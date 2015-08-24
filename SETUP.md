@@ -14,3 +14,23 @@
 cd DB-DefiVelo
 mkvirtualenv -a . -r requirements/dev.txt DefiVelo
 ```
+
+## Installer les dépendances du projet et initialiser la DB
+
+```
+pip install -r requirements/dev.txt
+echo "sqlite:///defivelo.sqlite" > envdir/local/DATABASE_URL
+./manage.py migrate
+```
+
+## Créer un utilisateur super-administrateur
+
+```
+./manage.py createsuperadmin
+```
+
+## Lancer le serveur Web de test
+
+```
+./manage.py runserver_plus
+```
