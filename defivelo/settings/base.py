@@ -13,6 +13,8 @@ import os
 import dj_database_url
 import pytz
 
+from django.contrib import messages
+
 from . import get_env_variable
 from .. import get_project_root_path
 
@@ -33,6 +35,8 @@ ALLOWED_HOSTS = tuple(get_env_variable('ALLOWED_HOSTS', '').splitlines())
 # Application definition
 
 UPSTREAM_APPS = (
+    'django_admin_bootstrapped',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -63,6 +67,14 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'defivelo.urls'
 
 WSGI_APPLICATION = 'defivelo.wsgi.application'
+
+# Bootstrap the admin
+DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
+MESSAGE_TAGS = {
+            messages.SUCCESS: 'alert-success success',
+            messages.WARNING: 'alert-warning warning',
+            messages.ERROR: 'alert-danger error'
+}
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
