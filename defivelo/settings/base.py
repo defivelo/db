@@ -11,10 +11,12 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 
 import dj_database_url
+import pytz
 
 from . import get_env_variable
 from .. import get_project_root_path
 
+gettext = lambda s: s
 
 PROJECT_ROOT = get_project_root_path()
 
@@ -37,6 +39,8 @@ UPSTREAM_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    'parler',
 )
 
 # Project apps tested by jenkins (everything in apps/)
@@ -60,7 +64,6 @@ ROOT_URLCONF = 'defivelo.urls'
 
 WSGI_APPLICATION = 'defivelo.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
@@ -70,17 +73,25 @@ DATABASES = {
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+# Internationalization
+LANGUAGE_CODE = 'fr'
+TIME_ZONE = 'Europe/Zurich'
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
+LANGUAGES = (
+    ('fr', gettext('French')),
+    ('de', gettext('German')),
+)
+
+PARLER_LANGUAGES = {
+    None: (
+        [{'code': lang[0]} for lang in LANGUAGES]
+    ),
+    'default': {
+    }
+}
 
 # This allows you to put project-wide translations in the "locale" directory of
 # your project
@@ -88,8 +99,27 @@ LOCALE_PATHS = (
     os.path.join(PROJECT_ROOT, 'locale'),
 )
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
+# URL prefix for static files.
+# Example: "http://media.lawrence.com/static/"
+STATIC_URL = get_env_variable('STATIC_URL', '/static/')
 
-STATIC_URL = '/static/'
+# Absolute path to the directory static files should be collected to.
+# Don't put anything in this directory yourself; store your static files
+# in apps' "static/" subdirectories and in STATICFILES_DIRS.
+# This is usually not used in a dev env, hence the default value
+# Example: "/home/media/media.lawrence.com/static/"
+STATIC_ROOT = get_env_variable('STATIC_ROOT', '/tmp/static')
+
+STATICFILES_DIRS = (
+)
+
+# URL that handles the media served from MEDIA_ROOT. Make sure to use a
+# trailing slash.
+# Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
+MEDIA_URL = get_env_variable('MEDIA_URL', '/media/')
+
+# Absolute filesystem path to the directory that will hold user-uploaded files.
+# Example: "/home/media/media.lawrence.com/media/"
+MEDIA_ROOT = get_env_variable('MEDIA_ROOT', '/tmp/static/media')

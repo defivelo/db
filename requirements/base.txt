@@ -1,2 +1,4 @@
 dj-database-url==0.3.0
 Django==1.8.4
+django-parler==1.5
+pytz==2015.4
