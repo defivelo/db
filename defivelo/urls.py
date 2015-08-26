@@ -2,13 +2,13 @@ from django.conf.urls import include, patterns, url
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
+from .views import HomeView
+
 admin.autodiscover()
 
 urlpatterns = patterns(
     '',
-    # Examples:
-    # url(r'^$', 'defivelo.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
+    url(r'^$', HomeView.as_view(), name='home'),
 
     url(r'^admin/', include(admin.site.urls)),
 )

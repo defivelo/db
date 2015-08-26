@@ -33,6 +33,7 @@ ALLOWED_HOSTS = tuple(get_env_variable('ALLOWED_HOSTS', '').splitlines())
 # Application definition
 
 UPSTREAM_APPS = (
+    'bootstrap3',
     'django_admin_bootstrapped',
     
     'django.contrib.admin',
@@ -43,6 +44,7 @@ UPSTREAM_APPS = (
     'django.contrib.staticfiles',
     
     'parler',
+    'compressor',
 )
 
 # Project apps tested by jenkins (everything in apps/)
@@ -78,7 +80,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(PROJECT_ROOT, 'templates')
+            os.path.join(PROJECT_ROOT, 'defivelo/templates')
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -97,6 +99,10 @@ TEMPLATES = [
         },
     },
 ]
+
+COMPRESS_PRECOMPILERS = (
+    ('text/x-scss', 'sassc {infile} {outfile}'),
+)
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
@@ -146,6 +152,13 @@ STATIC_URL = get_env_variable('STATIC_URL', '/static/')
 STATIC_ROOT = get_env_variable('STATIC_ROOT', '/tmp/static')
 
 STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT, "defivelo/static"),
+)
+
+STATICFILES_FINDERS = (
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    "compressor.finders.CompressorFinder",
 )
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a

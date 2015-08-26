@@ -5,3 +5,5 @@ pytz==2015.4
 django-admin-bootstrapped==2.5.4
 django-bootstrap3==6.2.2
 psycopg2==2.6.1
+django-compressor==1.5
+libsass==0.8.3
