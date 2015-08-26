@@ -12,7 +12,6 @@ import os
 
 import dj_database_url
 import pytz
-
 from django.contrib import messages
 
 from . import get_env_variable
