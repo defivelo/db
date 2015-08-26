@@ -34,6 +34,7 @@ ALLOWED_HOSTS = tuple(get_env_variable('ALLOWED_HOSTS', '').splitlines())
 
 UPSTREAM_APPS = (
     'bootstrap3',
+    'registration_bootstrap3',
     'django_admin_bootstrapped',
     
     'django.contrib.admin',
@@ -45,6 +46,7 @@ UPSTREAM_APPS = (
     
     'parler',
     'compressor',
+    'stronghold',
 )
 
 # Project apps tested by jenkins (everything in apps/)
@@ -62,7 +64,10 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'stronghold.middleware.LoginRequiredMiddleware',
 )
+
+LOGIN_REDIRECT_URL = '/'
 
 ROOT_URLCONF = 'defivelo.urls'
 

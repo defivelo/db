@@ -9,7 +9,7 @@ admin.autodiscover()
 urlpatterns = patterns(
     '',
     url(r'^$', HomeView.as_view(), name='home'),
-
+    url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )
 
