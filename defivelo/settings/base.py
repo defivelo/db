@@ -36,6 +36,11 @@ UPSTREAM_APPS = (
     'bootstrap3',
     'registration_bootstrap3',
     'django_admin_bootstrapped',
+    'django.contrib.sites',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
     
     'django.contrib.admin',
     'django.contrib.auth',
@@ -67,8 +72,6 @@ MIDDLEWARE_CLASSES = (
     'stronghold.middleware.LoginRequiredMiddleware',
 )
 
-LOGIN_REDIRECT_URL = '/'
-
 ROOT_URLCONF = 'defivelo.urls'
 
 WSGI_APPLICATION = 'defivelo.wsgi.application'
@@ -96,6 +99,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.i18n',
                 'django.template.context_processors.media',
+                'django.template.context_processors.request',
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
@@ -174,3 +178,27 @@ MEDIA_URL = get_env_variable('MEDIA_URL', '/media/')
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
 MEDIA_ROOT = get_env_variable('MEDIA_ROOT', '/tmp/static/media')
+
+AUTHENTICATION_BACKENDS = (
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+
+def defivelo_user_display(u):
+    if u.first_name and u.last_name:
+        return u'{first} {last}'.format(first=u.first_name, last=u.last_name)
+    else:
+        return u.email
+
+ACCOUNT_USER_DISPLAY = defivelo_user_display
+ACCOUNT_ADAPTER = 'defivelo.accounts.NoSignupAccountAdapter'
+
+LOGIN_REDIRECT_URL = '/'
+
+SITE_ID = 1
