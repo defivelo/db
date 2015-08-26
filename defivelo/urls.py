@@ -1,5 +1,6 @@
 from django.conf.urls import include, patterns, url
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
 admin.autodiscover()
 
@@ -11,3 +12,5 @@ urlpatterns = patterns(
 
     url(r'^admin/', include(admin.site.urls)),
 )
+
+admin.site.site_header = _('DB Défi Vélo')
