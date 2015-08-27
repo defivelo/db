@@ -10,3 +10,4 @@ libsass==0.8.3
 django-stronghold==0.2.7
 -e git+https://github.com/mgaitan/django-registration-bootstrap@d783998737cf6acfd67392ce266e510ffb1c94f4#egg=django-registration-bootstrap3
 django-allauth==0.23.0
+django-localflavor==1.1

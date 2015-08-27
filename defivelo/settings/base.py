@@ -52,6 +52,7 @@ UPSTREAM_APPS = (
     'parler',
     'compressor',
     'stronghold',
+    'localflavor',
 )
 
 # Project apps tested by jenkins (everything in apps/)

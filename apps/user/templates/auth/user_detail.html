@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load account %}
+{% block content %}
+    <h2>{% user_display user %}</h2>
+    <ul>
+        <li>{{ user.first_name }}</li>
+        <li>{{ user.last_name }}</li>
+        <li>{{ user.email }}</li>
+        <li>{{ user.userprofile.iban }}</li>
+    </ul>
+{% endblock %}

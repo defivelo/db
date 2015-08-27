@@ -12,6 +12,7 @@ admin.autodiscover()
 urlpatterns = patterns(
     '',
     url(r'^$', HomeView.as_view(), name='home'),
+    url(r'^me/', include('apps.user.urls')),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )
