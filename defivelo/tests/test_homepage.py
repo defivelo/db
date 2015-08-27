@@ -65,5 +65,6 @@ class HomePageRedirectTest(TestCase):
     def test_signup_forbidden(self):
         response = self.client.get(reverse('account_signup'))
 
-        # Check that the response is 302 redirect to the login page
-        self.assertRedirects(response, '%s?next=%s' % (reverse('account_login'), reverse('account_signup')))
+        # Check that the response is a 200 that uses the forbidden signup template
+        self.assertTemplateUsed(response, 'account/signup_closed.html')
+        self.assertEqual(response.status_code, 200)
