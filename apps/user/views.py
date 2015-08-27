@@ -28,6 +28,8 @@ class UserUpdate(SuccessMessageMixin, UpdateView):
     form_class = UserProfileForm
     template_name_suffix = '_update_form'
     success_message = _("Profil mis à jour")
+    otherfields = ['address_street', 'address_no', 'address_zip',
+                   'address_city', 'address_canton', 'natel', 'iban']
 
     def get_object(self):
         """
@@ -44,18 +46,20 @@ class UserUpdate(SuccessMessageMixin, UpdateView):
         """
         user = self.get_object()
         if hasattr(user, 'profile'):
-            return {'iban': user.profile.iban}
-        else:
-            return {}
+            struct = {}
+            for field in self.otherfields:
+                struct[field] = getattr(user.profile, field)
+            return struct
 
     def form_valid(self, form):
         """
         Write the non-model fields
         """
-        if 'iban' in form.cleaned_data:
-            (userprofile, created) = (
-                UserProfile.objects.get_or_create(user=self.request.user)
-            )
-            userprofile.iban = form.cleaned_data['iban']
-            userprofile.save()
+        (userprofile, created) = (
+            UserProfile.objects.get_or_create(user=self.request.user)
+        )
+        for field in self.otherfields:
+            if field in form.cleaned_data:
+                setattr(userprofile, field, form.cleaned_data[field])
+        userprofile.save()
         return super(UserUpdate, self).form_valid(form)

@@ -4,12 +4,36 @@
 {% load bootstrap3 %}
 {% block content %}
     <h2>{% trans "Éditer son profil" %}</h2>
-    <form method="POST" action="">
+    <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
-        {% bootstrap_form form %}
+        {% bootstrap_field form.first_name layout='horizontal' size='small' %}
+        {% bootstrap_field form.last_name layout='horizontal' size='small' %}
+        <div class="form-group form-group-sm">
+            {% bootstrap_label form.address_street.label label_class='col-md-3 control-label' %}
+            
+            {% bootstrap_field form.address_street size='small' field_class='col-md-6' form_group_class='none' show_label=False %}
+            
+            {% bootstrap_label form.address_no.label label_class='col-md-3 hidden-md hidden-lg control-label' %}
+            {% bootstrap_field form.address_no     size='small' field_class='col-md-3' form_group_class='none' show_label=False %}
+        </div>
+        <div class="form-group form-group-sm">
+            {% bootstrap_label form.address_city.label label_class='col-md-3 visible-md-block visible-lg-block control-label' %}
+            
+            {% bootstrap_label form.address_zip.label label_class='col-md-3 hidden-md hidden-lg control-label' %}
+            {% bootstrap_field form.address_zip       size='small' field_class='col-md-2' form_group_class='none' show_label=False %}
+            
+            {% bootstrap_label form.address_city.label label_class='col-md-3 hidden-md hidden-lg control-label' %}
+            {% bootstrap_field form.address_city       size='small' field_class='col-md-5' form_group_class='none' show_label=False %}
+            
+            {% bootstrap_label form.address_canton.label label_class='col-md-3 hidden-md hidden-lg control-label' %}
+            {% bootstrap_field form.address_canton       size='small' field_class='col-md-2' form_group_class='none' show_label=False %}
+        </div>
+        {% bootstrap_field form.natel layout='horizontal' size='small' %}
+        {% bootstrap_field form.iban layout='horizontal' size='small' %}
         
         {% buttons %}
             <button type="submit" class="btn btn-primary">{% trans 'Update' %}</button>
+            <a class="btn btn-default pull-right" href="{% url 'account_email' %}">{% blocktrans with email=form.email.value %}Changer d'email ({{ email }}){% endblocktrans %}</a>
         {% endbuttons %}
     </form>
     
