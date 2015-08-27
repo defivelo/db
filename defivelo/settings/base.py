@@ -110,7 +110,12 @@ TEMPLATES = [
 ]
 
 COMPRESS_PRECOMPILERS = (
-    ('text/x-scss', 'sassc {infile} {outfile}'),
+    ('text/x-scss',
+     os.path.join(
+         get_env_variable('VIRTUAL_ENV',
+                          os.path.join(PROJECT_ROOT, 'venv')
+                          ),
+         'bin', 'sassc') + ' {infile} {outfile}'),
 )
 
 # Database
