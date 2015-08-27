@@ -78,11 +78,6 @@ WSGI_APPLICATION = 'defivelo.wsgi.application'
 
 # Bootstrap the admin
 DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
-MESSAGE_TAGS = {
-            messages.SUCCESS: 'alert-success success',
-            messages.WARNING: 'alert-warning warning',
-            messages.ERROR: 'alert-danger error'
-}
 
 TEMPLATES = [
     {
