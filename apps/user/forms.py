@@ -17,7 +17,12 @@ class UserProfileForm(forms.ModelForm):
     address_no = forms.CharField(label=_('N°'),max_length=8, required=False)
     address_zip = CHZipCodeField(label=_('NPA'), max_length=4, required=False)
     address_city = forms.CharField(label=_('Ville'), max_length=64, required=False)
-    address_canton = forms.ChoiceField(label=_('Canton'), widget=CHStateSelect, choices=STATE_CHOICES)
+    address_canton = forms.ChoiceField(label=_('Canton'),
+                                       widget=CHStateSelect,
+                                       choices=tuple(
+                                           list((('', _('Canton'),),)) +
+                                           list(STATE_CHOICES)),
+                                       required=False)
     natel = CHPhoneNumberField(label=_('Natel'), required=False)
     iban = localforms.IBANFormField(label=_('Coordonnées bancaires (IBAN)'), include_countries=IBAN_SEPA_COUNTRIES, required=False)
     
