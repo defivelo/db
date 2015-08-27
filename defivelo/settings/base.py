@@ -41,14 +41,14 @@ UPSTREAM_APPS = (
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     'parler',
     'compressor',
     'stronghold',
@@ -158,7 +158,8 @@ STATIC_URL = get_env_variable('STATIC_URL', '/static/')
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # This is usually not used in a dev env, hence the default value
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = get_env_variable('STATIC_ROOT', '/tmp/static')
+STATIC_ROOT = get_env_variable('STATIC_ROOT',
+                               os.path.join(PROJECT_ROOT, 'static_files'))
 
 STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT, "defivelo/static"),
