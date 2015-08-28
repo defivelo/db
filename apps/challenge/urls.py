@@ -4,7 +4,8 @@ from __future__ import unicode_literals
 from django.conf.urls import url
 
 from .views import (
-    SessionCreateView, SessionDetailView, SessionsListView, SessionUpdateView, SessionDeleteView,
+    SessionCreateView, SessionDeleteView, SessionDetailView, SessionsListView,
+    SessionUpdateView,
 )
 
 urlpatterns = [
