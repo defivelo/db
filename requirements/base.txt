@@ -7,7 +7,7 @@ psycopg2==2.6.1
 django-compressor==1.5
 libsass==0.8.3
 django-stronghold==0.2.7
--e git+https://github.com/mgaitan/django-registration-bootstrap@d783998737cf6acfd67392ce266e510ffb1c94f4#egg=django-registration-bootstrap3
+-e git+https://github.com/mgaitan/django-registration-bootstrap@d783998737cf6acfd67392ce266e510ffb1c94f4#egg=django-registration-bootstrap3==0.1+master0
 django-allauth==0.23.0
 django-localflavor==1.1
--e git+https://github.com/nkunihiko/django-bootstrap3-datetimepicker.git@2fa9ea5f56c16ec10aa3288a989a17a4332bcb97#egg=django_bootstrap3_datetimepicker-origin/master
+-e git+https://github.com/nkunihiko/django-bootstrap3-datetimepicker.git@2fa9ea5f56c16ec10aa3288a989a17a4332bcb97#egg=django_bootstrap3_datetimepicker==2.3+master0
