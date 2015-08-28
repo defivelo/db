@@ -1,6 +1,6 @@
 dj-database-url==0.3.0
 Django==1.8.4
-django-parler==1.5
+-e git+https://github.com/defivelo/django-parler@9d7848f48d30ca5ab28a97ed1cf7aa7354279fb4#egg=django_parler-origin/dj19-util-deprecation
 pytz==2015.4
 django-admin-bootstrapped==2.5.4
 django-bootstrap3==6.2.2
