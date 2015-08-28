@@ -12,7 +12,14 @@ from .forms import UserProfileForm
 from .models import UserProfile
 
 
-class UserDetail(DetailView):
+class ProfileMixin:
+    def get_context_data(self, **kwargs):
+        context = super(ProfileMixin, self).get_context_data(**kwargs)
+        # Add our menu_category context
+        context['menu_category'] = 'profile'
+        return context
+
+class UserDetail(ProfileMixin,DetailView):
     model = get_user_model()
     context_object_name = 'user'
 
@@ -23,7 +30,7 @@ class UserDetail(DetailView):
         return get_user_model().objects.get(pk=self.request.user.pk)
 
 
-class UserUpdate(SuccessMessageMixin, UpdateView):
+class UserUpdate(ProfileMixin, SuccessMessageMixin, UpdateView):
     model = get_user_model()
     form_class = UserProfileForm
     template_name_suffix = '_update_form'
