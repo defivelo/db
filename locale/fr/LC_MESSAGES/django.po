@@ -1,0 +1,342 @@
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Didier Raboud <odyx@debian.org>, 2015.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-08-28 13:41+0200\n"
+"PO-Revision-Date: 2015-08-28 13:44+0200\n"
+"Last-Translator: Didier Raboud <odyx@debian.org>\n"
+"Language-Team: French <>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Lokalize 1.5\n"
+
+#: apps/challenge/forms.py:13 apps/challenge/models.py:34
+msgid "Date"
+msgstr ""
+
+#: apps/challenge/forms.py:20
+msgid "Horaire"
+msgstr ""
+
+#: apps/challenge/models.py:14
+msgid "Début"
+msgstr ""
+
+#: apps/challenge/models.py:15
+msgid "Fin"
+msgstr ""
+
+#: apps/challenge/models.py:18
+msgid "Horaire pour sessions"
+msgstr ""
+
+#: apps/challenge/models.py:19
+msgid "Horaires pour sessions"
+msgstr ""
+
+#: apps/challenge/models.py:39
+#: apps/challenge/templates/challenge/session_detail.html:4
+msgid "Session"
+msgstr ""
+
+#: apps/challenge/models.py:40
+msgid "Sessions"
+msgstr ""
+
+#: apps/challenge/templates/challenge/session_confirm_delete.html:4
+#: apps/challenge/templates/challenge/session_confirm_delete.html:7
+#, python-format
+msgid "Suppression de la session %(session)s?"
+msgstr ""
+
+#: apps/challenge/templates/challenge/session_confirm_delete.html:11
+#, python-format
+msgid ""
+"Supprimer la session %(session)s définitivement (y compris toutes les "
+"données y-relatives)?"
+msgstr ""
+
+#: apps/challenge/templates/challenge/session_confirm_delete.html:13
+#: apps/challenge/templates/challenge/session_detail.html:9
+msgid "Retour à la liste des sessions"
+msgstr ""
+
+#: apps/challenge/templates/challenge/session_confirm_delete.html:14
+msgid "Supprimer vraiment"
+msgstr ""
+
+#: apps/challenge/templates/challenge/session_detail.html:10
+msgid "Supprimer"
+msgstr ""
+
+#: apps/challenge/templates/challenge/session_detail.html:11
+msgid "Éditer"
+msgstr ""
+
+#: apps/challenge/templates/challenge/session_form.html:4
+#: apps/challenge/templates/challenge/session_form.html:14
+msgid "Édition de la session"
+msgstr ""
+
+#: apps/challenge/templates/challenge/session_form.html:4
+#: apps/challenge/templates/challenge/session_form.html:14
+msgid "Nouvelle session"
+msgstr ""
+
+#: apps/challenge/templates/challenge/session_form.html:23
+msgid "Annuler"
+msgstr ""
+
+#: apps/challenge/templates/challenge/session_form.html:25
+msgid "Enregistrer"
+msgstr ""
+
+#: apps/challenge/templates/challenge/session_list.html:4
+#: apps/challenge/templates/challenge/session_list.html:7
+msgid "Prochaines sessions"
+msgstr ""
+
+#: apps/challenge/templates/challenge/session_list.html:15
+msgid "Créer une nouvelle session"
+msgstr ""
+
+#: apps/user/forms.py:16
+msgid "Rue"
+msgstr ""
+
+#: apps/user/forms.py:17
+msgid "N°"
+msgstr ""
+
+#: apps/user/forms.py:18
+msgid "NPA"
+msgstr ""
+
+#: apps/user/forms.py:19
+msgid "Ville"
+msgstr ""
+
+#: apps/user/forms.py:20 apps/user/forms.py:23
+msgid "Canton"
+msgstr ""
+
+#: apps/user/forms.py:26
+msgid "Natel"
+msgstr ""
+
+#: apps/user/forms.py:27
+msgid "Coordonnées bancaires (IBAN)"
+msgstr ""
+
+#: apps/user/templates/auth/user_update_form.html:6
+msgid "Éditer son profil"
+msgstr ""
+
+#: apps/user/templates/auth/user_update_form.html:35
+msgid "Update"
+msgstr ""
+
+#: apps/user/templates/auth/user_update_form.html:36
+#, python-format
+msgid "Changer d'email (%(email)s)"
+msgstr ""
+
+#: apps/user/views.py:30
+msgid "Profil mis à jour"
+msgstr ""
+
+#: defivelo/settings/base.py:135
+msgid "French"
+msgstr "Français"
+
+#: defivelo/settings/base.py:136
+msgid "German"
+msgstr "Allemand "
+
+#: defivelo/templates/account/email.html:5
+msgid "Account"
+msgstr "Compte"
+
+#: defivelo/templates/account/email.html:8
+msgid "E-mail Addresses"
+msgstr "Adresses de courriel"
+
+#: defivelo/templates/account/email.html:10
+msgid "The following e-mail addresses are associated with your account:"
+msgstr "Les adresses suivantes sont associées à ce compte:"
+
+#: defivelo/templates/account/email.html:21
+msgid "Verified"
+msgstr "Vérifiée"
+
+#: defivelo/templates/account/email.html:23
+msgid "Unverified"
+msgstr "Non-vérifiée"
+
+#: defivelo/templates/account/email.html:25
+msgid "Primary"
+msgstr "Primaire"
+
+#: defivelo/templates/account/email.html:31
+msgid "Make Primary"
+msgstr "Rendre primaire"
+
+#: defivelo/templates/account/email.html:32
+msgid "Re-send Verification"
+msgstr "Ré-envoyer la vérification"
+
+#: defivelo/templates/account/email.html:33
+msgid "Remove"
+msgstr "Ôter"
+
+#: defivelo/templates/account/email.html:41
+msgid "Warning:"
+msgstr "Attention:"
+
+#: defivelo/templates/account/email.html:41
+msgid ""
+"You currently do not have any e-mail address set up. You should really add "
+"an e-mail address so you can receive notifications, reset your password, etc."
+msgstr ""
+"Vous n'avez pour l'instant configuré aucune adresse de courriel. Vous devriez "
+"vraiment en configurer une afin de pouvoir recevoir les notifications, "
+"réinitialiser votre mot de passe, etc."
+
+#: defivelo/templates/account/email.html:46
+msgid "Add E-mail Address"
+msgstr "Ajouter une adresse de courriel"
+
+#: defivelo/templates/account/email.html:51
+msgid "Add E-mail"
+msgstr "Ajouter un courriel"
+
+#: defivelo/templates/account/email.html:60
+msgid "Do you really want to remove the selected e-mail address?"
+msgstr "Vraiment supprimer les adresses de courriel sélectionnées?"
+
+#: defivelo/templates/account/email_confirm.html:6
+#: defivelo/templates/account/email_confirm.html:10
+msgid "Confirm E-mail Address"
+msgstr "Confirmer l'adresse email "
+
+#: defivelo/templates/account/email_confirm.html:16
+#, python-format
+msgid ""
+"Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an e-mail "
+"address for user %(user_display)s."
+msgstr ""
+
+#: defivelo/templates/account/email_confirm.html:20
+msgid "Confirm"
+msgstr ""
+
+#: defivelo/templates/account/email_confirm.html:27
+#, python-format
+msgid ""
+"This e-mail confirmation link expired or is invalid. Please <a href="
+"\"%(email_url)s\">issue a new e-mail confirmation request</a>."
+msgstr ""
+
+#: defivelo/templates/account/login.html:6
+#: defivelo/templates/account/login.html:9
+#: defivelo/templates/account/login.html:18
+msgid "Sign In"
+msgstr ""
+
+#: defivelo/templates/account/login.html:19
+msgid "Forgot Password?"
+msgstr ""
+
+#: defivelo/templates/account/logout.html:5
+#: defivelo/templates/account/logout.html:8
+#: defivelo/templates/account/logout.html:18
+msgid "Sign Out"
+msgstr ""
+
+#: defivelo/templates/account/logout.html:10
+msgid "Are you sure you want to sign out?"
+msgstr ""
+
+#: defivelo/templates/account/password_change.html:6
+#: defivelo/templates/account/password_change.html:9
+#: defivelo/templates/account/password_change.html:15
+#: defivelo/templates/account/password_reset_from_key.html:4
+#: defivelo/templates/account/password_reset_from_key.html:7
+#: defivelo/templates/account/password_reset_from_key.html:18
+msgid "Change Password"
+msgstr ""
+
+#: defivelo/templates/account/password_reset.html:6
+#: defivelo/templates/account/password_reset.html:9
+msgid "Password Reset"
+msgstr ""
+
+#: defivelo/templates/account/password_reset.html:13
+msgid ""
+"Forgotten your password? Enter your e-mail address below, and we'll send you "
+"an e-mail allowing you to reset it."
+msgstr ""
+
+#: defivelo/templates/account/password_reset.html:20
+msgid "Reset My Password"
+msgstr ""
+
+#: defivelo/templates/account/password_reset.html:24
+msgid "Please contact us if you have any trouble resetting your password."
+msgstr ""
+
+#: defivelo/templates/account/password_reset_from_key.html:7
+msgid "Bad Token"
+msgstr ""
+
+#: defivelo/templates/account/password_reset_from_key.html:11
+#, python-format
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</"
+"a>."
+msgstr ""
+
+#: defivelo/templates/account/password_reset_from_key.html:22
+msgid "Your password is now changed."
+msgstr ""
+
+#: defivelo/templates/base.html:9 defivelo/templates/base.html.py:41
+msgid "Accueil"
+msgstr ""
+
+#: defivelo/templates/base.html:9 defivelo/templates/base.html.py:37
+msgid "Défi Vélo"
+msgstr ""
+
+#: defivelo/templates/base.html:32
+msgid "Dérouler la navigation"
+msgstr ""
+
+#: defivelo/templates/base.html:48
+msgid "Profil"
+msgstr ""
+
+#: defivelo/templates/base.html:49
+msgid "Change password"
+msgstr ""
+
+#: defivelo/templates/base.html:50
+msgid "Log out"
+msgstr ""
+
+#: defivelo/templates/base.html:54
+msgid "Log in"
+msgstr ""
+
+#: defivelo/urls.py:21
+msgid "DB Défi Vélo"
+msgstr ""
+
