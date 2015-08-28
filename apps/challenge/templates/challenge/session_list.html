@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% block head_title %}{% trans "Prochaines sessions" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Prochaines sessions" %}</h1>
+
+    <div class="list-group">
+    {% for session in sessions %}
+        <a class="list-group-item" href="{% url 'session-detail' pk=session.pk %}">{{ session }}</a>
+    {% endfor %}
+    </div>
+
+    <a class="btn btn-primary pull-right" href="{% url 'session-create' %}">{% trans "Créer une nouvelle session" %}</a>
+{% endblock %}

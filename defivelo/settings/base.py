@@ -34,6 +34,7 @@ ALLOWED_HOSTS = tuple(get_env_variable('ALLOWED_HOSTS', '').splitlines())
 
 UPSTREAM_APPS = (
     'bootstrap3',
+    'bootstrap3_datetime',
     'registration_bootstrap3',
     'django_admin_bootstrapped',
     'django.contrib.sites',
@@ -128,6 +129,8 @@ TIME_ZONE = 'Europe/Zurich'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
+
+DATE_FORMAT = 'j F y'
 
 LANGUAGES = (
     ('fr', gettext('French')),

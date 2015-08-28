@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% block head_title %}{% if session %}{% trans "Édition de la session" %}{% else %}{% trans "Nouvelle session" %}{% endif %}{% endblock %}
+
+{% block bootstrap3_extra_head %}
+{{ form.media.css }}
+{% endblock %}
+{% block bootstrap3_extra_script %}
+{{ form.media.js }}
+{% endblock %}
+
+{% block content %}
+    <h1>{% if session %}{% trans "Édition de la session" %}{% else %}{% trans "Nouvelle session" %}{% endif %}</h1>
+
+
+    <form method="POST" action="" class="form-horizontal">
+        {% csrf_token %}
+        {% bootstrap_form form layout='horizontal' %}
+
+        {% buttons %}
+            {% if session %}
+                <a class="btn btn-default" href="{% url 'session-detail' pk=session.pk %}">{% trans "Annuler" %}</a>
+            {% endif %}
+            <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
+        {% endbuttons %}
+    </form>
+{% endblock %}
