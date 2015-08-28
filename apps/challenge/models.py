@@ -32,7 +32,8 @@ class Session(models.Model):
     # Time span
     day = models.DateField(_('Date'), blank=True)
     timeslot = models.ForeignKey(SessionTimeSlot,
-                                 related_name='sessions', blank=True)
+                                 related_name='sessions',
+                                 blank=True, null=True)
 
     class Meta:
         verbose_name = _('Session')
@@ -43,7 +44,7 @@ class Session(models.Model):
         return reverse('session-detail', args=[self.pk])
 
     def __str__(self):
-        return '%s (%s)' % (
+        return '%s%s' % (
             date(self.day, settings.DATE_FORMAT),
-            self.timeslot
+            ' (%s)' % self.timeslot if self.timeslot else ''
             )
