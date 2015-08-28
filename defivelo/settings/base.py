@@ -50,7 +50,6 @@ UPSTREAM_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'parler',
     'compressor',
     'stronghold',
     'localflavor',
