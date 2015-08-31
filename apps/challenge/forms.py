@@ -22,4 +22,4 @@ class SessionForm(autocomplete_light.ModelForm):
             'timeslot': _('Horaire'),
             'organization': _('Établissement'),
         }
-        fields = ['day', 'timeslot', 'organization']
+        fields = ['organization', 'day', 'timeslot',]

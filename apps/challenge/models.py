@@ -35,9 +35,12 @@ class Session(models.Model):
     # Time span
     day = models.DateField(_('Date'), blank=True)
     timeslot = models.ForeignKey(SessionTimeSlot,
+                                 verbose_name=_('Horaire'),
                                  related_name='sessions',
                                  blank=True, null=True)
-    organization = models.ForeignKey(Organization, related_name='sessions',
+    organization = models.ForeignKey(Organization,
+                                     verbose_name=_('Établissement'),
+                                     related_name='sessions',
                                      blank=True, null=True)
 
     class Meta:
