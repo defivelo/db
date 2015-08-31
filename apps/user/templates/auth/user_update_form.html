@@ -11,11 +11,11 @@
         {% include "address_bootstrap_form.html" %}
         {% bootstrap_field form.natel layout='horizontal' size='small' %}
         {% bootstrap_field form.iban layout='horizontal' size='small' %}
-        
+
         {% buttons %}
             <button type="submit" class="btn btn-primary">{% trans 'Update' %}</button>
             <a class="btn btn-default pull-right" href="{% url 'account_email' %}">{% blocktrans with email=form.email.value %}Changer d'email ({{ email }}){% endblocktrans %}</a>
         {% endbuttons %}
     </form>
-    
+
 {% endblock %}

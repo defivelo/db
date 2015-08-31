@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-31 15:18+0200\n"
+"POT-Creation-Date: 2015-08-31 17:57+0200\n"
 "PO-Revision-Date: 2015-08-28 13:58+0200\n"
 "Last-Translator: Didier Raboud <odyx@debian.org>\n"
 "Language-Team: French <>\n"
@@ -18,14 +18,18 @@ msgstr ""
 "X-Generator: Lokalize 1.5\n"
 
 #: apps/challenge/forms.py:15 apps/challenge/models.py:36
+#: apps/challenge/templates/challenge/session_detail.html:14
 msgid "Date"
 msgstr ""
 
-#: apps/challenge/forms.py:22
+#: apps/challenge/forms.py:22 apps/challenge/models.py:38
+#: apps/challenge/templates/challenge/session_detail.html:15
 msgid "Horaire"
 msgstr ""
 
-#: apps/challenge/forms.py:23 apps/orga/models.py:24
+#: apps/challenge/forms.py:23 apps/challenge/models.py:42
+#: apps/challenge/templates/challenge/session_detail.html:13
+#: apps/orga/models.py:23
 msgid "Établissement"
 msgstr ""
 
@@ -45,13 +49,72 @@ msgstr ""
 msgid "Horaires pour sessions"
 msgstr ""
 
-#: apps/challenge/models.py:44
+#: apps/challenge/models.py:47
 #: apps/challenge/templates/challenge/session_detail.html:4
 msgid "Session"
 msgstr ""
 
-#: apps/challenge/models.py:45 defivelo/templates/header.html:6
+#: apps/challenge/models.py:48 defivelo/templates/header.html:6
 msgid "Sessions"
+msgstr ""
+
+#: apps/challenge/models.py:66 apps/orga/models.py:15
+msgid "Nom"
+msgstr ""
+
+#: apps/challenge/models.py:71
+msgid "Qualification"
+msgstr ""
+
+#: apps/challenge/models.py:72
+#: apps/challenge/templates/challenge/session_detail.html:18
+msgid "Qualifications"
+msgstr ""
+
+#: apps/challenge/templates/challenge/qualification_confirm_delete.html:4
+#: apps/challenge/templates/challenge/qualification_confirm_delete.html:7
+#, python-format
+msgid "Suppression de la qualification %(qualification)s?"
+msgstr ""
+
+#: apps/challenge/templates/challenge/qualification_confirm_delete.html:11
+#, python-format
+msgid ""
+"Supprimer la qualification %(qualification)s (%(session)s) définitivement?"
+msgstr ""
+
+#: apps/challenge/templates/challenge/qualification_confirm_delete.html:14
+#: apps/challenge/templates/challenge/session_confirm_delete.html:21
+#: apps/orga/templates/orga/organization_confirm_delete.html:13
+msgid "Supprimer vraiment"
+msgstr ""
+
+#: apps/challenge/templates/challenge/qualification_confirm_delete.html:15
+msgid "Retour à la liste des qualifications"
+msgstr ""
+
+#: apps/challenge/templates/challenge/qualification_form.html:4
+#: apps/challenge/templates/challenge/qualification_form.html:15
+msgid "Édition de la qualification"
+msgstr ""
+
+#: apps/challenge/templates/challenge/qualification_form.html:4
+#: apps/challenge/templates/challenge/qualification_form.html:15
+msgid "Nouvelle qualification"
+msgstr ""
+
+#: apps/challenge/templates/challenge/qualification_form.html:22
+#: apps/challenge/templates/challenge/session_form.html:22
+#: apps/orga/templates/orga/organization_form.html:23
+msgid "Enregistrer"
+msgstr ""
+
+#: apps/challenge/templates/challenge/qualification_form.html:23
+#: apps/challenge/templates/challenge/session_form.html:24
+#: apps/challenge/templates/challenge/session_form.html:26
+#: apps/orga/templates/orga/organization_form.html:25
+#: apps/orga/templates/orga/organization_form.html:27
+msgid "Annuler"
 msgstr ""
 
 #: apps/challenge/templates/challenge/session_confirm_delete.html:4
@@ -63,28 +126,32 @@ msgstr ""
 #: apps/challenge/templates/challenge/session_confirm_delete.html:11
 #, python-format
 msgid ""
-"Supprimer la session %(session)s définitivement (y compris toutes les "
-"données y-relatives)?"
+"Supprimer la session %(session)s définitivement (y compris toutes ses "
+"qualifications)?"
 msgstr ""
 
 #: apps/challenge/templates/challenge/session_confirm_delete.html:13
-#: apps/challenge/templates/challenge/session_detail.html:9
+msgid "Qualifications qui seront supprimées"
+msgstr ""
+
+#: apps/challenge/templates/challenge/session_confirm_delete.html:22
+#: apps/challenge/templates/challenge/session_detail.html:34
 msgid "Retour à la liste des sessions"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_confirm_delete.html:14
-#: apps/orga/templates/orga/organization_confirm_delete.html:14
-msgid "Supprimer vraiment"
+#: apps/challenge/templates/challenge/session_detail.html:10
+#: apps/orga/templates/orga/organization_detail.html:22
+msgid "Éditer"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_detail.html:10
+#: apps/challenge/templates/challenge/session_detail.html:22
+#: apps/challenge/templates/challenge/session_detail.html:33
 #: apps/orga/templates/orga/organization_detail.html:24
 msgid "Supprimer"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_detail.html:11
-#: apps/orga/templates/orga/organization_detail.html:25
-msgid "Éditer"
+#: apps/challenge/templates/challenge/session_detail.html:27
+msgid "Créer une qualification"
 msgstr ""
 
 #: apps/challenge/templates/challenge/session_form.html:4
@@ -97,18 +164,6 @@ msgstr ""
 msgid "Nouvelle session"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_form.html:23
-#: apps/challenge/templates/challenge/session_form.html:25
-#: apps/orga/templates/orga/organization_form.html:24
-#: apps/orga/templates/orga/organization_form.html:26
-msgid "Annuler"
-msgstr ""
-
-#: apps/challenge/templates/challenge/session_form.html:27
-#: apps/orga/templates/orga/organization_form.html:28
-msgid "Enregistrer"
-msgstr ""
-
 #: apps/challenge/templates/challenge/session_list.html:4
 #: apps/challenge/templates/challenge/session_list.html:7
 msgid "Prochaines sessions"
@@ -118,12 +173,28 @@ msgstr ""
 msgid "Créer une nouvelle session"
 msgstr ""
 
-#: apps/challenge/views.py:40
+#: apps/challenge/views.py:44
 msgid "Session mise à jour"
 msgstr ""
 
-#: apps/challenge/views.py:47
+#: apps/challenge/views.py:48
 msgid "Session créée"
+msgstr ""
+
+#: apps/challenge/views.py:52
+msgid "Session supprimée"
+msgstr ""
+
+#: apps/challenge/views.py:81
+msgid "Qualification créée"
+msgstr ""
+
+#: apps/challenge/views.py:88
+msgid "Qualification mise à jour"
+msgstr ""
+
+#: apps/challenge/views.py:92
+msgid "Qualification supprimée"
 msgstr ""
 
 #: apps/orga/forms.py:15 apps/orga/forms.py:18 apps/user/forms.py:20
@@ -147,11 +218,7 @@ msgstr ""
 msgid "Ville"
 msgstr ""
 
-#: apps/orga/models.py:16
-msgid "Nom"
-msgstr ""
-
-#: apps/orga/models.py:25 apps/orga/templates/orga/organization_list.html:4
+#: apps/orga/models.py:24 apps/orga/templates/orga/organization_list.html:4
 #: apps/orga/templates/orga/organization_list.html:7
 #: defivelo/templates/header.html:7
 msgid "Établissements"
@@ -170,10 +237,7 @@ msgid ""
 "les données y-relatives)?"
 msgstr ""
 
-#: apps/orga/templates/orga/organization_confirm_delete.html:13
-msgid "Retour à la liste des établissementsb"
-msgstr ""
-
+#: apps/orga/templates/orga/organization_confirm_delete.html:14
 #: apps/orga/templates/orga/organization_detail.html:23
 msgid "Retour à la liste des établissements"
 msgstr ""
@@ -192,11 +256,11 @@ msgstr ""
 msgid "Créer un nouvel établissement"
 msgstr ""
 
-#: apps/orga/views.py:39
+#: apps/orga/views.py:40
 msgid "Établissement mis à jour"
 msgstr ""
 
-#: apps/orga/views.py:45
+#: apps/orga/views.py:46
 msgid "Établissement créé"
 msgstr ""
 
@@ -396,27 +460,27 @@ msgstr "Votre mot de passe a été modifié."
 msgid "Accueil"
 msgstr ""
 
-#: defivelo/templates/base.html:9 defivelo/templates/base.html.py:40
+#: defivelo/templates/base.html:9 defivelo/templates/base.html.py:38
 msgid "Défi Vélo"
 msgstr ""
 
-#: defivelo/templates/base.html:35
+#: defivelo/templates/base.html:33
 msgid "Dérouler la navigation"
 msgstr ""
 
-#: defivelo/templates/base.html:49
+#: defivelo/templates/base.html:47
 msgid "Profil"
 msgstr ""
 
-#: defivelo/templates/base.html:50
+#: defivelo/templates/base.html:48
 msgid "Change password"
 msgstr "Changer mon mot de passe"
 
-#: defivelo/templates/base.html:51
+#: defivelo/templates/base.html:49
 msgid "Log out"
 msgstr "Se déconnecter"
 
-#: defivelo/templates/base.html:55
+#: defivelo/templates/base.html:53
 msgid "Log in"
 msgstr "Se connecter"
 

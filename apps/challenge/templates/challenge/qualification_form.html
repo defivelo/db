@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% block head_title %}{% if qualification %}{% trans "Édition de la qualification" %}{% else %}{% trans "Nouvelle qualification" %}{% endif %}{% endblock %}
+
+{% block bootstrap3_extra_head %}
+{{ form.media.css }}
+{% endblock %}
+{% block bootstrap3_extra_script %}
+{{ form.media.js }}
+{% endblock %}
+
+{% block content %}
+    <h1>{{ session }}</h1>
+    <h2>{% if qualification %}{% trans "Édition de la qualification" %}{% else %}{% trans "Nouvelle qualification" %}{% endif %}</h2>
+
+    <form method="POST" action="" class="form-horizontal">
+        {% csrf_token %}
+        {% bootstrap_form form layout='horizontal' %}
+
+        {% buttons %}
+            <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
+            <a class="btn btn-default" href="{% url 'session-detail' pk=session.id %}">{% trans "Annuler" %}</a>
+        {% endbuttons %}
+    </form>
+{% endblock %}

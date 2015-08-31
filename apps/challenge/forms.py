@@ -7,11 +7,12 @@ from django.utils.translation import ugettext_lazy as _
 
 from bootstrap3_datetime.widgets import DateTimePicker
 
-from .models import Session
+from .models import Qualification, Session
 
 
 class SessionForm(autocomplete_light.ModelForm):
-    day = forms.DateField(label=_('Date'),
+    day = forms.DateField(
+        label=_('Date'),
         widget=DateTimePicker(options={"format": "YYYY-MM-DD",
                                        "pickTime": False}))
 
@@ -21,4 +22,14 @@ class SessionForm(autocomplete_light.ModelForm):
             'timeslot': _('Horaire'),
             'organization': _('Établissement'),
         }
-        fields = ['organization', 'day', 'timeslot',]
+        fields = ['organization', 'day', 'timeslot']
+
+
+class QualificationForm(forms.ModelForm):
+
+    class Meta:
+        model = Qualification
+        widgets = {
+            'session': forms.HiddenInput
+        }
+        fields = ['session', 'name']

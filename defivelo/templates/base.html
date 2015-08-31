@@ -21,8 +21,6 @@
     {% endcompress %}
     {% if 'javascript_in_head'|bootstrap_setting %}{% bootstrap_javascript jquery=True %}{% endif %}
     {% block bootstrap3_extra_head %}{% endblock %}
-    
-    {% include 'autocomplete_light/_ajax_csrf.html' %}
     <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/style.css' %}" />
 </head>
 
@@ -68,6 +66,7 @@
 {% if not 'javascript_in_head'|bootstrap_setting %}{% bootstrap_javascript jquery=True %}{% endif %}
 {% block bootstrap3_extra_script %}{% endblock %}
 {% compress js %}
+{% include 'autocomplete_light/_ajax_csrf.html' %}
 <script type="text/javascript" src="{% static 'autocomplete_light/django_admin.js' %}"></script>
 <script type="text/javascript" src="{% static 'autocomplete_light/autocomplete.js' %}"></script>
 <script type="text/javascript" src="{% static 'autocomplete_light/widget.js' %}"></script>

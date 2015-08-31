@@ -9,11 +9,15 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
-from .forms import SessionForm
-from .models import Session
+from .forms import QualificationForm, SessionForm
+from .models import Qualification, Session
 
 
 class SessionMixin(object):
+    model = Session
+    context_object_name = 'session'
+    form_class = SessionForm
+
     def get_context_data(self, **kwargs):
         context = super(SessionMixin, self).get_context_data(**kwargs)
         # Add our menu_category context
@@ -22,7 +26,6 @@ class SessionMixin(object):
 
 
 class SessionsListView(SessionMixin,ListView):
-    model = Session
     context_object_name = 'sessions'
 
     def get_queryset(self):
@@ -30,24 +33,60 @@ class SessionsListView(SessionMixin,ListView):
 
 
 class SessionDetailView(SessionMixin,DetailView):
-    model = Session
-    context_object_name = 'session'
+    def get_queryset(self):
+        return (
+            super(SessionDetailView, self).get_queryset()
+            .prefetch_related('qualifications')
+        )
 
 
 class SessionUpdateView(SessionMixin,SuccessMessageMixin,UpdateView):
-    model = Session
-    context_object_name = 'session'
     success_message = _("Session mise à jour")
-    form_class = SessionForm
 
 
 class SessionCreateView(SessionMixin,SuccessMessageMixin,CreateView):
-    model = Session
-    context_object_name = 'session'
     success_message = _("Session créée")
-    form_class = SessionForm
 
 
-class SessionDeleteView(SessionMixin,DeleteView):
-    model = Session
+class SessionDeleteView(SessionMixin,SuccessMessageMixin,DeleteView):
+    success_message = _("Session supprimée")
     success_url = reverse_lazy('session-list')
+
+
+class QualiMixin(SessionMixin):
+    model = Qualification
+    context_object_name = 'qualification'
+    form_class = QualificationForm
+
+    def get_session_id(self):
+        resolvermatch = self.request.resolver_match
+        if 'session' in resolvermatch.kwargs:
+            return int(resolvermatch.kwargs['session'])
+
+    def get_success_url(self):
+        return reverse_lazy('session-detail', kwargs={'pk': self.get_session_id()})
+
+    def get_context_data(self, **kwargs):
+        context = super(QualiMixin, self).get_context_data(**kwargs)
+        # Add our menu_category context
+        context['menu_category'] += ' qualification'
+        try:
+            context['session'] = Session.objects.get(pk=self.get_session_id())
+        except:
+            pass
+        return context
+
+
+class QualiCreateView(QualiMixin,SuccessMessageMixin,CreateView):
+    success_message = _("Qualification créée")
+
+    def get_initial(self):
+        return {'session': self.get_session_id()}
+
+
+class QualiUpdateView(QualiMixin,SuccessMessageMixin,UpdateView):
+    success_message = _("Qualification mise à jour")
+
+
+class QualiDeleteView(QualiMixin,DeleteView):
+    success_message = _("Qualification supprimée")

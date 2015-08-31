@@ -72,9 +72,6 @@ class Qualification(models.Model):
         verbose_name_plural = _('Qualifications')
         ordering = ['session', 'created_on', 'name']
 
-    def get_absolute_url(self):
-        return reverse('qualification-detail', args=[self.pk])
-
     def __str__(self):
         return '{name} ({session})'.format(
             name=self.name,

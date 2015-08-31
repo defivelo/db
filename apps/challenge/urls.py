@@ -4,8 +4,8 @@ from __future__ import unicode_literals
 from django.conf.urls import url
 
 from .views import (
-    SessionCreateView, SessionDeleteView, SessionDetailView, SessionsListView,
-    SessionUpdateView,
+    QualiCreateView, QualiDeleteView, QualiUpdateView, SessionCreateView,
+    SessionDeleteView, SessionDetailView, SessionsListView, SessionUpdateView,
 )
 
 urlpatterns = [
@@ -17,4 +17,9 @@ urlpatterns = [
         name="session-update"),
     url(r'^(?P<pk>[0-9]+)/delete/$', SessionDeleteView.as_view(),
         name="session-delete"),
+    url(r'^(?P<session>[0-9]+)/quali$', QualiCreateView.as_view(), name="quali-create"),
+    url(r'^(?P<session>[0-9]+)/quali/(?P<pk>[0-9]+)/$',
+        QualiUpdateView.as_view(), name="quali-update"),
+    url(r'^(?P<session>[0-9]+)/quali/(?P<pk>[0-9]+)/delete$',
+        QualiDeleteView.as_view(), name="quali-delete"),
 ]

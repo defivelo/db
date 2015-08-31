@@ -5,15 +5,32 @@
 
 {% block content %}
     <h1>{{ session }}</h1>
-    
+
+    <div>
+        <a class="btn btn-primary pull-right" href="{% url 'session-update' pk=session.pk %}">{% trans "Éditer" %}</a>
+     </div>
     <table class="table">
     <tr><th>{% trans "Établissement" %}</th><td>{{ session.organization.name }}</td></tr>
     <tr><th>{% trans "Date" %}</th><td>{{ session.day|date:"l, j F Y" }}</td></tr>
     <tr><th>{% trans "Horaire" %}</th><td>{{ session.timeslot }}</td></tr>
     </table>
-          {% buttons %}
-            <a class="btn btn-default" href="{% url 'session-list' %}">{% trans "Retour à la liste des sessions" %}</a>
-            <a class="btn btn-danger" href="{% url 'session-delete' pk=session.pk %}">{% trans "Supprimer" %}</a>
-            <a class="btn btn-primary pull-right" href="{% url 'session-update' pk=session.pk %}">{% trans "Éditer" %}</a>
-        {% endbuttons %}
+
+    <h2>{% trans "Qualifications" %}</h2>
+    <table class="table">
+    {% if session.qualifications.count > 0 %}
+        <tr>{% for quali in session.qualifications.all %}<th><a href="{% url 'quali-update' session=session.id pk=quali.pk %}">{{ quali.name }}</a></th>{% endfor %}</tr>
+        <tr>{% for quali in session.qualifications.all %}<td><a class="btn btn-danger btn-xs" href="{% url 'quali-delete' session=session.id pk=quali.pk %}">{% trans "Supprimer" %}</a></th>{% endfor %}</tr>
+    {% endif %}
+
+    <tr>
+        <td{% if session.qualifications.count > 0 %} colspan="{{ session.qualifications.count }}"{% endif %}>
+            <a class="btn btn-primary pull-right" href="{% url 'quali-create' session=session.pk %}">{% trans "Créer une qualification" %}</a>
+        </td>
+    </tr>
+    </table>
+
+    <div>
+        <a class="btn btn-danger pull-right" href="{% url 'session-delete' pk=session.pk %}">{% trans "Supprimer" %}</a>
+        <a class="btn btn-default" href="{% url 'session-list' %}">{% trans "Retour à la liste des sessions" %}</a>
+    </div>
 {% endblock %}
