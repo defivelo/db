@@ -13,7 +13,7 @@ from .forms import SessionForm
 from .models import Session
 
 
-class SessionMixin:
+class SessionMixin(object):
     def get_context_data(self, **kwargs):
         context = super(SessionMixin, self).get_context_data(**kwargs)
         # Add our menu_category context
