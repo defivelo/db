@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from autocomplete_light import AutocompleteModelBase, register as al_register
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
-
-from autocomplete_light import AutocompleteModelBase, register as al_register
 
 
 @python_2_unicode_compatible
