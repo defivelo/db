@@ -26,7 +26,7 @@ class SessionsListView(SessionMixin,ListView):
     context_object_name = 'sessions'
 
     def get_queryset(self):
-        return Session.objects.filter(day__gte=timezone.now().date()).order_by('day')
+        return Session.objects.filter(day__gte=timezone.now().date())
 
 
 class SessionDetailView(SessionMixin,DetailView):

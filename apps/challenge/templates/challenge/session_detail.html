@@ -5,6 +5,12 @@
 
 {% block content %}
     <h1>{{ session }}</h1>
+    
+    <table class="table">
+    <tr><th>{% trans "Établissement" %}</th><td>{{ session.organization.name }}</td></tr>
+    <tr><th>{% trans "Date" %}</th><td>{{ session.day|date:"l, j F Y" }}</td></tr>
+    <tr><th>{% trans "Horaire" %}</th><td>{{ session.timeslot }}</td></tr>
+    </table>
           {% buttons %}
             <a class="btn btn-default" href="{% url 'session-list' %}">{% trans "Retour à la liste des sessions" %}</a>
             <a class="btn btn-danger" href="{% url 'session-delete' pk=session.pk %}">{% trans "Supprimer" %}</a>

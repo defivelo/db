@@ -43,6 +43,8 @@ class Session(models.Model):
     class Meta:
         verbose_name = _('Session')
         verbose_name_plural = _('Sessions')
+        unique_together = (('organization', 'timeslot', 'day'),)
+        ordering = ['day', 'timeslot__begin', 'organization__name']
 
     def get_absolute_url(self):
         return reverse('session-detail', args=[self.pk])
