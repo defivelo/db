@@ -58,3 +58,25 @@ class Session(models.Model):
             timeslot=' (%s)' % self.timeslot if self.timeslot else '',
             orga=' - %s' % self.organization.name if self.organization else ''
             )
+
+
+@python_2_unicode_compatible
+class Qualification(models.Model):
+    created_on = models.DateTimeField(auto_now_add=True)
+    name = models.CharField(_('Nom'), max_length=255)  # TODO: Replace with automated or classes objects
+    session = models.ForeignKey(Session,
+                                related_name='qualifications')
+
+    class Meta:
+        verbose_name = _('Qualification')
+        verbose_name_plural = _('Qualifications')
+        ordering = ['session', 'created_on', 'name']
+
+    def get_absolute_url(self):
+        return reverse('qualification-detail', args=[self.pk])
+
+    def __str__(self):
+        return '{name} ({session})'.format(
+            name=self.name,
+            session=self.session
+            )
