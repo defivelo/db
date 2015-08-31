@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.defaultfilters import date
 from django.utils.encoding import python_2_unicode_compatible
@@ -40,7 +41,6 @@ class Session(models.Model):
         verbose_name_plural = _('Sessions')
 
     def get_absolute_url(self):
-        from django.core.urlresolvers import reverse
         return reverse('session-detail', args=[self.pk])
 
     def __str__(self):
