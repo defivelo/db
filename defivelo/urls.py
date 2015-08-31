@@ -13,6 +13,7 @@ urlpatterns = patterns(
     '',
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^challenge/', include('apps.challenge.urls')),
+    url(r'^orga/', include('apps.orga.urls')),
     url(r'^me/', include('apps.user.urls')),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^admin/', include(admin.site.urls)),

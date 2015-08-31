@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% block head_title %}{% if organization %}{% trans "Édition de l'établissement" %}{% else %}{% trans "Nouvel établissement" %}{% endif %}{% endblock %}
+
+{% block bootstrap3_extra_head %}
+{{ form.media.css }}
+{% endblock %}
+{% block bootstrap3_extra_script %}
+{{ form.media.js }}
+{% endblock %}
+
+{% block content %}
+    <h1>{% if organization %}{% trans "Édition de l'établissement" %}{% else %}{% trans "Nouvel établissement" %}{% endif %}</h1>
+
+
+    <form method="POST" action="" class="form-horizontal">
+        {% csrf_token %}
+        {% bootstrap_field form.name layout='horizontal' size='small' %}
+        {% include "address_bootstrap_form.html" %}
+
+        {% buttons %}
+            {% if organization %}
+                <a class="btn btn-default" href="{% url 'organization-detail' pk=organization.pk %}">{% trans "Annuler" %}</a>
+            {% else %}
+                <a class="btn btn-default" href="{% url 'organization-list' %}">{% trans "Annuler" %}</a>
+            {% endif %}
+            <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
+        {% endbuttons %}
+    </form>
+{% endblock %}

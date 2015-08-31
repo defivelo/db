@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% block head_title %}{{ organization }}{% endblock %}
+
+{% block content %}
+    <h1>{{ organization }}</h1>
+    
+    <div class="vcard"> 
+        <span class="organization-name">{{ organization.name }}</span>
+        <div class="adr"> 
+            <div class="street-address">{{ organization.address_street }} {{ organization.address_no }}</div> 
+            <div>
+                <span class="postal-code">{{ organization.address_zip }}</span> <span class="locality">{{ organization.address_city }}</span>
+                {% if organization.address_canton %}
+                ({{ organization.address_canton }})
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% buttons %}
+        <a class="btn btn-default" href="{% url 'organization-list' %}">{% trans "Retour à la liste des établissements" %}</a>
+        <a class="btn btn-danger" href="{% url 'organization-delete' pk=organization.pk %}">{% trans "Supprimer" %}</a>
+        <a class="btn btn-primary pull-right" href="{% url 'organization-update' pk=organization.pk %}">{% trans "Éditer" %}</a>
+    {% endbuttons %}
+{% endblock %}

@@ -21,6 +21,8 @@
         {% buttons %}
             {% if session %}
                 <a class="btn btn-default" href="{% url 'session-detail' pk=session.pk %}">{% trans "Annuler" %}</a>
+            {% else %}
+                <a class="btn btn-default" href="{% url 'session-list' %}">{% trans "Annuler" %}</a>
             {% endif %}
             <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
         {% endbuttons %}

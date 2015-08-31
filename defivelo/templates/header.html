@@ -1,0 +1,9 @@
+{% load i18n %}
+
+<ul class="nav navbar-nav">
+    <li{% if menu_category = 'home' %} class="active"{% endif %}><a href="{% url 'home' %}">{% trans "Accueil" %}</a></li>
+    {% if user.is_authenticated %}
+        <li{% if menu_category = 'session' %} class="active"{% endif %}><a href="{% url 'session-list' %}">{% trans "Sessions" %}</a></li>
+        <li{% if menu_category = 'organization' %} class="active"{% endif %}><a href="{% url 'organization-list' %}">{% trans "Établissements" %}</a></li>
+    {% endif %}
+</ul>
