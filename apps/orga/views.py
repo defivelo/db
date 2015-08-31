@@ -13,8 +13,9 @@ from .forms import OrganizationForm
 from .models import Organization
 
 
-class OrganizationMixin:
+class OrganizationMixin(object):
     context_object_name = 'organization'
+
     def get_context_data(self, **kwargs):
         context = super(OrganizationMixin, self).get_context_data(**kwargs)
         # Add our menu_category context
