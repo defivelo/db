@@ -11,3 +11,4 @@ django-stronghold==0.2.7
 django-allauth==0.23.0
 django-localflavor==1.1
 -e git+https://github.com/nkunihiko/django-bootstrap3-datetimepicker.git@2fa9ea5f56c16ec10aa3288a989a17a4332bcb97#egg=django_bootstrap3_datetimepicker==2.3+master0
+django-autocomplete-light==2.2.5

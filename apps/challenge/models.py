@@ -8,6 +8,8 @@ from django.template.defaultfilters import date
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
+from apps.orga.models import Organization
+
 
 @python_2_unicode_compatible
 class SessionTimeSlot(models.Model):
@@ -35,6 +37,8 @@ class Session(models.Model):
     timeslot = models.ForeignKey(SessionTimeSlot,
                                  related_name='sessions',
                                  blank=True, null=True)
+    organization = models.ForeignKey(Organization, related_name='sessions',
+                                     blank=True, null=True)
 
     class Meta:
         verbose_name = _('Session')
@@ -44,7 +48,8 @@ class Session(models.Model):
         return reverse('session-detail', args=[self.pk])
 
     def __str__(self):
-        return '%s%s' % (
-            date(self.day, settings.DATE_FORMAT),
-            ' (%s)' % self.timeslot if self.timeslot else ''
+        return '{date}{timeslot}{orga}'.format(
+            date=date(self.day, settings.DATE_FORMAT),
+            timeslot=' (%s)' % self.timeslot if self.timeslot else '',
+            orga=' - %s' % self.organization.name if self.organization else ''
             )

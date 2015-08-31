@@ -17,6 +17,7 @@ urlpatterns = patterns(
     url(r'^me/', include('apps.user.urls')),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^autocomplete/', include('autocomplete_light.urls')),
 )
 
 admin.site.site_header = _('DB Défi Vélo')

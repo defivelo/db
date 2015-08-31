@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-28 14:22+0200\n"
+"POT-Creation-Date: 2015-08-31 15:18+0200\n"
 "PO-Revision-Date: 2015-08-28 13:58+0200\n"
 "Last-Translator: Didier Raboud <odyx@debian.org>\n"
 "Language-Team: French <>\n"
@@ -17,36 +17,40 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Lokalize 1.5\n"
 
-#: apps/challenge/forms.py:13 apps/challenge/models.py:33
+#: apps/challenge/forms.py:15 apps/challenge/models.py:36
 msgid "Date"
 msgstr ""
 
-#: apps/challenge/forms.py:20
+#: apps/challenge/forms.py:22
 msgid "Horaire"
 msgstr ""
 
-#: apps/challenge/models.py:13
+#: apps/challenge/forms.py:23 apps/orga/models.py:24
+msgid "Établissement"
+msgstr ""
+
+#: apps/challenge/models.py:16
 msgid "Début"
 msgstr ""
 
-#: apps/challenge/models.py:14
+#: apps/challenge/models.py:17
 msgid "Fin"
 msgstr ""
 
-#: apps/challenge/models.py:17
+#: apps/challenge/models.py:20
 msgid "Horaire pour sessions"
 msgstr ""
 
-#: apps/challenge/models.py:18
+#: apps/challenge/models.py:21
 msgid "Horaires pour sessions"
 msgstr ""
 
-#: apps/challenge/models.py:39
+#: apps/challenge/models.py:44
 #: apps/challenge/templates/challenge/session_detail.html:4
 msgid "Session"
 msgstr ""
 
-#: apps/challenge/models.py:40 defivelo/templates/base.html:43
+#: apps/challenge/models.py:45 defivelo/templates/header.html:6
 msgid "Sessions"
 msgstr ""
 
@@ -69,14 +73,17 @@ msgid "Retour à la liste des sessions"
 msgstr ""
 
 #: apps/challenge/templates/challenge/session_confirm_delete.html:14
+#: apps/orga/templates/orga/organization_confirm_delete.html:14
 msgid "Supprimer vraiment"
 msgstr ""
 
 #: apps/challenge/templates/challenge/session_detail.html:10
+#: apps/orga/templates/orga/organization_detail.html:24
 msgid "Supprimer"
 msgstr ""
 
 #: apps/challenge/templates/challenge/session_detail.html:11
+#: apps/orga/templates/orga/organization_detail.html:25
 msgid "Éditer"
 msgstr ""
 
@@ -91,10 +98,14 @@ msgid "Nouvelle session"
 msgstr ""
 
 #: apps/challenge/templates/challenge/session_form.html:23
+#: apps/challenge/templates/challenge/session_form.html:25
+#: apps/orga/templates/orga/organization_form.html:24
+#: apps/orga/templates/orga/organization_form.html:26
 msgid "Annuler"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_form.html:25
+#: apps/challenge/templates/challenge/session_form.html:27
+#: apps/orga/templates/orga/organization_form.html:28
 msgid "Enregistrer"
 msgstr ""
 
@@ -115,24 +126,78 @@ msgstr ""
 msgid "Session créée"
 msgstr ""
 
-#: apps/user/forms.py:16
+#: apps/orga/forms.py:15 apps/orga/forms.py:18 apps/user/forms.py:20
+#: apps/user/forms.py:23
+msgid "Canton"
+msgstr ""
+
+#: apps/orga/forms.py:25 apps/user/forms.py:16
 msgid "Rue"
 msgstr ""
 
-#: apps/user/forms.py:17
+#: apps/orga/forms.py:26 apps/user/forms.py:17
 msgid "N°"
 msgstr ""
 
-#: apps/user/forms.py:18
+#: apps/orga/forms.py:27 apps/user/forms.py:18
 msgid "NPA"
 msgstr ""
 
-#: apps/user/forms.py:19
+#: apps/orga/forms.py:28 apps/user/forms.py:19
 msgid "Ville"
 msgstr ""
 
-#: apps/user/forms.py:20 apps/user/forms.py:23
-msgid "Canton"
+#: apps/orga/models.py:16
+msgid "Nom"
+msgstr ""
+
+#: apps/orga/models.py:25 apps/orga/templates/orga/organization_list.html:4
+#: apps/orga/templates/orga/organization_list.html:7
+#: defivelo/templates/header.html:7
+msgid "Établissements"
+msgstr ""
+
+#: apps/orga/templates/orga/organization_confirm_delete.html:4
+#: apps/orga/templates/orga/organization_confirm_delete.html:7
+#, python-format
+msgid "Suppression de l'établissement %(organization)s?"
+msgstr ""
+
+#: apps/orga/templates/orga/organization_confirm_delete.html:11
+#, python-format
+msgid ""
+"Supprimer l'établissement %(organization)s définitivement (y compris toutes "
+"les données y-relatives)?"
+msgstr ""
+
+#: apps/orga/templates/orga/organization_confirm_delete.html:13
+msgid "Retour à la liste des établissementsb"
+msgstr ""
+
+#: apps/orga/templates/orga/organization_detail.html:23
+msgid "Retour à la liste des établissements"
+msgstr ""
+
+#: apps/orga/templates/orga/organization_form.html:4
+#: apps/orga/templates/orga/organization_form.html:14
+msgid "Édition de l'établissement"
+msgstr ""
+
+#: apps/orga/templates/orga/organization_form.html:4
+#: apps/orga/templates/orga/organization_form.html:14
+msgid "Nouvel établissement"
+msgstr ""
+
+#: apps/orga/templates/orga/organization_list.html:15
+msgid "Créer un nouvel établissement"
+msgstr ""
+
+#: apps/orga/views.py:39
+msgid "Établissement mis à jour"
+msgstr ""
+
+#: apps/orga/views.py:45
+msgid "Établissement créé"
 msgstr ""
 
 #: apps/user/forms.py:26
@@ -147,11 +212,11 @@ msgstr ""
 msgid "Éditer son profil"
 msgstr ""
 
-#: apps/user/templates/auth/user_update_form.html:35
+#: apps/user/templates/auth/user_update_form.html:16
 msgid "Update"
 msgstr "Mettre à jour"
 
-#: apps/user/templates/auth/user_update_form.html:36
+#: apps/user/templates/auth/user_update_form.html:17
 #, python-format
 msgid "Changer d'email (%(email)s)"
 msgstr ""
@@ -160,11 +225,11 @@ msgstr ""
 msgid "Profil mis à jour"
 msgstr ""
 
-#: defivelo/settings/base.py:135
+#: defivelo/settings/base.py:136
 msgid "French"
 msgstr "Français"
 
-#: defivelo/settings/base.py:136
+#: defivelo/settings/base.py:137
 msgid "German"
 msgstr "Allemand"
 
@@ -327,34 +392,34 @@ msgstr ""
 msgid "Your password is now changed."
 msgstr "Votre mot de passe a été modifié."
 
-#: defivelo/templates/base.html:9 defivelo/templates/base.html.py:41
+#: defivelo/templates/base.html:9 defivelo/templates/header.html:4
 msgid "Accueil"
 msgstr ""
 
-#: defivelo/templates/base.html:9 defivelo/templates/base.html.py:37
+#: defivelo/templates/base.html:9 defivelo/templates/base.html.py:40
 msgid "Défi Vélo"
 msgstr ""
 
-#: defivelo/templates/base.html:32
+#: defivelo/templates/base.html:35
 msgid "Dérouler la navigation"
 msgstr ""
 
-#: defivelo/templates/base.html:51
+#: defivelo/templates/base.html:49
 msgid "Profil"
 msgstr ""
 
-#: defivelo/templates/base.html:52
+#: defivelo/templates/base.html:50
 msgid "Change password"
 msgstr "Changer mon mot de passe"
 
-#: defivelo/templates/base.html:53
+#: defivelo/templates/base.html:51
 msgid "Log out"
 msgstr "Se déconnecter"
 
-#: defivelo/templates/base.html:57
+#: defivelo/templates/base.html:55
 msgid "Log in"
 msgstr "Se connecter"
 
-#: defivelo/urls.py:21
+#: defivelo/urls.py:23
 msgid "DB Défi Vélo"
 msgstr ""

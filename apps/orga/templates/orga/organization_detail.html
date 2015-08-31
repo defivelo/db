@@ -7,7 +7,7 @@
     <h1>{{ organization }}</h1>
     
     <div class="vcard"> 
-        <span class="organization-name">{{ organization.name }}</span>
+        <a href="{{ organization.get_absolute_url }}" class="organization-name">{{ organization.name }}</a>
         <div class="adr"> 
             <div class="street-address">{{ organization.address_street }} {{ organization.address_no }}</div> 
             <div>

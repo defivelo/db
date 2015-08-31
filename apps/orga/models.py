@@ -7,6 +7,8 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
+from autocomplete_light import AutocompleteModelBase, register as al_register
+
 
 @python_2_unicode_compatible
 class Organization(models.Model):
@@ -28,3 +30,9 @@ class Organization(models.Model):
 
     def get_absolute_url(self):
         return reverse('organization-detail', args=[self.pk])
+
+
+class OrganizationAutocomplete(AutocompleteModelBase):
+    search_fields = ['name', 'address_city', 'address_street']
+    model = Organization
+al_register(OrganizationAutocomplete)
