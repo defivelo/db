@@ -54,6 +54,7 @@ UPSTREAM_APPS = (
     'compressor',
     'stronghold',
     'localflavor',
+    'parler',
 )
 
 # Project apps tested by jenkins (everything in apps/)
@@ -122,6 +123,8 @@ DATABASES = {
     'default': dj_database_url.parse(get_env_variable('DATABASE_URL'))
 }
 
+SITE_ID = 1
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 # Internationalization
@@ -139,7 +142,7 @@ LANGUAGES = (
 )
 
 PARLER_LANGUAGES = {
-    None: (
+    SITE_ID: (
         [{'code': lang[0]} for lang in LANGUAGES]
     ),
     'default': {
@@ -210,5 +213,3 @@ ACCOUNT_USER_DISPLAY = defivelo_user_display
 ACCOUNT_ADAPTER = 'defivelo.accounts.NoSignupAccountAdapter'
 
 LOGIN_REDIRECT_URL = '/'
-
-SITE_ID = 1

@@ -18,8 +18,15 @@
     <h2>{% trans "Qualifications" %}</h2>
     <table class="table">
     {% if session.qualifications.count > 0 %}
-        <tr>{% for quali in session.qualifications.all %}<th><a href="{% url 'quali-update' session=session.id pk=quali.pk %}">{{ quali.name }}</a></th>{% endfor %}</tr>
-        <tr>{% for quali in session.qualifications.all %}<td><a class="btn btn-danger btn-xs" href="{% url 'quali-delete' session=session.id pk=quali.pk %}">{% trans "Supprimer" %}</a></th>{% endfor %}</tr>
+        <tr><td></td>{% for quali in session.qualifications.all %}<th><a href="{% url 'quali-update' session=session.id pk=quali.pk %}">{{ quali.name }}</a></th>{% endfor %}</tr>
+        <tr><th>{% trans "Vélo dans la rue" %}</th>
+                {% for quali in session.qualifications.all %}<td>{{ quali.activity_A|default:"" }}</a></td>{% endfor %}</tr>
+        <tr><th>{% trans "Mécanique" %}</th>
+                {% for quali in session.qualifications.all %}<td>{{ quali.activity_B|default:"" }}</a></td>{% endfor %}</tr>
+        <tr><th>{% trans "Rencontre" %}</th>
+                {% for quali in session.qualifications.all %}<td>{{ quali.activity_C|default:"" }}</a></td>{% endfor %}</tr>
+        <tr><td></td>
+                {% for quali in session.qualifications.all %}<td><a class="btn btn-danger btn-xs" href="{% url 'quali-delete' session=session.id pk=quali.pk %}">{% trans "Supprimer" %}</a></th>{% endfor %}</tr>
     {% endif %}
 
     <tr>

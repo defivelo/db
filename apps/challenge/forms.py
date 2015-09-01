@@ -32,4 +32,5 @@ class QualificationForm(forms.ModelForm):
         widgets = {
             'session': forms.HiddenInput
         }
-        fields = ['session', 'name']
+        fields = ['session', 'name',
+                  'activity_A', 'activity_B', 'activity_C']

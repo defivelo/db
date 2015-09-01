@@ -7,6 +7,7 @@ from django.db import models
 from django.template.defaultfilters import date
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
+from parler.models import TranslatableModel, TranslatedFields
 
 from apps.orga.models import Organization
 
@@ -61,11 +62,51 @@ class Session(models.Model):
 
 
 @python_2_unicode_compatible
+class SessionActivity(TranslatableModel):
+    CATEGORY_CHOICES = (
+        ('A', _('Vélo dans la rue')),
+        ('B', _('Mécanique')),
+        ('C', _('Rencontre')),
+    )
+    translations = TranslatedFields(
+        name = models.CharField(_('Nom'), max_length=255)
+    )
+    category = models.CharField(_("Catégorie"), max_length=1,
+                                choices=CATEGORY_CHOICES, blank=True)
+
+    class Meta:
+        verbose_name = _('Poste')
+        verbose_name_plural = _('Postes')
+        ordering = ['category', 'pk']
+
+    def __str__(self):
+        return self.name
+
+
+@python_2_unicode_compatible
 class Qualification(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     name = models.CharField(_('Nom'), max_length=255)  # TODO: Replace with automated or classes objects
     session = models.ForeignKey(Session,
                                 related_name='qualifications')
+    activity_A = models.ForeignKey(SessionActivity,
+                                   limit_choices_to={'category': 'A'},
+                                   verbose_name=_('Vélo dans la rue'),
+                                   related_name='sessions_A',
+                                   blank=True, null=True
+                                   )
+    activity_B = models.ForeignKey(SessionActivity,
+                                   limit_choices_to={'category': 'B'},
+                                   verbose_name=_('Mécanique'),
+                                   related_name='sessions_B',
+                                   blank=True, null=True
+                                   )
+    activity_C = models.ForeignKey(SessionActivity,
+                                   limit_choices_to={'category': 'C'},
+                                   verbose_name=_('Rencontre'),
+                                   related_name='sessions_C',
+                                   blank=True, null=True
+                                   )
 
     class Meta:
         verbose_name = _('Qualification')

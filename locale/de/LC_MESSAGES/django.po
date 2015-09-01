@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-01 10:25+0200\n"
+"POT-Creation-Date: 2015-09-01 12:18+0200\n"
 "PO-Revision-Date: 2015-08-28 13:58+0200\n"
 "Last-Translator: Didier Raboud <me+defivelo@odyx.org>\n"
 "Language-Team: Deutsch <>\n"
@@ -16,59 +16,87 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: apps/challenge/forms.py:15 apps/challenge/models.py:36
+#: apps/challenge/forms.py:15 apps/challenge/models.py:37
 #: apps/challenge/templates/challenge/session_detail.html:14
 msgid "Date"
 msgstr "Datum"
 
-#: apps/challenge/forms.py:22 apps/challenge/models.py:38
+#: apps/challenge/forms.py:22 apps/challenge/models.py:39
 #: apps/challenge/templates/challenge/session_detail.html:15
 msgid "Horaire"
 msgstr "Zeit"
 
-#: apps/challenge/forms.py:23 apps/challenge/models.py:42
+#: apps/challenge/forms.py:23 apps/challenge/models.py:43
 #: apps/challenge/templates/challenge/session_detail.html:13
 #: apps/orga/models.py:23
 msgid "Établissement"
 msgstr "Schule"
 
-#: apps/challenge/models.py:16
+#: apps/challenge/models.py:17
 msgid "Début"
 msgstr "Anfang"
 
-#: apps/challenge/models.py:17
+#: apps/challenge/models.py:18
 msgid "Fin"
 msgstr "Ende"
 
-#: apps/challenge/models.py:20
+#: apps/challenge/models.py:21
 msgid "Horaire pour sessions"
 msgstr ""
 
-#: apps/challenge/models.py:21
+#: apps/challenge/models.py:22
 msgid "Horaires pour sessions"
 msgstr ""
 
-#: apps/challenge/models.py:47
+#: apps/challenge/models.py:48
 #: apps/challenge/templates/challenge/session_detail.html:4
 msgid "Session"
 msgstr ""
 
-#: apps/challenge/models.py:48 defivelo/templates/header.html:7
+#: apps/challenge/models.py:49 defivelo/templates/header.html:7
 msgid "Sessions"
 msgstr ""
 
-#: apps/challenge/models.py:66 apps/orga/models.py:15
+#: apps/challenge/models.py:67 apps/challenge/models.py:94
+#: apps/challenge/templates/challenge/session_detail.html:22
+msgid "Vélo dans la rue"
+msgstr "Geschicklichkeit"
+
+#: apps/challenge/models.py:68 apps/challenge/models.py:100
+#: apps/challenge/templates/challenge/session_detail.html:24
+msgid "Mécanique"
+msgstr "Mechanik"
+
+#: apps/challenge/models.py:69 apps/challenge/models.py:106
+#: apps/challenge/templates/challenge/session_detail.html:26
+msgid "Rencontre"
+msgstr "Begegnung"
+
+#: apps/challenge/models.py:72 apps/challenge/models.py:89
+#: apps/orga/models.py:15
 msgid "Nom"
-msgstr ""
+msgstr "Name"
 
-#: apps/challenge/models.py:71
+#: apps/challenge/models.py:74
+msgid "Catégorie"
+msgstr "Kategorie"
+
+#: apps/challenge/models.py:78
+msgid "Poste"
+msgstr "Posten"
+
+#: apps/challenge/models.py:79
+msgid "Postes"
+msgstr "Posten"
+
+#: apps/challenge/models.py:112
 msgid "Qualification"
-msgstr ""
+msgstr "Qualifizierung"
 
-#: apps/challenge/models.py:72
+#: apps/challenge/models.py:113
 #: apps/challenge/templates/challenge/session_detail.html:18
 msgid "Qualifications"
-msgstr ""
+msgstr "Qualifizierungen"
 
 #: apps/challenge/templates/challenge/qualification_confirm_delete.html:4
 #: apps/challenge/templates/challenge/qualification_confirm_delete.html:7
@@ -134,7 +162,7 @@ msgid "Qualifications qui seront supprimées"
 msgstr ""
 
 #: apps/challenge/templates/challenge/session_confirm_delete.html:22
-#: apps/challenge/templates/challenge/session_detail.html:34
+#: apps/challenge/templates/challenge/session_detail.html:41
 msgid "Retour à la liste des sessions"
 msgstr ""
 
@@ -143,13 +171,13 @@ msgstr ""
 msgid "Éditer"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_detail.html:22
-#: apps/challenge/templates/challenge/session_detail.html:33
+#: apps/challenge/templates/challenge/session_detail.html:29
+#: apps/challenge/templates/challenge/session_detail.html:40
 #: apps/orga/templates/orga/organization_detail.html:24
 msgid "Supprimer"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_detail.html:27
+#: apps/challenge/templates/challenge/session_detail.html:34
 msgid "Créer une qualification"
 msgstr ""
 
@@ -288,11 +316,11 @@ msgstr ""
 msgid "Profil mis à jour"
 msgstr ""
 
-#: defivelo/settings/base.py:137
+#: defivelo/settings/base.py:140
 msgid "French"
 msgstr "Französich"
 
-#: defivelo/settings/base.py:138
+#: defivelo/settings/base.py:141
 msgid "German"
 msgstr "Deutsch"
 
