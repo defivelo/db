@@ -15,12 +15,12 @@ urlpatterns = patterns(
     url(r'^admin/', include(admin.site.urls)),
     url(r'^autocomplete/', include('autocomplete_light.urls')),
     url(r'^i18n/', include('django.conf.urls.i18n')),
+    url(r'^accounts/', include('allauth.urls')),
 )
 
 urlpatterns += i18n_patterns(
     '',
     url(r'^$', HomeView.as_view(), name='home'),
-    url(r'^accounts/', include('allauth.urls')),
     url(r'^challenge/', include('apps.challenge.urls')),
     url(r'^orga/', include('apps.orga.urls')),
     url(r'^me/', include('apps.user.urls')),

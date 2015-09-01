@@ -5,6 +5,7 @@ from allauth.account.models import EmailAddress, EmailConfirmation
 from django.contrib.auth import get_user_model
 from django.test import Client
 from django.utils import timezone
+from django.utils.translation import activate
 
 
 class AuthClient(Client):
@@ -23,3 +24,6 @@ class AuthClient(Client):
         EmailAddress.objects.create(user=self.user, email=self.EMAIL,
                                     verified=True, primary=True)
         self.login(email=self.EMAIL, password=self.PASSWORD)
+
+        self.language = 'fr'
+        activate(self.language)

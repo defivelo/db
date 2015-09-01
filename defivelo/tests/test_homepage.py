@@ -2,6 +2,7 @@ from allauth.account.models import EmailAddress, EmailConfirmation
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.utils.translation import activate
 
 
 class HomePageRedirectTest(TestCase):
@@ -12,13 +13,26 @@ class HomePageRedirectTest(TestCase):
             email='jacob@example.com',
             password=self.userpassword
         )
+        self.language = 'fr'
+        activate(self.language)
 
     def test_unauthenticated_homepage_redirects(self):
         # Issue a GET request.
         response = self.client.get('/')
+        i18n_homepage = '/%s/' % self.language
+        # Check that the response is 302 redirect to the language page
+        self.assertRedirects(response, i18n_homepage,
+                             target_status_code=302)
+
+        # Now fetch that language-based homepage
+        response = self.client.get(i18n_homepage)
 
         # Check that the response is 302 redirect to the login page
-        self.assertRedirects(response, '%s?next=/' % reverse('account_login'))
+        self.assertRedirects(response,
+                             '{login}?next={home}'.format(
+                                 login=reverse('account_login'),
+                                 home=i18n_homepage)
+                             )
 
     def test_login_with_username_fails(self):
         response = self.client.post(
