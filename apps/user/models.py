@@ -16,7 +16,7 @@ class UserProfile(models.Model):
     address_zip = models.CharField(max_length=4, blank=True)
     address_city = models.CharField(max_length=64, blank=True)
     address_canton = models.CharField(max_length=2, blank=True)
-    natel = models.CharField(max_length=12, blank=True)
+    natel = models.CharField(max_length=13, blank=True)
 
 
 @receiver(pre_save, sender=settings.AUTH_USER_MODEL)
