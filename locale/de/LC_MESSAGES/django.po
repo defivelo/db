@@ -9,36 +9,36 @@ msgstr ""
 "POT-Creation-Date: 2015-09-01 10:25+0200\n"
 "PO-Revision-Date: 2015-08-28 13:58+0200\n"
 "Last-Translator: Didier Raboud <me+defivelo@odyx.org>\n"
-"Language-Team: French <>\n"
-"Language: fr\n"
+"Language-Team: Deutsch <>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: apps/challenge/forms.py:15 apps/challenge/models.py:36
 #: apps/challenge/templates/challenge/session_detail.html:14
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #: apps/challenge/forms.py:22 apps/challenge/models.py:38
 #: apps/challenge/templates/challenge/session_detail.html:15
 msgid "Horaire"
-msgstr ""
+msgstr "Zeit"
 
 #: apps/challenge/forms.py:23 apps/challenge/models.py:42
 #: apps/challenge/templates/challenge/session_detail.html:13
 #: apps/orga/models.py:23
 msgid "Établissement"
-msgstr ""
+msgstr "Schule"
 
 #: apps/challenge/models.py:16
 msgid "Début"
-msgstr ""
+msgstr "Anfang"
 
 #: apps/challenge/models.py:17
 msgid "Fin"
-msgstr ""
+msgstr "Ende"
 
 #: apps/challenge/models.py:20
 msgid "Horaire pour sessions"
@@ -199,11 +199,11 @@ msgstr ""
 #: apps/orga/forms.py:15 apps/orga/forms.py:18 apps/user/forms.py:20
 #: apps/user/forms.py:23
 msgid "Canton"
-msgstr ""
+msgstr "Kanton"
 
 #: apps/orga/forms.py:25 apps/user/forms.py:16
 msgid "Rue"
-msgstr ""
+msgstr "Straße"
 
 #: apps/orga/forms.py:26 apps/user/forms.py:17
 msgid "N°"
@@ -215,13 +215,13 @@ msgstr ""
 
 #: apps/orga/forms.py:28 apps/user/forms.py:19
 msgid "Ville"
-msgstr ""
+msgstr "Stadt"
 
 #: apps/orga/models.py:24 apps/orga/templates/orga/organization_list.html:4
 #: apps/orga/templates/orga/organization_list.html:7
 #: defivelo/templates/header.html:8
 msgid "Établissements"
-msgstr ""
+msgstr "Schule"
 
 #: apps/orga/templates/orga/organization_confirm_delete.html:4
 #: apps/orga/templates/orga/organization_confirm_delete.html:7
@@ -277,7 +277,7 @@ msgstr ""
 
 #: apps/user/templates/auth/user_update_form.html:16
 msgid "Update"
-msgstr "Mettre à jour"
+msgstr ""
 
 #: apps/user/templates/auth/user_update_form.html:17
 #, python-format
@@ -290,77 +290,77 @@ msgstr ""
 
 #: defivelo/settings/base.py:137
 msgid "French"
-msgstr "Français"
+msgstr "Französich"
 
 #: defivelo/settings/base.py:138
 msgid "German"
-msgstr "Allemand"
+msgstr "Deutsch"
 
 #: defivelo/templates/account/email.html:5
 msgid "Account"
-msgstr "Compte"
+msgstr "Konto"
 
 #: defivelo/templates/account/email.html:8
 msgid "E-mail Addresses"
-msgstr "Adresses e-mail"
+msgstr "E-Mail-Adressen"
 
 #: defivelo/templates/account/email.html:10
 msgid "The following e-mail addresses are associated with your account:"
-msgstr "Les adresses e-mail suivantes sont associées à votre compte :"
+msgstr "Folgende E-Mail-Adressen sind mit diesem Konto verknüpft:"
 
 #: defivelo/templates/account/email.html:21
 msgid "Verified"
-msgstr "Vérifiée"
+msgstr "Bestätigt"
 
 #: defivelo/templates/account/email.html:23
 msgid "Unverified"
-msgstr "Non vérifiée"
+msgstr "Unbestätigt"
 
 #: defivelo/templates/account/email.html:25
 msgid "Primary"
-msgstr "Principale"
+msgstr "Primär"
 
 #: defivelo/templates/account/email.html:31
 msgid "Make Primary"
-msgstr "Rendre Principale"
+msgstr "Als primäre Adresse festlegen"
 
 #: defivelo/templates/account/email.html:32
 msgid "Re-send Verification"
-msgstr "Renvoyer la vérification"
+msgstr "Bestätigungs-Mail nochmal verschicken"
 
 #: defivelo/templates/account/email.html:33
 msgid "Remove"
-msgstr "Retirer"
+msgstr "Ausgewählte entfernen"
 
 #: defivelo/templates/account/email.html:41
 msgid "Warning:"
-msgstr "Attention :"
+msgstr "Warnung:"
 
 #: defivelo/templates/account/email.html:41
 msgid ""
 "You currently do not have any e-mail address set up. You should really add "
 "an e-mail address so you can receive notifications, reset your password, etc."
 msgstr ""
-"Vous n'avez aucune adresse e-mail associée à votre compte. Vous devriez "
-"ajouter une adresse email pour pouvoir recevoir des notifications, "
-"réinitialiser votre mot de passe, etc."
+"Du hast derzeit keine E-Mail-Adressen angegeben. Das solltest Du allerdings "
+"tun, denn nur so können wir dich benachrichtigen und dein Passwort "
+"zurücksetzen."
 
 #: defivelo/templates/account/email.html:46
 msgid "Add E-mail Address"
-msgstr "Ajouter une adresse E-mail"
+msgstr "E-Mail-Adresse hinzufügen"
 
 #: defivelo/templates/account/email.html:51
 msgid "Add E-mail"
-msgstr "Ajouter E-mail"
+msgstr "E-Mail hinzufügen"
 
 #: defivelo/templates/account/email.html:60
 msgid "Do you really want to remove the selected e-mail address?"
-msgstr "Voulez-vous vraiment retirer cette adresse e-mail ?"
+msgstr "Möchtest du wirklich die ausgewählte E-Mail-Adresse entfernen?"
 
 #: defivelo/templates/account/email_confirm.html:6
 #: defivelo/templates/account/email_confirm.html:10
 msgid "Confirm E-mail Address"
-msgstr "Confirmer l'adresse e-mail"
+msgstr "E-Mail-Adresse bestätigen?"
 
 #: defivelo/templates/account/email_confirm.html:16
 #, python-format
@@ -368,12 +368,12 @@ msgid ""
 "Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an e-mail "
 "address for user %(user_display)s."
 msgstr ""
-"Merci de confirmer que <a href=\"mailto:%(email)s\">%(email)s</a> est "
-"l'adresse email de %(user_display)s."
+"Bitte bestätige, dass <a href=\"mailto:%(email)s\">%(email)s</a> eine E-Mail-"
+"Adresse von %(user_display)s ist."
 
 #: defivelo/templates/account/email_confirm.html:20
 msgid "Confirm"
-msgstr "Confirmer"
+msgstr "Bestätigen"
 
 #: defivelo/templates/account/email_confirm.html:27
 #, python-format
@@ -381,28 +381,28 @@ msgid ""
 "This e-mail confirmation link expired or is invalid. Please <a href="
 "\"%(email_url)s\">issue a new e-mail confirmation request</a>."
 msgstr ""
-"Ce lien de confirmation d'adresse email est expiré ou non valide. Veuillez "
-"faire <a href=\"%(email_url)s\">une nouvelle demande de confirmation</a>."
+"Dieser Bestätigungslink ist leider abgelaufen. Lass Dir bitte eine neue <a "
+"href=\"%(email_url)s\">Bestätigungs-Mail</a> schicken."
 
 #: defivelo/templates/account/login.html:6
 #: defivelo/templates/account/login.html:9
 #: defivelo/templates/account/login.html:18
 msgid "Sign In"
-msgstr "Connexion"
+msgstr "Anmeldung"
 
 #: defivelo/templates/account/login.html:19
 msgid "Forgot Password?"
-msgstr "Mot de passe oublié ?"
+msgstr "Passwort vergessen?"
 
 #: defivelo/templates/account/logout.html:5
 #: defivelo/templates/account/logout.html:8
 #: defivelo/templates/account/logout.html:18
 msgid "Sign Out"
-msgstr "Se Déconnecter"
+msgstr "Abmelden"
 
 #: defivelo/templates/account/logout.html:10
 msgid "Are you sure you want to sign out?"
-msgstr "Êtes-vous sûr de vouloir vous déconnecter ?"
+msgstr "Bist Du sicher, dass du Dich abmelden möchtest?"
 
 #: defivelo/templates/account/password_change.html:6
 #: defivelo/templates/account/password_change.html:9
@@ -411,34 +411,33 @@ msgstr "Êtes-vous sûr de vouloir vous déconnecter ?"
 #: defivelo/templates/account/password_reset_from_key.html:7
 #: defivelo/templates/account/password_reset_from_key.html:18
 msgid "Change Password"
-msgstr "Modifier le mot de passe"
+msgstr "Passwort ändern"
 
 #: defivelo/templates/account/password_reset.html:6
 #: defivelo/templates/account/password_reset.html:9
 msgid "Password Reset"
-msgstr "Réinitialisation du mot de passe"
+msgstr "Passwort zurücksetzen"
 
 #: defivelo/templates/account/password_reset.html:13
 msgid ""
 "Forgotten your password? Enter your e-mail address below, and we'll send you "
 "an e-mail allowing you to reset it."
 msgstr ""
-"Mot de passe oublié ? Indiquez votre adresse email ci-dessous et nous vous "
-"enverrons un email pour le réinitialiser."
+"Passwort vergessen? Gib' Deine E-Mail-Adresse unten ein, dann schicken wir "
+"Dir einen Link, unter dem Du Dein Passwort zurücksetzen kannst."
 
 #: defivelo/templates/account/password_reset.html:20
 msgid "Reset My Password"
-msgstr "Réinitialiser mon mot de passe"
+msgstr "Passwort zurücksetzen"
 
 #: defivelo/templates/account/password_reset.html:24
 msgid "Please contact us if you have any trouble resetting your password."
 msgstr ""
-"Merci de nous contacter si vous n'arrivez pas à réinitialiser votre mot de "
-"passe."
+"Bitte kontaktiere uns, wenn das Zurücksetzen des Passworts nicht klappt."
 
 #: defivelo/templates/account/password_reset_from_key.html:7
 msgid "Bad Token"
-msgstr "Mauvais jeton d'identification"
+msgstr "Falsches Token"
 
 #: defivelo/templates/account/password_reset_from_key.html:11
 #, python-format
@@ -447,17 +446,17 @@ msgid ""
 "used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</"
 "a>."
 msgstr ""
-"Le lien de réinitialisation du mot de passe est invalide. Il a peut être "
-"déjà été utilisé. Veuillez faire une nouvelle <a href=\"%(passwd_reset_url)s"
-"\">demande de réinitialisation de mot de passe</a>."
+"Der Link zum Zurücksetzen des Passworts war ungültig, womöglich wurde dieser "
+"Link bereits benutzt. Bitte lass' Dein Passwort noch mal <a href="
+"\"%(passwd_reset_url)s\">zurücksetzen</a>."
 
 #: defivelo/templates/account/password_reset_from_key.html:22
 msgid "Your password is now changed."
-msgstr "Votre mot de passe a été modifié."
+msgstr "Dein Passwort wurde geändert."
 
 #: defivelo/templates/base.html:8 defivelo/templates/header.html:5
 msgid "Accueil"
-msgstr ""
+msgstr "Hauptseite"
 
 #: defivelo/templates/base.html:8 defivelo/templates/base.html.py:37
 msgid "Défi Vélo"
@@ -473,19 +472,19 @@ msgstr ""
 
 #: defivelo/templates/header.html:20
 msgid "Change password"
-msgstr "Changer mon mot de passe"
+msgstr ""
 
 #: defivelo/templates/header.html:21
 msgid "Log out"
-msgstr "Se déconnecter"
+msgstr ""
 
 #: defivelo/templates/header.html:25
 msgid "Log in"
-msgstr "Se connecter"
+msgstr ""
 
 #: defivelo/templates/language_switcher.html:7
 msgid "Langue"
-msgstr ""
+msgstr "Sprache"
 
 #: defivelo/urls.py:29
 msgid "DB Défi Vélo"
