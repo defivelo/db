@@ -3,18 +3,19 @@
 
 <ul class="nav navbar-nav">
     <li{% if menu_category = 'home' %} class="active"{% endif %}><a href="{% url 'home' %}">{% trans "Accueil" %}</a></li>
-    {% if user.is_authenticated %}
-        <li{% if menu_category = 'session' %} class="active"{% endif %}><a href="{% url 'session-list' %}">{% trans "Sessions" %}</a></li>
-        <li{% if menu_category = 'organization' %} class="active"{% endif %}><a href="{% url 'organization-list' %}">{% trans "Établissements" %}</a></li>
+    {% if request.user.is_authenticated %}
+        <li{% if 'session' in menu_category %} class="active"{% endif %}><a href="{% url 'session-list' %}">{% trans "Sessions" %}</a></li>
+        <li{% if 'user' in menu_category %} class="active"{% endif %}><a href="{% url 'user-list' %}">{% trans "Personnes" %}</a></li>
+        <li{% if 'organization' in menu_category  %} class="active"{% endif %}><a href="{% url 'organization-list' %}">{% trans "Établissements" %}</a></li>
     {% endif %}
 </ul>
 
 <ul class="nav navbar-nav navbar-right">  
     {% include "language_switcher.html" %}
 
-    {% if user.is_authenticated %}
-    <li class="{% if menu_category = 'profile' %}active {% endif %}dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% user_display user %}<span class="caret"></span></a>
+    {% if request.user.is_authenticated %}
+    <li class="{% if profile_category %}active {% endif %}dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% user_display request.user %}<span class="caret"></span></a>
         <ul class="dropdown-menu">
         <li><a href="{% url 'profile-update' %}">{% trans "Profil" %}</a></li>
         <li><a href="{% url 'account_change_password' %}">{% trans "Change password" %}</a></li>

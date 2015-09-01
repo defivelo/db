@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
+from django.db import IntegrityError
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DetailView
 from django.views.generic.edit import UpdateView
@@ -15,34 +16,42 @@ from .models import UserProfile
 
 class ProfileMixin(object):
     model = get_user_model()
-    context_object_name = 'user'
+    context_object_name = 'userprofile'
+    form_class = UserProfileForm
+    profile_fields = ['address_street', 'address_no', 'address_zip',
+                      'address_city', 'address_canton', 'natel', 'iban']
 
     def get_context_data(self, **kwargs):
         context = super(ProfileMixin, self).get_context_data(**kwargs)
         # Add our menu_category context
-        context['menu_category'] = 'profile'
+        context['menu_category'] = 'user'
         return context
 
     def get_object(self):
         """
-        Only allow self-edits for now
+        Fallback to myself when accessing the profile
         """
-        return get_user_model().objects.get(pk=self.request.user.pk)
+        resolvermatch = self.request.resolver_match
+        return self.model.objects.get(
+            pk=int(resolvermatch.kwargs.get('pk', self.request.user.pk))
+            )
 
     def get_success_url(self):
-        return reverse_lazy('profile-update')
+        if self.get_object().pk == self.request.user.pk:
+            return reverse_lazy('profile-update')
+        return reverse_lazy('user-list')
 
 
 class UserDetail(ProfileMixin, DetailView):
-    pass
+    def get_queryset(self):
+        return (
+            super(SessionDetailView, self).get_queryset()
+            .prefetch_related('profile')
+        )
 
 
 class UserUpdate(ProfileMixin, SuccessMessageMixin, UpdateView):
-    form_class = UserProfileForm
-    template_name_suffix = '_update_form'
     success_message = _("Profil mis à jour")
-    otherfields = ['address_street', 'address_no', 'address_zip',
-                   'address_city', 'address_canton', 'natel', 'iban']
 
     def get_initial(self):
         """
@@ -51,7 +60,7 @@ class UserUpdate(ProfileMixin, SuccessMessageMixin, UpdateView):
         user = self.get_object()
         if hasattr(user, 'profile'):
             struct = {}
-            for field in self.otherfields:
+            for field in self.profile_fields:
                 struct[field] = getattr(user.profile, field)
             return struct
 
@@ -60,17 +69,27 @@ class UserUpdate(ProfileMixin, SuccessMessageMixin, UpdateView):
         Write the non-model fields
         """
         (userprofile, created) = (
-            UserProfile.objects.get_or_create(user=self.request.user)
+            UserProfile.objects.get_or_create(user=self.get_object())
         )
-        for field in self.otherfields:
+        for field in self.profile_fields:
             if field in form.cleaned_data:
                 setattr(userprofile, field, form.cleaned_data[field])
         userprofile.save()
         return super(UserUpdate, self).form_valid(form)
 
 
+class UserCreate(ProfileMixin, SuccessMessageMixin, UpdateView):
+    success_message = _("Utilisateur créé")
+
+    def get_object(self):
+        return None
+
+    def get_success_url(self):
+        return reverse_lazy('user-list')
+
+
 class UserList(ProfileMixin, ListView):
     context_object_name = 'users'
 
     def get_queryset(self):
-        return get_user_model().objects.all()
+        return self.model.objects.all().order_by('first_name', 'last_name')

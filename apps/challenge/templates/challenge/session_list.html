@@ -11,6 +11,7 @@
         <a class="list-group-item" href="{% url 'session-detail' pk=session.pk %}">{{ session }}</a>
     {% endfor %}
     </div>
-
-    <a class="btn btn-primary pull-right" href="{% url 'session-create' %}">{% trans "Créer une nouvelle session" %}</a>
+    <div>
+        <a class="btn btn-primary pull-right" href="{% url 'session-create' %}">{% trans "Créer une nouvelle session" %}</a>
+    </div>
 {% endblock %}

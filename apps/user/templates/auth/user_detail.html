@@ -1,12 +1,30 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load account %}
+{% load bootstrap3 %}
 {% block content %}
-    <h2>{% user_display user %}</h2>
-    <ul>
-        <li>{{ user.first_name }}</li>
-        <li>{{ user.last_name }}</li>
-        <li>{{ user.email }}</li>
-        <li>{{ user.userprofile.iban }}</li>
-    </ul>
+    <div class="panel panel-default vcard">
+        <div class="panel-heading">
+            <h2 class="panel-title"><a href="{{ userprofile.get_absolute_url }}" class="fn">{% user_display userprofile %}</a></h2>
+        </div>
+        <div class="adr panel-body">
+            <div class="street-address">{{ userprofile.profile.address_street }} {{ userprofile.profile.address_no }}</div>
+            <div>
+                <span class="postal-code">{{ userprofile.address_zip }}</span> <span class="locality">{{ userprofile.profile.address_city }}</span>
+                {% if userprofile.profile.address_canton %}
+                ({{ userprofile.profile.address_canton }})
+                {% endif %}
+            </div>
+            
+            <div>
+                {% if userprofile.email %}<a class="email" href="mailto:{{ userprofile.email }}">{{ userprofile.email }}</a>{% endif %}
+                {% if userprofile.profile.natel %}<div class="tel">{{ userprofile.profile.natel }}</div>{% endif %}
+                {% if userprofile.profile.iban %}<div class="iban">{{ userprofile.profile.iban }}</div>{% endif %}
+            </div>
+        </div>
+    </div>
+    {% buttons %}
+        <a class="btn btn-primary pull-right" href="{% url 'user-update' pk=userprofile.pk %}">{% trans "Éditer" %}</a>
+        <a class="btn btn-default" href="{% url 'user-list' %}">{% trans "Retour à la liste des utilisateurs" %}</a>
+    {% endbuttons %}
 {% endblock %}
