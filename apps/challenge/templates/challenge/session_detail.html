@@ -30,7 +30,7 @@
     {% endif %}
 
     <tr>
-        <td{% if session.qualifications.count > 0 %} colspan="{{ session.qualifications.count }}"{% endif %}>
+        <td{% if session.qualifications.count > 0 %} colspan="{{ session.qualifications.count|add:1 }}"{% endif %}>
             <a class="btn btn-primary pull-right" href="{% url 'quali-create' session=session.pk %}">{% trans "Créer une qualification" %}</a>
         </td>
     </tr>
