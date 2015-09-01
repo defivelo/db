@@ -62,10 +62,11 @@ PROJECT_APPS = tuple(['apps.' + aname
                      for aname in os.listdir(APPS_DIR)
                      if os.path.isdir(os.path.join(APPS_DIR, aname))])
 
-INSTALLED_APPS = UPSTREAM_APPS + PROJECT_APPS
+INSTALLED_APPS = UPSTREAM_APPS + PROJECT_APPS + ('defivelo', )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
