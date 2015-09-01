@@ -14,7 +14,7 @@ class OrgaBasicTest(TestCase):
 
     def test_access_to_profile(self):
         # Issue a GET request.
-        response = self.client.get(reverse('user-update'))
+        response = self.client.get(reverse('profile-update'))
 
         self.assertTemplateUsed(response, 'auth/user_update_form.html')
         self.assertEqual(response.status_code, 200)

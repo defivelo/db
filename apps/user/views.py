@@ -7,36 +7,21 @@ from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DetailView
 from django.views.generic.edit import UpdateView
+from django.views.generic.list import ListView
 
 from .forms import UserProfileForm
 from .models import UserProfile
 
 
 class ProfileMixin(object):
+    model = get_user_model()
+    context_object_name = 'user'
+
     def get_context_data(self, **kwargs):
         context = super(ProfileMixin, self).get_context_data(**kwargs)
         # Add our menu_category context
         context['menu_category'] = 'profile'
         return context
-
-class UserDetail(ProfileMixin,DetailView):
-    model = get_user_model()
-    context_object_name = 'user'
-
-    def get_object(self):
-        """
-        Only allow self-view for now
-        """
-        return get_user_model().objects.get(pk=self.request.user.pk)
-
-
-class UserUpdate(ProfileMixin, SuccessMessageMixin, UpdateView):
-    model = get_user_model()
-    form_class = UserProfileForm
-    template_name_suffix = '_update_form'
-    success_message = _("Profil mis à jour")
-    otherfields = ['address_street', 'address_no', 'address_zip',
-                   'address_city', 'address_canton', 'natel', 'iban']
 
     def get_object(self):
         """
@@ -45,7 +30,19 @@ class UserUpdate(ProfileMixin, SuccessMessageMixin, UpdateView):
         return get_user_model().objects.get(pk=self.request.user.pk)
 
     def get_success_url(self):
-        return reverse_lazy('user-update')
+        return reverse_lazy('profile-update')
+
+
+class UserDetail(ProfileMixin, DetailView):
+    pass
+
+
+class UserUpdate(ProfileMixin, SuccessMessageMixin, UpdateView):
+    form_class = UserProfileForm
+    template_name_suffix = '_update_form'
+    success_message = _("Profil mis à jour")
+    otherfields = ['address_street', 'address_no', 'address_zip',
+                   'address_city', 'address_canton', 'natel', 'iban']
 
     def get_initial(self):
         """
@@ -70,3 +67,10 @@ class UserUpdate(ProfileMixin, SuccessMessageMixin, UpdateView):
                 setattr(userprofile, field, form.cleaned_data[field])
         userprofile.save()
         return super(UserUpdate, self).form_valid(form)
+
+
+class UserList(ProfileMixin, ListView):
+    context_object_name = 'users'
+
+    def get_queryset(self):
+        return get_user_model().objects.all()

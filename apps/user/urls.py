@@ -1,7 +1,8 @@
 from django.conf.urls import url
 
-from .views import UserDetail, UserUpdate
+from .views import UserList, UserUpdate
 
 urlpatterns = [
-    url(r'^edit/$', UserUpdate.as_view(), name="user-update"),
+    url(r'^$', UserList.as_view(), name="user-list"),
+    url(r'^me/$', UserUpdate.as_view(), name="profile-update"),
 ]
