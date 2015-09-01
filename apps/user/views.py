@@ -12,7 +12,7 @@ from .forms import UserProfileForm
 from .models import UserProfile
 
 
-class ProfileMixin:
+class ProfileMixin(object):
     def get_context_data(self, **kwargs):
         context = super(ProfileMixin, self).get_context_data(**kwargs)
         # Add our menu_category context
