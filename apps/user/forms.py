@@ -11,6 +11,8 @@ from localflavor.ch.forms import (
 from localflavor.generic import forms as localforms
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 
+from .models import FORMATION_CHOICES
+
 
 class UserProfileForm(forms.ModelForm):
     address_street = forms.CharField(label=_('Rue'), max_length=255,
@@ -30,6 +32,9 @@ class UserProfileForm(forms.ModelForm):
     iban = localforms.IBANFormField(label=_('Coordonnées bancaires (IBAN)'),
                                     include_countries=IBAN_SEPA_COUNTRIES,
                                     required=False)
+    formation = forms.ChoiceField(label=_('Formation'),
+                                  choices=FORMATION_CHOICES,
+                                  required=False)
 
     class Meta:
         model = get_user_model()
