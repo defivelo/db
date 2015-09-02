@@ -62,7 +62,7 @@ class Session(models.Model):
 
 
 @python_2_unicode_compatible
-class SessionActivity(TranslatableModel):
+class QualificationActivity(TranslatableModel):
     CATEGORY_CHOICES = (
         ('A', _('Vélo dans la rue')),
         ('B', _('Mécanique')),
@@ -89,24 +89,40 @@ class Qualification(models.Model):
     name = models.CharField(_('Nom'), max_length=255)  # TODO: Replace with automated or classes objects
     session = models.ForeignKey(Session,
                                 related_name='qualifications')
-    activity_A = models.ForeignKey(SessionActivity,
+    activity_A = models.ForeignKey(QualificationActivity,
                                    limit_choices_to={'category': 'A'},
                                    verbose_name=_('Vélo dans la rue'),
                                    related_name='sessions_A',
                                    blank=True, null=True
                                    )
-    activity_B = models.ForeignKey(SessionActivity,
+    activity_B = models.ForeignKey(QualificationActivity,
                                    limit_choices_to={'category': 'B'},
                                    verbose_name=_('Mécanique'),
                                    related_name='sessions_B',
                                    blank=True, null=True
                                    )
-    activity_C = models.ForeignKey(SessionActivity,
+    activity_C = models.ForeignKey(QualificationActivity,
                                    limit_choices_to={'category': 'C'},
                                    verbose_name=_('Rencontre'),
                                    related_name='sessions_C',
                                    blank=True, null=True
                                    )
+    leader = models.ForeignKey(settings.AUTH_USER_MODEL,
+                               verbose_name=_('Moniteur 2'),
+                               related_name='sessions_mon2',
+                               limit_choices_to={'profile__formation': 'M2'},
+                               blank=True, null=True)
+    helpers = models.ManyToManyField(settings.AUTH_USER_MODEL,
+                                     verbose_name=_('Moniteurs 1'),
+                                     related_name='sessions_mon1',
+                                     limit_choices_to={
+                                         'profile__formation__in': ['M1', 'M2']},
+                                     blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.helpers.count() > 2:
+            self.helpers = self.helpers.all()[0:2]
+        super(Qualification, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = _('Qualification')

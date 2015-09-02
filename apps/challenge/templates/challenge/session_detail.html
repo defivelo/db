@@ -19,6 +19,10 @@
     <table class="table">
     {% if session.qualifications.count > 0 %}
         <tr><td></td>{% for quali in session.qualifications.all %}<th><a href="{% url 'quali-update' session=session.id pk=quali.pk %}">{{ quali.name }}</a></th>{% endfor %}</tr>
+        <tr><th>{% trans "Moniteur 2" %}</th>
+                {% for quali in session.qualifications.all %}<td>{{ quali.leader.get_full_name }}</td>{% endfor %}</tr>
+        <tr><th>{% trans "Moniteurs 1" %}</th>
+                {% for quali in session.qualifications.all %}<td>{% for helper in quali.helpers.all %}{{ helper.get_full_name }}<br />{% endfor %}</td>{% endfor %}</tr>
         <tr><th>{% trans "Vélo dans la rue" %}</th>
                 {% for quali in session.qualifications.all %}<td>{{ quali.activity_A|default:"" }}</a></td>{% endfor %}</tr>
         <tr><th>{% trans "Mécanique" %}</th>

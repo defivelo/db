@@ -3,14 +3,16 @@ from django.contrib import admin
 from django.templatetags.static import static
 from parler.admin import TranslatableAdmin
 
-from .models import Qualification, Session, SessionActivity, SessionTimeSlot
+from .models import (
+    Qualification, QualificationActivity, Session, SessionTimeSlot,
+)
 
 admin.site.register(SessionTimeSlot)
 admin.site.register(Session)
 admin.site.register(Qualification)
 
 
-class SessionActivityAdmin(TranslatableAdmin):
+class QualificationActivityAdmin(TranslatableAdmin):
     list_display = ['category', 'name', 'missing_languages']
     list_display_links = ('name', )
     search_fields = ('translations__name', 'pk')
@@ -26,4 +28,4 @@ class SessionActivityAdmin(TranslatableAdmin):
             return '<img src="%s" />' % static('admin/img/icon-yes.gif')
     missing_languages.allow_tags = True
 
-admin.site.register(SessionActivity, SessionActivityAdmin)
+admin.site.register(QualificationActivity, QualificationActivityAdmin)

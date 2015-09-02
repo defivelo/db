@@ -25,14 +25,14 @@ class SessionMixin(object):
         return context
 
 
-class SessionsListView(SessionMixin,ListView):
+class SessionsListView(SessionMixin, ListView):
     context_object_name = 'sessions'
 
     def get_queryset(self):
         return Session.objects.filter(day__gte=timezone.now().date())
 
 
-class SessionDetailView(SessionMixin,DetailView):
+class SessionDetailView(SessionMixin, DetailView):
     def get_queryset(self):
         return (
             super(SessionDetailView, self).get_queryset()
@@ -40,15 +40,15 @@ class SessionDetailView(SessionMixin,DetailView):
         )
 
 
-class SessionUpdateView(SessionMixin,SuccessMessageMixin,UpdateView):
+class SessionUpdateView(SessionMixin, SuccessMessageMixin, UpdateView):
     success_message = _("Session mise à jour")
 
 
-class SessionCreateView(SessionMixin,SuccessMessageMixin,CreateView):
+class SessionCreateView(SessionMixin, SuccessMessageMixin, CreateView):
     success_message = _("Session créée")
 
 
-class SessionDeleteView(SessionMixin,SuccessMessageMixin,DeleteView):
+class SessionDeleteView(SessionMixin, SuccessMessageMixin, DeleteView):
     success_message = _("Session supprimée")
     success_url = reverse_lazy('session-list')
 
@@ -77,16 +77,16 @@ class QualiMixin(SessionMixin):
         return context
 
 
-class QualiCreateView(QualiMixin,SuccessMessageMixin,CreateView):
+class QualiCreateView(QualiMixin, SuccessMessageMixin, CreateView):
     success_message = _("Qualification créée")
 
     def get_initial(self):
         return {'session': self.get_session_id()}
 
 
-class QualiUpdateView(QualiMixin,SuccessMessageMixin,UpdateView):
+class QualiUpdateView(QualiMixin, SuccessMessageMixin, UpdateView):
     success_message = _("Qualification mise à jour")
 
 
-class QualiDeleteView(QualiMixin,DeleteView):
+class QualiDeleteView(QualiMixin, DeleteView):
     success_message = _("Qualification supprimée")

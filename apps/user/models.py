@@ -31,11 +31,11 @@ class UserProfile(models.Model):
                                  choices=FORMATION_CHOICES,
                                  blank=True)
 
+    @property
     def formation_full(self):
         if self.formation:
             return dict(FORMATION_CHOICES)[self.formation]
         return ''
-
 
 @receiver(pre_save, sender=settings.AUTH_USER_MODEL)
 def User_pre_save(sender, **kwargs):
