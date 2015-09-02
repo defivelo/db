@@ -1,11 +1,15 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load account %}
 {% load bootstrap3 %}
 {% block content %}
     <div class="panel panel-default vcard">
         <div class="panel-heading">
-            <h2 class="panel-title"><a href="{{ userprofile.get_absolute_url }}" class="fn">{% user_display userprofile %}</a></h2>
+            <h2 class="panel-title">
+                <a href="{{ userprofile.get_absolute_url }}" class="fn">{{ userprofile.get_full_name }}</a>
+                {% if userprofile.profile.formation %}
+                    <span class="badge pull-right">{{ userprofile.profile.formation_full }} {{ userprofile.profile.formation_icon|safe }}</span>
+                {% endif %}
+            </h2>
         </div>
         <div class="adr panel-body">
             <div class="street-address">{{ userprofile.profile.address_street }} {{ userprofile.profile.address_no }}</div>

@@ -37,6 +37,23 @@ class UserProfile(models.Model):
             return dict(FORMATION_CHOICES)[self.formation]
         return ''
 
+    def formation_icon(self):
+        icon = ''
+        if self.formation == 'M1':
+            icon = 'tag'
+            title = _('Moniteur 1')
+        elif self.formation == 'M2':
+            icon = 'tags'
+            title = _('Moniteur 2')
+        if icon:
+            return (
+                '<span class="glyphicon glyphicon-{icon}" aria-hidden="true"'
+                ' title="{title}"></span>'.format(
+                    icon=icon,
+                    title=title)
+            )
+        return ''
+
 @receiver(pre_save, sender=settings.AUTH_USER_MODEL)
 def User_pre_save(sender, **kwargs):
     if not kwargs['instance'].username:
