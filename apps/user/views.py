@@ -42,6 +42,24 @@ class ProfileMixin(object):
             return reverse_lazy('profile-update')
         return reverse_lazy('user-list')
 
+    def form_valid(self, form):
+        ret = super(ProfileMixin, self).form_valid(form)
+        """
+        Write the non-model fields
+        """
+        user = self.get_object()
+        if not user:
+            user = self.object
+
+        (userprofile, created) = (
+            UserProfile.objects.get_or_create(user=user)
+        )
+        for field in self.profile_fields:
+            if field in form.cleaned_data:
+                setattr(userprofile, field, form.cleaned_data[field])
+        userprofile.save()
+        return ret
+
 
 class UserDetail(ProfileMixin, DetailView):
     def get_queryset(self):
@@ -64,19 +82,6 @@ class UserUpdate(ProfileMixin, SuccessMessageMixin, UpdateView):
             for field in self.profile_fields:
                 struct[field] = getattr(user.profile, field)
             return struct
-
-    def form_valid(self, form):
-        """
-        Write the non-model fields
-        """
-        (userprofile, created) = (
-            UserProfile.objects.get_or_create(user=self.get_object())
-        )
-        for field in self.profile_fields:
-            if field in form.cleaned_data:
-                setattr(userprofile, field, form.cleaned_data[field])
-        userprofile.save()
-        return super(UserUpdate, self).form_valid(form)
 
 
 class UserCreate(ProfileMixin, SuccessMessageMixin, UpdateView):
