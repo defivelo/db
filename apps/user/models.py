@@ -40,4 +40,4 @@ class UserProfile(models.Model):
 @receiver(pre_save, sender=settings.AUTH_USER_MODEL)
 def User_pre_save(sender, **kwargs):
     if not kwargs['instance'].username:
-        kwargs['instance'].username = uuid.uuid4().hex
+        kwargs['instance'].username = uuid.uuid4().hex[0:30]
