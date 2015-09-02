@@ -2,6 +2,8 @@ from autocomplete_light import AutocompleteModelBase, register as al_register
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
+from apps.challenge.models import MAX_MONO1_PER_QUALI
+
 
 class UserAutocomplete(AutocompleteModelBase):
     search_fields = ['first_name', 'last_name']
@@ -17,7 +19,7 @@ al_register(UserAutocomplete, name='Helpers',
                 profile__formation__in=['M1', 'M2']
                 ),
             widget_attrs={
-                'data-widget-maximum-values': 3,
+                'data-widget-maximum-values': MAX_MONO1_PER_QUALI,
             })
 al_register(UserAutocomplete, name='Leaders',
             choices=get_user_model().objects.filter(profile__formation='M2'))

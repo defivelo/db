@@ -11,6 +11,8 @@ from parler.models import TranslatableModel, TranslatedFields
 
 from apps.orga.models import Organization
 
+MAX_MONO1_PER_QUALI = 2
+
 
 @python_2_unicode_compatible
 class SessionTimeSlot(models.Model):
@@ -120,8 +122,8 @@ class Qualification(models.Model):
                                      blank=True)
 
     def save(self, *args, **kwargs):
-        if self.helpers.count() > 2:
-            self.helpers = self.helpers.all()[0:2]
+        if self.helpers.count() > MAX_MONO1_PER_QUALI:
+            self.helpers = self.helpers.all()[0:MAX_MONO1_PER_QUALI]
         super(Qualification, self).save(*args, **kwargs)
 
     class Meta:

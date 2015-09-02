@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from bootstrap3_datetime.widgets import DateTimePicker
 
-from .models import Qualification, Session
+from .models import MAX_MONO1_PER_QUALI, Qualification, Session
 
 
 class SessionForm(autocomplete_light.ModelForm):
@@ -30,8 +30,8 @@ class QualificationForm(autocomplete_light.ModelForm):
     def clean(self):
         # Check that we don't have too many moniteurs 1
         helpers = self.cleaned_data.get('helpers')
-        if helpers and helpers.count() > 2:
-            raise ValidationError(_('Pas plus de %s moniteurs 1 !') % 2)
+        if helpers and helpers.count() > MAX_MONO1_PER_QUALI:
+            raise ValidationError(_('Pas plus de %s moniteurs 1 !') % MAX_MONO1_PER_QUALI)
 
         # Check that all moniteurs are unique
         all_leaders_pk = []
