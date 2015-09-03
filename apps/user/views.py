@@ -20,7 +20,8 @@ class ProfileMixin(object):
     form_class = UserProfileForm
     profile_fields = ['address_street', 'address_no', 'address_zip',
                       'address_city', 'address_canton', 'natel', 'iban',
-                      'formation']
+                      'social_security',
+                      'formation', 'actor_for']
 
     def get_context_data(self, **kwargs):
         context = super(ProfileMixin, self).get_context_data(**kwargs)
