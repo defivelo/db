@@ -45,6 +45,19 @@ class Session(models.Model):
                                      verbose_name=_('Établissement'),
                                      related_name='sessions',
                                      blank=True, null=True)
+    FALLBACK_CHOICES = (
+        ('A', _('Programme déluge')),
+        ('B', _('Annulation')),
+        ('C', _('Report …')),
+        ('D', _('Autre …')),
+    )
+    fallback_plan = models.CharField(_("Mauvais temps"), max_length=1,
+                                     choices=FALLBACK_CHOICES, blank=True)
+    helpers_time = models.TimeField(_('Heure rendez-vous moniteurs'),
+                                    null=True, blank=True)
+    helpers_place = models.CharField(_("Lieu rendez-vous moniteurs"),
+                                     max_length=512, blank=True)
+    apples = models.CharField(_("Pommes"), max_length=512, blank=True)
     comments = models.TextField(_('Remarques'), blank=True)
 
     class Meta:
@@ -92,6 +105,19 @@ class Qualification(models.Model):
     name = models.CharField(_('Nom'), max_length=255)  # TODO: Replace with automated or classes objects
     session = models.ForeignKey(Session,
                                 related_name='qualifications')
+    class_teacher_fullname = models.CharField(_('Enseignant'), max_length=512,
+                                     blank=True)
+    class_teacher_natel = models.CharField(_('Natel enseignant'),
+                                           max_length=13, blank=True)
+    n_participants = models.PositiveSmallIntegerField(
+        _('Nombre de participants'),
+        null=True)
+    n_bikes = models.PositiveSmallIntegerField(
+        _('Nombre de vélos'),
+        null=True)
+    n_helmets = models.PositiveSmallIntegerField(
+        _('Nombre de casques'),
+        null=True)
     activity_A = models.ForeignKey(QualificationActivity,
                                    limit_choices_to={'category': 'A'},
                                    verbose_name=_('Vélo dans la rue'),

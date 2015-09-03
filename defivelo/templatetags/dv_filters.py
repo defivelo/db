@@ -17,7 +17,8 @@ def setlang(request, newlang):
 
 @register.filter
 def profile_tag(user):
-    """ Replace language code in request.path with the new language code
+    """
+    Standard user display (currently fullname + small natel
     """
     usertag = '<span>'
     usertag += user.get_full_name()

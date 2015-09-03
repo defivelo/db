@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from bootstrap3_datetime.widgets import DateTimePicker
+from localflavor.ch.forms import CHPhoneNumberField
 
 from .models import MAX_MONO1_PER_QUALI, Qualification, Session
 
@@ -23,10 +24,15 @@ class SessionForm(autocomplete_light.ModelForm):
             'timeslot': _('Horaire'),
             'organization': _('Établissement'),
         }
-        fields = ['organization', 'day', 'timeslot', 'comments']
+        fields = ['organization', 'day', 'timeslot', 'fallback_plan',
+                  'apples',
+                  'helpers_time', 'helpers_place',
+                  'comments']
 
 
 class QualificationForm(autocomplete_light.ModelForm):
+    class_teacher_natel = CHPhoneNumberField(required=False)
+    
     def clean(self):
         # Check that we don't have too many moniteurs 1
         helpers = self.cleaned_data.get('helpers')
@@ -57,6 +63,20 @@ class QualificationForm(autocomplete_light.ModelForm):
                     _("L'intervenant n'est pas qualifié pour la rencontre "
                         "prévue !"),
                     code='unqualified-actor')
+
+        # Check that there are <= helmets or bikes than participants
+        n_participants = self.cleaned_data.get('n_participants')
+        if n_participants:
+            n_bikes = self.cleaned_data.get('n_bikes')
+            if n_bikes and int(n_bikes) > int(n_participants):
+                raise ValidationError(
+                    _("Il y a trop de vélos prévus !"),
+                    code='too-many-bikes')
+            n_helmets = self.cleaned_data.get('n_helmets')
+            if n_helmets and int(n_helmets) > int(n_participants):
+                raise ValidationError(
+                    _("Il y a trop de casques prévus !"),
+                    code='too-many-helmets')
         return self.cleaned_data
 
     class Meta:
@@ -65,6 +85,8 @@ class QualificationForm(autocomplete_light.ModelForm):
             'session': forms.HiddenInput
         }
         fields = ['session', 'name',
+                  'class_teacher_fullname', 'class_teacher_natel',
+                  'n_participants', 'n_bikes', 'n_helmets',
                   'leader', 'helpers',
                   'activity_A', 'activity_B', 'activity_C', 'actor', 'route',
                   'comments']
