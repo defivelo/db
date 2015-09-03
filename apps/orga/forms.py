@@ -3,10 +3,10 @@ from __future__ import unicode_literals
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from localflavor.ch.ch_states import STATE_CHOICES
-from localflavor.ch.forms import CHStateSelect
 
 from bootstrap3_datetime.widgets import DateTimePicker
+from localflavor.ch.ch_states import STATE_CHOICES
+from localflavor.ch.forms import CHStateSelect
 
 from .models import Organization
 

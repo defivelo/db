@@ -10,10 +10,10 @@ from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
-from localflavor.generic.models import IBANField
 
 from apps.challenge.models import QualificationActivity
+from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
+from localflavor.generic.models import IBANField
 
 FORMATION_CHOICES = (
     ('', '----------'),

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-01 12:18+0200\n"
+"POT-Creation-Date: 2015-09-03 16:10+0200\n"
 "PO-Revision-Date: 2015-08-28 13:58+0200\n"
 "Last-Translator: Didier Raboud <me+defivelo@odyx.org>\n"
 "Language-Team: Deutsch <>\n"
@@ -16,85 +16,124 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: apps/challenge/forms.py:15 apps/challenge/models.py:37
-#: apps/challenge/templates/challenge/session_detail.html:14
+#: apps/challenge/forms.py:16 apps/challenge/models.py:39
+#: apps/challenge/templates/challenge/session_detail.html:15
 msgid "Date"
 msgstr "Datum"
 
-#: apps/challenge/forms.py:22 apps/challenge/models.py:39
-#: apps/challenge/templates/challenge/session_detail.html:15
+#: apps/challenge/forms.py:23 apps/challenge/models.py:41
+#: apps/challenge/templates/challenge/session_detail.html:16
 msgid "Horaire"
 msgstr "Zeit"
 
-#: apps/challenge/forms.py:23 apps/challenge/models.py:43
-#: apps/challenge/templates/challenge/session_detail.html:13
+#: apps/challenge/forms.py:24 apps/challenge/models.py:45
+#: apps/challenge/templates/challenge/session_detail.html:14
 #: apps/orga/models.py:23
 msgid "Établissement"
 msgstr "Schule"
 
-#: apps/challenge/models.py:17
+#: apps/challenge/forms.py:34
+#, python-format
+msgid "Pas plus de %s moniteurs 1 !"
+msgstr ""
+
+#: apps/challenge/forms.py:47
+msgid "Il y a des moniteurs à double !"
+msgstr ""
+
+#: apps/challenge/forms.py:57
+msgid "L'intervenant n'est pas qualifié pour la rencontre prévue !"
+msgstr ""
+
+#: apps/challenge/models.py:19
 msgid "Début"
 msgstr "Anfang"
 
-#: apps/challenge/models.py:18
+#: apps/challenge/models.py:20
 msgid "Fin"
 msgstr "Ende"
 
-#: apps/challenge/models.py:21
+#: apps/challenge/models.py:23
 msgid "Horaire pour sessions"
 msgstr ""
 
-#: apps/challenge/models.py:22
+#: apps/challenge/models.py:24
 msgid "Horaires pour sessions"
 msgstr ""
 
-#: apps/challenge/models.py:48
-#: apps/challenge/templates/challenge/session_detail.html:4
+#: apps/challenge/models.py:48 apps/challenge/models.py:139
+#: apps/challenge/templates/challenge/session_detail.html:17
+#: apps/challenge/templates/challenge/session_detail.html:42
+msgid "Remarques"
+msgstr ""
+
+#: apps/challenge/models.py:51
+#: apps/challenge/templates/challenge/session_detail.html:5
 msgid "Session"
 msgstr ""
 
-#: apps/challenge/models.py:49 defivelo/templates/header.html:7
+#: apps/challenge/models.py:52 defivelo/templates/header.html:7
 msgid "Sessions"
 msgstr ""
 
-#: apps/challenge/models.py:67 apps/challenge/models.py:94
-#: apps/challenge/templates/challenge/session_detail.html:22
+#: apps/challenge/models.py:70 apps/challenge/models.py:97
+#: apps/challenge/templates/challenge/session_detail.html:28
 msgid "Vélo dans la rue"
 msgstr "Geschicklichkeit"
 
-#: apps/challenge/models.py:68 apps/challenge/models.py:100
-#: apps/challenge/templates/challenge/session_detail.html:24
+#: apps/challenge/models.py:71 apps/challenge/models.py:103
+#: apps/challenge/templates/challenge/session_detail.html:30
 msgid "Mécanique"
 msgstr "Mechanik"
 
-#: apps/challenge/models.py:69 apps/challenge/models.py:106
-#: apps/challenge/templates/challenge/session_detail.html:26
+#: apps/challenge/models.py:72 apps/challenge/models.py:109
+#: apps/challenge/templates/challenge/session_detail.html:32
 msgid "Rencontre"
 msgstr "Begegnung"
 
-#: apps/challenge/models.py:72 apps/challenge/models.py:89
-#: apps/orga/models.py:15
+#: apps/challenge/models.py:75 apps/challenge/models.py:92
+#: apps/orga/models.py:15 apps/user/templates/auth/user_list.html:10
 msgid "Nom"
 msgstr "Name"
 
-#: apps/challenge/models.py:74
+#: apps/challenge/models.py:77
 msgid "Catégorie"
 msgstr "Kategorie"
 
-#: apps/challenge/models.py:78
+#: apps/challenge/models.py:81
 msgid "Poste"
 msgstr "Posten"
 
-#: apps/challenge/models.py:79
+#: apps/challenge/models.py:82
 msgid "Postes"
 msgstr "Posten"
 
-#: apps/challenge/models.py:112
+#: apps/challenge/models.py:114
+#: apps/challenge/templates/challenge/session_detail.html:24
+#: apps/user/models.py:21 apps/user/models.py:59
+msgid "Moniteur 2"
+msgstr ""
+
+#: apps/challenge/models.py:119
+#: apps/challenge/templates/challenge/session_detail.html:26
+msgid "Moniteurs 1"
+msgstr ""
+
+#: apps/challenge/models.py:125 apps/user/forms.py:44
+msgid "Intervenant"
+msgstr ""
+
+#: apps/challenge/models.py:137
+#: apps/challenge/templates/challenge/session_detail.html:40
+msgid "Parcours"
+msgstr ""
+
+#: apps/challenge/models.py:147
 msgid "Qualification"
 msgstr "Qualifizierung"
 
-#: apps/challenge/models.py:113
-#: apps/challenge/templates/challenge/session_detail.html:18
+#: apps/challenge/models.py:148
+#: apps/challenge/templates/challenge/session_detail.html:20
 msgid "Qualifications"
 msgstr "Qualifizierungen"
 
@@ -141,6 +180,7 @@ msgstr ""
 #: apps/challenge/templates/challenge/session_form.html:26
 #: apps/orga/templates/orga/organization_form.html:25
 #: apps/orga/templates/orga/organization_form.html:27
+#: apps/user/templates/auth/user_form.html:29
 msgid "Annuler"
 msgstr ""
 
@@ -162,22 +202,24 @@ msgid "Qualifications qui seront supprimées"
 msgstr ""
 
 #: apps/challenge/templates/challenge/session_confirm_delete.html:22
-#: apps/challenge/templates/challenge/session_detail.html:41
+#: apps/challenge/templates/challenge/session_detail.html:57
 msgid "Retour à la liste des sessions"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_detail.html:10
+#: apps/challenge/templates/challenge/session_detail.html:11
 #: apps/orga/templates/orga/organization_detail.html:22
+#: apps/user/templates/auth/user_detail.html:35
+#: apps/user/templates/auth/user_list.html:27
 msgid "Éditer"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_detail.html:29
-#: apps/challenge/templates/challenge/session_detail.html:40
+#: apps/challenge/templates/challenge/session_detail.html:45
+#: apps/challenge/templates/challenge/session_detail.html:56
 #: apps/orga/templates/orga/organization_detail.html:24
 msgid "Supprimer"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_detail.html:34
+#: apps/challenge/templates/challenge/session_detail.html:50
 msgid "Créer une qualification"
 msgstr ""
 
@@ -224,30 +266,30 @@ msgstr ""
 msgid "Qualification supprimée"
 msgstr ""
 
-#: apps/orga/forms.py:15 apps/orga/forms.py:18 apps/user/forms.py:20
-#: apps/user/forms.py:23
+#: apps/orga/forms.py:15 apps/orga/forms.py:18 apps/user/forms.py:28
+#: apps/user/forms.py:31
 msgid "Canton"
 msgstr "Kanton"
 
-#: apps/orga/forms.py:25 apps/user/forms.py:16
+#: apps/orga/forms.py:25 apps/user/forms.py:21
 msgid "Rue"
 msgstr "Straße"
 
-#: apps/orga/forms.py:26 apps/user/forms.py:17
+#: apps/orga/forms.py:26 apps/user/forms.py:23
 msgid "N°"
 msgstr ""
 
-#: apps/orga/forms.py:27 apps/user/forms.py:18
+#: apps/orga/forms.py:27 apps/user/forms.py:25
 msgid "NPA"
 msgstr ""
 
-#: apps/orga/forms.py:28 apps/user/forms.py:19
+#: apps/orga/forms.py:28 apps/user/forms.py:26
 msgid "Ville"
 msgstr "Stadt"
 
 #: apps/orga/models.py:24 apps/orga/templates/orga/organization_list.html:4
 #: apps/orga/templates/orga/organization_list.html:7
-#: defivelo/templates/header.html:8
+#: defivelo/templates/header.html:9
 msgid "Établissements"
 msgstr "Schule"
 
@@ -291,29 +333,66 @@ msgstr ""
 msgid "Établissement créé"
 msgstr ""
 
-#: apps/user/forms.py:26
+#: apps/user/forms.py:34
 msgid "Natel"
 msgstr ""
 
-#: apps/user/forms.py:27
+#: apps/user/forms.py:35
 msgid "Coordonnées bancaires (IBAN)"
 msgstr ""
 
-#: apps/user/templates/auth/user_update_form.html:6
-msgid "Éditer son profil"
+#: apps/user/forms.py:38
+msgid "N° AVS"
 msgstr ""
 
-#: apps/user/templates/auth/user_update_form.html:16
+#: apps/user/forms.py:41 apps/user/models.py:38
+msgid "Formation"
+msgstr ""
+
+#: apps/user/models.py:20 apps/user/models.py:56
+msgid "Moniteur 1"
+msgstr ""
+
+#: apps/user/templates/auth/user_detail.html:36
+msgid "Retour à la liste des utilisateurs"
+msgstr ""
+
+#: apps/user/templates/auth/user_form.html:6 defivelo/templates/header.html:20
+msgid "Profil"
+msgstr ""
+
+#: apps/user/templates/auth/user_form.html:9
+#: apps/user/templates/auth/user_list.html:38
+msgid "Nouvel utilisateur"
+msgstr ""
+
+#: apps/user/templates/auth/user_form.html:25
 msgid "Update"
 msgstr ""
 
-#: apps/user/templates/auth/user_update_form.html:17
+#: apps/user/templates/auth/user_form.html:27
 #, python-format
 msgid "Changer d'email (%(email)s)"
 msgstr ""
 
-#: apps/user/views.py:37
+#: apps/user/templates/auth/user_list.html:4
+msgid "Users"
+msgstr ""
+
+#: apps/user/templates/auth/user_list.html:9
+msgid "Prénom"
+msgstr ""
+
+#: apps/user/templates/auth/user_list.html:11
+msgid "Attributs"
+msgstr ""
+
+#: apps/user/views.py:74
 msgid "Profil mis à jour"
+msgstr ""
+
+#: apps/user/views.py:89
+msgid "Utilisateur créé"
 msgstr ""
 
 #: defivelo/settings/base.py:140
@@ -494,26 +573,25 @@ msgstr ""
 msgid "Dérouler la navigation"
 msgstr ""
 
-#: defivelo/templates/header.html:19
-msgid "Profil"
-msgstr ""
-
-#: defivelo/templates/header.html:20
-msgid "Change password"
+#: defivelo/templates/header.html:8
+msgid "Personnes"
 msgstr ""
 
 #: defivelo/templates/header.html:21
+msgid "Change password"
+msgstr ""
+
+#: defivelo/templates/header.html:22
 msgid "Log out"
 msgstr ""
 
-#: defivelo/templates/header.html:25
+#: defivelo/templates/header.html:26
 msgid "Log in"
 msgstr ""
-
-#: defivelo/templates/language_switcher.html:7
-msgid "Langue"
-msgstr "Sprache"
 
 #: defivelo/urls.py:29
 msgid "DB Défi Vélo"
 msgstr ""
+
+#~ msgid "Langue"
+#~ msgstr "Sprache"

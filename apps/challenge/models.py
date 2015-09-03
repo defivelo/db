@@ -45,6 +45,7 @@ class Session(models.Model):
                                      verbose_name=_('Établissement'),
                                      related_name='sessions',
                                      blank=True, null=True)
+    comments = models.TextField(_('Remarques'), blank=True)
 
     class Meta:
         verbose_name = _('Session')
@@ -127,6 +128,15 @@ class Qualification(models.Model):
                                   'profile__actor_for__isnull': False
                               },
                               blank=True, null=True)
+    ROUTE_CHOICES = (
+        ('A', 'A'),
+        ('B', 'B'),
+        ('C', 'C'),
+        ('D', 'D'),
+    )
+    route = models.CharField(_("Parcours"), max_length=1,
+                             choices=ROUTE_CHOICES, blank=True)
+    comments = models.TextField(_('Remarques'), blank=True)
 
     def save(self, *args, **kwargs):
         if self.helpers.count() > MAX_MONO1_PER_QUALI:

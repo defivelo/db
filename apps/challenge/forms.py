@@ -23,7 +23,7 @@ class SessionForm(autocomplete_light.ModelForm):
             'timeslot': _('Horaire'),
             'organization': _('Établissement'),
         }
-        fields = ['organization', 'day', 'timeslot']
+        fields = ['organization', 'day', 'timeslot', 'comments']
 
 
 class QualificationForm(autocomplete_light.ModelForm):
@@ -65,8 +65,9 @@ class QualificationForm(autocomplete_light.ModelForm):
             'session': forms.HiddenInput
         }
         fields = ['session', 'name',
-                  'leader', 'helpers', 'actor',
-                  'activity_A', 'activity_B', 'activity_C']
+                  'leader', 'helpers',
+                  'activity_A', 'activity_B', 'activity_C', 'actor', 'route',
+                  'comments']
         autocomplete_names = {'leader': 'Leaders',
                               'helpers': 'Helpers',
                               'actor': 'Actors'}

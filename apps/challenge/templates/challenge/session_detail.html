@@ -14,12 +14,13 @@
     <tr><th>{% trans "Établissement" %}</th><td>{{ session.organization.name }}</td></tr>
     <tr><th>{% trans "Date" %}</th><td>{{ session.day|date:"l, j F Y" }}</td></tr>
     <tr><th>{% trans "Horaire" %}</th><td>{{ session.timeslot }}</td></tr>
+    <tr><th>{% trans "Remarques" %}</th><td>{{ session.comments }}</td></tr>
     </table>
 
     <h2>{% trans "Qualifications" %}</h2>
     <table class="table">
     {% if session.qualifications.count > 0 %}
-        <tr><td></td>{% for quali in session.qualifications.all %}<th><a href="{% url 'quali-update' session=session.id pk=quali.pk %}">{{ quali.name }}</a></th>{% endfor %}</tr>
+        <tr><td></td>{% for quali in session.qualifications.all %}<th>{{ forloop.counter }} - <a href="{% url 'quali-update' session=session.id pk=quali.pk %}">{{ quali.name }}</a></th>{% endfor %}</tr>
         <tr><th>{% trans "Moniteur 2" %}</th>
                 {% for quali in session.qualifications.all %}<td>{{ quali.leader|profile_tag }}</td>{% endfor %}</tr>
         <tr><th>{% trans "Moniteurs 1" %}</th>
@@ -36,6 +37,10 @@
                     </td>
                 {% endfor %}
         </tr>
+        <tr><th>{% trans "Parcours" %}</th>
+                {% for quali in session.qualifications.all %}<td><em>{{ quali.route|default:"" }}</em></td>{% endfor %}</tr>
+        <tr><th>{% trans "Remarques" %}</th>
+                {% for quali in session.qualifications.all %}<td><em>{{ quali.comments }}</em></td>{% endfor %}</tr>
         <tr><td></td>
                 {% for quali in session.qualifications.all %}<td><a class="btn btn-danger btn-xs" href="{% url 'quali-delete' session=session.id pk=quali.pk %}">{% trans "Supprimer" %}</a></th>{% endfor %}</tr>
     {% endif %}
