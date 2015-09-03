@@ -7,6 +7,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from localflavor.generic.models import IBANField
@@ -18,9 +19,11 @@ FORMATION_CHOICES = (
 )
 
 
+@python_2_unicode_compatible
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile', primary_key=True)
     iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)
+    social_security = models.CharField(max_length=16, blank=True)
     address_street = models.CharField(max_length=255, blank=True)
     address_no = models.CharField(max_length=8, blank=True)
     address_zip = models.CharField(max_length=4, blank=True)
@@ -53,6 +56,10 @@ class UserProfile(models.Model):
                     title=title)
             )
         return ''
+
+    def __str__(self):
+        return self.user.get_full_name()
+
 
 @receiver(pre_save, sender=settings.AUTH_USER_MODEL)
 def User_pre_save(sender, **kwargs):

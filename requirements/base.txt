@@ -9,7 +9,7 @@ libsass==0.8.3
 django-stronghold==0.2.7
 -e git+https://github.com/mgaitan/django-registration-bootstrap@d783998737cf6acfd67392ce266e510ffb1c94f4#egg=django-registration-bootstrap3==0.1+master0
 django-allauth==0.23.0
-django-localflavor==1.1
+-e git+https://github.com/django/django-localflavor@2be39bfb1edfbc1365e30bc5799935a30bd38f47#egg=django-localflavor==1.1+master0
 -e git+https://github.com/nkunihiko/django-bootstrap3-datetimepicker.git@2fa9ea5f56c16ec10aa3288a989a17a4332bcb97#egg=django_bootstrap3_datetimepicker==2.3+master0
 django-autocomplete-light==2.2.5
 -e git+https://github.com/defivelo/django-parler@9d7848f48d30ca5ab28a97ed1cf7aa7354279fb4#egg=django_parler==1.5+defivelo0

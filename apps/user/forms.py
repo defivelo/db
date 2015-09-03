@@ -6,7 +6,8 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 from localflavor.ch.ch_states import STATE_CHOICES
 from localflavor.ch.forms import (
-    CHPhoneNumberField, CHStateSelect, CHZipCodeField,
+    CHPhoneNumberField, CHSocialSecurityNumberField, CHStateSelect,
+    CHZipCodeField,
 )
 from localflavor.generic import forms as localforms
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
@@ -32,6 +33,9 @@ class UserProfileForm(forms.ModelForm):
     iban = localforms.IBANFormField(label=_('Coordonnées bancaires (IBAN)'),
                                     include_countries=IBAN_SEPA_COUNTRIES,
                                     required=False)
+    social_security = CHSocialSecurityNumberField(label=_('N° AVS'),
+                                                  max_length=16,
+                                                  required=False)
     formation = forms.ChoiceField(label=_('Formation'),
                                   choices=FORMATION_CHOICES,
                                   required=False)

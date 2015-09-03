@@ -24,6 +24,7 @@
                 {% if userprofile.email %}<a class="email" href="mailto:{{ userprofile.email }}">{{ userprofile.email }}</a>{% endif %}
                 {% if userprofile.profile.natel %}<div class="tel">{{ userprofile.profile.natel }}</div>{% endif %}
                 {% if userprofile.profile.iban %}<div class="iban">{{ userprofile.profile.iban }}</div>{% endif %}
+                {% if userprofile.profile.social_security %}<div class="social_security">{{ userprofile.profile.social_security }}</div>{% endif %}
             </div>
         </div>
     </div>

@@ -203,6 +203,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 
+
 def defivelo_user_display(u):
     if u.first_name and u.last_name:
         return u'{first} {last}'.format(first=u.first_name, last=u.last_name)
