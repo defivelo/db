@@ -7,9 +7,9 @@ from django.db import models
 from django.template.defaultfilters import date
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
-from parler.models import TranslatableModel, TranslatedFields
 
 from apps.orga.models import Organization
+from parler.models import TranslatableModel, TranslatedFields
 
 MAX_MONO1_PER_QUALI = 2
 
