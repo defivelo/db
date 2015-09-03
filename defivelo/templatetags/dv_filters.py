@@ -20,6 +20,8 @@ def profile_tag(user):
     """
     Standard user display (currently fullname + small natel
     """
+    if not user:
+        return ''
     usertag = '<span>'
     usertag += user.get_full_name()
     if user.profile.natel:
