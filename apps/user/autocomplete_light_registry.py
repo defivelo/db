@@ -6,7 +6,7 @@ from django.utils.html import escape
 from apps.challenge.models import MAX_MONO1_PER_QUALI
 
 
-class UserAutocomplete(AutocompleteModelBase):
+class PersonAutocomplete(AutocompleteModelBase):
     search_fields = ['first_name', 'last_name']
     model = settings.AUTH_USER_MODEL
 
@@ -18,17 +18,30 @@ class UserAutocomplete(AutocompleteModelBase):
             escape(self.choice_value(choice)),
             self.choice_label(choice))
 
+
+class HelpersAutocomplete(PersonAutocomplete):
     def choice_label(self, choice):
         return "{name} {icon}".format(
             name=choice.get_full_name(),
             icon=choice.profile.formation_icon())
 
-al_register(UserAutocomplete, name='Helpers',
+al_register(HelpersAutocomplete, name='Helpers',
             choices=get_user_model().objects.filter(
                 profile__formation__in=['M1', 'M2']
                 ),
             widget_attrs={
                 'data-widget-maximum-values': MAX_MONO1_PER_QUALI,
             })
-al_register(UserAutocomplete, name='Leaders',
+al_register(HelpersAutocomplete, name='Leaders',
             choices=get_user_model().objects.filter(profile__formation='M2'))
+
+
+class ActorsAutocomplete(PersonAutocomplete):
+    def choice_label(self, choice):
+        return "{name} ({actor_for})".format(
+            name=choice.get_full_name(),
+            actor_for=choice.profile.actor_for.name)
+
+
+al_register(ActorsAutocomplete, name='Actors',
+            choices=get_user_model().objects.exclude(profile__actor_for__isnull=True))

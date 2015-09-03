@@ -120,6 +120,13 @@ class Qualification(models.Model):
                                      limit_choices_to={
                                          'profile__formation__in': ['M1', 'M2']},
                                      blank=True)
+    actor = models.ForeignKey(settings.AUTH_USER_MODEL,
+                              verbose_name=_('Intervenant'),
+                              related_name='sessions_actor',
+                              limit_choices_to={
+                                  'profile__actor_for__isnull': False
+                              },
+                              blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.helpers.count() > MAX_MONO1_PER_QUALI:

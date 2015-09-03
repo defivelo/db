@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
+{% load dv_filters %}
 {% block head_title %}{% trans "Session" %}{% endblock %}
 
 {% block content %}
@@ -20,15 +21,21 @@
     {% if session.qualifications.count > 0 %}
         <tr><td></td>{% for quali in session.qualifications.all %}<th><a href="{% url 'quali-update' session=session.id pk=quali.pk %}">{{ quali.name }}</a></th>{% endfor %}</tr>
         <tr><th>{% trans "Moniteur 2" %}</th>
-                {% for quali in session.qualifications.all %}<td>{{ quali.leader.get_full_name }}</td>{% endfor %}</tr>
+                {% for quali in session.qualifications.all %}<td>{{ quali.leader|profile_tag }}</td>{% endfor %}</tr>
         <tr><th>{% trans "Moniteurs 1" %}</th>
-                {% for quali in session.qualifications.all %}<td>{% for helper in quali.helpers.all %}{{ helper.get_full_name }}<br />{% endfor %}</td>{% endfor %}</tr>
+                {% for quali in session.qualifications.all %}<td>{% for helper in quali.helpers.all %}{{ helper|profile_tag }}<br />{% endfor %}</td>{% endfor %}</tr>
         <tr><th>{% trans "Vélo dans la rue" %}</th>
-                {% for quali in session.qualifications.all %}<td>{{ quali.activity_A|default:"" }}</a></td>{% endfor %}</tr>
+                {% for quali in session.qualifications.all %}<td><em>{{ quali.activity_A|default:"" }}</em></td>{% endfor %}</tr>
         <tr><th>{% trans "Mécanique" %}</th>
-                {% for quali in session.qualifications.all %}<td>{{ quali.activity_B|default:"" }}</a></td>{% endfor %}</tr>
+                {% for quali in session.qualifications.all %}<td><em>{{ quali.activity_B|default:"" }}</em></td>{% endfor %}</tr>
         <tr><th>{% trans "Rencontre" %}</th>
-                {% for quali in session.qualifications.all %}<td>{{ quali.activity_C|default:"" }}</a></td>{% endfor %}</tr>
+                {% for quali in session.qualifications.all %}
+                    <td>
+                    <em>{{ quali.activity_C|default:"" }}</em><br />
+                    {{ quali.actor|profile_tag }}
+                    </td>
+                {% endfor %}
+        </tr>
         <tr><td></td>
                 {% for quali in session.qualifications.all %}<td><a class="btn btn-danger btn-xs" href="{% url 'quali-delete' session=session.id pk=quali.pk %}">{% trans "Supprimer" %}</a></th>{% endfor %}</tr>
     {% endif %}

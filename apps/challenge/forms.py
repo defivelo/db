@@ -44,7 +44,19 @@ class QualificationForm(autocomplete_light.ModelForm):
         # Check unicity
         seen_pk = set()
         if len([x for x in all_leaders_pk if x not in seen_pk and not seen_pk.add(x)]) < len(all_leaders_pk):
-            raise ValidationError(_('Il y a des moniteurs à double !'))
+            raise ValidationError(_('Il y a des moniteurs à double !'),
+                                  code='double-helpers'
+                                  )
+
+        # Check that the picked actor corresponds to the activity_C
+        actor = self.cleaned_data.get('actor')
+        activity_C = self.cleaned_data.get('activity_C')
+        if actor and activity_C:
+            if actor.profile.actor_for != activity_C:
+                raise ValidationError(
+                    _("L'intervenant n'est pas qualifié pour la rencontre "
+                        "prévue !"),
+                    code='unqualified-actor')
         return self.cleaned_data
 
     class Meta:
@@ -53,7 +65,8 @@ class QualificationForm(autocomplete_light.ModelForm):
             'session': forms.HiddenInput
         }
         fields = ['session', 'name',
-                  'leader', 'helpers',
+                  'leader', 'helpers', 'actor',
                   'activity_A', 'activity_B', 'activity_C']
         autocomplete_names = {'leader': 'Leaders',
-                              'helpers': 'Helpers'}
+                              'helpers': 'Helpers',
+                              'actor': 'Actors'}

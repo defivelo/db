@@ -2,6 +2,7 @@ from re import sub
 
 from django import template
 from django.conf import settings
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -12,3 +13,19 @@ def setlang(request, newlang):
     """
     return sub('^/(%s)/' % request.LANGUAGE_CODE,
                '/%s/' % newlang, request.path)
+
+
+@register.filter
+def profile_tag(user):
+    """ Replace language code in request.path with the new language code
+    """
+    usertag = '<span>'
+    usertag += user.get_full_name()
+    if user.profile.natel:
+        usertag += (
+            '<br /><small><a href="tel:{natel}">{natel}</a></small>'
+            .format(natel=user.profile.natel)
+            )
+    usertag += '</span>'
+
+    return mark_safe(usertag)

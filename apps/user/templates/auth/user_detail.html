@@ -7,7 +7,10 @@
             <h2 class="panel-title">
                 <a href="{{ userprofile.get_absolute_url }}" class="fn">{{ userprofile.get_full_name }}</a>
                 {% if userprofile.profile.formation %}
-                    <span class="badge pull-right">{{ userprofile.profile.formation_full }} {{ userprofile.profile.formation_icon|safe }}</span>
+                    <span class="badge pull-right">{{ userprofile.profile.formation_full }} {{ userprofile.profile.formation_icon }}</span>
+                {% endif %}
+                {% if userprofile.profile.actor_for %}
+                    <span class="badge pull-right">{{ userprofile.profile.actor_for }} {{ userprofile.profile.actor_icon }}</span>
                 {% endif %}
             </h2>
         </div>
@@ -21,8 +24,8 @@
             </div>
             
             <div>
-                {% if userprofile.email %}<a class="email" href="mailto:{{ userprofile.email }}">{{ userprofile.email }}</a>{% endif %}
-                {% if userprofile.profile.natel %}<div class="tel">{{ userprofile.profile.natel }}</div>{% endif %}
+                {% if userprofile.email %}<a class="email" href="mailto:{{ userprofile.email }}">{{ userprofile.email }}</a><br />{% endif %}
+                {% if userprofile.profile.natel %}<a class="tel" href="tel:{{ userprofile.profile.natel }}">{{ userprofile.profile.natel }}</a><br />{% endif %}
                 {% if userprofile.profile.iban %}<div class="iban">{{ userprofile.profile.iban }}</div>{% endif %}
                 {% if userprofile.profile.social_security %}<div class="social_security">{{ userprofile.profile.social_security }}</div>{% endif %}
             </div>
