@@ -31,8 +31,9 @@ class SessionForm(autocomplete_light.ModelForm):
 
 
 class QualificationForm(autocomplete_light.ModelForm):
-    class_teacher_natel = CHPhoneNumberField(required=False)
-    
+    class_teacher_natel = CHPhoneNumberField(label=_('Natel enseignant'),
+                                             required=False)
+
     def clean(self):
         # Check that we don't have too many moniteurs 1
         helpers = self.cleaned_data.get('helpers')
