@@ -14,6 +14,12 @@
     <h1>{{ session }}</h1>
     <h2>{% if qualification %}{% trans "Édition de la qualification" %}{% else %}{% trans "Nouvelle qualification" %}{% endif %}</h2>
 
+    {% if qualification.errors %}
+    <div>
+        {{ qualification.errors }}
+    </div>
+    {% endif %}
+
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
         {% bootstrap_form form layout='horizontal' %}

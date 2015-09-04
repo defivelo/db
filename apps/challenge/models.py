@@ -6,7 +6,8 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.defaultfilters import date
 from django.utils.encoding import python_2_unicode_compatible
-from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext as u, ugettext_lazy as _
 
 from apps.orga.models import Organization
 from parler.models import TranslatableModel, TranslatedFields
@@ -69,6 +70,23 @@ class Session(models.Model):
     def get_absolute_url(self):
         return reverse('session-detail', args=[self.pk])
 
+    @property
+    def errors(self):
+        errors = []
+        for quali in self.qualifications.all():
+            if quali.errors:
+                errors.append(quali)
+        if errors:
+            return mark_safe(
+                '<br />'.join(
+                    [
+                        '<span class="btn-warning btn-xs disabled">'
+                        '  <span class="glyphicon glyphicon-warning-sign"></span>'
+                        '  {qname}'
+                        '</span>'.format(qname=e.name) for e in errors
+                    ])
+                )
+
     def __str__(self):
         return '{date}{timeslot}{orga}'.format(
             date=date(self.day, settings.DATE_FORMAT),
@@ -106,7 +124,7 @@ class Qualification(models.Model):
     session = models.ForeignKey(Session,
                                 related_name='qualifications')
     class_teacher_fullname = models.CharField(_('Enseignant'), max_length=512,
-                                     blank=True)
+                                              blank=True)
     class_teacher_natel = models.CharField(_('Natel enseignant'),
                                            max_length=13, blank=True)
     n_participants = models.PositiveSmallIntegerField(
@@ -164,10 +182,23 @@ class Qualification(models.Model):
                              choices=ROUTE_CHOICES, blank=True)
     comments = models.TextField(_('Remarques'), blank=True)
 
-    def save(self, *args, **kwargs):
-        if self.helpers.count() > MAX_MONO1_PER_QUALI:
-            self.helpers = self.helpers.all()[0:MAX_MONO1_PER_QUALI]
-        super(Qualification, self).save(*args, **kwargs)
+    @property
+    def errors(self):
+        errors = []
+        if not self.class_teacher_fullname or not self.class_teacher_natel:
+            errors.append(u("Enseignant"))
+        if not self.n_participants:
+            errors.append(u("Nombre de participants"))
+        if not self.leader or self.helpers.count() != MAX_MONO1_PER_QUALI:
+            errors.append(u("Moniteurs"))
+        if not self.actor:
+            errors.append(u("Intervenant"))
+        if not self.activity_A or not self.activity_B or not self.activity_C:
+            errors.append(u('Postes'))
+        if errors:
+            return mark_safe(
+                '<br />'.join(['<span class="btn-warning btn-xs disabled"><span class="glyphicon glyphicon-warning-sign"></span> %s</span>' % e for e in errors])
+                )
 
     class Meta:
         verbose_name = _('Qualification')

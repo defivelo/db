@@ -25,7 +25,10 @@
             </td>
         </tr>
     {% endif %}
-    {% if comments %}
+    {% if session.errors %}
+        <tr><th>{% trans "Erreurs" %}</th><td>{{ session.errors }}</td></tr>
+    {% endif %}
+    {% if session.comments %}
         <tr><th>{% trans "Remarques" %}</th><td>{{ session.comments }}</td></tr>
     {% endif %}
     </table>
@@ -33,7 +36,16 @@
     <h2>{% trans "Qualifications" %}</h2>
     <table class="table">
     {% if session.qualifications.count > 0 %}
-        <tr><td></td>{% for quali in session.qualifications.all %}<th>{{ forloop.counter }} - <a href="{% url 'quali-update' session=session.id pk=quali.pk %}">{{ quali.name }}</a></th>{% endfor %}</tr>
+        <tr><td></td>
+            {% for quali in session.qualifications.all %}
+                <th>{{ forloop.counter }} - <a href="{% url 'quali-update' session=session.id pk=quali.pk %}">{{ quali.name }}</a>
+                {% if quali.errors %}
+                    <br />
+                    {{ quali.errors }}
+                {% endif %}
+                </th>
+            {% endfor %}
+        </tr>
         <tr><th>{% trans "Classe" %}</th>
                 {% for quali in session.qualifications.all %}
                     <td>{{ quali.class_teacher_fullname }}<br />
