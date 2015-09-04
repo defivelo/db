@@ -66,18 +66,18 @@ class QualificationForm(autocomplete_light.ModelForm):
                     code='unqualified-actor')
 
         # Check that there are <= helmets or bikes than participants
-        n_participants = self.cleaned_data.get('n_participants')
-        if n_participants:
-            n_bikes = self.cleaned_data.get('n_bikes')
-            if n_bikes and int(n_bikes) > int(n_participants):
-                raise ValidationError(
-                    _("Il y a trop de vélos prévus !"),
-                    code='too-many-bikes')
-            n_helmets = self.cleaned_data.get('n_helmets')
-            if n_helmets and int(n_helmets) > int(n_participants):
-                raise ValidationError(
-                    _("Il y a trop de casques prévus !"),
-                    code='too-many-helmets')
+        n_participants = self.cleaned_data.get('n_participants', 0)
+        n_bikes = self.cleaned_data.get('n_bikes')
+        if n_bikes and int(n_bikes) > int(n_participants):
+            raise ValidationError(
+                _("Il y a trop de vélos prévus !"),
+                code='too-many-bikes')
+        n_helmets = self.cleaned_data.get('n_helmets')
+        if n_helmets and int(n_helmets) > int(n_participants):
+            raise ValidationError(
+                _("Il y a trop de casques prévus !"),
+                code='too-many-helmets')
+
         return self.cleaned_data
 
     class Meta:
