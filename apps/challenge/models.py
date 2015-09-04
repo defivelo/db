@@ -73,19 +73,30 @@ class Session(models.Model):
     @property
     def errors(self):
         errors = []
+        # Check the qualifications
+        if not self.fallback_plan:
+            errors.append(_('Mauvais temps'))
+        if not self.apples:
+            errors.append(_('Pommes'))
         for quali in self.qualifications.all():
             if quali.errors:
-                errors.append(quali)
+                errors.append(quali.name)
         if errors:
             return mark_safe(
                 '<br />'.join(
                     [
                         '<span class="btn-warning btn-xs disabled">'
                         '  <span class="glyphicon glyphicon-warning-sign"></span>'
-                        '  {qname}'
-                        '</span>'.format(qname=e.name) for e in errors
+                        '  {error}'
+                        '</span>'.format(error=e) for e in errors
                     ])
                 )
+
+    @property
+    def fallback(self):
+        if self.fallback_plan:
+            return dict(self.FALLBACK_CHOICES)[self.fallback_plan]
+        return ''
 
     def __str__(self):
         return '{date}{timeslot}{orga}'.format(

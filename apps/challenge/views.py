@@ -39,7 +39,19 @@ class SessionDetailView(SessionMixin, DetailView):
     def get_queryset(self):
         return (
             super(SessionDetailView, self).get_queryset()
-            .prefetch_related('qualifications')
+            .prefetch_related(
+                'organization',
+                'timeslot',
+                'qualifications',
+                'qualifications__leader',
+                'qualifications__leader__profile',
+                'qualifications__helpers',
+                'qualifications__helpers__profile',
+                'qualifications__actor',
+                'qualifications__actor__profile',
+                'qualifications__activity_A',
+                'qualifications__activity_B',
+                'qualifications__activity_C')
         )
 
 

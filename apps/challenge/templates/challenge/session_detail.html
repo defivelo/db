@@ -5,15 +5,23 @@
 {% block head_title %}{% trans "Session" %}{% endblock %}
 
 {% block content %}
-    <h1>{{ session }}</h1>
+    <h1>{{ session.organization.name }}{% if session.organization.address_city %}, {{ session.organization.address_city }}{% endif %}</h1>
+    <h2>{{ session.day|date:"j F" }}, {{ session.timeslot }}</h2>
 
-    <div>
+    <div class="hidden-print">
         <a class="btn btn-primary pull-right" href="{% url 'session-update' pk=session.pk %}">{% trans "Éditer" %}</a>
-     </div>
+    </div>
     <table class="table">
-    <tr><th>{% trans "Établissement" %}</th><td>{{ session.organization.name }}</td></tr>
-    <tr><th>{% trans "Date" %}</th><td>{{ session.day|date:"l, j F Y" }}</td></tr>
+    <tr class="hidden-print"><th>{% trans "Établissement" %}</th>
+        <td>{{ session.organization.name }}
+            {% if session.organization.address_city %}<br />{{ session.organization.address_city }}{% endif %}
+        </td>
+    </tr>
+    <tr class="hidden-print"><th>{% trans "Date" %}</th><td>{{ session.day|date:"l, j F Y" }}</td></tr>
     <tr><th>{% trans "Horaire" %}</th><td>{{ session.timeslot }}</td></tr>
+    {% if session.fallback %}
+        <tr><th>{% trans "Mauvais temps" %}</th><td>{{ session.fallback }}</td></tr>
+    {% endif %} 
     {% if session.apples %}
         <tr><th>{% trans "Pommes" %}</th><td>{{ session.apples }}</td></tr>
     {% endif %} 
@@ -87,7 +95,7 @@
         </tr>
         <tr><th>{% trans "Remarques" %}</th>
                 {% for quali in session.qualifications.all %}<td><em>{{ quali.comments }}</em></td>{% endfor %}</tr>
-        <tr><td></td>
+        <tr class="hidden-print"><td></td>
                 {% for quali in session.qualifications.all %}
                     <td>
                         <a class="btn btn-primary btn-xs" href="{% url 'quali-update' session=session.id pk=quali.pk %}">
@@ -101,14 +109,14 @@
         </tr>
     {% endif %}
 
-    <tr>
+    <tr class="hidden-print">
         <td{% if session.qualifications.count > 0 %} colspan="{{ session.qualifications.count|add:1 }}"{% endif %}>
             <a class="btn btn-primary pull-right" href="{% url 'quali-create' session=session.pk %}">{% trans "Créer une qualification" %}</a>
         </td>
     </tr>
     </table>
 
-    <div>
+    <div class="hidden-print">
         <a class="btn btn-danger pull-right" href="{% url 'session-delete' pk=session.pk %}">{% trans "Supprimer" %}</a>
         <a class="btn btn-default" href="{% url 'session-list' year=session.day|date:"Y" week=session.day|weeknumber %}">{% trans "Retour à la liste des sessions" %}</a>
     </div>
