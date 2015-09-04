@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-04 11:40+0200\n"
+"POT-Creation-Date: 2015-09-04 16:42+0200\n"
 "PO-Revision-Date: 2015-08-28 13:58+0200\n"
 "Last-Translator: Didier Raboud <me+defivelo@odyx.org>\n"
 "Language-Team: Deutsch <>\n"
@@ -247,6 +247,19 @@ msgstr ""
 msgid "Annuler"
 msgstr ""
 
+#: apps/challenge/templates/challenge/session_archive_week.html:5
+msgid "Prochaines sessions"
+msgstr ""
+
+#: apps/challenge/templates/challenge/session_archive_week.html:8
+#, python-format
+msgid "Sessions de la semaine du %(monday)s"
+msgstr ""
+
+#: apps/challenge/templates/challenge/session_archive_week.html:32
+msgid "Créer une nouvelle session"
+msgstr ""
+
 #: apps/challenge/templates/challenge/session_confirm_delete.html:4
 #: apps/challenge/templates/challenge/session_confirm_delete.html:7
 #, python-format
@@ -332,36 +345,27 @@ msgstr ""
 msgid "Nouvelle session"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_list.html:4
-#: apps/challenge/templates/challenge/session_list.html:7
-msgid "Prochaines sessions"
-msgstr ""
-
-#: apps/challenge/templates/challenge/session_list.html:15
-msgid "Créer une nouvelle session"
-msgstr ""
-
-#: apps/challenge/views.py:44
+#: apps/challenge/views.py:47
 msgid "Session mise à jour"
 msgstr ""
 
-#: apps/challenge/views.py:48
+#: apps/challenge/views.py:51
 msgid "Session créée"
 msgstr ""
 
-#: apps/challenge/views.py:52
+#: apps/challenge/views.py:55
 msgid "Session supprimée"
 msgstr ""
 
-#: apps/challenge/views.py:81
+#: apps/challenge/views.py:84
 msgid "Qualification créée"
 msgstr ""
 
-#: apps/challenge/views.py:88
+#: apps/challenge/views.py:91
 msgid "Qualification mise à jour"
 msgstr ""
 
-#: apps/challenge/views.py:92
+#: apps/challenge/views.py:95
 msgid "Qualification supprimée"
 msgstr ""
 

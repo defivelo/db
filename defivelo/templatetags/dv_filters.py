@@ -32,3 +32,11 @@ def profile_tag(user):
     usertag += '</span>'
 
     return mark_safe(usertag)
+
+
+@register.filter
+def weeknumber(date):
+    if not date:
+        return ''
+    # This "solves" the weird week numbers in templates
+    return date.strftime('%W')

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load dv_filters %}
+{% block head_title %}{% trans "Prochaines sessions" %}{% endblock %}
+
+{% block content %}
+    <h1>{% blocktrans with monday=week %}Sessions de la semaine du {{ monday }}{% endblocktrans %}</h1>
+    
+    <nav>
+        <ul class="pager">
+            <li class="previous">
+                <a href="{% url 'session-list' year=previous_week.year week=previous_week|weeknumber %}">
+                    <span aria-hidden="true">&larr;</span> {{ previous_week }}
+                </a>
+            </li>
+            <li class="next">
+                <a href="{% url 'session-list' year=next_week.year week=next_week|weeknumber %}">
+                    {{ next_week }} <span aria-hidden="true">&rarr;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    
+    <div class="list-group">
+    {% for session in sessions %}
+        <a class="list-group-item" href="{% url 'session-detail' pk=session.pk %}">{{ session }}</a>
+    {% endfor %}
+    </div>
+
+    <div>
+        <a class="btn btn-primary pull-right" href="{% url 'session-create' %}">{% trans "Créer une nouvelle session" %}</a>
+    </div>
+{% endblock %}

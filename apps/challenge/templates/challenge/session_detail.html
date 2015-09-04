@@ -110,6 +110,6 @@
 
     <div>
         <a class="btn btn-danger pull-right" href="{% url 'session-delete' pk=session.pk %}">{% trans "Supprimer" %}</a>
-        <a class="btn btn-default" href="{% url 'session-list' %}">{% trans "Retour à la liste des sessions" %}</a>
+        <a class="btn btn-default" href="{% url 'session-list' year=session.day|date:"Y" week=session.day|weeknumber %}">{% trans "Retour à la liste des sessions" %}</a>
     </div>
 {% endblock %}

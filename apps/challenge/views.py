@@ -5,6 +5,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic.dates import WeekArchiveView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
@@ -25,11 +26,13 @@ class SessionMixin(object):
         return context
 
 
-class SessionsListView(SessionMixin, ListView):
+class SessionsListView(SessionMixin, WeekArchiveView):
+    date_field = "day"
     context_object_name = 'sessions'
-
-    def get_queryset(self):
-        return Session.objects.filter(day__gte=timezone.now().date())
+    allow_empty = True
+    allow_future = True
+    week_format = '%W'
+    ordering = ['day', 'timeslot__begin']
 
 
 class SessionDetailView(SessionMixin, DetailView):
