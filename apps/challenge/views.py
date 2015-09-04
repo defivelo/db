@@ -23,6 +23,7 @@ class SessionMixin(object):
         context = super(SessionMixin, self).get_context_data(**kwargs)
         # Add our menu_category context
         context['menu_category'] = 'session'
+        context['now'] = timezone.now()
         return context
 
 

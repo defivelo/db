@@ -17,6 +17,7 @@
     <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}" />
     {% compress css %}
         <link rel="stylesheet" type="text/x-scss" href="{% static "style/main.scss" %}">
+        <link rel="stylesheet" type="text/x-scss" media="print" href="{% static "style/print.scss" %}">
     {% endcompress %}
     {% if 'javascript_in_head'|bootstrap_setting %}{% bootstrap_javascript jquery=True %}{% endif %}
     {% block bootstrap3_extra_head %}{% endblock %}

@@ -78,9 +78,13 @@ class Session(models.Model):
             errors.append(_('Mauvais temps'))
         if not self.apples:
             errors.append(_('Pommes'))
+        qualiq = 0
         for quali in self.qualifications.all():
+            qualiq += 1
             if quali.errors:
                 errors.append(quali.name)
+        if qualiq == 0:
+            errors.append(_('Pas de qualifications'))
         if errors:
             return mark_safe(
                 '<br />'.join(

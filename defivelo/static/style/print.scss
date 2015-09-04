@@ -1,0 +1,9 @@
+/* No underscores */
+a, a:visited {
+    text-decoration: none;
+}
+
+/* We want no link hrefs */
+a[href]:after {
+    content: "";
+}

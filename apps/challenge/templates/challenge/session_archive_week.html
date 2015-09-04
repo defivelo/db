@@ -9,12 +9,16 @@
     
     <nav>
         <ul class="pager">
-            <li class="previous">
+            <li class="previous btn-xs">
                 <a href="{% url 'session-list' year=previous_week.year week=previous_week|weeknumber %}">
                     <span aria-hidden="true">&larr;</span> {{ previous_week }}
                 </a>
             </li>
-            <li class="next">
+            {% if week|weeknumber != now|weeknumber %}
+                <li class="btn-xs"><a href="{% url 'session-list' year=next_week.year week=now|weeknumber %}">{% trans "Semaine courante" %}</a>
+                </li>
+            {% endif %}
+            <li class="next btn-xs">
                 <a href="{% url 'session-list' year=next_week.year week=next_week|weeknumber %}">
                     {{ next_week }} <span aria-hidden="true">&rarr;</span>
                 </a>
