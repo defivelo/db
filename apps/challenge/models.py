@@ -144,13 +144,13 @@ class Qualification(models.Model):
                                            max_length=13, blank=True)
     n_participants = models.PositiveSmallIntegerField(
         _('Nombre de participants'),
-        null=True)
+        blank=True, null=True)
     n_bikes = models.PositiveSmallIntegerField(
         _('Nombre de vélos'),
-        null=True)
+        blank=True, null=True)
     n_helmets = models.PositiveSmallIntegerField(
         _('Nombre de casques'),
-        null=True)
+        blank=True, null=True)
     activity_A = models.ForeignKey(QualificationActivity,
                                    limit_choices_to={'category': 'A'},
                                    verbose_name=_('Vélo dans la rue'),
