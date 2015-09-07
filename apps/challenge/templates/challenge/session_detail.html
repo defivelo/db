@@ -6,7 +6,7 @@
 
 {% block content %}
     <h1>{{ session.organization.name }}{% if session.organization.address_city %}, {{ session.organization.address_city }}{% endif %}</h1>
-    <h2>{{ session.day|date:"j F" }}, {{ session.timeslot }}</h2>
+    <h2>{{ session.day|date:"j F" }}, {{ session.begin }}</h2>
 
     <div class="hidden-print">
         <a class="btn btn-primary pull-right" href="{% url 'session-update' pk=session.pk %}">{% trans "Éditer" %}</a>
@@ -18,7 +18,9 @@
         </td>
     </tr>
     <tr class="hidden-print"><th>{% trans "Date" %}</th><td>{{ session.day|date:"l, j F Y" }}</td></tr>
-    <tr><th>{% trans "Horaire" %}</th><td>{{ session.timeslot }}</td></tr>
+    {% if session.begin and session.duration %}
+        <tr><th>{% trans "Horaire" %}</th><td>{{ session.begin }} - {{ session.end }}</td></tr>
+    {% endif %}
     {% if session.fallback %}
         <tr><th>{% trans "Mauvais temps" %}</th><td>{{ session.fallback }}</td></tr>
     {% endif %} 

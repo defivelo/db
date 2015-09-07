@@ -42,7 +42,6 @@ class SessionDetailView(SessionMixin, DetailView):
             super(SessionDetailView, self).get_queryset()
             .prefetch_related(
                 'organization',
-                'timeslot',
                 'qualifications',
                 'qualifications__leader',
                 'qualifications__leader__profile',

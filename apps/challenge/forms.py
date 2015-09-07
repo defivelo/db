@@ -21,10 +21,10 @@ class SessionForm(autocomplete_light.ModelForm):
     class Meta:
         model = Session
         labels = {
-            'timeslot': _('Horaire'),
+            'begin': _('Horaire'),
             'organization': _('Établissement'),
         }
-        fields = ['organization', 'day', 'timeslot', 'fallback_plan',
+        fields = ['organization', 'day', 'begin', 'fallback_plan',
                   'apples',
                   'helpers_time', 'helpers_place',
                   'comments']
