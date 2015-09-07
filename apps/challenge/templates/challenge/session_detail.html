@@ -2,11 +2,11 @@
 {% load i18n %}
 {% load bootstrap3 %}
 {% load dv_filters %}
-{% block head_title %}{% trans "Session" %}{% endblock %}
+{% block head_title %}{% trans "Session" %} {{ session.pk }}{% endblock %}
 
 {% block content %}
     <h1>{{ session.organization.name }}{% if session.organization.address_city %}, {{ session.organization.address_city }}{% endif %}</h1>
-    <h2>{{ session.day|date:"j F" }}, {{ session.begin }}</h2>
+    <h2>{{ session.day|date:"j F" }}{% if session.begin %}, {{ session.begin }}{% endif %}</h2>
 
     <div class="hidden-print">
         <a class="btn btn-primary pull-right" href="{% url 'session-update' pk=session.pk %}">{% trans "Éditer" %}</a>
