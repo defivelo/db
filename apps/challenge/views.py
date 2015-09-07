@@ -33,7 +33,7 @@ class SessionsListView(SessionMixin, WeekArchiveView):
     allow_empty = True
     allow_future = True
     week_format = '%W'
-    ordering = ['day', 'timeslot__begin']
+    ordering = ['day', 'begin', 'duration']
 
 
 class SessionDetailView(SessionMixin, DetailView):
