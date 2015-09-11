@@ -8,16 +8,13 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
+from apps.common.models import Address
+
 
 @python_2_unicode_compatible
-class Organization(models.Model):
+class Organization(Address, models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     name = models.CharField(_('Nom'), max_length=255)
-    address_street = models.CharField(max_length=255, blank=True)
-    address_no = models.CharField(max_length=8, blank=True)
-    address_zip = models.CharField(max_length=4, blank=True)
-    address_city = models.CharField(max_length=64, blank=True)
-    address_canton = models.CharField(max_length=2, blank=True)
 
     class Meta:
         verbose_name = _('Établissement')

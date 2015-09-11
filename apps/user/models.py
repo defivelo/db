@@ -12,6 +12,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from apps.challenge.models import QualificationActivity
+from apps.common.models import Address
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from localflavor.generic.models import IBANField
 
@@ -23,17 +24,12 @@ FORMATION_CHOICES = (
 
 
 @python_2_unicode_compatible
-class UserProfile(models.Model):
+class UserProfile(Address, models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                                 related_name='profile',
                                 primary_key=True)
     iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)
     social_security = models.CharField(max_length=16, blank=True)
-    address_street = models.CharField(max_length=255, blank=True)
-    address_no = models.CharField(max_length=8, blank=True)
-    address_zip = models.CharField(max_length=4, blank=True)
-    address_city = models.CharField(max_length=64, blank=True)
-    address_canton = models.CharField(max_length=2, blank=True)
     natel = models.CharField(max_length=13, blank=True)
     formation = models.CharField(_("Formation"), max_length=2,
                                  choices=FORMATION_CHOICES,
