@@ -5,7 +5,8 @@
 {% block head_title %}{% trans "Session" %} {{ session.pk }}{% endblock %}
 
 {% block content %}
-    <h1>{{ session.organization.name }}{% if session.organization.address_city %}, {{ session.organization.address_city }}{% endif %}</h1>
+    <h1>{{ session.organization.name }}{% if session.address_city %}, {{ session.address_city }}{% elif session.organization.address_city %}, {{ session.organization.address_city }}{% endif %}
+    </h1>
     <h2>{{ session.day|date:"j F" }}{% if session.begin %}, {{ session.begin }}{% endif %}</h2>
 
     <div class="hidden-print">
@@ -13,8 +14,11 @@
     </div>
     <table class="table">
     <tr class="hidden-print"><th>{% trans "Établissement" %}</th>
-        <td>{{ session.organization.name }}
-            {% if session.organization.address_city %}<br />{{ session.organization.address_city }}{% endif %}
+        <td><a href="{% url 'organization-detail' session.organization.pk %}">{{ session.organization.name }}</a></td>
+    </tr>
+    <tr><th>{% trans "Emplacement de la session" %}</th>
+        <td>{{ session.address_street }} {{ session.address_no }}<br />
+            {{ session.address_city }}{% if session.canton %} ({{ session.address_canton }}){% endif %}
         </td>
     </tr>
     <tr class="hidden-print"><th>{% trans "Date" %}</th><td>{{ session.day|date:"l, j F Y" }}</td></tr>
@@ -27,14 +31,12 @@
     {% if session.apples %}
         <tr><th>{% trans "Pommes" %}</th><td>{{ session.apples }}</td></tr>
     {% endif %} 
-    {% if session.helpers_time or session.helpers_place %}
         <tr><th>{% trans "Rendez-vous moniteurs" %}</th>
             <td>
-                {{ session.helpers_time|default:"" }}<br />
+                {{ session.helpers_time_with_default }}<br />
                 {{ session.helpers_place }}
             </td>
         </tr>
-    {% endif %}
     {% if session.errors %}
         <tr><th>{% trans "Erreurs" %}</th><td>{{ session.errors }}</td></tr>
     {% endif %}

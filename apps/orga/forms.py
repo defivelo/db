@@ -21,11 +21,5 @@ class OrganizationForm(forms.ModelForm):
 
     class Meta:
         model = Organization
-        labels = {
-            'address_street': _('Rue'),
-            'address_no': _('N°'),
-            'address_zip': _('NPA'),
-            'address_city': _('Ville'),
-            }
         fields = ['name', 'address_street', 'address_no', 'address_zip',
                   'address_city', 'address_canton']

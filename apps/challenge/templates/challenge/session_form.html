@@ -16,8 +16,17 @@
 
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
-        {% bootstrap_form form layout='horizontal' %}
-
+        <h3>{% trans "Emplacement" %}</h3>
+        {% bootstrap_field form.organization layout='horizontal' size='small' %}
+        {% bootstrap_field form.day layout='horizontal' size='small' %}
+        {% bootstrap_field form.begin layout='horizontal' size='small' %}
+        {% include "address_bootstrap_form.html" %}
+        <h3>{% trans "Logistique" %}</h3>
+        {% bootstrap_field form.fallback_plan layout='horizontal' size='small' %}
+        {% bootstrap_field form.apples layout='horizontal' size='small' %}
+        {% bootstrap_field form.helpers_time layout='horizontal' size='small' %}
+        {% bootstrap_field form.helpers_place layout='horizontal' size='small' %}
+        {% bootstrap_field form.comments layout='horizontal' size='small' %}
         {% buttons %}
             <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
             {% if session %}

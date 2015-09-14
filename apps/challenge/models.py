@@ -11,14 +11,16 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as u, ugettext_lazy as _
 
+from apps.common.models import Address
 from apps.orga.models import Organization
 from parler.models import TranslatableModel, TranslatedFields
 
 MAX_MONO1_PER_QUALI = 2
+DEFAULT_EARLY_MINUTES_FOR_HELPERS_MEETINGS = 60
 
 
 @python_2_unicode_compatible
-class Session(models.Model):
+class Session(Address, models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
 
     # Time span
@@ -94,6 +96,18 @@ class Session(models.Model):
             day = self.day if self.day else datetime.today()
             end = datetime.combine(day, self.begin) + self.duration
             return end.time()
+
+    def helpers_time_with_default(self):
+        if self.helpers_time:
+            return self.helpers_time
+        if self.begin:
+            # Compute a default value with regards to the start time
+            helpers_time = (
+                datetime.combine(datetime.today(), self.begin) -
+                timedelta(minutes=DEFAULT_EARLY_MINUTES_FOR_HELPERS_MEETINGS)
+                ).time().strftime('%H:%M')
+            return mark_safe('<em>{}</em>'.format(helpers_time))
+        return ''
 
     def __str__(self):
         return '{date}{begin}{orga}'.format(
