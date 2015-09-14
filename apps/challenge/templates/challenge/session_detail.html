@@ -31,12 +31,12 @@
     {% if session.apples %}
         <tr><th>{% trans "Pommes" %}</th><td>{{ session.apples }}</td></tr>
     {% endif %} 
-        <tr><th>{% trans "Rendez-vous moniteurs" %}</th>
-            <td>
-                {{ session.helpers_time_with_default }}<br />
-                {{ session.helpers_place }}
-            </td>
-        </tr>
+    <tr><th>{% trans "Rendez-vous moniteurs" %}</th>
+        <td>
+            {{ session.helpers_time_with_default }}<br />
+            {{ session.helpers_place }}
+        </td>
+    </tr>
     {% if session.errors %}
         <tr><th>{% trans "Erreurs" %}</th><td>{{ session.errors }}</td></tr>
     {% endif %}
