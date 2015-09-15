@@ -14,7 +14,9 @@ from .models import Organization
 
 
 class OrganizationMixin(object):
+    model = Organization
     context_object_name = 'organization'
+    form_class = OrganizationForm
 
     def get_context_data(self, **kwargs):
         context = super(OrganizationMixin, self).get_context_data(**kwargs)
@@ -23,30 +25,30 @@ class OrganizationMixin(object):
         return context
 
 
-class OrganizationsListView(OrganizationMixin,ListView):
-    model = Organization
+class OrganizationsListView(OrganizationMixin,
+                            ListView):
     context_object_name = 'organizations'
 
     def get_queryset(self):
         return Organization.objects.all()
 
 
-class OrganizationDetailView(OrganizationMixin,DetailView):
-    model = Organization
+class OrganizationDetailView(OrganizationMixin,
+                             DetailView):
+    pass
 
 
-class OrganizationUpdateView(OrganizationMixin,SuccessMessageMixin,UpdateView):
-    model = Organization
+class OrganizationUpdateView(OrganizationMixin,
+                             SuccessMessageMixin,
+                             UpdateView):
     success_message = _("Établissement mis à jour")
-    form_class = OrganizationForm
 
 
-class OrganizationCreateView(OrganizationMixin,SuccessMessageMixin,CreateView):
-    model = Organization
+class OrganizationCreateView(OrganizationMixin,
+                             SuccessMessageMixin,
+                             CreateView):
     success_message = _("Établissement créé")
-    form_class = OrganizationForm
 
 
-class OrganizationDeleteView(OrganizationMixin,DeleteView):
-    model = Organization
+class OrganizationDeleteView(OrganizationMixin, DeleteView):
     success_url = reverse_lazy('organization-list')
