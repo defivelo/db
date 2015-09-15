@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load dv_filters %}
+{% block head_title %}{% blocktrans with year=year.year %}Saisons {{ year }}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+    <h1>{% blocktrans with year=year.year %}Saisons {{ year }}{% endblocktrans %}</h1>
+    
+    <nav>
+        <ul class="pager">
+            <li class="previous btn-xs">
+                <a href="{% url 'season-list' year=previous_year.year %}">
+                    <span aria-hidden="true">&larr;</span> {{ previous_year.year }}
+                </a>
+            </li>
+            {% if year.year != now.year %}
+                <li class="btn-xs"><a href="{% url 'season-list' year=now.year %}">{% trans "Année courante" %}</a>
+                </li>
+            {% endif %}
+            <li class="next btn-xs">
+                <a href="{% url 'season-list' year=next_year.year %}">
+                    {{ next_year.year }} <span aria-hidden="true">&rarr;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    
+    <div class="list-group">
+    {% for season in seasons %}
+        <a class="list-group-item" href="{% url 'season-detail' pk=season.pk %}">
+            <span class="badge">{{ season.leader.get_full_name }}</span>
+            {{ season.desc }}
+        </a>
+    {% endfor %}
+    </div>
+
+    <div>
+        <a class="btn btn-primary pull-right" href="{% url 'season-create' %}">{% trans "Créer une nouvelle saison" %}</a>
+    </div>
+{% endblock %}

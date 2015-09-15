@@ -13,3 +13,4 @@ django-allauth==0.23.0
 -e git+https://github.com/nkunihiko/django-bootstrap3-datetimepicker.git@2fa9ea5f56c16ec10aa3288a989a17a4332bcb97#egg=django_bootstrap3_datetimepicker==2.3+master0
 django-autocomplete-light==2.2.5
 -e git+https://github.com/defivelo/django-parler@9d7848f48d30ca5ab28a97ed1cf7aa7354279fb4#egg=django_parler==1.5+defivelo0
+django-multiselectfield==0.1.3

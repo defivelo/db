@@ -9,7 +9,23 @@ from django.utils.translation import ugettext_lazy as _
 from bootstrap3_datetime.widgets import DateTimePicker
 from localflavor.ch.forms import CHPhoneNumberField
 
-from .models import MAX_MONO1_PER_QUALI, Qualification, Session
+from .models import MAX_MONO1_PER_QUALI, Qualification, Season, Session
+
+
+class SeasonForm(autocomplete_light.ModelForm):
+    begin = forms.DateField(
+        label=_('Début'),
+        widget=DateTimePicker(options={"format": "YYYY-MM-DD",
+                                       "pickTime": False}))
+    end = forms.DateField(
+        label=_('Fin'),
+        widget=DateTimePicker(options={"format": "YYYY-MM-DD",
+                                       "pickTime": False}))
+
+    class Meta:
+        model = Season
+        fields = ['begin', 'end', 'cantons', 'leader']
+        autocomplete_names = {'leader': 'AllPersons'}
 
 
 class SessionForm(autocomplete_light.ModelForm):

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load dv_filters %}
+{% block head_title %}{% trans "Saison" %} {{ season.pk }}{% endblock %}
+
+{% block content %}
+    <h1>{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }}</h1>
+    <h2>{{ season.cantons|join:", " }}</h2>
+
+    <div class="hidden-print">
+        <a class="btn btn-primary pull-right" href="{% url 'season-update' pk=season.pk %}">{% trans "Éditer" %}</a>
+    </div>
+     
+    <div class="hidden-print">
+        <a class="btn btn-danger pull-right" href="{% url 'season-delete' pk=season.pk %}">{% trans "Supprimer" %}</a>
+        <a class="btn btn-default" href="{% url 'season-list' year=season.begin.year %}">{% trans "Retour à la liste des saisons" %}</a>
+    </div>
+{% endblock %}

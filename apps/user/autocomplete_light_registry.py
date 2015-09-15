@@ -10,6 +10,9 @@ class PersonAutocomplete(AutocompleteModelBase):
     search_fields = ['first_name', 'last_name']
     model = settings.AUTH_USER_MODEL
 
+    def choice_label(self, choice):
+        return choice.get_full_name()
+
     def choice_html(self, choice):
         """
         Override autocomplete_light to drop the 'escape' call over choice_label
@@ -17,6 +20,12 @@ class PersonAutocomplete(AutocompleteModelBase):
         return self.choice_html_format % (
             escape(self.choice_value(choice)),
             self.choice_label(choice))
+
+al_register(PersonAutocomplete, name='AllPersons',
+            choices=get_user_model().objects.all(),
+            widget_attrs={
+                'data-widget-maximum-values': 1,
+            })
 
 
 class HelpersAutocomplete(PersonAutocomplete):

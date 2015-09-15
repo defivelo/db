@@ -15,7 +15,7 @@
                 </a>
             </li>
             {% if week|weeknumber != now|weeknumber %}
-                <li class="btn-xs"><a href="{% url 'session-list' year=next_week.year week=now|weeknumber %}">{% trans "Semaine courante" %}</a>
+                <li class="btn-xs"><a href="{% url 'session-list' year=now.year week=now|weeknumber %}">{% trans "Semaine courante" %}</a>
                 </li>
             {% endif %}
             <li class="next btn-xs">

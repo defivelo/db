@@ -55,6 +55,7 @@ UPSTREAM_APPS = (
     'stronghold',
     'localflavor',
     'parler',
+    'multiselectfield',
 )
 
 # Project apps tested by jenkins (everything in apps/)

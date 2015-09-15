@@ -5,13 +5,52 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic.dates import WeekArchiveView
+from django.views.generic.dates import WeekArchiveView, YearArchiveView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
-from .forms import QualificationForm, SessionForm
-from .models import Qualification, Session
+from .forms import QualificationForm, SeasonForm, SessionForm
+from .models import Qualification, Season, Session
+
+
+class SeasonMixin(object):
+    model = Season
+    context_object_name = 'season'
+    form_class = SeasonForm
+
+    def get_context_data(self, **kwargs):
+        context = super(SeasonMixin, self).get_context_data(**kwargs)
+        # Add our menu_category context
+        context['now'] = timezone.now()
+        context['menu_category'] = 'season'
+        return context
+
+
+class SeasonListView(SeasonMixin, YearArchiveView):
+    date_field = 'begin'
+    allow_empty = True
+    allow_future = True
+    context_object_name = 'seasons'
+    make_object_list = True
+    pass
+
+
+class SeasonDetailView(SeasonMixin, DetailView):
+    pass
+
+
+class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
+    success_message = _("Saison mise à jour")
+
+
+class SeasonCreateView(SeasonMixin, SuccessMessageMixin, CreateView):
+    success_message = _("Saison créée")
+
+
+class SeasonDeleteView(SeasonMixin, SuccessMessageMixin, DeleteView):
+    success_message = _("Saison supprimée")
+    success_url = reverse_lazy('season-list')
 
 
 class SessionMixin(object):
