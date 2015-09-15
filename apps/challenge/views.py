@@ -10,11 +10,13 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
+from defivelo.views import MenuView
+
 from .forms import QualificationForm, SeasonForm, SessionForm
 from .models import Qualification, Season, Session
 
 
-class SeasonMixin(object):
+class SeasonMixin(MenuView):
     model = Season
     context_object_name = 'season'
     form_class = SeasonForm
@@ -22,7 +24,6 @@ class SeasonMixin(object):
     def get_context_data(self, **kwargs):
         context = super(SeasonMixin, self).get_context_data(**kwargs)
         # Add our menu_category context
-        context['now'] = timezone.now()
         context['menu_category'] = 'season'
         return context
 
@@ -53,16 +54,33 @@ class SeasonDeleteView(SeasonMixin, SuccessMessageMixin, DeleteView):
     success_url = reverse_lazy('season-list')
 
 
-class SessionMixin(object):
+class SessionMixin(MenuView):
     model = Session
     context_object_name = 'session'
     form_class = SessionForm
 
+    def get_queryset(self):
+        try:
+            self.season = Season.objects.get(pk=int(self.kwargs['seasonpk']))
+            return self.model.objects.filter(
+                organization__address_canton__in=self.season.cantons
+                )
+        except:
+            return self.model.objects
+
+    def get_success_url(self):
+        return reverse_lazy('session-detail',
+                            kwargs={
+                                'seasonpk': self.season.pk,
+                                'pk': self.object.pk
+                                })
+
     def get_context_data(self, **kwargs):
         context = super(SessionMixin, self).get_context_data(**kwargs)
         # Add our menu_category context
-        context['menu_category'] = 'session'
-        context['now'] = timezone.now()
+        context['menu_category'] = 'season'
+        if hasattr(self, 'season'):
+            context['season'] = self.season
         return context
 
 
@@ -112,20 +130,32 @@ class QualiMixin(SessionMixin):
     context_object_name = 'qualification'
     form_class = QualificationForm
 
-    def get_session_id(self):
+    def get_session_pk(self):
         resolvermatch = self.request.resolver_match
-        if 'session' in resolvermatch.kwargs:
-            return int(resolvermatch.kwargs['session'])
+        if 'sessionpk' in resolvermatch.kwargs:
+            return int(resolvermatch.kwargs['sessionpk'])
+
+    def get_season_pk(self):
+        resolvermatch = self.request.resolver_match
+        if 'seasonpk' in resolvermatch.kwargs:
+            return int(resolvermatch.kwargs['seasonpk'])
 
     def get_success_url(self):
-        return reverse_lazy('session-detail', kwargs={'pk': self.get_session_id()})
+        return reverse_lazy('session-detail', kwargs={
+            'seasonpk': self.get_season_pk(),
+            'pk': self.get_session_pk()
+            })
 
     def get_context_data(self, **kwargs):
         context = super(QualiMixin, self).get_context_data(**kwargs)
         # Add our menu_category context
         context['menu_category'] += ' qualification'
         try:
-            context['session'] = Session.objects.get(pk=self.get_session_id())
+            context['session'] = Session.objects.get(pk=self.get_session_pk())
+        except:
+            pass
+        try:
+            context['season'] = Season.objects.get(pk=self.get_season_pk())
         except:
             pass
         return context
@@ -135,7 +165,7 @@ class QualiCreateView(QualiMixin, SuccessMessageMixin, CreateView):
     success_message = _("Qualification créée")
 
     def get_initial(self):
-        return {'session': self.get_session_id()}
+        return {'session': self.get_session_pk()}
 
 
 class QualiUpdateView(QualiMixin, SuccessMessageMixin, UpdateView):

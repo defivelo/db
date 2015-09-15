@@ -20,7 +20,7 @@ urlpatterns = patterns(
 urlpatterns += i18n_patterns(
     '',
     url(r'^$', HomeView.as_view(), name='home'),
-    url(r'^challenge/', include('apps.challenge.urls')),
+    url(r'^season/', include('apps.challenge.urls')),
     url(r'^orga/', include('apps.orga.urls')),
     url(r'^user/', include('apps.user.urls')),
     url(r'^autocomplete/', include('autocomplete_light.urls')),

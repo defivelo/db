@@ -2,24 +2,29 @@
 {% load i18n %}
 {% load bootstrap3 %}
 {% load dv_filters %}
-{% block head_title %}{% trans "Prochaines sessions" %}{% endblock %}
+{% block head_title %}{{ season.desc }} - {% trans "Prochaines sessions" %}{% endblock %}
 
 {% block content %}
-    <h1>{% blocktrans with monday=week %}Sessions de la semaine du {{ monday }}{% endblocktrans %}</h1>
+    <h1>{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }}</h1>
+    <h3>{{ season.cantons_verb|join:", " }}</h3>
+
+    <h4>{% blocktrans with monday=week %}Semaine du {{ monday }}{% endblocktrans %}</h4>
     
     <nav>
         <ul class="pager">
             <li class="previous btn-xs">
-                <a href="{% url 'session-list' year=previous_week.year week=previous_week|weeknumber %}">
+                <a href="{% url 'session-list' seasonpk=season.pk year=previous_week.year week=previous_week|weeknumber %}">
                     <span aria-hidden="true">&larr;</span> {{ previous_week }}
                 </a>
             </li>
             {% if week|weeknumber != now|weeknumber %}
-                <li class="btn-xs"><a href="{% url 'session-list' year=now.year week=now|weeknumber %}">{% trans "Semaine courante" %}</a>
+                <li class="btn-xs"><a href="{% url 'session-list' seasonpk=season.pk year=now.year week=now|weeknumber %}">{% trans "Semaine courante" %}</a>
                 </li>
             {% endif %}
+            <li class="btn-xs"><a href="{% url 'season-detail' season.pk %}">{% trans "Toutes les sessions" %}</a>
+            </li>
             <li class="next btn-xs">
-                <a href="{% url 'session-list' year=next_week.year week=next_week|weeknumber %}">
+                <a href="{% url 'session-list' seasonpk=season.pk year=next_week.year week=next_week|weeknumber %}">
                     {{ next_week }} <span aria-hidden="true">&rarr;</span>
                 </a>
             </li>
@@ -28,19 +33,9 @@
     
     <div class="list-group">
     {% for session in sessions %}
-        <a class="list-group-item list-group-item-{% if session.errors %}warning{% endif %}" href="{% url 'session-detail' pk=session.pk %}">
-            {{ session }}
-            {% if session.errors %}
-                <span class="btn-xs btn-warning disabled" style="float: right;">
-                    <span class="glyphicon glyphicon-warning-sign"></span>
-                    {% trans "Incomplet" %}
-                </span>
-            {% endif %}
-        </a>
+        {% include "challenge/session_item_in_list.html" with session=session season=season only %}
     {% endfor %}
     </div>
 
-    <div>
-        <a class="btn btn-primary pull-right" href="{% url 'session-create' %}">{% trans "Créer une nouvelle session" %}</a>
-    </div>
+    {% include "challenge/session_list_links.html" %}
 {% endblock %}

@@ -6,14 +6,20 @@
 
 {% block content %}
     <h1>{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }}</h1>
-    <h2>{{ season.cantons|join:", " }}</h2>
+    <h3>{{ season.cantons_verb|join:", " }}</h3>
 
-    <div class="hidden-print">
-        <a class="btn btn-primary pull-right" href="{% url 'season-update' pk=season.pk %}">{% trans "Éditer" %}</a>
+    <h4>{% trans "Toutes les sessions" %}</h4>
+    <nav>
+        <ul class="pager">
+            <li><a href="{% url 'session-list' seasonpk=season.pk year=now.year week=now|weeknumber %}">{% trans "Par semaine" %}</a></li>
+        </ul>
+    </nav>
+    
+    <div class="list-group">
+    {% for session in season.sessions %}
+        {% include "challenge/session_item_in_list.html" with session=session season=season only %}
+    {% endfor %}
     </div>
      
-    <div class="hidden-print">
-        <a class="btn btn-danger pull-right" href="{% url 'season-delete' pk=season.pk %}">{% trans "Supprimer" %}</a>
-        <a class="btn btn-default" href="{% url 'season-list' year=season.begin.year %}">{% trans "Retour à la liste des saisons" %}</a>
-    </div>
+    {% include "challenge/session_list_links.html" %}
 {% endblock %}

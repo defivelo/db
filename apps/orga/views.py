@@ -9,11 +9,13 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
+from defivelo.views import MenuView
+
 from .forms import OrganizationForm
 from .models import Organization
 
 
-class OrganizationMixin(object):
+class OrganizationMixin(MenuView):
     model = Organization
     context_object_name = 'organization'
     form_class = OrganizationForm

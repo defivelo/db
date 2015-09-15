@@ -12,7 +12,7 @@
 
         {% buttons %}
             <button type="submit" class="btn btn-danger pull-right">{% trans "Supprimer vraiment" %}</button>
-            <a class="btn btn-default" href="{% url 'session-detail' pk=session.pk %}">{% trans "Retour à la liste des qualifications" %}</a>
+            <a class="btn btn-default" href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">{% trans "Retour à la liste des qualifications" %}</a>
         {% endbuttons %}
     </form>
 {% endblock %}

@@ -37,6 +37,19 @@ class Season(models.Model):
         verbose_name_plural = _('Saisons')
         ordering = ['begin', 'end', ]
 
+    @property
+    def cantons_verb(self):
+        if self.cantons:
+            return [c[1] for c in STATE_CHOICES if c[0] in self.cantons]
+
+    @property
+    def sessions(self):
+        return Session.objects.filter(
+            organization__address_canton__in=self.cantons,
+            day__gte=self.begin,
+            day__lt=self.end
+            )
+
     def get_absolute_url(self):
         return reverse('season-detail', args=[self.pk])
 
@@ -89,9 +102,6 @@ class Session(Address, models.Model):
         verbose_name_plural = _('Sessions')
         unique_together = (('organization', 'begin', 'day'),)
         ordering = ['day', 'begin', 'organization__name']
-
-    def get_absolute_url(self):
-        return reverse('session-detail', args=[self.pk])
 
     @property
     def errors(self):

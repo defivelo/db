@@ -10,11 +10,13 @@ from django.views.generic import DetailView
 from django.views.generic.edit import UpdateView
 from django.views.generic.list import ListView
 
+from defivelo.views import MenuView
+
 from .forms import UserProfileForm
 from .models import UserProfile
 
 
-class ProfileMixin(object):
+class ProfileMixin(MenuView):
     model = get_user_model()
     context_object_name = 'userprofile'
     form_class = UserProfileForm
