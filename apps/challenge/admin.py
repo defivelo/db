@@ -4,11 +4,15 @@ from django.templatetags.static import static
 
 from parler.admin import TranslatableAdmin
 
-from .models import Qualification, QualificationActivity, Season, Session
+from .models import (
+    HelperSessionAvailability, Qualification, QualificationActivity, Season,
+    Session,
+)
 
 admin.site.register(Season)
 admin.site.register(Session)
 admin.site.register(Qualification)
+admin.site.register(HelperSessionAvailability)
 
 
 class QualificationActivityAdmin(TranslatableAdmin):

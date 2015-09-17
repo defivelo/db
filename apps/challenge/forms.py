@@ -9,7 +9,8 @@ from django.utils.translation import ugettext_lazy as _
 from bootstrap3_datetime.widgets import DateTimePicker
 from localflavor.ch.forms import CHPhoneNumberField
 
-from .models import MAX_MONO1_PER_QUALI, Qualification, Season, Session
+from .models import Qualification, Season, Session
+from .models.qualification import MAX_MONO1_PER_QUALI
 
 
 class SeasonForm(autocomplete_light.ModelForm):
