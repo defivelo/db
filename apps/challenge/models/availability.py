@@ -18,7 +18,7 @@ class HelperSessionAvailability(models.Model):
     )
     created_on = models.DateTimeField(auto_now_add=True)
     session = models.ForeignKey(Session, verbose_name=_('Session'),
-                                related_name='availabilities')
+                                related_name='availability_statuses')
     helper = models.ForeignKey(settings.AUTH_USER_MODEL,
                                verbose_name=_('Moniteur'),
                                related_name='availabilities',
@@ -30,6 +30,7 @@ class HelperSessionAvailability(models.Model):
         verbose_name = _('Disponibilité par session')
         verbose_name_plural = _('Disponibilités par session')
         ordering = ['session', 'helper', 'availability']
+        unique_together = (('session', 'helper', ), )
 
     def __str__(self):
         is_available = _("n'est pas disponible")

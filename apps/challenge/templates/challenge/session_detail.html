@@ -37,6 +37,17 @@
             {{ session.helpers_place }}
         </td>
     </tr>
+    
+    <tr>
+        <th>{% trans "Disponibilités" %}</th>
+        <td>
+            {% blocktrans count counter=session.helper_availabilities.1 with formation=1 needs=session.helper_needs.1 %}Moniteur {{ formation }} : 1/{{ needs }}{% plural %}Moniteurs {{ formation }} : {{ counter }}/{{ needs }}{% endblocktrans %}
+            <br />
+            {% blocktrans count counter=session.helper_availabilities.2 with formation=2 needs=session.helper_needs.2 %}Moniteur {{ formation }} : 1/{{ needs }}{% plural %}Moniteurs {{ formation }} : {{ counter }}/{{ needs }}{% endblocktrans %}
+            <br />
+            {% blocktrans count counter=session.actor_availabilities with needs=session.actor_needs %}Intervenant : 1/{{ needs }}{% plural %}Intervenants  : {{ counter }}/{{ needs }}{% endblocktrans %}
+    </tr>
+    
     {% if session.errors %}
         <tr><th>{% trans "Erreurs" %}</th><td>{{ session.errors }}</td></tr>
     {% endif %}
