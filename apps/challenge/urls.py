@@ -9,8 +9,8 @@ from django.views.generic.base import RedirectView
 from .views import (
     QualiCreateView, QualiDeleteView, QualiUpdateView, SeasonCreateView,
     SeasonDeleteView, SeasonDetailView, SeasonListView, SeasonUpdateView,
-    SessionCreateView, SessionDeleteView, SessionDetailView, SessionsListView,
-    SessionUpdateView,
+    SessionAvailabilityView, SessionCreateView, SessionDeleteView,
+    SessionDetailView, SessionsListView, SessionUpdateView,
 )
 
 urlpatterns = [
@@ -39,6 +39,9 @@ urlpatterns = [
     url(r'^snew/$', SessionCreateView.as_view(), name="session-create"),
     url(r'^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/$', SessionDetailView.as_view(),
         name="session-detail"),
+    url(r'^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/availability$',
+        SessionAvailabilityView.as_view(),
+        name="session-availabilities"),
     url(r'^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/update/$', SessionUpdateView.as_view(),
         name="session-update"),
     url(r'^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/delete/$', SessionDeleteView.as_view(),

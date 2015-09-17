@@ -125,6 +125,10 @@ class SessionDeleteView(SessionMixin, SuccessMessageMixin, DeleteView):
     success_url = reverse_lazy('session-list')
 
 
+class SessionAvailabilityView(SessionDetailView):
+    template_name = 'challenge/session_availability.html'
+
+
 class QualiMixin(SessionMixin):
     model = Qualification
     context_object_name = 'qualification'

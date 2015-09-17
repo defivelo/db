@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load dv_filters %}
+{% block head_title %}{% trans "Disponibilités" %} {{ session.pk }}{% endblock %}
+
+{% block content %}
+    <h1>{{ session.organization.name }}{% if session.address_city %}, {{ session.address_city }}{% elif session.organization.address_city %}, {{ session.organization.address_city }}{% endif %}
+    </h1>
+    <h2>{{ session.day|date:"j F" }}{% if session.begin %}, {{ session.begin }}{% endif %}</h2>
+    
+    {% trans "Moniteurs 1" as label %}
+    {% include "challenge/session_availability_list.html" with availabilities=session.helper_availabilities.1 label=label only %}
+    
+    {% trans "Moniteurs 2" as label %}
+    {% include "challenge/session_availability_list.html" with availabilities=session.helper_availabilities.2 label=label only %}
+    
+    {% trans "Intervenants" as label %}
+    {% include "challenge/session_availability_list.html" with availabilities=session.actor_availabilities label=label only %}
+
+    <div class="hidden-print">
+        <a class="btn btn-default" href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">{% trans "Retour à la session" %}</a>
+    </div>
+{% endblock %}

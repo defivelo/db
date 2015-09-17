@@ -97,22 +97,26 @@ class Session(Address, models.Model):
 
     @property
     def availabilities(self):
-        return self.availability_statuses.exclude(availability='n')
-    
+        return (
+            self.availability_statuses
+            .exclude(availability='n')
+            .order_by('-availability')
+        )
+
     @property
     def n_qualifications(self):
         return self.qualifications.count()
 
     def helper_availabilities(self):
         formations = ['M1', 'M2']
-        return [0] + [self.availabilities.filter(helper__profile__formation=f).count() for f in formations]
+        return [0] + [self.availabilities.filter(helper__profile__formation=f) for f in formations]
 
     def helper_needs(self):
         n_sessions = self.n_qualifications
         return [0] + [n_sessions * 2, n_sessions]
 
     def actor_availabilities(self):
-        return self.availabilities.exclude(helper__profile__actor_for__isnull=True).count()
+        return self.availabilities.exclude(helper__profile__actor_for__isnull=True)
 
     def actor_needs(self):
         return self.n_qualifications

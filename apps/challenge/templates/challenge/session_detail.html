@@ -39,13 +39,13 @@
     </tr>
     
     <tr>
-        <th>{% trans "Disponibilités" %}</th>
+        <th><a href="{% url 'session-availabilities' seasonpk=season.pk pk=session.pk %}">{% trans "Disponibilités" %}</a></th>
         <td>
-            {% blocktrans count counter=session.helper_availabilities.1 with formation=1 needs=session.helper_needs.1 %}Moniteur {{ formation }} : 1/{{ needs }}{% plural %}Moniteurs {{ formation }} : {{ counter }}/{{ needs }}{% endblocktrans %}
+            {% blocktrans count counter=session.helper_availabilities.1.count with formation=1 needs=session.helper_needs.1 %}Moniteur {{ formation }} : 1/{{ needs }}{% plural %}Moniteurs {{ formation }} : {{ counter }}/{{ needs }}{% endblocktrans %}
             <br />
-            {% blocktrans count counter=session.helper_availabilities.2 with formation=2 needs=session.helper_needs.2 %}Moniteur {{ formation }} : 1/{{ needs }}{% plural %}Moniteurs {{ formation }} : {{ counter }}/{{ needs }}{% endblocktrans %}
+            {% blocktrans count counter=session.helper_availabilities.2.count with formation=2 needs=session.helper_needs.2 %}Moniteur {{ formation }} : 1/{{ needs }}{% plural %}Moniteurs {{ formation }} : {{ counter }}/{{ needs }}{% endblocktrans %}
             <br />
-            {% blocktrans count counter=session.actor_availabilities with needs=session.actor_needs %}Intervenant : 1/{{ needs }}{% plural %}Intervenants  : {{ counter }}/{{ needs }}{% endblocktrans %}
+            {% blocktrans count counter=session.actor_availabilities.count with needs=session.actor_needs %}Intervenant : 1/{{ needs }}{% plural %}Intervenants  : {{ counter }}/{{ needs }}{% endblocktrans %}
     </tr>
     
     {% if session.errors %}
