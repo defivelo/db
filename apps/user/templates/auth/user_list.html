@@ -3,6 +3,27 @@
 {% load account %}
 {% block head_title %}{% trans "Users" %}{% endblock %}
 {% block content %}
+    {% if page_obj %}
+    <nav>
+        <ul class="pager">
+        {% if page_obj.has_previous %}
+            <li class="previous btn-xs">
+                <a href="{% url 'user-list' %}?page={{ page_obj.previous_page_number }}">
+                    <span aria-hidden="true">&larr;</span> {% blocktrans with page_obj.previous_page_number as number %}Page {{number}}{% endblocktrans %}
+                </a>
+            </li>
+        {% endif %}
+        {% if page_obj.has_next %}
+            <li class="next btn-xs">
+                <a href="{% url 'user-list' %}?page={{ page_obj.next_page_number }}">
+                    {% blocktrans with page_obj.next_page_number as number %}Page {{number}}{% endblocktrans %} <span aria-hidden="true">&rarr;</span>
+                </a>
+            </li>
+        {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    
     <table class="table">
     <thead>
         <tr>

@@ -99,6 +99,8 @@ class UserCreate(ProfileMixin, SuccessMessageMixin, UpdateView):
 
 class UserList(ProfileMixin, ListView):
     context_object_name = 'users'
+    paginate_by = 25
+    paginate_orphans = 3
 
     def get_queryset(self):
         return self.model.objects.all().order_by('first_name', 'last_name')
