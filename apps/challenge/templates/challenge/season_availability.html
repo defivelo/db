@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load dv_filters %}
+{% block head_title %}{% trans "Saison" %} {{ season.pk }}{% endblock %}
+
+{% block content %}
+    <h1>{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }}</h1>
+    <h3>{{ season.cantons_verb|join:", " }}</h3>
+
+    <h4>{% trans "Disponibilités" %}</h4>
+
+    <form method="POST" action="" class="form-horizontal">
+        {% csrf_token %}
+        <table class="table text-center">
+        <thead>
+            <tr>
+                <th rowspan="3">{% trans "Personnes" %}</th>
+                {% for session in season.sessions %}
+                    <th class="text-center">{{ session.day|date:"j F" }}</th>
+                {% endfor %}</tr>
+            <tr>{% for session in season.sessions %}
+                    <th class="text-center">{{ session.organization.name }}<br />
+                        {{ session.address_city }}
+                    </th>
+                {% endfor %}</tr>
+            <tr>{% for session in season.sessions %}
+                    <th class="text-center">{{ session.begin|date:"H\hi" }} - {{ session.end|date:"H\hi" }}</th>
+                {% endfor %}</tr>
+        </thead>
+        <tbody>
+            {% for helper_category,helpers in potential_helpers %}
+                <tr><th colspan="{{ season.sessions.count|add:"2" }}">{{ helper_category }}</th></tr>
+                {% for helper in helpers %}
+                <tr>
+                    <td class="text-left">{{ helper.get_full_name }}</td>
+                    {{ form|useravailsessions:helper }}
+                   </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+        </table>
+        {% buttons %}
+            <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
+            {% if session %}
+                <a class="btn btn-default" href="{% url 'season-detail' pk=season.pk %}">{% trans "Annuler" %}</a>
+            {% else %}
+                <a class="btn btn-default" href="{% url 'season-list' %}">{% trans "Annuler" %}</a>
+            {% endif %}
+        {% endbuttons %}
+     </form>
+
+{% endblock %}

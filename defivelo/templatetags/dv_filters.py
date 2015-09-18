@@ -35,6 +35,20 @@ def profile_tag(user):
 
 
 @register.filter
+def useravailsessions(form, user):
+    if not form or not user:
+        return ''
+    output = ''
+    for key in form.fields:
+        if 'avail-h{hpk}'.format(hpk=user.pk) in key:
+            output += '<td>{field}</td>'.format(
+                field=form.fields[key].widget.render(
+                    key, form.fields[key].initial, attrs={'id': key})
+                )
+    return mark_safe(output)
+
+
+@register.filter
 def weeknumber(date):
     if not date:
         return ''

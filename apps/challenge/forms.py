@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import autocomplete_light
 from django import forms
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
@@ -10,6 +11,7 @@ from bootstrap3_datetime.widgets import DateTimePicker
 from localflavor.ch.forms import CHPhoneNumberField
 
 from .models import Qualification, Season, Session
+from .models.availability import HelperSessionAvailability
 from .models.qualification import MAX_MONO1_PER_QUALI
 
 
@@ -113,3 +115,61 @@ class QualificationForm(autocomplete_light.ModelForm):
         autocomplete_names = {'leader': 'Leaders',
                               'helpers': 'Helpers',
                               'actor': 'Actors'}
+
+
+class BSRadioRenderer(forms.widgets.RadioFieldRenderer):
+    def render(self):
+        id_ = self.attrs.get('id', None)
+        options = ''
+        for option in self.choices:
+            level = 'danger'
+            if option[0] == 'y':
+                level = 'success'
+            elif option[0] == 'i':
+                level = 'warning'
+            checked = 'checked' if self.value == option[0] else ''
+            active = 'active' if self.value == option[0] else ''
+            options += (
+                '<label class="btn btn-{level} {active}">'
+                '<input type="radio" '
+                'name="{key}" id="{key}-{value}" value="{value}" {checked}>'
+                '{label}</label>\n').format(
+                    level=level,
+                    key=id_,
+                    value=option[0],
+                    label=option[1],
+                    checked=checked,
+                    active=active)
+        return (
+            '<div class="btn-group-vertical" data-toggle="buttons">'
+            '{options}</div>').format(options=options)
+
+
+class SeasonAvailabilityForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        self.season = kwargs.pop('instance')
+        super(SeasonAvailabilityForm, self).__init__(*args, **kwargs)
+
+        all_helpers = get_user_model().objects.all()
+        self.potential_helpers = (
+            (_('Moniteurs 2'), all_helpers.filter(profile__formation='M2')),
+            (_('Moniteurs 1'), all_helpers.filter(profile__formation='M1')),
+            (_('Intervenants'), all_helpers.exclude(profile__actor_for__isnull=True)),
+        )
+        
+        for helper_category, helpers in self.potential_helpers:
+            for helper in helpers:
+                for session in self.season.sessions:
+                    fieldkey = 'avail-h{hpk}-s{spk}'.format(hpk=helper.pk,
+                                                            spk=session.pk)
+                    fieldinit = None
+                    if fieldkey in self.initial:
+                        fieldinit = self.initial[fieldkey]
+                    self.fields[fieldkey] = forms.ChoiceField(
+                        choices=HelperSessionAvailability.AVAILABILITY_CHOICES,
+                        widget=forms.RadioSelect(renderer=BSRadioRenderer),
+                        required=False, initial=fieldinit
+                    )
+
+    def save(self):
+        pass

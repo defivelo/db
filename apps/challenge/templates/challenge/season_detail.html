@@ -15,11 +15,11 @@
         </ul>
     </nav>
     
-    <div class="list-group">
+    <table class="table">
     {% for session in season.sessions %}
         {% include "challenge/session_item_in_list.html" with session=session season=season only %}
     {% endfor %}
-    </div>
+    </table>
      
     {% include "challenge/session_list_links.html" %}
 {% endblock %}

@@ -1,19 +1,29 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
+from django.http import HttpResponseRedirect
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.dates import WeekArchiveView, YearArchiveView
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic.detail import (
+    DetailView, SingleObjectMixin, SingleObjectTemplateResponseMixin,
+)
+from django.views.generic.edit import (
+    CreateView, DeleteView, FormView, UpdateView,
+)
 from django.views.generic.list import ListView
 
 from defivelo.views import MenuView
 
-from .forms import QualificationForm, SeasonForm, SessionForm
-from .models import Qualification, Season, Session
+from .forms import (
+    QualificationForm, SeasonAvailabilityForm, SeasonForm, SessionForm,
+)
+from .models import HelperSessionAvailability, Qualification, Season, Session
+
+AVAILABILITY_FIELDKEY = 'avail-h{hpk}-s{spk}'
 
 
 class SeasonMixin(MenuView):
@@ -45,6 +55,61 @@ class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
     success_message = _("Saison mise à jour")
 
 
+class SeasonAvailabilityView(SeasonUpdateView):
+    template_name = 'challenge/season_availability.html'
+    success_message = _("Disponibilités mises à jour")
+    form_class = SeasonAvailabilityForm
+
+    def potential_helpers(self):
+        all_helpers = get_user_model().objects
+        return (
+            (_('Moniteurs 2'), all_helpers.filter(profile__formation='M2')),
+            (_('Moniteurs 1'), all_helpers.filter(profile__formation='M1')),
+            (_('Intervenants'), all_helpers.exclude(profile__actor_for__isnull=True)),
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super(SeasonAvailabilityView, self).get_context_data(**kwargs)
+        context['potential_helpers'] = self.potential_helpers()
+        return context
+
+    def get_initial(self):
+        initials = {}
+        all_hsas = HelperSessionAvailability.objects.filter(
+            session__in=self.object.sessions)
+        if all_hsas:
+            for session in self.object.sessions:
+                for helper_category, helpers in self.potential_helpers():
+                    for helper in helpers:
+                        fieldkey = AVAILABILITY_FIELDKEY.format(hpk=helper.pk,
+                                                                spk=session.pk)
+                        availability = [a.availability for a in all_hsas if a.helper == helper][0]
+                        if availability:
+                            initials[fieldkey] = availability
+            return initials
+
+    def form_valid(self, form):
+        # Create or update the Availability objects
+        for session in self.object.sessions:
+            for helper_category, helpers in self.potential_helpers():
+                for helper in helpers:
+                    fieldkey = AVAILABILITY_FIELDKEY.format(hpk=helper.pk,
+                                                            spk=session.pk)
+                    if fieldkey in form.cleaned_data:
+                        availability = form.cleaned_data[fieldkey]
+                        (hsa, created) = (
+                            HelperSessionAvailability.objects.get_or_create(
+                                session=session,
+                                helper=helper,
+                                defaults={'availability': availability})
+                            )
+                        if not created:
+                            hsa.availability = availability
+                            hsa.save()
+        return HttpResponseRedirect(reverse_lazy('season-detail',
+                                                 kwargs={'pk': self.object.pk}))
+
+
 class SeasonCreateView(SeasonMixin, SuccessMessageMixin, CreateView):
     success_message = _("Saison créée")
 
@@ -59,11 +124,15 @@ class SessionMixin(MenuView):
     context_object_name = 'session'
     form_class = SessionForm
 
+    def get_season(self):
+        if not hasattr(self, 'season'):
+            self.season = Season.objects.get(pk=int(self.kwargs['seasonpk']))
+        return self.season
+
     def get_queryset(self):
         try:
-            self.season = Season.objects.get(pk=int(self.kwargs['seasonpk']))
             return self.model.objects.filter(
-                organization__address_canton__in=self.season.cantons
+                organization__address_canton__in=self.get_season().cantons
                 )
         except:
             return self.model.objects
@@ -71,7 +140,7 @@ class SessionMixin(MenuView):
     def get_success_url(self):
         return reverse_lazy('session-detail',
                             kwargs={
-                                'seasonpk': self.season.pk,
+                                'seasonpk': self.get_season().pk,
                                 'pk': self.object.pk
                                 })
 
@@ -79,8 +148,7 @@ class SessionMixin(MenuView):
         context = super(SessionMixin, self).get_context_data(**kwargs)
         # Add our menu_category context
         context['menu_category'] = 'season'
-        if hasattr(self, 'season'):
-            context['season'] = self.season
+        context['season'] = self.get_season()
         return context
 
 

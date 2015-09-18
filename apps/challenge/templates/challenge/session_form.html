@@ -31,7 +31,7 @@
             {% if session %}
                 <a class="btn btn-default" href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">{% trans "Annuler" %}</a>
             {% else %}
-                <a class="btn btn-default" href="{% url 'session-list' %}">{% trans "Annuler" %}</a>
+                <a class="btn btn-default" href="{% url 'season-detail' season.pk %}">{% trans "Annuler" %}</a>
             {% endif %}
         {% endbuttons %}
     </form>

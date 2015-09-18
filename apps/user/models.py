@@ -47,12 +47,11 @@ class UserProfile(Address, models.Model):
 
     def formation_icon(self):
         icon = ''
+        title = self.formation_full
         if self.formation == 'M1':
             icon = 'tag'
-            title = _('Moniteur 1')
         elif self.formation == 'M2':
             icon = 'tags'
-            title = _('Moniteur 2')
         if icon:
             return mark_safe(
                 '<span class="glyphicon glyphicon-{icon}" aria-hidden="true"'

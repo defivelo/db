@@ -7,10 +7,10 @@ from django.utils import timezone
 from django.views.generic.base import RedirectView
 
 from .views import (
-    QualiCreateView, QualiDeleteView, QualiUpdateView, SeasonCreateView,
-    SeasonDeleteView, SeasonDetailView, SeasonListView, SeasonUpdateView,
-    SessionAvailabilityView, SessionCreateView, SessionDeleteView,
-    SessionDetailView, SessionsListView, SessionUpdateView,
+    QualiCreateView, QualiDeleteView, QualiUpdateView, SeasonAvailabilityView,
+    SeasonCreateView, SeasonDeleteView, SeasonDetailView, SeasonListView,
+    SeasonUpdateView, SessionAvailabilityView, SessionCreateView,
+    SessionDeleteView, SessionDetailView, SessionsListView, SessionUpdateView,
 )
 
 urlpatterns = [
@@ -29,6 +29,9 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/$',
         SeasonDetailView.as_view(),
         name='season-detail'),
+    url(r'^(?P<pk>[0-9]+)/availability/$',
+        SeasonAvailabilityView.as_view(),
+        name='season-availabilities'),
     url(r'^(?P<pk>[0-9]+)/delete/$', SeasonDeleteView.as_view(),
         name="season-delete"),
 
@@ -36,10 +39,10 @@ urlpatterns = [
     url(r'^(?P<seasonpk>[0-9]+)/(?P<year>[0-9]{4})/w(?P<week>[0-9]+)/$',
         SessionsListView.as_view(),
         name="session-list"),
-    url(r'^snew/$', SessionCreateView.as_view(), name="session-create"),
+    url(r'^(?P<seasonpk>[0-9]+)/snew/$', SessionCreateView.as_view(), name="session-create"),
     url(r'^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/$', SessionDetailView.as_view(),
         name="session-detail"),
-    url(r'^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/availability$',
+    url(r'^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/availability/$',
         SessionAvailabilityView.as_view(),
         name="session-availabilities"),
     url(r'^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/update/$', SessionUpdateView.as_view(),

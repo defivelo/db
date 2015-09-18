@@ -1,10 +1,15 @@
 {% load i18n %}
-<a class="list-group-item list-group-item-{% if session.errors %}warning{% endif %}" href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">
-    {{ session }}
-    {% if session.errors %}
-        <span class="btn-xs btn-warning disabled" style="float: right;">
+<tr class="{% if session.errors %}warning{% endif %}" >
+    <th><a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">
+        {{ session }}
+    </a></th>
+    <td>
+        {% if session.errors %}
             <span class="glyphicon glyphicon-warning-sign"></span>
             {% trans "Incomplet" %}
-        </span>
-    {% endif %}
-</a>
+        {% endif %}
+    </td>
+    <td>
+        <a href="{% url 'session-availabilities'  seasonpk=season.pk pk=session.pk %}">{% trans "Disponibilités" %}</a>
+    </td>
+</tr>
