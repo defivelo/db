@@ -32,7 +32,7 @@
     </nav>
     
     <table class="table">
-    {% for session in season.sessions %}
+    {% for session in sessions %}
         {% include "challenge/session_item_in_list.html" with session=session season=season only %}
     {% endfor %}
     </table>

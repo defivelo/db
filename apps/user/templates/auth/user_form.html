@@ -22,7 +22,7 @@
         {% bootstrap_field form.actor_for layout='horizontal' size='small' %}
 
         {% buttons %}
-            <button type="submit" class="btn btn-primary pull-right">{% trans 'Update' %}</button>
+            <button type="submit" class="btn btn-primary pull-right">{% if userprofile %}{% trans 'Update' %}{% else %}{% trans 'Créer' %}{% endif %}</button>
             {% if userprofile == request.user %}
                 <a class="btn btn-default pull-right" href="{% url 'account_email' %}">{% blocktrans with email=request.user.email %}Changer d'email ({{ email }}){% endblocktrans %}</a>
             {% else %}
