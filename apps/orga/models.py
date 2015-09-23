@@ -22,7 +22,9 @@ class Organization(Address, models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return self.name
+        return "{name}{city}".format(
+            name=self.name,
+            city=' (%s)' % self.address_city if self.address_city else '')
 
     def get_absolute_url(self):
         return reverse('organization-detail', args=[self.pk])

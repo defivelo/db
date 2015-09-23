@@ -14,7 +14,7 @@
     </div>
     <table class="table">
     <tr class="hidden-print"><th>{% trans "Établissement" %}</th>
-        <td><a href="{% url 'organization-detail' session.organization.pk %}">{{ session.organization.name }}</a></td>
+        <td><a href="{% url 'organization-detail' session.organization.pk %}">{{ session.organization }}</a></td>
     </tr>
     <tr><th>{% trans "Emplacement de la session" %}</th>
         <td>{{ session.address_street }} {{ session.address_no }}<br />
