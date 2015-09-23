@@ -1,0 +1,28 @@
+<thead>
+    <tr>
+        <td rowspan="4">&nbsp;</td>
+        {% for session in sessions %}
+            <th class="text-center">{{ session.day|date:"j F" }}</th>
+        {% endfor %}</tr>
+    <tr>{% for session in sessions %}
+            <th class="text-center" style="vertical-align: top;">
+                <a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">
+                    {{ session.organization.name }}
+                </a>
+            </th>
+        {% endfor %}</tr>
+    <tr>{% for session in sessions %}
+            <td class="text-center">
+                {% if session.address_city %}{{ session.address_city }}{% elif session.organization.address_city %}{{ session.organization.address_city }}{% endif %}
+            </td>
+        {% endfor %}</tr>
+    <tr>{% for session in sessions %}
+            <th class="text-center">{{ session.begin|date:"H\hi" }} - {{ session.end|date:"H\hi" }}</th>
+        {% endfor %}</tr>
+    {% comment %}
+    <!-- Add the id for debugging -->
+    <tr>{% for session in sessions %}
+            <th class="text-center">{{ session.id }}</th>
+        {% endfor %}</tr>
+    {% endcomment %}
+</thead>

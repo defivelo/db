@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from collections import OrderedDict
+
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
@@ -56,18 +58,63 @@ class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
 
 
 class SeasonAvailabilityMixin(SeasonMixin):
-    def get_context_data(self, **kwargs):
-        context = super(SeasonAvailabilityMixin, self).get_context_data(**kwargs)
-        context['potential_helpers'] = self.potential_helpers()
-        return context
-
-    def potential_helpers(self):
-        all_helpers = get_user_model().objects.order_by('first_name', 'last_name')
+    def potential_helpers(self, queryset=None):
+        if not queryset:
+            queryset = get_user_model().objects
+        all_helpers = queryset.order_by('first_name', 'last_name')
         return (
             (_('Moniteurs 2'), all_helpers.filter(profile__formation='M2')),
             (_('Moniteurs 1'), all_helpers.filter(profile__formation='M1')),
             (_('Intervenants'), all_helpers.exclude(profile__actor_for__isnull=True)),
         )
+
+    def current_availabilities(self):
+        return HelperSessionAvailability.objects.filter(
+            session__in=self.object.sessions).prefetch_related('helper')
+
+    def get_initial(self, all_hsas=None, all_helpers=None):
+        initials = OrderedDict()
+        if not all_hsas:
+            all_hsas = self.current_availabilities()
+        if not all_helpers:
+            all_helpers = self.potential_helpers()
+
+        if all_hsas:
+            for helper_category, helpers in all_helpers:
+                for helper in helpers:
+                    helper_availability = {
+                        a.session_id: a.availability for a in all_hsas
+                        if a.helper == helper
+                    }
+                    for session in self.object.sessions:
+                        fieldkey = AVAILABILITY_FIELDKEY.format(
+                            hpk=helper.pk, spk=session.pk)
+                        if session.id in helper_availability:
+                            initials[fieldkey] = (
+                                helper_availability[session.id]
+                            )
+                        else:
+                            initials[fieldkey] = ''
+            return initials
+
+
+class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
+    template_name = 'challenge/season_availability.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SeasonAvailabilityView, self).get_context_data(**kwargs)
+        hsas = self.current_availabilities()
+
+        # Fill in the helpers with the ones we currently have
+        helpers = {hsa.helper.pk: hsa.helper.pk for hsa in hsas}
+        context['potential_helpers'] = self.potential_helpers(
+            queryset=get_user_model().objects.filter(pk__in=helpers)
+        )
+        context['availabilities'] = self.get_initial(
+            all_hsas=hsas,
+            all_helpers=context['potential_helpers']
+        )
+        return context
 
 
 class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
@@ -75,20 +122,10 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
     success_message = _("Disponibilités mises à jour")
     form_class = SeasonAvailabilityForm
 
-    def get_initial(self):
-        initials = {}
-        all_hsas = HelperSessionAvailability.objects.filter(
-            session__in=self.object.sessions)
-        if all_hsas:
-            for session in self.object.sessions:
-                for helper_category, helpers in self.potential_helpers():
-                    for helper in helpers:
-                        fieldkey = AVAILABILITY_FIELDKEY.format(hpk=helper.pk,
-                                                                spk=session.pk)
-                        availability = [a.availability for a in all_hsas if a.helper == helper][0]
-                        if availability:
-                            initials[fieldkey] = availability
-            return initials
+    def get_context_data(self, **kwargs):
+        context = super(SeasonAvailabilityMixin, self).get_context_data(**kwargs)
+        context['potential_helpers'] = self.potential_helpers()
+        return context
 
     def form_valid(self, form):
         # Create or update the Availability objects

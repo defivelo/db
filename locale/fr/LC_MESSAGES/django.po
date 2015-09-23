@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-23 16:58+0200\n"
+"POT-Creation-Date: 2015-09-23 18:49+0200\n"
 "PO-Revision-Date: 2015-08-28 13:58+0200\n"
 "Last-Translator: Didier Raboud <me+defivelo@odyx.org>\n"
 "Language-Team: French <>\n"
@@ -68,34 +68,37 @@ msgstr ""
 
 #: apps/challenge/forms.py:155
 #: apps/challenge/templates/challenge/session_availability.html:15
-#: apps/challenge/views.py:67
+#: apps/challenge/views.py:66
 msgid "Moniteurs 2"
 msgstr ""
 
 #: apps/challenge/forms.py:156 apps/challenge/models/qualification.py:90
 #: apps/challenge/templates/challenge/session_availability.html:12
 #: apps/challenge/templates/challenge/session_detail.html:84
-#: apps/challenge/views.py:68
+#: apps/challenge/views.py:67
 msgid "Moniteurs 1"
 msgstr ""
 
 #: apps/challenge/forms.py:157
 #: apps/challenge/templates/challenge/session_availability.html:18
-#: apps/challenge/views.py:69
+#: apps/challenge/views.py:68
 msgid "Intervenants"
 msgstr ""
 
 #: apps/challenge/models/availability.py:15
 #: apps/challenge/templates/challenge/session_availability_list.html:7
+#: defivelo/templatetags/dv_filters.py:77
 msgid "Oui"
 msgstr ""
 
 #: apps/challenge/models/availability.py:16
 #: apps/challenge/templates/challenge/session_availability_list.html:7
+#: defivelo/templatetags/dv_filters.py:69
 msgid "Si nécessaire"
 msgstr ""
 
 #: apps/challenge/models/availability.py:17
+#: defivelo/templatetags/dv_filters.py:73
 msgid "Non"
 msgstr ""
 
@@ -329,8 +332,7 @@ msgid "Nouvelle qualification"
 msgstr ""
 
 #: apps/challenge/templates/challenge/qualification_form.html:28
-#: apps/challenge/templates/challenge/season_availability.html:47
-#: apps/challenge/templates/challenge/season_availability_update.html:47
+#: apps/challenge/templates/challenge/season_availability_update.html:32
 #: apps/challenge/templates/challenge/season_form.html:21
 #: apps/challenge/templates/challenge/session_form.html:30
 #: apps/orga/templates/orga/organization_form.html:23
@@ -338,10 +340,8 @@ msgid "Enregistrer"
 msgstr ""
 
 #: apps/challenge/templates/challenge/qualification_form.html:29
-#: apps/challenge/templates/challenge/season_availability.html:49
-#: apps/challenge/templates/challenge/season_availability.html:51
-#: apps/challenge/templates/challenge/season_availability_update.html:49
-#: apps/challenge/templates/challenge/season_availability_update.html:51
+#: apps/challenge/templates/challenge/season_availability_update.html:34
+#: apps/challenge/templates/challenge/season_availability_update.html:36
 #: apps/challenge/templates/challenge/season_form.html:23
 #: apps/challenge/templates/challenge/season_form.html:25
 #: apps/challenge/templates/challenge/session_form.html:32
@@ -373,6 +373,14 @@ msgstr ""
 #: apps/challenge/templates/challenge/session_item_in_list.html:13
 #: apps/challenge/templates/challenge/session_list_links.html:4
 msgid "Disponibilités"
+msgstr ""
+
+#: apps/challenge/templates/challenge/season_availability.html:30
+msgid "Retour à la saison"
+msgstr ""
+
+#: apps/challenge/templates/challenge/season_availability.html:31
+msgid "Éditer les disponibilités"
 msgstr ""
 
 #: apps/challenge/templates/challenge/season_confirm_delete.html:4
@@ -541,43 +549,43 @@ msgstr ""
 msgid "Créer une nouvelle session"
 msgstr ""
 
-#: apps/challenge/views.py:55
+#: apps/challenge/views.py:57
 msgid "Saison mise à jour"
 msgstr ""
 
-#: apps/challenge/views.py:75
+#: apps/challenge/views.py:122
 msgid "Disponibilités mises à jour"
 msgstr ""
 
-#: apps/challenge/views.py:117
+#: apps/challenge/views.py:155
 msgid "Saison créée"
 msgstr ""
 
-#: apps/challenge/views.py:121
+#: apps/challenge/views.py:159
 msgid "Saison supprimée"
 msgstr ""
 
-#: apps/challenge/views.py:187
+#: apps/challenge/views.py:225
 msgid "Session mise à jour"
 msgstr ""
 
-#: apps/challenge/views.py:191
+#: apps/challenge/views.py:229
 msgid "Session créée"
 msgstr ""
 
-#: apps/challenge/views.py:195
+#: apps/challenge/views.py:233
 msgid "Session supprimée"
 msgstr ""
 
-#: apps/challenge/views.py:240
+#: apps/challenge/views.py:278
 msgid "Qualification créée"
 msgstr ""
 
-#: apps/challenge/views.py:247
+#: apps/challenge/views.py:285
 msgid "Qualification mise à jour"
 msgstr ""
 
-#: apps/challenge/views.py:251
+#: apps/challenge/views.py:289
 msgid "Qualification supprimée"
 msgstr ""
 

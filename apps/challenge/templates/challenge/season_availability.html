@@ -9,9 +9,6 @@
     <h3>{{ season.cantons_verb|join:", " }}</h3>
 
     <h4>{% trans "Disponibilités" %}</h4>
-
-    <form method="POST" action="" class="form-horizontal">
-        {% csrf_token %}
         <table class="table text-center">
         {% include "challenge/season_availability_thead.html" with sessions=season.sessions season=season only %}
         <tbody>
@@ -21,21 +18,16 @@
                     {% for helper in helpers %}
                     <tr>
                         <td class="text-left">{{ helper.get_full_name }}</td>
-                        {{ form|useravailsessions:helper }}
+                        {{ availabilities|useravailsessions_readonly:helper }}
                     </tr>
                     {% endfor %}
                 {% endif %}
             {% endfor %}
         </tbody>
         </table>
-        {% buttons %}
-            <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
-            {% if session %}
-                <a class="btn btn-default" href="{% url 'season-detail' pk=season.pk %}">{% trans "Annuler" %}</a>
-            {% else %}
-                <a class="btn btn-default" href="{% url 'season-list' %}">{% trans "Annuler" %}</a>
-            {% endif %}
-        {% endbuttons %}
-     </form>
 
+<div class="hidden-print">
+    <a class="btn btn-default" href="{% url 'season-detail' season.pk %}">{% trans "Retour à la saison" %}</a>
+    <a class="btn btn-primary pull-right" href="{% url 'season-availabilities-update' season.pk %}"><span class="glyphicon glyphicon-th"></span>{% trans "Éditer les disponibilités" %}</a>
+</div>
 {% endblock %}
