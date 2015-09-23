@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-17 18:00+0200\n"
+"POT-Creation-Date: 2015-09-23 16:58+0200\n"
 "PO-Revision-Date: 2015-08-28 13:58+0200\n"
 "Last-Translator: Didier Raboud <me+defivelo@odyx.org>\n"
 "Language-Team: French <>\n"
@@ -16,54 +16,73 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps/challenge/forms.py:18 apps/challenge/models/season.py:20
+#: apps/challenge/forms.py:20 apps/challenge/models/season.py:20
 #: apps/challenge/models/session.py:27
 msgid "Début"
 msgstr ""
 
-#: apps/challenge/forms.py:22 apps/challenge/models/season.py:21
+#: apps/challenge/forms.py:24 apps/challenge/models/season.py:21
 msgid "Fin"
 msgstr ""
 
-#: apps/challenge/forms.py:34 apps/challenge/models/session.py:26
+#: apps/challenge/forms.py:36 apps/challenge/models/session.py:26
 #: apps/challenge/templates/challenge/session_detail.html:24
 msgid "Date"
 msgstr ""
 
-#: apps/challenge/forms.py:41 apps/challenge/models/session.py:61
+#: apps/challenge/forms.py:43 apps/challenge/models/session.py:61
 #: apps/challenge/templates/challenge/session_detail.html:26
 msgid "Horaire"
 msgstr ""
 
-#: apps/challenge/forms.py:42 apps/challenge/models/session.py:33
+#: apps/challenge/forms.py:44 apps/challenge/models/session.py:33
 #: apps/challenge/templates/challenge/session_detail.html:16
 #: apps/orga/models.py:20
 msgid "Établissement"
 msgstr ""
 
-#: apps/challenge/forms.py:53 apps/challenge/models/qualification.py:55
+#: apps/challenge/forms.py:55 apps/challenge/models/qualification.py:55
 msgid "Natel enseignant"
 msgstr ""
 
-#: apps/challenge/forms.py:60
+#: apps/challenge/forms.py:62
 #, python-format
 msgid "Pas plus de %s moniteurs 1 !"
 msgstr ""
 
-#: apps/challenge/forms.py:73
+#: apps/challenge/forms.py:75
 msgid "Il y a des moniteurs à double !"
 msgstr ""
 
-#: apps/challenge/forms.py:83
+#: apps/challenge/forms.py:85
 msgid "L'intervenant n'est pas qualifié pour la rencontre prévue !"
 msgstr ""
 
-#: apps/challenge/forms.py:92
+#: apps/challenge/forms.py:94
 msgid "Il y a trop de vélos prévus !"
 msgstr ""
 
-#: apps/challenge/forms.py:97
+#: apps/challenge/forms.py:99
 msgid "Il y a trop de casques prévus !"
+msgstr ""
+
+#: apps/challenge/forms.py:155
+#: apps/challenge/templates/challenge/session_availability.html:15
+#: apps/challenge/views.py:67
+msgid "Moniteurs 2"
+msgstr ""
+
+#: apps/challenge/forms.py:156 apps/challenge/models/qualification.py:90
+#: apps/challenge/templates/challenge/session_availability.html:12
+#: apps/challenge/templates/challenge/session_detail.html:84
+#: apps/challenge/views.py:68
+msgid "Moniteurs 1"
+msgstr ""
+
+#: apps/challenge/forms.py:157
+#: apps/challenge/templates/challenge/session_availability.html:18
+#: apps/challenge/views.py:69
+msgid "Intervenants"
 msgstr ""
 
 #: apps/challenge/models/availability.py:15
@@ -138,7 +157,7 @@ msgstr ""
 
 #: apps/challenge/models/qualification.py:33
 #: apps/challenge/models/qualification.py:50 apps/orga/models.py:17
-#: apps/user/templates/auth/user_list.html:31
+#: apps/user/templates/auth/user_list.html:37
 msgid "Nom"
 msgstr ""
 
@@ -172,14 +191,8 @@ msgstr ""
 
 #: apps/challenge/models/qualification.py:85
 #: apps/challenge/templates/challenge/session_detail.html:82
-#: apps/user/models.py:22 apps/user/models.py:55
+#: apps/user/models.py:22
 msgid "Moniteur 2"
-msgstr ""
-
-#: apps/challenge/models/qualification.py:90
-#: apps/challenge/templates/challenge/session_availability.html:12
-#: apps/challenge/templates/challenge/session_detail.html:84
-msgid "Moniteurs 1"
 msgstr ""
 
 #: apps/challenge/models/qualification.py:96 apps/user/forms.py:44
@@ -216,6 +229,8 @@ msgid "Chargé de projet"
 msgstr ""
 
 #: apps/challenge/models/season.py:28
+#: apps/challenge/templates/challenge/season_availability.html:5
+#: apps/challenge/templates/challenge/season_availability_update.html:5
 #: apps/challenge/templates/challenge/season_detail.html:5
 msgid "Saison"
 msgstr ""
@@ -314,6 +329,8 @@ msgid "Nouvelle qualification"
 msgstr ""
 
 #: apps/challenge/templates/challenge/qualification_form.html:28
+#: apps/challenge/templates/challenge/season_availability.html:47
+#: apps/challenge/templates/challenge/season_availability_update.html:47
 #: apps/challenge/templates/challenge/season_form.html:21
 #: apps/challenge/templates/challenge/session_form.html:30
 #: apps/orga/templates/orga/organization_form.html:23
@@ -321,6 +338,10 @@ msgid "Enregistrer"
 msgstr ""
 
 #: apps/challenge/templates/challenge/qualification_form.html:29
+#: apps/challenge/templates/challenge/season_availability.html:49
+#: apps/challenge/templates/challenge/season_availability.html:51
+#: apps/challenge/templates/challenge/season_availability_update.html:49
+#: apps/challenge/templates/challenge/season_availability_update.html:51
 #: apps/challenge/templates/challenge/season_form.html:23
 #: apps/challenge/templates/challenge/season_form.html:25
 #: apps/challenge/templates/challenge/session_form.html:32
@@ -343,6 +364,15 @@ msgstr ""
 
 #: apps/challenge/templates/challenge/season_archive_year.html:39
 msgid "Créer une nouvelle saison"
+msgstr ""
+
+#: apps/challenge/templates/challenge/season_availability.html:11
+#: apps/challenge/templates/challenge/season_availability_update.html:11
+#: apps/challenge/templates/challenge/session_availability.html:5
+#: apps/challenge/templates/challenge/session_detail.html:42
+#: apps/challenge/templates/challenge/session_item_in_list.html:13
+#: apps/challenge/templates/challenge/session_list_links.html:4
+msgid "Disponibilités"
 msgstr ""
 
 #: apps/challenge/templates/challenge/season_confirm_delete.html:4
@@ -397,19 +427,6 @@ msgstr ""
 msgid "Semaine courante"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_availability.html:5
-#: apps/challenge/templates/challenge/session_detail.html:42
-msgid "Disponibilités"
-msgstr ""
-
-#: apps/challenge/templates/challenge/session_availability.html:15
-msgid "Moniteurs 2"
-msgstr ""
-
-#: apps/challenge/templates/challenge/session_availability.html:18
-msgid "Intervenants"
-msgstr ""
-
 #: apps/challenge/templates/challenge/session_availability.html:22
 msgid "Retour à la session"
 msgstr ""
@@ -440,7 +457,7 @@ msgstr ""
 #: apps/challenge/templates/challenge/session_detail.html:117
 #: apps/orga/templates/orga/organization_detail.html:22
 #: apps/user/templates/auth/user_detail.html:35
-#: apps/user/templates/auth/user_list.html:48
+#: apps/user/templates/auth/user_list.html:54
 msgid "Éditer"
 msgstr ""
 
@@ -516,47 +533,51 @@ msgstr ""
 msgid "Logistique"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_item_in_list.html:7
+#: apps/challenge/templates/challenge/session_item_in_list.html:9
 msgid "Incomplet"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_list_links.html:4
+#: apps/challenge/templates/challenge/session_list_links.html:5
 msgid "Créer une nouvelle session"
 msgstr ""
 
-#: apps/challenge/views.py:45
+#: apps/challenge/views.py:55
 msgid "Saison mise à jour"
 msgstr ""
 
-#: apps/challenge/views.py:49
+#: apps/challenge/views.py:75
+msgid "Disponibilités mises à jour"
+msgstr ""
+
+#: apps/challenge/views.py:117
 msgid "Saison créée"
 msgstr ""
 
-#: apps/challenge/views.py:53
+#: apps/challenge/views.py:121
 msgid "Saison supprimée"
 msgstr ""
 
-#: apps/challenge/views.py:116
+#: apps/challenge/views.py:187
 msgid "Session mise à jour"
 msgstr ""
 
-#: apps/challenge/views.py:120
+#: apps/challenge/views.py:191
 msgid "Session créée"
 msgstr ""
 
-#: apps/challenge/views.py:124
+#: apps/challenge/views.py:195
 msgid "Session supprimée"
 msgstr ""
 
-#: apps/challenge/views.py:169
+#: apps/challenge/views.py:240
 msgid "Qualification créée"
 msgstr ""
 
-#: apps/challenge/views.py:176
+#: apps/challenge/views.py:247
 msgid "Qualification mise à jour"
 msgstr ""
 
-#: apps/challenge/views.py:180
+#: apps/challenge/views.py:251
 msgid "Qualification supprimée"
 msgstr ""
 
@@ -643,7 +664,7 @@ msgstr ""
 msgid "Formation"
 msgstr ""
 
-#: apps/user/models.py:21 apps/user/models.py:52
+#: apps/user/models.py:21
 msgid "Moniteur 1"
 msgstr ""
 
@@ -656,13 +677,17 @@ msgid "Profil"
 msgstr ""
 
 #: apps/user/templates/auth/user_form.html:9
-#: apps/user/templates/auth/user_list.html:59
+#: apps/user/templates/auth/user_list.html:19
 msgid "Nouvel utilisateur"
 msgstr ""
 
 #: apps/user/templates/auth/user_form.html:25
 msgid "Update"
 msgstr "Mettre à jour"
+
+#: apps/user/templates/auth/user_form.html:25
+msgid "Créer"
+msgstr ""
 
 #: apps/user/templates/auth/user_form.html:27
 #, python-format
@@ -674,16 +699,16 @@ msgid "Users"
 msgstr "Utilisateurs"
 
 #: apps/user/templates/auth/user_list.html:12
-#: apps/user/templates/auth/user_list.html:19
+#: apps/user/templates/auth/user_list.html:25
 #, python-format
 msgid "Page %(number)s"
 msgstr ""
 
-#: apps/user/templates/auth/user_list.html:30
+#: apps/user/templates/auth/user_list.html:36
 msgid "Prénom"
 msgstr ""
 
-#: apps/user/templates/auth/user_list.html:32
+#: apps/user/templates/auth/user_list.html:38
 msgid "Attributs"
 msgstr ""
 

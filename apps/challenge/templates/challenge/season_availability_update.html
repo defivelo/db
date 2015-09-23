@@ -15,14 +15,17 @@
         <table class="table text-center">
         <thead>
             <tr>
-                <th rowspan="3">{% trans "Personnes" %}</th>
+                <td rowspan="4">&nbsp;</td>
                 {% for session in season.sessions %}
                     <th class="text-center">{{ session.day|date:"j F" }}</th>
                 {% endfor %}</tr>
             <tr>{% for session in season.sessions %}
-                    <th class="text-center">{{ session.organization.name }}<br />
-                        {{ session.address_city }}
-                    </th>
+                    <th class="text-center" style="vertical-align: top;">{{ session.organization.name }}</th>
+                {% endfor %}</tr>
+            <tr>{% for session in season.sessions %}
+                    <td class="text-center">
+                        {% if session.address_city %}{{ session.address_city }}{% elif session.organization.address_city %}{{ session.organization.address_city }}{% endif %}
+                    </td>
                 {% endfor %}</tr>
             <tr>{% for session in season.sessions %}
                     <th class="text-center">{{ session.begin|date:"H\hi" }} - {{ session.end|date:"H\hi" }}</th>

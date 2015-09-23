@@ -55,23 +55,25 @@ class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
     success_message = _("Saison mise à jour")
 
 
-class SeasonAvailabilityView(SeasonUpdateView):
-    template_name = 'challenge/season_availability.html'
-    success_message = _("Disponibilités mises à jour")
-    form_class = SeasonAvailabilityForm
+class SeasonAvailabilityMixin(SeasonMixin):
+    def get_context_data(self, **kwargs):
+        context = super(SeasonAvailabilityMixin, self).get_context_data(**kwargs)
+        context['potential_helpers'] = self.potential_helpers()
+        return context
 
     def potential_helpers(self):
-        all_helpers = get_user_model().objects
+        all_helpers = get_user_model().objects.order_by('first_name', 'last_name')
         return (
             (_('Moniteurs 2'), all_helpers.filter(profile__formation='M2')),
             (_('Moniteurs 1'), all_helpers.filter(profile__formation='M1')),
             (_('Intervenants'), all_helpers.exclude(profile__actor_for__isnull=True)),
         )
 
-    def get_context_data(self, **kwargs):
-        context = super(SeasonAvailabilityView, self).get_context_data(**kwargs)
-        context['potential_helpers'] = self.potential_helpers()
-        return context
+
+class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
+    template_name = 'challenge/season_availability_update.html'
+    success_message = _("Disponibilités mises à jour")
+    form_class = SeasonAvailabilityForm
 
     def get_initial(self):
         initials = {}
@@ -97,15 +99,16 @@ class SeasonAvailabilityView(SeasonUpdateView):
                                                             spk=session.pk)
                     if fieldkey in form.cleaned_data:
                         availability = form.cleaned_data[fieldkey]
-                        (hsa, created) = (
-                            HelperSessionAvailability.objects.get_or_create(
-                                session=session,
-                                helper=helper,
-                                defaults={'availability': availability})
-                            )
-                        if not created:
-                            hsa.availability = availability
-                            hsa.save()
+                        if availability:
+                            (hsa, created) = (
+                                HelperSessionAvailability.objects.get_or_create(
+                                    session=session,
+                                    helper=helper,
+                                    defaults={'availability': availability})
+                                )
+                            if not created:
+                                hsa.availability = availability
+                                hsa.save()
         return HttpResponseRedirect(reverse_lazy('season-detail',
                                                  kwargs={'pk': self.object.pk}))
 
