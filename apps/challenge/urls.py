@@ -36,6 +36,9 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/availability/edit/$',
         SeasonAvailabilityUpdateView.as_view(),
         name='season-availabilities-update'),
+    url(r'^(?P<pk>[0-9]+)/availability/(?P<helperpk>[0-9]+)/edit/$',
+        SeasonAvailabilityUpdateView.as_view(),
+        name='season-availabilities-update'),
     url(r'^(?P<pk>[0-9]+)/delete/$', SeasonDeleteView.as_view(),
         name="season-delete"),
 

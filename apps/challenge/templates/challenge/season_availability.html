@@ -17,7 +17,11 @@
                     <tr><th colspan="{{ season.sessions.count|add:"2" }}">{{ helper_category }}</th></tr>
                     {% for helper in helpers %}
                     <tr>
-                        <td class="text-left">{{ helper.get_full_name }}</td>
+                        <td class="text-left">
+                            <a title="{% trans "Éditer les disponibilités" %}" href="{% url 'season-availabilities-update' pk=season.pk helperpk=helper.pk %}">
+                                {{ helper.get_full_name }}
+                            </a>
+                        </td>
                         {{ availabilities|useravailsessions_readonly:helper }}
                     </tr>
                     {% endfor %}
@@ -28,6 +32,6 @@
 
 <div class="hidden-print">
     <a class="btn btn-default" href="{% url 'season-detail' season.pk %}">{% trans "Retour à la saison" %}</a>
-    <a class="btn btn-primary pull-right" href="{% url 'season-availabilities-update' season.pk %}"><span class="glyphicon glyphicon-th"></span>{% trans "Éditer les disponibilités" %}</a>
+    <a class="btn btn-primary pull-right" href="{% url 'season-availabilities-update' season.pk %}"><span class="glyphicon glyphicon-th"></span> {% trans "Éditer les disponibilités" %}</a>
 </div>
 {% endblock %}

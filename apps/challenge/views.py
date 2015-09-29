@@ -61,6 +61,11 @@ class SeasonAvailabilityMixin(SeasonMixin):
     def potential_helpers(self, queryset=None):
         if not queryset:
             queryset = get_user_model().objects
+
+            resolvermatch = self.request.resolver_match
+            if 'helperpk' in resolvermatch.kwargs:
+                queryset = queryset.filter(pk=int(resolvermatch.kwargs['helperpk']))
+
         all_helpers = queryset.order_by('first_name', 'last_name')
         return (
             (_('Moniteurs 2'), all_helpers.filter(profile__formation='M2')),
