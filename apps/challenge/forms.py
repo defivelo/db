@@ -150,6 +150,11 @@ class BSRadioRenderer(forms.widgets.RadioFieldRenderer):
             '{options}</div>').format(options=options)
 
 
+class SeasonNewHelperAvailabilityForm(forms.Form):
+    helper = autocomplete_light.ChoiceField('PersonsRelevantForSessions',
+                                            label=_('Disponibilités pour:'))
+
+
 class SeasonAvailabilityForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.season = kwargs.pop('instance')

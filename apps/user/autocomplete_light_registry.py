@@ -1,6 +1,7 @@
 from autocomplete_light import AutocompleteModelBase, register as al_register
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 from django.utils.html import escape
 
 from apps.challenge.models.qualification import MAX_MONO1_PER_QUALI
@@ -27,6 +28,13 @@ al_register(PersonAutocomplete, name='AllPersons',
                 'data-widget-maximum-values': 1,
             })
 
+al_register(PersonAutocomplete, name='PersonsRelevantForSessions',
+            choices=get_user_model().objects.filter(
+                Q(profile__formation__in=['M1', 'M2']) | Q(profile__actor_for__isnull=False)
+            ),
+            widget_attrs={
+                'data-widget-maximum-values': 1,
+            })
 
 class HelpersAutocomplete(PersonAutocomplete):
     def choice_label(self, choice):

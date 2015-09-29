@@ -14,14 +14,15 @@ from django.views.generic.detail import (
     DetailView, SingleObjectMixin, SingleObjectTemplateResponseMixin,
 )
 from django.views.generic.edit import (
-    CreateView, DeleteView, FormView, UpdateView,
+    CreateView, DeleteView, FormMixin, FormView, UpdateView,
 )
 from django.views.generic.list import ListView
 
 from defivelo.views import MenuView
 
 from .forms import (
-    QualificationForm, SeasonAvailabilityForm, SeasonForm, SessionForm,
+    QualificationForm, SeasonAvailabilityForm, SeasonForm,
+    SeasonNewHelperAvailabilityForm, SessionForm,
 )
 from .models import HelperSessionAvailability, Qualification, Season, Session
 
@@ -108,8 +109,8 @@ class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(SeasonAvailabilityView, self).get_context_data(**kwargs)
+        context['form'] = SeasonNewHelperAvailabilityForm()
         hsas = self.current_availabilities()
-
         # Fill in the helpers with the ones we currently have
         helpers = {hsa.helper.pk: hsa.helper.pk for hsa in hsas}
         context['potential_helpers'] = self.potential_helpers(
@@ -120,6 +121,19 @@ class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
             all_helpers=context['potential_helpers']
         )
         return context
+
+    def post(self, request, *args, **kwargs):
+        seasonpk = kwargs.get('pk', None)
+        form = SeasonNewHelperAvailabilityForm(request.POST)
+        if form.is_valid():
+            helperpk = int(form.cleaned_data['helper'])
+            return HttpResponseRedirect(
+                reverse_lazy('season-availabilities-update',
+                             kwargs={'pk': seasonpk, 'helperpk': helperpk})
+            )
+        return HttpResponseRedirect(
+            reverse_lazy('season-availabilities', kwargs={'pk': seasonpk})
+        )
 
 
 class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
@@ -156,7 +170,7 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
                             if not created:
                                 hsa.availability = availability
                                 hsa.save()
-        return HttpResponseRedirect(reverse_lazy('season-detail',
+        return HttpResponseRedirect(reverse_lazy('season-availabilities',
                                                  kwargs={'pk': self.object.pk}))
 
 

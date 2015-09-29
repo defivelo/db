@@ -32,6 +32,13 @@
 
 <div class="hidden-print">
     <a class="btn btn-default" href="{% url 'season-detail' season.pk %}">{% trans "Retour à la saison" %}</a>
-    <a class="btn btn-primary pull-right" href="{% url 'season-availabilities-update' season.pk %}"><span class="glyphicon glyphicon-th"></span> {% trans "Éditer les disponibilités" %}</a>
+
+    <form method="POST" action="" class="pull-right form-inline" novalidate>
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons %}
+            <button type="submit" class="btn btn-primary pull-right">{% trans "Disponibilités" %}</button>
+        {% endbuttons %}
+     </form>
 </div>
 {% endblock %}

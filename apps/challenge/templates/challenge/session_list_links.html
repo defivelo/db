@@ -1,6 +1,7 @@
 {% load i18n %}
 <div class="hidden-print">
     <a class="btn btn-default" href="{% url 'season-list' year=now.year %}">{% trans "Retour à la liste des saisons" %}</a>
+    <a class="btn btn-default" href="{% url 'season-update' season.pk %}"><span class="glyphicon glyphicon-pencil"></span> {% trans "Éditer la saison" %}</a>
     <a class="btn btn-primary" href="{% url 'season-availabilities' season.pk %}"><span class="glyphicon glyphicon-th"></span> {% trans "Disponibilités" %}</a>
     <a class="btn btn-primary pull-right" href="{% url 'session-create' season.pk %}">{% trans "Créer une nouvelle session" %}</a>
 </div>
