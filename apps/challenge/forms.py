@@ -153,15 +153,9 @@ class BSRadioRenderer(forms.widgets.RadioFieldRenderer):
 class SeasonAvailabilityForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.season = kwargs.pop('instance')
+        self.potential_helpers = kwargs.pop('potential_helpers')
         super(SeasonAvailabilityForm, self).__init__(*args, **kwargs)
 
-        all_helpers = get_user_model().objects.all()
-        self.potential_helpers = (
-            (_('Moniteurs 2'), all_helpers.filter(profile__formation='M2')),
-            (_('Moniteurs 1'), all_helpers.filter(profile__formation='M1')),
-            (_('Intervenants'), all_helpers.exclude(profile__actor_for__isnull=True)),
-        )
-        
         for helper_category, helpers in self.potential_helpers:
             for helper in helpers:
                 for session in self.season.sessions:

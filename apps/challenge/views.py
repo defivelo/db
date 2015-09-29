@@ -122,6 +122,11 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
     success_message = _("Disponibilités mises à jour")
     form_class = SeasonAvailabilityForm
 
+    def get_form_kwargs(self):
+        form_kwargs = super(SeasonAvailabilityMixin, self).get_form_kwargs()
+        form_kwargs['potential_helpers'] = self.potential_helpers()
+        return form_kwargs
+
     def get_context_data(self, **kwargs):
         context = super(SeasonAvailabilityMixin, self).get_context_data(**kwargs)
         context['potential_helpers'] = self.potential_helpers()
