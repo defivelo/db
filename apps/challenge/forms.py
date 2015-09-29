@@ -123,18 +123,23 @@ class BSRadioRenderer(forms.widgets.RadioFieldRenderer):
         options = ''
         for option in self.choices:
             level = 'danger'
+            glyphicon = 'remove-circle'
             if option[0] == 'y':
                 level = 'success'
+                glyphicon = 'ok-sign'
             elif option[0] == 'i':
                 level = 'warning'
+                glyphicon = 'ok-circle'
             checked = 'checked' if self.value == option[0] else ''
             active = 'active' if self.value == option[0] else ''
             options += (
                 '<label class="btn btn-{level} {active}">'
                 '<input type="radio" '
                 'name="{key}" id="{key}-{value}" value="{value}" {checked}>'
-                '{label}</label>\n').format(
+                '<span class="glyphicon glyphicon-{glyphicon}" title="{label}"></span> '
+                '</label>\n').format(
                     level=level,
+                    glyphicon=glyphicon,
                     key=id_,
                     value=option[0],
                     label=option[1],
