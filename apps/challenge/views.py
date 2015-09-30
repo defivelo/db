@@ -113,12 +113,14 @@ class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
         hsas = self.current_availabilities()
         # Fill in the helpers with the ones we currently have
         helpers = {hsa.helper.pk: hsa.helper.pk for hsa in hsas}
-        context['potential_helpers'] = self.potential_helpers(
+        potential_helpers = self.potential_helpers(
             queryset=get_user_model().objects.filter(pk__in=helpers)
         )
+        if helpers:
+            context['potential_helpers'] = potential_helpers
         context['availabilities'] = self.get_initial(
             all_hsas=hsas,
-            all_helpers=context['potential_helpers']
+            all_helpers=potential_helpers
         )
         return context
 
