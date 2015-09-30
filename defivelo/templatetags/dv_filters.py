@@ -109,6 +109,10 @@ def userstaffsessions(form, user):
 
 
 @register.filter
+def chosen_staff_for_season(user, season):
+    return user.sessions.filter(pk__in=season.sessions).count()
+
+@register.filter
 def weeknumber(date):
     if not date:
         return ''
