@@ -183,20 +183,21 @@ class SeasonAvailabilityForm(forms.Form):
         self.season = kwargs.pop('instance')
         self.potential_helpers = kwargs.pop('potential_helpers')
         super(SeasonAvailabilityForm, self).__init__(*args, **kwargs)
-
-        for helper_category, helpers in self.potential_helpers:
-            for helper in helpers:
-                for session in self.season.sessions_with_qualifs:
-                    fieldkey = 'avail-h{hpk}-s{spk}'.format(hpk=helper.pk,
-                                                            spk=session.pk)
-                    fieldinit = None
-                    if fieldkey in self.initial:
-                        fieldinit = self.initial[fieldkey]
-                    self.fields[fieldkey] = forms.ChoiceField(
-                        choices=HelperSessionAvailability.AVAILABILITY_CHOICES,
-                        widget=forms.RadioSelect(renderer=BSRadioRenderer),
-                        required=False, initial=fieldinit
-                    )
+        
+        if self.potential_helpers:
+            for helper_category, helpers in self.potential_helpers:
+                for helper in helpers:
+                    for session in self.season.sessions_with_qualifs:
+                        fieldkey = 'avail-h{hpk}-s{spk}'.format(hpk=helper.pk,
+                                                                spk=session.pk)
+                        fieldinit = None
+                        if fieldkey in self.initial:
+                            fieldinit = self.initial[fieldkey]
+                        self.fields[fieldkey] = forms.ChoiceField(
+                            choices=HelperSessionAvailability.AVAILABILITY_CHOICES,
+                            widget=forms.RadioSelect(renderer=BSRadioRenderer),
+                            required=False, initial=fieldinit
+                        )
 
     def save(self):
         pass
@@ -208,18 +209,19 @@ class SeasonStaffChoiceForm(forms.Form):
         self.available_helpers = kwargs.pop('available_helpers')
         super(SeasonStaffChoiceForm, self).__init__(*args, **kwargs)
 
-        for helper_category, helpers in self.available_helpers:
-            for helper in helpers:
-                for session in self.season.sessions_with_qualifs:
-                    fieldkey = 'staff-h{hpk}-s{spk}'.format(hpk=helper.pk,
-                                                            spk=session.pk)
-                    fieldinit = None
-                    if fieldkey in self.initial:
-                        fieldinit = self.initial[fieldkey]
-                    self.fields[fieldkey] = forms.BooleanField(
-                        widget=forms.RadioSelect(renderer=BSCheckBoxRenderer),
-                        required=False, initial=fieldinit
-                    )
+        if self.available_helpers:
+            for helper_category, helpers in self.available_helpers:
+                for helper in helpers:
+                    for session in self.season.sessions_with_qualifs:
+                        fieldkey = 'staff-h{hpk}-s{spk}'.format(hpk=helper.pk,
+                                                                spk=session.pk)
+                        fieldinit = None
+                        if fieldkey in self.initial:
+                            fieldinit = self.initial[fieldkey]
+                        self.fields[fieldkey] = forms.BooleanField(
+                            widget=forms.RadioSelect(renderer=BSCheckBoxRenderer),
+                            required=False, initial=fieldinit
+                        )
 
     def save(self):
         pass
