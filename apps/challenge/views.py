@@ -65,18 +65,22 @@ class SeasonAvailabilityMixin(SeasonMixin):
 
             resolvermatch = self.request.resolver_match
             if 'helperpk' in resolvermatch.kwargs:
-                queryset = queryset.filter(pk=int(resolvermatch.kwargs['helperpk']))
+                queryset = queryset.filter(
+                    pk=int(resolvermatch.kwargs['helperpk'])
+                )
 
         all_helpers = queryset.order_by('first_name', 'last_name')
         return (
             (_('Moniteurs 2'), all_helpers.filter(profile__formation='M2')),
             (_('Moniteurs 1'), all_helpers.filter(profile__formation='M1')),
-            (_('Intervenants'), all_helpers.exclude(profile__actor_for__isnull=True)),
+            (_('Intervenants'), all_helpers.exclude(
+                profile__actor_for__isnull=True
+            )),
         )
 
     def current_availabilities(self):
         return HelperSessionAvailability.objects.filter(
-            session__in=self.object.sessions).prefetch_related('helper')
+            session__in=self.object.sessions_with_qualifs).prefetch_related('helper')
 
     def get_initial(self, all_hsas=None, all_helpers=None):
         initials = OrderedDict()
@@ -92,7 +96,7 @@ class SeasonAvailabilityMixin(SeasonMixin):
                         a.session_id: a.availability for a in all_hsas
                         if a.helper == helper
                     }
-                    for session in self.object.sessions:
+                    for session in self.object.sessions_with_qualifs:
                         fieldkey = AVAILABILITY_FIELDKEY.format(
                             hpk=helper.pk, spk=session.pk)
                         if session.id in helper_availability:
@@ -109,19 +113,21 @@ class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(SeasonAvailabilityView, self).get_context_data(**kwargs)
+        # Add the form for picking a new helper
         context['form'] = SeasonNewHelperAvailabilityForm()
         hsas = self.current_availabilities()
-        # Fill in the helpers with the ones we currently have
-        helpers = {hsa.helper.pk: hsa.helper.pk for hsa in hsas}
-        potential_helpers = self.potential_helpers(
-            queryset=get_user_model().objects.filter(pk__in=helpers)
-        )
-        if helpers:
+        if hsas:
+            # Fill in the helpers with the ones we currently have
+            helpers = {hsa.helper.pk: hsa.helper.pk for hsa in hsas}
+            potential_helpers = self.potential_helpers(
+                queryset=get_user_model().objects.filter(pk__in=helpers)
+            )
+
             context['potential_helpers'] = potential_helpers
-        context['availabilities'] = self.get_initial(
-            all_hsas=hsas,
-            all_helpers=potential_helpers
-        )
+            context['availabilities'] = self.get_initial(
+                all_hsas=hsas,
+                all_helpers=potential_helpers
+            )
         return context
 
     def post(self, request, *args, **kwargs):
@@ -155,7 +161,7 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
 
     def form_valid(self, form):
         # Create or update the Availability objects
-        for session in self.object.sessions:
+        for session in self.object.sessions_with_qualifs:
             for helper_category, helpers in self.potential_helpers():
                 for helper in helpers:
                     fieldkey = AVAILABILITY_FIELDKEY.format(hpk=helper.pk,

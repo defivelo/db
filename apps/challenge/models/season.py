@@ -42,6 +42,12 @@ class Season(models.Model):
             day__lt=self.end
             )
 
+    @property
+    def sessions_with_qualifs(self):
+        return self.sessions.annotate(models.Count('qualifications')).filter(
+            qualifications__count__gt=0,
+            )
+
     def get_absolute_url(self):
         return reverse('season-detail', args=[self.pk])
 

@@ -163,7 +163,7 @@ class SeasonAvailabilityForm(forms.Form):
 
         for helper_category, helpers in self.potential_helpers:
             for helper in helpers:
-                for session in self.season.sessions:
+                for session in self.season.sessions_with_qualifs:
                     fieldkey = 'avail-h{hpk}-s{spk}'.format(hpk=helper.pk,
                                                             spk=session.pk)
                     fieldinit = None
