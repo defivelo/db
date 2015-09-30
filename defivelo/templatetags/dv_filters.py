@@ -53,7 +53,7 @@ def useravailsessions(form, user):
 
 
 @register.filter
-def useravailsessions_readonly(struct, user):
+def useravailsessions_readonly(struct, user, avail_content=None):
     if not struct or not user:
         return ''
     output = ''
@@ -83,11 +83,28 @@ def useravailsessions_readonly(struct, user):
                 avail_class=avail_class,
                 avail_verbose=' title="%s"' % avail_verb if avail_verb else '',
                 avail_label=(
-                    '<span class="glyphicon glyphicon-%s"></span> '
-                    % avail_label
-                    if avail_label else ''
-                    )
+                    avail_content if avail_content else
+                    ('<span class="glyphicon glyphicon-%s"></span> '
+                        % avail_label
+                        if avail_label else '')
+                    ),
             )
+    return mark_safe(output)
+
+
+
+@register.filter
+def userstaffsessions(form, user):
+    if not form or not user:
+        return ''
+    output = ''
+    for key in form.fields:
+        if 'staff-h{hpk}'.format(hpk=user.pk) in key:
+            output += useravailsessions_readonly(
+                struct=form.initial,
+                user=user,
+                avail_content=form.fields[key].widget.render(
+                    key, form.fields[key].initial, attrs={'id': key}))
     return mark_safe(output)
 
 

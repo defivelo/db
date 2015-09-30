@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load dv_filters %}
+{% block head_title %}{% trans "Saison" %} {{ season.pk }}{% endblock %}
+
+{% block content %}
+    <h1>{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }}</h1>
+    <h3>{{ season.cantons_verb|join:", " }}</h3>
+
+    <h4>{% trans "Attributions dans les sessions" %}</h4>
+
+    <form method="POST" action="" class="form-horizontal">
+        {% csrf_token %}
+        <table class="table text-center">
+        {% include "challenge/season_availability_thead.html" with sessions=season.sessions_with_qualifs season=season only %}
+        <tbody>
+            {% for helper_category,helpers in available_helpers %}
+                {% if helpers %}
+                    <tr><th colspan="{{ season.sessions_with_qualifs.count|add:"2" }}">{{ helper_category }}</th></tr>
+                    {% for helper in helpers %}
+                    <tr>
+                        <td class="text-left">{{ helper.get_full_name }}</td>
+                        {{ form|userstaffsessions:helper }}
+                    </tr>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+        </tbody>
+        </table>
+        {% buttons %}
+            <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
+            <a class="btn btn-default" href="{% url 'season-availabilities' pk=season.pk %}">{% trans "Retour" %}</a>
+        {% endbuttons %}
+     </form>
+
+{% endblock %}

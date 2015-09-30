@@ -9,9 +9,10 @@ from django.views.generic.base import RedirectView
 from .views import (
     QualiCreateView, QualiDeleteView, QualiUpdateView,
     SeasonAvailabilityUpdateView, SeasonAvailabilityView, SeasonCreateView,
-    SeasonDeleteView, SeasonDetailView, SeasonListView, SeasonUpdateView,
-    SessionAvailabilityView, SessionCreateView, SessionDeleteView,
-    SessionDetailView, SessionsListView, SessionUpdateView,
+    SeasonDeleteView, SeasonDetailView, SeasonListView,
+    SeasonStaffChoiceUpdateView, SeasonUpdateView, SessionAvailabilityView,
+    SessionCreateView, SessionDeleteView, SessionDetailView, SessionsListView,
+    SessionUpdateView,
 )
 
 urlpatterns = [
@@ -33,9 +34,9 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/availability/$',
         SeasonAvailabilityView.as_view(),
         name='season-availabilities'),
-    url(r'^(?P<pk>[0-9]+)/availability/edit/$',
-        SeasonAvailabilityUpdateView.as_view(),
-        name='season-availabilities-update'),
+    url(r'^(?P<pk>[0-9]+)/availability/staff/$',
+        SeasonStaffChoiceUpdateView.as_view(),
+        name='season-staff-update'),
     url(r'^(?P<pk>[0-9]+)/availability/(?P<helperpk>[0-9]+)/edit/$',
         SeasonAvailabilityUpdateView.as_view(),
         name='season-availabilities-update'),

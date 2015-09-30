@@ -134,7 +134,7 @@ class BSRadioRenderer(forms.widgets.RadioFieldRenderer):
             active = 'active' if self.value == option[0] else ''
             options += (
                 '<label class="btn btn-{level} {active}">'
-                '<input type="radio" '
+                '<input type="radio" autocomplete="off" '
                 'name="{key}" id="{key}-{value}" value="{value}" {checked}>'
                 '<span class="glyphicon glyphicon-{glyphicon}" title="{label}"></span> '
                 '</label>\n').format(
@@ -148,6 +148,29 @@ class BSRadioRenderer(forms.widgets.RadioFieldRenderer):
         return (
             '<div class="btn-group-vertical" data-toggle="buttons">'
             '{options}</div>').format(options=options)
+
+
+class BSCheckBoxRenderer(forms.widgets.CheckboxFieldRenderer):
+    def render(self):
+        id_ = self.attrs.get('id', None)
+        checked = 'checked' if self.value else ''
+        active = 'active' if self.value else ''
+        checkbox = (
+            '<label class="btn btn-{level} {active}">'
+            '<input type="checkbox" autocomplete="off" '
+            'name="{key}" id="{key}-{value}" value="{value}" {checked}>'
+            '<span class="glyphicon glyphicon-{glyphicon}" title="{label}"></span> '
+            '</label>\n').format(
+                level='primary',
+                glyphicon='user',
+                key=id_,
+                value=1,
+                label=_('Choisir pour cette session'),
+                checked=checked,
+                active=active)
+        return (
+            '<div data-toggle="buttons">'
+            '{checkbox}</div>').format(checkbox=checkbox)
 
 
 class SeasonNewHelperAvailabilityForm(forms.Form):
@@ -172,6 +195,29 @@ class SeasonAvailabilityForm(forms.Form):
                     self.fields[fieldkey] = forms.ChoiceField(
                         choices=HelperSessionAvailability.AVAILABILITY_CHOICES,
                         widget=forms.RadioSelect(renderer=BSRadioRenderer),
+                        required=False, initial=fieldinit
+                    )
+
+    def save(self):
+        pass
+
+
+class SeasonStaffChoiceForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        self.season = kwargs.pop('instance')
+        self.available_helpers = kwargs.pop('available_helpers')
+        super(SeasonStaffChoiceForm, self).__init__(*args, **kwargs)
+
+        for helper_category, helpers in self.available_helpers:
+            for helper in helpers:
+                for session in self.season.sessions_with_qualifs:
+                    fieldkey = 'staff-h{hpk}-s{spk}'.format(hpk=helper.pk,
+                                                            spk=session.pk)
+                    fieldinit = None
+                    if fieldkey in self.initial:
+                        fieldinit = self.initial[fieldkey]
+                    self.fields[fieldkey] = forms.BooleanField(
+                        widget=forms.RadioSelect(renderer=BSCheckBoxRenderer),
                         required=False, initial=fieldinit
                     )
 

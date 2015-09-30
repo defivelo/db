@@ -30,15 +30,18 @@
         </tbody>
         </table>
 
+    <div class="text-center">
+        <form method="POST" action="" class="form-inline" novalidate>
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            {% buttons %}
+                <button type="submit" class="btn btn-primary pull-right">{% trans "Disponibilités" %}</button>
+            {% endbuttons %}
+        </form>
+    </div>
+
 <div class="hidden-print">
     <a class="btn btn-default" href="{% url 'season-detail' season.pk %}">{% trans "Retour à la saison" %}</a>
-
-    <form method="POST" action="" class="pull-right form-inline" novalidate>
-        {% csrf_token %}
-        {% bootstrap_form form %}
-        {% buttons %}
-            <button type="submit" class="btn btn-primary pull-right">{% trans "Disponibilités" %}</button>
-        {% endbuttons %}
-     </form>
+    <a class="pull-right btn btn-default" href="{% url 'season-staff-update' season.pk %}">{% trans "Attribuer les moniteurs" %}</a>
 </div>
 {% endblock %}

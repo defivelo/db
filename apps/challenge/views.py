@@ -22,11 +22,12 @@ from defivelo.views import MenuView
 
 from .forms import (
     QualificationForm, SeasonAvailabilityForm, SeasonForm,
-    SeasonNewHelperAvailabilityForm, SessionForm,
+    SeasonNewHelperAvailabilityForm, SeasonStaffChoiceForm, SessionForm,
 )
 from .models import HelperSessionAvailability, Qualification, Season, Session
 
 AVAILABILITY_FIELDKEY = 'avail-h{hpk}-s{spk}'
+STAFF_FIELDKEY = 'staff-h{hpk}-s{spk}'
 
 
 class SeasonMixin(MenuView):
@@ -63,6 +64,7 @@ class SeasonAvailabilityMixin(SeasonMixin):
         if not queryset:
             queryset = get_user_model().objects
 
+            # Pick the one helper from the command line if it makes sense
             resolvermatch = self.request.resolver_match
             if 'helperpk' in resolvermatch.kwargs:
                 queryset = queryset.filter(
@@ -79,8 +81,11 @@ class SeasonAvailabilityMixin(SeasonMixin):
         )
 
     def current_availabilities(self):
-        return HelperSessionAvailability.objects.filter(
-            session__in=self.object.sessions_with_qualifs).prefetch_related('helper')
+        return (
+            HelperSessionAvailability.objects
+            .filter(session__in=self.object.sessions_with_qualifs)
+            .prefetch_related('helper')
+        )
 
     def get_initial(self, all_hsas=None, all_helpers=None):
         initials = OrderedDict()
@@ -105,6 +110,11 @@ class SeasonAvailabilityMixin(SeasonMixin):
                             )
                         else:
                             initials[fieldkey] = ''
+                        initials[STAFF_FIELDKEY.format(
+                            hpk=helper.pk, spk=session.pk)] = (
+                                session.chosen_staff.filter(pk=helper.pk)
+                                .exists()
+                            )
             return initials
 
 
@@ -179,6 +189,52 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
                                 hsa.availability = availability
                                 hsa.save()
         return HttpResponseRedirect(reverse_lazy('season-availabilities',
+                                                 kwargs={'pk': self.object.pk}))
+
+
+class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
+    template_name = 'challenge/season_staff_update.html'
+    success_message = _("Choix du personnel mises à jour")
+    form_class = SeasonStaffChoiceForm
+
+    def available_helpers(self):
+        if hasattr(self, 'ahelpers'):
+            return self.ahelpers
+        # Only take available people
+        hsas = self.current_availabilities().exclude(availability='n')
+        if hsas:
+            # Fill in the helpers with the ones we currently have
+            helpers = {hsa.helper.pk: hsa.helper.pk for hsa in hsas}
+            self.ahelpers = self.potential_helpers(
+                queryset=get_user_model().objects.filter(pk__in=helpers)
+            )
+            return self.ahelpers
+
+    def get_form_kwargs(self):
+        form_kwargs = super(SeasonStaffChoiceUpdateView, self).get_form_kwargs()
+        form_kwargs['available_helpers'] = self.available_helpers()
+        return form_kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super(SeasonStaffChoiceUpdateView, self).get_context_data(**kwargs)
+        context['available_helpers'] = self.available_helpers()
+        return context
+
+    def form_valid(self, form):
+        # Update all staff choices
+        for session in self.object.sessions_with_qualifs:
+            picked_staff = []
+            for helper_category, helpers in self.available_helpers():
+                for helper in helpers:
+                    fieldkey = STAFF_FIELDKEY.format(hpk=helper.pk,
+                                                     spk=session.pk)
+                    if fieldkey in form.cleaned_data:
+                        picked = form.cleaned_data[fieldkey]
+                        if picked:
+                            picked_staff.append(helper.pk)
+            session.chosen_staff = picked_staff
+            session.save()
+        return HttpResponseRedirect(reverse_lazy('season-staff-update',
                                                  kwargs={'pk': self.object.pk}))
 
 

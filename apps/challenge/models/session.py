@@ -47,6 +47,10 @@ class Session(Address, models.Model):
                                      max_length=512, blank=True)
     apples = models.CharField(_("Pommes"), max_length=512, blank=True)
     comments = models.TextField(_('Remarques'), blank=True)
+    chosen_staff = models.ManyToManyField(settings.AUTH_USER_MODEL,
+                                          verbose_name=_('Personnel'),
+                                          related_name='sessions',
+                                          blank=True)
 
     class Meta:
         verbose_name = _('Session')
@@ -109,7 +113,9 @@ class Session(Address, models.Model):
 
     def helper_availabilities(self):
         formations = ['M1', 'M2']
-        return [0] + [self.availabilities.filter(helper__profile__formation=f) for f in formations]
+        return [0] + [
+            self.availabilities.filter(helper__profile__formation=f)
+            for f in formations]
 
     def helper_needs(self):
         n_sessions = self.n_qualifications

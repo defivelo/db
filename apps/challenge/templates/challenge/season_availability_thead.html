@@ -1,6 +1,7 @@
+{% load i18n %}
 <thead>
     <tr>
-        <td rowspan="4">&nbsp;</td>
+        <td rowspan="5">&nbsp;</td>
         {% for session in sessions %}
             <th class="text-center">{{ session.day|date:"j F" }}</th>
         {% endfor %}</tr>
@@ -18,6 +19,13 @@
         {% endfor %}</tr>
     <tr>{% for session in sessions %}
             <th class="text-center">{{ session.begin|date:"H\hi" }} - {{ session.end|date:"H\hi" }}</th>
+        {% endfor %}</tr>
+    <tr>{% for session in sessions %}
+            <td class="text-center">
+                <small>
+                    {% blocktrans count n=session.qualifications.count %}1 quali{% plural %}{{ n }} qualis{% endblocktrans %}
+                </small>
+            </td>
         {% endfor %}</tr>
     {% comment %}
     <!-- Add the id for debugging -->
