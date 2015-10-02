@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from re import sub
+from re import search, sub
 
 from django import template
 from django.conf import settings
@@ -53,12 +53,19 @@ def useravailsessions(form, user):
 
 
 @register.filter
-def useravailsessions_readonly(struct, user, avail_content=None):
+def useravailsessions_readonly(struct, user, avail_content=None, sesskey=None,
+                               onlyavail=False):
     if not struct or not user:
         return ''
     output = ''
     for key in struct:
         if 'avail-h{hpk}'.format(hpk=user.pk) in key:
+            # If there's a sessionkey specified, skip the ones not
+            # corresponding
+            if sesskey:
+                if key != 'avail-h{hpk}-s{spk}'.format(hpk=user.pk,
+                                                       spk=sesskey):
+                    continue
             availability = struct[key]
             avail_verb = ''  # Fulltext
             avail_label = ''  # Bootstrap glyphicon name
@@ -76,6 +83,8 @@ def useravailsessions_readonly(struct, user, avail_content=None):
                 avail_verb = _('Oui')
                 avail_label = 'ok-sign'
                 avail_class = 'success'
+            if onlyavail and availability not in ['y', 'i']:
+                avail_content = ' '
             output += (
                 '<td class="{avail_class}"{avail_verbose}>{avail_label}'
                 '</td>'
@@ -100,9 +109,14 @@ def userstaffsessions(form, user):
     output = ''
     for key in form.fields:
         if 'staff-h{hpk}'.format(hpk=user.pk) in key:
+            # Lookout for the session key in the form field key, and pipe
+            # it to the useravailsessions_readonly function
+            sesskey = int(search(r'-s(\d+)', key).group(1))
             output += useravailsessions_readonly(
                 struct=form.initial,
                 user=user,
+                sesskey=sesskey,
+                onlyavail=True,
                 avail_content=form.fields[key].widget.render(
                     key, form.fields[key].initial, attrs={'id': key}))
     return mark_safe(output)
@@ -110,7 +124,10 @@ def userstaffsessions(form, user):
 
 @register.filter
 def chosen_staff_for_season(user, season):
-    return user.sessions.filter(pk__in=season.sessions).count()
+    return user.availabilities.filter(
+        availability__in=['i', 'y'],
+        chosen=True,
+        session__in=season.sessions).count()
 
 @register.filter
 def weeknumber(date):

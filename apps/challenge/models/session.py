@@ -47,10 +47,6 @@ class Session(Address, models.Model):
                                      max_length=512, blank=True)
     apples = models.CharField(_("Pommes"), max_length=512, blank=True)
     comments = models.TextField(_('Remarques'), blank=True)
-    chosen_staff = models.ManyToManyField(settings.AUTH_USER_MODEL,
-                                          verbose_name=_('Personnel'),
-                                          related_name='sessions',
-                                          blank=True)
 
     class Meta:
         verbose_name = _('Session')

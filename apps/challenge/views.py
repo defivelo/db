@@ -98,23 +98,24 @@ class SeasonAvailabilityMixin(SeasonMixin):
             for helper_category, helpers in all_helpers:
                 for helper in helpers:
                     helper_availability = {
-                        a.session_id: a.availability for a in all_hsas
+                        a.session_id: (a.availability, a.chosen) for a in all_hsas
                         if a.helper == helper
                     }
                     for session in self.object.sessions_with_qualifs:
                         fieldkey = AVAILABILITY_FIELDKEY.format(
                             hpk=helper.pk, spk=session.pk)
-                        if session.id in helper_availability:
+                        try:
                             initials[fieldkey] = (
-                                helper_availability[session.id]
+                                helper_availability[session.id][0]
                             )
-                        else:
+                            initials[STAFF_FIELDKEY.format(
+                                hpk=helper.pk, spk=session.pk)] = (
+                                helper_availability[session.id][1]
+                            )
+                        except:
                             initials[fieldkey] = ''
-                        initials[STAFF_FIELDKEY.format(
-                            hpk=helper.pk, spk=session.pk)] = (
-                                session.chosen_staff.filter(pk=helper.pk)
-                                .exists()
-                            )
+                            initials[STAFF_FIELDKEY.format(
+                                hpk=helper.pk, spk=session.pk)] = False
             return initials
 
 
@@ -223,17 +224,17 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
     def form_valid(self, form):
         # Update all staff choices
         for session in self.object.sessions_with_qualifs:
-            picked_staff = []
             for helper_category, helpers in self.available_helpers():
                 for helper in helpers:
                     fieldkey = STAFF_FIELDKEY.format(hpk=helper.pk,
                                                      spk=session.pk)
-                    if fieldkey in form.cleaned_data:
-                        picked = form.cleaned_data[fieldkey]
-                        if picked:
-                            picked_staff.append(helper.pk)
-            session.chosen_staff = picked_staff
-            session.save()
+                    try:
+                        HelperSessionAvailability.objects.filter(
+                                session=session,
+                                helper=helper
+                            ).update(chosen=form.cleaned_data[fieldkey])
+                    except:  # if the fieldkey's not in cleaned_data, or other reasons
+                        pass
         return HttpResponseRedirect(reverse_lazy('season-staff-update',
                                                  kwargs={'pk': self.object.pk}))
 

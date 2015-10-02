@@ -42,6 +42,6 @@
 
 <div class="hidden-print">
     <a class="btn btn-default" href="{% url 'season-detail' season.pk %}">{% trans "Retour à la saison" %}</a>
-    <a class="pull-right btn btn-default" href="{% url 'season-staff-update' season.pk %}">{% trans "Attribuer les moniteurs" %}</a>
+    <a class="pull-right btn btn-primary" href="{% url 'season-staff-update' season.pk %}">{% trans "Attribuer les moniteurs" %}</a>
 </div>
 {% endblock %}

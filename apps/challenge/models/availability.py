@@ -25,6 +25,8 @@ class HelperSessionAvailability(models.Model):
                                limit_choices_to={'profile__isnull': False})
     availability = models.CharField(_("Disponible"), max_length=1,
                                     choices=AVAILABILITY_CHOICES)
+    chosen = models.BooleanField(_("Sélectionné pour la session"),
+                                 default=False)
 
     class Meta:
         verbose_name = _('Disponibilité par session')
@@ -39,7 +41,8 @@ class HelperSessionAvailability(models.Model):
         elif self.availability == 'i':
             is_available = _('est disponible si nécessaire')
 
-        return _('{session}: {helper} {is_available}').format(
+        return _('{session}: {chosen}{helper} {is_available}').format(
              session=self.session,
+             chosen='* ' if self.chosen else '',
              helper=self.helper.get_full_name(),
              is_available=is_available)

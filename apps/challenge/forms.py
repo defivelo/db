@@ -121,6 +121,14 @@ class BSRadioRenderer(forms.widgets.RadioFieldRenderer):
     def render(self):
         id_ = self.attrs.get('id', None)
         options = ''
+        try:
+            optionvalue = self.value[0]
+        except IndexError:
+            optionvalue = ''
+        try:
+            chosen = (self.value[1] == '*')
+        except IndexError:
+            chosen = False
         for option in self.choices:
             level = 'danger'
             glyphicon = 'remove-circle'
@@ -130,21 +138,29 @@ class BSRadioRenderer(forms.widgets.RadioFieldRenderer):
             elif option[0] == 'i':
                 level = 'warning'
                 glyphicon = 'ok-circle'
-            checked = 'checked' if self.value == option[0] else ''
-            active = 'active' if self.value == option[0] else ''
+            checked = 'checked' if optionvalue == option[0] else ''
+            active = 'active' if optionvalue == option[0] else ''
+            disabled = 'disabled' if (option[0] == 'n' and chosen) else ''
             options += (
-                '<label class="btn btn-{level} {active}">'
-                '<input type="radio" autocomplete="off" '
-                'name="{key}" id="{key}-{value}" value="{value}" {checked}>'
-                '<span class="glyphicon glyphicon-{glyphicon}" title="{label}"></span> '
+                '<label title="{label}"'
+                '       class="btn btn-{level} {active} {disabled}">'
+                '  <input type="radio" autocomplete="off"'
+                '         name="{key}" id="{key}-{value}" value="{value}"'
+                '         {checked} {disabled}>'
+                '    <span class="glyphicon glyphicon-{glyphicon}"'
+                '          title="{label}"></span> '
                 '</label>\n').format(
                     level=level,
                     glyphicon=glyphicon,
                     key=id_,
                     value=option[0],
-                    label=option[1],
+                    label=(
+                        option[1] if not disabled
+                        else _('Sélectionné pour une quali, impossible')
+                    ),
                     checked=checked,
-                    active=active)
+                    active=active,
+                    disabled=disabled)
         return (
             '<div class="btn-group-vertical" data-toggle="buttons">'
             '{options}</div>').format(options=options)
@@ -156,10 +172,12 @@ class BSCheckBoxRenderer(forms.widgets.CheckboxFieldRenderer):
         checked = 'checked' if self.value else ''
         active = 'active' if self.value else ''
         checkbox = (
-            '<label class="btn btn-{level} {active}">'
-            '<input type="checkbox" autocomplete="off" '
-            'name="{key}" id="{key}-{value}" value="{value}" {checked}>'
-            '<span class="glyphicon glyphicon-{glyphicon}" title="{label}"></span> '
+            '<label title="{label}"'
+            '       class="btn btn-{level} {active}">'
+            '  <input type="checkbox" autocomplete="off" '
+            '         name="{key}" id="{key}-{value}" value="{value}" {checked}>'
+            '    <span class="glyphicon glyphicon-{glyphicon}"'
+            '          title="{label}"></span> '
             '</label>\n').format(
                 level='primary',
                 glyphicon='user',
@@ -183,17 +201,26 @@ class SeasonAvailabilityForm(forms.Form):
         self.season = kwargs.pop('instance')
         self.potential_helpers = kwargs.pop('potential_helpers')
         super(SeasonAvailabilityForm, self).__init__(*args, **kwargs)
-        
+
         if self.potential_helpers:
             for helper_category, helpers in self.potential_helpers:
                 for helper in helpers:
                     for session in self.season.sessions_with_qualifs:
-                        fieldkey = 'avail-h{hpk}-s{spk}'.format(hpk=helper.pk,
+                        availkey = 'avail-h{hpk}-s{spk}'.format(hpk=helper.pk,
                                                                 spk=session.pk)
-                        fieldinit = None
-                        if fieldkey in self.initial:
-                            fieldinit = self.initial[fieldkey]
-                        self.fields[fieldkey] = forms.ChoiceField(
+                        staffkey = 'staff-h{hpk}-s{spk}'.format(hpk=helper.pk,
+                                                                spk=session.pk)
+                        try:
+                            fieldinit = self.initial[availkey]
+                        except:
+                            pass
+                        # Trick to pass the 'chosen' information through
+                        try:
+                            fieldinit += '*' if self.initial[staffkey] else ''
+                        except:
+                            pass
+
+                        self.fields[availkey] = forms.ChoiceField(
                             choices=HelperSessionAvailability.AVAILABILITY_CHOICES,
                             widget=forms.RadioSelect(renderer=BSRadioRenderer),
                             required=False, initial=fieldinit
@@ -213,12 +240,18 @@ class SeasonStaffChoiceForm(forms.Form):
             for helper_category, helpers in self.available_helpers:
                 for helper in helpers:
                     for session in self.season.sessions_with_qualifs:
-                        fieldkey = 'staff-h{hpk}-s{spk}'.format(hpk=helper.pk,
+                        availkey = 'avail-h{hpk}-s{spk}'.format(hpk=helper.pk,
                                                                 spk=session.pk)
-                        fieldinit = None
-                        if fieldkey in self.initial:
-                            fieldinit = self.initial[fieldkey]
-                        self.fields[fieldkey] = forms.BooleanField(
+                        staffkey = 'staff-h{hpk}-s{spk}'.format(hpk=helper.pk,
+                                                                spk=session.pk)
+                        ## If the availability is not 'y' or 'i', skip that one
+                        #if self.initial[availkey] not in ['i', 'y']:
+                            #continue
+                        try:
+                            fieldinit = self.initial[staffkey]
+                        except:
+                            pass
+                        self.fields[staffkey] = forms.BooleanField(
                             widget=forms.RadioSelect(renderer=BSCheckBoxRenderer),
                             required=False, initial=fieldinit
                         )

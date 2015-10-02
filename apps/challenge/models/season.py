@@ -44,9 +44,11 @@ class Season(models.Model):
 
     @property
     def sessions_with_qualifs(self):
-        return self.sessions.annotate(models.Count('qualifications')).filter(
-            qualifications__count__gt=0,
-            )
+        if not hasattr(self, 'sessions_with_q'):
+            self.sessions_with_q = self.sessions.annotate(models.Count('qualifications')).filter(
+                qualifications__count__gt=0,
+                )
+        return self.sessions_with_q
 
     def get_absolute_url(self):
         return reverse('season-detail', args=[self.pk])
