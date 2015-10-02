@@ -18,6 +18,7 @@ from django.views.generic.edit import (
 )
 from django.views.generic.list import ListView
 
+from apps.user.views import ActorsList, HelpersList
 from defivelo.views import MenuView
 
 from .forms import (
@@ -35,10 +36,16 @@ class SeasonMixin(MenuView):
     context_object_name = 'season'
     form_class = SeasonForm
 
+    def get_season(self):
+        if not hasattr(self, 'season'):
+            self.season = Season.objects.get(pk=int(self.kwargs['pk']))
+        return self.season
+
     def get_context_data(self, **kwargs):
         context = super(SeasonMixin, self).get_context_data(**kwargs)
         # Add our menu_category context
         context['menu_category'] = 'season'
+        context['season'] = self.get_season()
         return context
 
 
@@ -246,6 +253,32 @@ class SeasonCreateView(SeasonMixin, SuccessMessageMixin, CreateView):
 class SeasonDeleteView(SeasonMixin, SuccessMessageMixin, DeleteView):
     success_message = _("Saison supprimée")
     success_url = reverse_lazy('season-list')
+
+
+class SeasonHelperListView(HelpersList, SeasonMixin):
+    page_title = _('Moniteurs de la saison')
+
+    def get_queryset(self):
+        season = self.get_season()
+        return (
+            super(SeasonHelperListView, self).get_queryset()
+            .filter(availabilities__session__in=season.sessions_with_qualifs,
+                    availabilities__chosen=True)
+            .distinct()
+        )
+
+
+class SeasonActorListView(ActorsList, SeasonMixin):
+    page_title = _('Intervenants de la saison')
+
+    def get_queryset(self):
+        season = self.get_season()
+        return (
+            super(SeasonActorListView, self).get_queryset()
+            .filter(availabilities__session__in=season.sessions_with_qualifs,
+                    availabilities__chosen=True)
+            .distinct()
+        )
 
 
 class SessionMixin(MenuView):

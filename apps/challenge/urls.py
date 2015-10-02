@@ -7,9 +7,9 @@ from django.utils import timezone
 from django.views.generic.base import RedirectView
 
 from .views import (
-    QualiCreateView, QualiDeleteView, QualiUpdateView,
+    QualiCreateView, QualiDeleteView, QualiUpdateView, SeasonActorListView,
     SeasonAvailabilityUpdateView, SeasonAvailabilityView, SeasonCreateView,
-    SeasonDeleteView, SeasonDetailView, SeasonListView,
+    SeasonDeleteView, SeasonDetailView, SeasonHelperListView, SeasonListView,
     SeasonStaffChoiceUpdateView, SeasonUpdateView, SessionAvailabilityView,
     SessionCreateView, SessionDeleteView, SessionDetailView, SessionsListView,
     SessionUpdateView,
@@ -31,6 +31,12 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/$',
         SeasonDetailView.as_view(),
         name='season-detail'),
+    url(r'^(?P<pk>[0-9]+)/moniteurs/$',
+        SeasonHelperListView.as_view(),
+        name='season-helperlist'),
+    url(r'^(?P<pk>[0-9]+)/intervenants/$',
+        SeasonActorListView.as_view(),
+        name='season-actorlist'),
     url(r'^(?P<pk>[0-9]+)/availability/$',
         SeasonAvailabilityView.as_view(),
         name='season-availabilities'),

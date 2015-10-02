@@ -45,6 +45,13 @@ class UserProfile(Address, models.Model):
             return dict(FORMATION_CHOICES)[self.formation]
         return ''
 
+    @property
+    def natel_int(self):
+        if self.natel:
+            # Delete spaces, drop initial 0, add +41
+            return '+41' + self.natel.replace(' ', '')[1:]
+        return ''
+
     def formation_icon(self):
         icon = ''
         title = self.formation_full

@@ -103,4 +103,42 @@ class UserList(ProfileMixin, ListView):
     paginate_orphans = 3
 
     def get_queryset(self):
-        return self.model.objects.all().order_by('first_name', 'last_name')
+        return self.model.objects.order_by('first_name', 'last_name')
+
+
+class UserDetailedList(UserList):
+    context_object_name = 'users'
+    template_name = 'auth/user_detailed_list.html'
+    page_title = _('Liste des utilisateurs')
+
+    def get_context_data(self, **kwargs):
+        context = super(UserDetailedList, self).get_context_data(**kwargs)
+        # Add our page title
+        context['page_title'] = self.page_title
+        return context
+
+    def get_queryset(self):
+        return (
+            super(UserDetailedList, self).get_queryset()
+            .prefetch_related('profile')
+        )
+
+
+class HelpersList(UserDetailedList):
+    page_title = _('Liste des moniteurs')
+
+    def get_queryset(self):
+        return (
+            super(HelpersList, self).get_queryset()
+            .filter(profile__formation__in=['M1', 'M2'])
+        )
+
+
+class ActorsList(UserDetailedList):
+    page_title = _('Liste des intervenants')
+
+    def get_queryset(self):
+        return (
+            super(ActorsList, self).get_queryset()
+            .exclude(profile__actor_for__isnull=True)
+        )

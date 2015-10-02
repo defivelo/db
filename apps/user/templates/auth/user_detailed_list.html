@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load account %}
+{% block head_title %}{{ page_title }}{% endblock %}
+{% block content %}
+    {% if season %}
+        <h2>{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }} ({{ season.cantons_verb|join:", " }})</h3>
+    {% endif %}
+    <h3>{{ page_title }}</h3>
+    
+    <table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>{# Attributs #}</th>
+            <th>{% trans "Prénom" %}</th>
+            <th>{% trans "Nom" %}</th>
+            <th>{% trans "Canton" %}</th>
+            <th>{% trans "Natel" %}</th>
+            <th>{% trans "Email" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for user in users %}
+        <tr>
+            <td class="small">
+                {{ user.profile.formation_icon|safe }}
+                {{ user.profile.actor_icon|default:"" }}
+            </td>
+            <td>{{ user.first_name }}</td>
+            <td>{{ user.last_name }}</td>
+            <td>{{ user.profile.canton }}</td>
+            <td>{% if user.profile.natel %}<a href="tel:{{ user.profile.natel_int }}">{{ user.profile.natel }}</a>{% endif %}</td>
+            <td>{% if user.profile.email %}<a href="mailto:{{ user.profile.email }}">{{ user.profile.email }}</a>{% endif %}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+    
+    <footer class="pull-right">
+    {% now "DATE_FORMAT" as now %}{% blocktrans with jour=now %}État au {{ jour }}{% endblocktrans %}
+    </footer>
+{% endblock %}
