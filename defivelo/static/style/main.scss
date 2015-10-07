@@ -42,3 +42,13 @@ form.language-selector {
         font-size: 0.7em;
     }
 }
+
+// Click-buttons
+.btn.active[data-active-class="primary"] {
+    color: #fff;
+    background-color: #286090;
+    border-color: #204d74;
+}
+.btn.active span[data-active-icon="check"]:before {
+    content: "\e067"; // -check
+}

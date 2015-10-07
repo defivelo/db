@@ -88,7 +88,22 @@ def useravailsessions_readonly(struct, user, avail_content=None, sesskey=None,
                 avail_verb = _('Oui')
                 avail_label = 'ok-sign'
                 avail_class = 'success'
-            if onlyavail and availability not in ['y', 'i']:
+
+            if availability in ['y', 'i']:
+                # Si le choix des moniteurs est connu, remplace le label et
+                # la version verbeuse par l'état du choix
+                if not sesskey:
+                    thissesskey = int(search(r'-s(\d+)', key).group(1))
+                    staffkey = STAFF_FIELDKEY.format(hpk=user.pk,
+                                                     spk=thissesskey)
+                    if staffkey in struct:
+                        if struct[staffkey]:
+                            avail_label = 'check'
+                            avail_verb = _('Choisi')
+                        else:
+                            avail_label = 'unchecked'
+                            avail_verb = _('Pas choisi')
+            elif onlyavail:
                 avail_content = ' '
             output += (
                 '<td class="{avail_class}"{avail_verbose}>'

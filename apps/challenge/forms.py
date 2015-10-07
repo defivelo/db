@@ -227,13 +227,14 @@ class BSCheckBoxRenderer(forms.widgets.CheckboxFieldRenderer):
         active = 'active' if self.value else ''
         checkbox = (
             '<label title="{label}"'
-            '       class="btn btn-{level} {active}">'
+            '       class="btn btn-default {active}"'
+            '       data-active-class="primary">'
             '  <input type="checkbox" autocomplete="off" '
             '         name="{key}" id="{key}-{value}" value="{value}" {checked}>'
-            '    <span class="glyphicon glyphicon-{glyphicon}"'
+            '    <span class="glyphicon glyphicon-unchecked"'
+            '          data-active-icon="check"'
             '          title="{label}"></span> '
             '</label>\n').format(
-                level='primary',
                 glyphicon='user',
                 key=id_,
                 value=1,
