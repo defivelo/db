@@ -197,7 +197,8 @@ class BSRadioRenderer(forms.widgets.RadioFieldRenderer):
             disabled = 'disabled' if (option[0] == 'n' and chosen) else ''
             options += (
                 '<label title="{label}"'
-                '       class="btn btn-{level} {active} {disabled}">'
+                '       class="btn btn-default {active} {disabled}"'
+                '       data-active-class="{level}">'
                 '  <input type="radio" autocomplete="off"'
                 '         name="{key}" id="{key}-{value}" value="{value}"'
                 '         {checked} {disabled}>'

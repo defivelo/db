@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.challenge import (
     AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX,
-    STAFF_FIELDKEY_HELPER_PREFIX,
+    STAFF_FIELDKEY, STAFF_FIELDKEY_HELPER_PREFIX,
 )
 
 register = template.Library()
@@ -105,6 +105,7 @@ def useravailsessions_readonly(struct, user, avail_content=None, sesskey=None,
                             avail_verb = _('Pas choisi')
             elif onlyavail:
                 avail_content = ' '
+
             output += (
                 '<td class="{avail_class}"{avail_verbose}>'
                 '<!-- {key} -->'
@@ -151,6 +152,7 @@ def chosen_staff_for_season(user, season):
         availability__in=['i', 'y'],
         chosen=True,
         session__in=season.sessions).count()
+
 
 @register.filter
 def weeknumber(date):
