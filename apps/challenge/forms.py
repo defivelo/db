@@ -268,7 +268,7 @@ class SeasonAvailabilityForm(forms.Form):
                         try:
                             fieldinit = self.initial[availkey]
                         except:
-                            pass
+                            fieldinit = ''
                         # Trick to pass the 'chosen' information through
                         try:
                             fieldinit += '*' if self.initial[staffkey] else ''
