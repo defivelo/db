@@ -404,6 +404,14 @@ class QualiMixin(SessionMixin):
             'pk': self.get_session_pk()
             })
 
+    def get_form_kwargs(self):
+        form_kwargs = super(QualiMixin, self).get_form_kwargs()
+        try:
+            form_kwargs['session'] = Session.objects.get(pk=self.get_session_pk())
+        except:
+            pass
+        return form_kwargs
+
     def get_context_data(self, **kwargs):
         context = super(QualiMixin, self).get_context_data(**kwargs)
         # Add our menu_category context

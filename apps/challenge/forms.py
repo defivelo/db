@@ -51,9 +51,41 @@ class SessionForm(autocomplete_light.ModelForm):
                   'comments']
 
 
-class QualificationForm(autocomplete_light.ModelForm):
+class LeaderChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.get_full_name()
+
+
+class HelpersChoiceField(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        return (
+            obj.get_full_name() +
+            ' (%s)' % obj.profile.formation if obj.profile.formation != 'M1' else ''
+        )
+
+
+class QualificationForm(forms.ModelForm):
     class_teacher_natel = CHPhoneNumberField(label=_('Natel enseignant'),
                                              required=False)
+
+    def __init__(self, *args, **kwargs):
+        session = kwargs.pop('session')
+        super(QualificationForm, self).__init__(*args, **kwargs)
+
+        available_helpers = get_user_model().objects.filter(
+            availabilities__chosen=True,
+            availabilities__session=session
+        )
+        self.fields['leader'] = LeaderChoiceField(
+            label=_('Moniteur 2'),
+            queryset=available_helpers.filter(profile__formation='M2')
+        )
+        self.fields['helpers'] = HelpersChoiceField(
+            label=_('Moniteurs 1'),
+            queryset=available_helpers.filter(
+                profile__formation__in=['M1', 'M2']
+            )
+        )
 
     def clean(self):
         # Check that we don't have too many moniteurs 1
@@ -112,9 +144,6 @@ class QualificationForm(autocomplete_light.ModelForm):
                   'leader', 'helpers',
                   'activity_A', 'activity_B', 'activity_C', 'actor', 'route',
                   'comments']
-        autocomplete_names = {'leader': 'Leaders',
-                              'helpers': 'Helpers',
-                              'actor': 'Actors'}
 
 
 class BSRadioRenderer(forms.widgets.RadioFieldRenderer):
