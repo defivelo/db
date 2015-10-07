@@ -21,14 +21,12 @@ from django.views.generic.list import ListView
 from apps.user.views import ActorsList, HelpersList
 from defivelo.views import MenuView
 
+from . import AVAILABILITY_FIELDKEY, STAFF_FIELDKEY
 from .forms import (
     QualificationForm, SeasonAvailabilityForm, SeasonForm,
     SeasonNewHelperAvailabilityForm, SeasonStaffChoiceForm, SessionForm,
 )
 from .models import HelperSessionAvailability, Qualification, Season, Session
-
-AVAILABILITY_FIELDKEY = 'avail-h{hpk}-s{spk}'
-STAFF_FIELDKEY = 'staff-h{hpk}-s{spk}'
 
 
 class SeasonMixin(MenuView):
@@ -117,18 +115,18 @@ class SeasonAvailabilityMixin(SeasonMixin):
                     for session in self.object.sessions_with_qualifs:
                         fieldkey = AVAILABILITY_FIELDKEY.format(
                             hpk=helper.pk, spk=session.pk)
+                        staffkey = STAFF_FIELDKEY.format(
+                            hpk=helper.pk, spk=session.pk)
                         try:
                             initials[fieldkey] = (
                                 helper_availability[session.id][0]
                             )
-                            initials[STAFF_FIELDKEY.format(
-                                hpk=helper.pk, spk=session.pk)] = (
+                            initials[staffkey] = (
                                 helper_availability[session.id][1]
                             )
                         except:
                             initials[fieldkey] = ''
-                            initials[STAFF_FIELDKEY.format(
-                                hpk=helper.pk, spk=session.pk)] = False
+                            initials[staffkey] = False
             return initials
 
     def get_context_data(self, **kwargs):

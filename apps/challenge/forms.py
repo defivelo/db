@@ -10,6 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from bootstrap3_datetime.widgets import DateTimePicker
 from localflavor.ch.forms import CHPhoneNumberField
 
+from . import AVAILABILITY_FIELDKEY, STAFF_FIELDKEY
 from .models import Qualification, Season, Session
 from .models.availability import HelperSessionAvailability
 from .models.qualification import MAX_MONO1_PER_QUALI
@@ -235,10 +236,10 @@ class SeasonAvailabilityForm(forms.Form):
             for helper_category, helpers in self.potential_helpers:
                 for helper in helpers:
                     for session in self.season.sessions_with_qualifs:
-                        availkey = 'avail-h{hpk}-s{spk}'.format(hpk=helper.pk,
+                        availkey = AVAILABILITY_FIELDKEY.format(hpk=helper.pk,
                                                                 spk=session.pk)
-                        staffkey = 'staff-h{hpk}-s{spk}'.format(hpk=helper.pk,
-                                                                spk=session.pk)
+                        staffkey = STAFF_FIELDKEY.format(hpk=helper.pk,
+                                                         spk=session.pk)
                         try:
                             fieldinit = self.initial[availkey]
                         except:
@@ -269,10 +270,10 @@ class SeasonStaffChoiceForm(forms.Form):
             for helper_category, helpers in self.available_helpers:
                 for helper in helpers:
                     for session in self.season.sessions_with_qualifs:
-                        availkey = 'avail-h{hpk}-s{spk}'.format(hpk=helper.pk,
+                        availkey = AVAILABILITY_FIELDKEY.format(hpk=helper.pk,
                                                                 spk=session.pk)
-                        staffkey = 'staff-h{hpk}-s{spk}'.format(hpk=helper.pk,
-                                                                spk=session.pk)
+                        staffkey = STAFF_FIELDKEY.format(hpk=helper.pk,
+                                                         spk=session.pk)
                         ## If the availability is not 'y' or 'i', skip that one
                         #if self.initial[availkey] not in ['i', 'y']:
                             #continue

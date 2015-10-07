@@ -8,6 +8,11 @@ from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
+from apps.challenge import (
+    AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX,
+    STAFF_FIELDKEY_HELPER_PREFIX,
+)
+
 register = template.Library()
 
 
@@ -44,7 +49,7 @@ def useravailsessions(form, user):
         return ''
     output = ''
     for key in form.fields:
-        if 'avail-h{hpk}'.format(hpk=user.pk) in key:
+        if AVAILABILITY_FIELDKEY_HELPER_PREFIX.format(hpk=user.pk) in key:
             output += '<td>{field}</td>'.format(
                 field=form.fields[key].widget.render(
                     key, form.fields[key].initial, attrs={'id': key})
@@ -59,11 +64,11 @@ def useravailsessions_readonly(struct, user, avail_content=None, sesskey=None,
         return ''
     output = ''
     for key in struct:
-        if 'avail-h{hpk}'.format(hpk=user.pk) in key:
+        if AVAILABILITY_FIELDKEY_HELPER_PREFIX.format(hpk=user.pk) in key:
             # If there's a sessionkey specified, skip the ones not
             # corresponding
             if sesskey:
-                if key != 'avail-h{hpk}-s{spk}'.format(hpk=user.pk,
+                if key != AVAILABILITY_FIELDKEY.format(hpk=user.pk,
                                                        spk=sesskey):
                     continue
             availability = struct[key]
@@ -86,7 +91,9 @@ def useravailsessions_readonly(struct, user, avail_content=None, sesskey=None,
             if onlyavail and availability not in ['y', 'i']:
                 avail_content = ' '
             output += (
-                '<td class="{avail_class}"{avail_verbose}>{avail_label}'
+                '<td class="{avail_class}"{avail_verbose}>'
+                '<!-- {key} -->'
+                '{avail_label}'
                 '</td>'
             ).format(
                 avail_class=avail_class,
@@ -97,6 +104,7 @@ def useravailsessions_readonly(struct, user, avail_content=None, sesskey=None,
                         % avail_label
                         if avail_label else '')
                     ),
+                key=key,
             )
     return mark_safe(output)
 
@@ -108,7 +116,7 @@ def userstaffsessions(form, user):
         return ''
     output = ''
     for key in form.fields:
-        if 'staff-h{hpk}'.format(hpk=user.pk) in key:
+        if STAFF_FIELDKEY_HELPER_PREFIX.format(hpk=user.pk) in key:
             # Lookout for the session key in the form field key, and pipe
             # it to the useravailsessions_readonly function
             sesskey = int(search(r'-s(\d+)', key).group(1))
