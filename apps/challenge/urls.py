@@ -10,9 +10,9 @@ from .views import (
     QualiCreateView, QualiDeleteView, QualiUpdateView, SeasonActorListView,
     SeasonAvailabilityUpdateView, SeasonAvailabilityView, SeasonCreateView,
     SeasonDeleteView, SeasonDetailView, SeasonHelperListView, SeasonListView,
-    SeasonStaffChoiceUpdateView, SeasonUpdateView, SessionStaffChoiceView,
-    SessionCreateView, SessionDeleteView, SessionDetailView, SessionsListView,
-    SessionUpdateView,
+    SeasonStaffChoiceUpdateView, SeasonUpdateView, SessionCreateView,
+    SessionDeleteView, SessionDetailView, SessionsListView,
+    SessionStaffChoiceView, SessionUpdateView,
 )
 
 urlpatterns = [
