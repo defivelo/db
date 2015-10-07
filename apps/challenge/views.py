@@ -58,11 +58,14 @@ class SeasonListView(SeasonMixin, YearArchiveView):
     allow_future = True
     context_object_name = 'seasons'
     make_object_list = True
-    pass
 
 
 class SeasonDetailView(SeasonMixin, DetailView):
-    pass
+    def get_context_data(self, **kwargs):
+        context = super(SeasonDetailView, self).get_context_data(**kwargs)
+        # Add our submenu_category context
+        context['submenu_category'] = 'season-detail'
+        return context
 
 
 class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
@@ -127,6 +130,12 @@ class SeasonAvailabilityMixin(SeasonMixin):
                             initials[STAFF_FIELDKEY.format(
                                 hpk=helper.pk, spk=session.pk)] = False
             return initials
+
+    def get_context_data(self, **kwargs):
+        context = super(SeasonAvailabilityMixin, self).get_context_data(**kwargs)
+        # Add our submenu_category context
+        context['submenu_category'] = 'season-availability'
+        return context
 
 
 class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
@@ -261,6 +270,12 @@ class SeasonDeleteView(SeasonMixin, SuccessMessageMixin, DeleteView):
 class SeasonHelperListView(HelpersList, SeasonMixin):
     page_title = _('Moniteurs de la saison')
 
+    def get_context_data(self, **kwargs):
+        context = super(SeasonHelperListView, self).get_context_data(**kwargs)
+        # Add our submenu_category context
+        context['submenu_category'] = 'season-helperlist'
+        return context
+
     def get_queryset(self):
         season = self.get_season()
         return (
@@ -273,6 +288,12 @@ class SeasonHelperListView(HelpersList, SeasonMixin):
 
 class SeasonActorListView(ActorsList, SeasonMixin):
     page_title = _('Intervenants de la saison')
+
+    def get_context_data(self, **kwargs):
+        context = super(SeasonActorListView, self).get_context_data(**kwargs)
+        # Add our submenu_category context
+        context['submenu_category'] = 'season-actorslist'
+        return context
 
     def get_queryset(self):
         season = self.get_season()

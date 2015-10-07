@@ -4,21 +4,37 @@
 <ul class="nav navbar-nav">
     <li{% if menu_category = 'home' %} class="active"{% endif %}><a href="{% url 'home' %}">{% trans "Accueil" %}</a></li>
     {% if request.user.is_authenticated %}
-        <li{% if 'season' in menu_category %} class="active"{% endif %}>
-            <a href="{% url 'season-list' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Saisons" %}<span class="caret"></span></a>
+        {% if season %}
+             <li class="active">
+                <a href="{% url 'season-detail' season.pk %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    {{ season.desc }} <span class="caret"></span>
+                </a>
                 <ul class="dropdown-menu">
-                {% for season in current_seasons %}
-                    <li><a href="{{ season.get_absolute_url }}">{{ season.desc }}</a></li>
-                {% endfor %}
-                {% if current_seasons %}
-                <li role="separator" class="divider"></li>
-                {% endif %}
-                <li><a href="{% url 'season-list' year=now.year %}">{% trans "Toutes les saisons" %}</a></li>
-                <li><a href="{% url 'season-create' %}">{% trans "Créer une saison" %}</a></li>
+                    <li{% if 'season-detail' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-detail' season.pk %}">{% trans "Toutes les sessions" %}</a></li>
+                    <li{% if 'season-availability' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-availabilities' season.pk %}">{% trans "Disponibilités" %}</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li{% if 'season-helperlist' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-helperlist' season.pk %}">{% trans "Liste des moniteurs" %}</a></li>
+                    <li{% if 'season-actorlist' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-actorlist' season.pk %}">{% trans "Liste des intervenants" %}</a></li>
                 </ul>
-        </li>
-        <li{% if 'user' in menu_category %} class="active"{% endif %}><a href="{% url 'user-list' %}">{% trans "Personnes" %}</a></li>
-        <li{% if 'organization' in menu_category  %} class="active"{% endif %}><a href="{% url 'organization-list' %}">{% trans "Établissements" %}</a></li>
+            </li>
+            <li><a href="{% url 'season-list' year=now.year %}">{% trans "Toutes les saisons" %}</a></li>
+        {% else %}
+            <li{% if 'season' in menu_category %} class="active"{% endif %}>
+                <a href="{% url 'season-list' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Saisons" %}<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                    {% for season in current_seasons %}
+                        <li><a href="{{ season.get_absolute_url }}">{{ season.desc }}</a></li>
+                    {% endfor %}
+                    {% if current_seasons %}
+                    <li role="separator" class="divider"></li>
+                    {% endif %}
+                    <li><a href="{% url 'season-list' year=now.year %}">{% trans "Toutes les saisons" %}</a></li>
+                    <li><a href="{% url 'season-create' %}">{% trans "Créer une saison" %}</a></li>
+                    </ul>
+            </li>
+            <li{% if 'user' in menu_category %} class="active"{% endif %}><a href="{% url 'user-list' %}">{% trans "Personnes" %}</a></li>
+            <li{% if 'organization' in menu_category  %} class="active"{% endif %}><a href="{% url 'organization-list' %}">{% trans "Établissements" %}</a></li>
+        {% endif %}
     {% endif %}
 </ul>
 
