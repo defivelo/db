@@ -1,6 +1,16 @@
-/* Comment */
+/* Dimensions dans la page */
+/* /!\ Divisible par 3 ! */
+$global-footer-height: 30px;
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
 body {
     padding-top: 70px;
+    /* Margin bottom by footer height */
+    margin-bottom: ($global-footer-height + 20px);
 }
 
 form.language-selector {
@@ -18,5 +28,17 @@ form.language-selector {
             text-decoration: none;
             background-color: #f5f5f5;
         }
+    }
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: #f5f5f5;
+    
+    .container .text-muted {
+        margin: $global-footer-height/3 0;
+        font-size: 0.7em;
     }
 }

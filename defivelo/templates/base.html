@@ -51,6 +51,15 @@
     {% endblock %}
     </div> <!-- /container -->
 {% endblock %}
+<footer class="footer">
+    <div class="container">
+        <p class="text-muted pull-right"><span title="Copyright">©</span> {% trans "Défi Vélo" %} 2015{% if now.year > 2015 %}-{{ now.year }}{% endif %}</p>
+        <ul class="list-inline text-muted">
+            <li><a href="https://github.com/defivelo/db"><span class="glyphicon glyphicon-wrench"></span> {% trans "Code source" %}</li>
+            <li><a href="https://github.com/defivelo/db/issues"><span class="glyphicon glyphicon-tasks"></span> {% trans "Rapports de bugs" %}</li>
+        </ul>
+    </div>
+</footer>
 {% if not 'javascript_in_head'|bootstrap_setting %}{% bootstrap_javascript jquery=True %}{% endif %}
 {% block bootstrap3_extra_script %}{% endblock %}
 {% compress js %}
