@@ -38,7 +38,10 @@ class SeasonMixin(MenuView):
 
     def get_season(self):
         if not hasattr(self, 'season'):
-            self.season = Season.objects.get(pk=int(self.kwargs['pk']))
+            try:
+                self.season = Season.objects.get(pk=int(self.kwargs['pk']))
+            except KeyError:
+                self.season = None
         return self.season
 
     def get_context_data(self, **kwargs):
