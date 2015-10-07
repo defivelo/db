@@ -5,6 +5,7 @@ import autocomplete_light
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from bootstrap3_datetime.widgets import DateTimePicker
@@ -79,26 +80,36 @@ class QualificationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         session = kwargs.pop('session')
         super(QualificationForm, self).__init__(*args, **kwargs)
-
-        available_staff = get_user_model().objects.filter(
-            availabilities__chosen=True,
-            availabilities__session=session
+        other_qualifs = session.qualifications.exclude(pk=self.instance.pk)
+        available_staff = (
+            get_user_model().objects.filter(
+                availabilities__chosen=True,
+                availabilities__session=session,
+            )
+            .exclude(
+                Q(qualifs_mon2__in=other_qualifs) |
+                Q(qualifs_mon1__in=other_qualifs) |
+                Q(qualifs_actor__in=other_qualifs)
+            )
         )
         self.fields['leader'] = LeaderChoiceField(
             label=_('Moniteur 2'),
-            queryset=available_staff.filter(profile__formation='M2')
+            queryset=available_staff.filter(profile__formation='M2'),
+            required=False,
         )
         self.fields['helpers'] = HelpersChoiceField(
             label=_('Moniteurs 1'),
             queryset=available_staff.filter(
                 profile__formation__in=['M1', 'M2']
-            )
+            ),
+            required=False,
         )
         self.fields['actor'] = ActorChoiceField(
             label=_('Intervenant'),
             queryset=available_staff.exclude(
                 profile__actor_for__isnull=True
-            )
+            ),
+            required=False
         )
 
     def clean(self):
