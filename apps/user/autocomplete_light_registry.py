@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.utils.html import escape
 
-from apps.challenge.models.qualification import MAX_MONO1_PER_QUALI
+from apps.challenge import MAX_MONO1_PER_QUALI
 
 
 class PersonAutocomplete(AutocompleteModelBase):

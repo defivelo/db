@@ -9,8 +9,8 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from apps.challenge import (
-    AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX,
-    STAFF_FIELDKEY, STAFF_FIELDKEY_HELPER_PREFIX,
+    AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX, STAFF_FIELDKEY,
+    STAFF_FIELDKEY_HELPER_PREFIX,
 )
 
 register = template.Library()

@@ -17,9 +17,8 @@ from apps.orga.models import Organization
 from localflavor.ch.ch_states import STATE_CHOICES
 from parler.models import TranslatableModel, TranslatedFields
 
+from .. import MAX_MONO1_PER_QUALI
 from .session import Session
-
-MAX_MONO1_PER_QUALI = 2
 
 
 @python_2_unicode_compatible

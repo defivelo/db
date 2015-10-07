@@ -11,10 +11,9 @@ from django.utils.translation import ugettext_lazy as _
 from bootstrap3_datetime.widgets import DateTimePicker
 from localflavor.ch.forms import CHPhoneNumberField
 
-from . import AVAILABILITY_FIELDKEY, STAFF_FIELDKEY
+from . import AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, STAFF_FIELDKEY
 from .models import Qualification, Season, Session
 from .models.availability import HelperSessionAvailability
-from .models.qualification import MAX_MONO1_PER_QUALI
 
 
 class SeasonForm(autocomplete_light.ModelForm):
