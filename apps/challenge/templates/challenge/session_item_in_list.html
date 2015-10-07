@@ -15,7 +15,7 @@
     </td>
     <td>
         {% if session.qualifications.count != 0 %}
-            <a href="{% url 'session-availabilities'  seasonpk=season.pk pk=session.pk %}">{% trans "Disponibilités" %}</a>
+            <a href="{% url 'session-staff-choices'  seasonpk=season.pk pk=session.pk %}">{% trans "Présences" %}</a>
         {% endif %}
     </td>
 </tr>

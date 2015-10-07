@@ -9,14 +9,44 @@
     </h1>
     <h2>{{ session.day|date:"j F" }}{% if session.begin %}, {{ session.begin }}{% endif %}</h2>
     
-    {% trans "Moniteurs 1" as label %}
-    {% include "challenge/session_availability_list.html" with availabilities=session.helper_availabilities.1 label=label only %}
-    
-    {% trans "Moniteurs 2" as label %}
-    {% include "challenge/session_availability_list.html" with availabilities=session.helper_availabilities.2 label=label only %}
-    
-    {% trans "Intervenants" as label %}
-    {% include "challenge/session_availability_list.html" with availabilities=session.actor_availabilities label=label only %}
+    <h3>
+        {% blocktrans count n=session.chosen_helpers.count with need=session.helper_needs.1 %}1/{{ need }} moniteur{% plural %}{{ n }}/{{ need }} moniteurs{% endblocktrans %}
+    </h3>
+
+    <table class="table">
+    {% for avail in session.chosen_helpers %}
+        {% ifchanged avail.helper.profile.formation %}
+        <tr>
+            <th colspan="2">
+                {{ avail.helper.profile.formation_icon }}
+
+                {% if avail.helper.profile.formation == 'M2' %}
+                    {% trans "Moniteurs 2" %} ({% blocktrans with need=session.helper_needs.2 %}au moins {{ need }}{% endblocktrans %})
+                {% else %}
+                    {% trans "Moniteurs 1" %}
+                {% endif %}
+            </th>
+        </tr>
+        {% endifchanged %}
+        <tr>
+            <td><span class="glyphicon glyphicon-{% if avail.availability == 'y' %}ok-sign{% elif avail.availability == 'i' %}ok-circle{% endif %}" aria-hidden="true" title="{% if avail.availability == 'y' %}{% trans "Oui" %}{% elif avail.availability == 'i' %}{% trans "Si nécessaire" %}{% endif %}"></span></td>
+            <td>{{ avail.helper.get_full_name }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+
+    <h3>
+        {% blocktrans count n=session.chosen_actors.count with need=session.actor_needs %}1/{{ need }} intervenant{% plural %}{{ n }}/{{ need }} intervenants{% endblocktrans %}
+    </h3>
+    <table class="table">
+    {% for avail in session.chosen_actors %}
+        <tr>
+            <td><span class="glyphicon glyphicon-{% if avail.availability == 'y' %}ok-sign{% elif avail.availability == 'i' %}ok-circle{% endif %}" aria-hidden="true" title="{% if avail.availability == 'y' %}{% trans "Oui" %}{% elif avail.availability == 'i' %}{% trans "Si nécessaire" %}{% endif %}"></span></td>
+            <td>{{ avail.helper.get_full_name }}</td>
+            <td>{{ avail.helper.profile.actor_for }}</td>
+        </tr>
+    {% endfor %}
+    </table>   
 
     <div class="hidden-print">
         <a class="btn btn-default" href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">{% trans "Retour à la session" %}</a>

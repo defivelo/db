@@ -98,9 +98,10 @@ class Session(Address, models.Model):
             return end.time()
 
     @property
-    def availabilities(self):
+    def chosen_staff(self):
         return (
             self.availability_statuses
+            .filter(chosen=True)
             .exclude(availability='n')
             .order_by('-availability')
         )
@@ -109,18 +110,24 @@ class Session(Address, models.Model):
     def n_qualifications(self):
         return self.qualifications.count()
 
-    def helper_availabilities(self):
-        formations = ['M1', 'M2']
-        return [0] + [
-            self.availabilities.filter(helper__profile__formation=f)
-            for f in formations]
+    def chosen_helpers(self):
+        return (
+            self.chosen_staff
+            .filter(helper__profile__formation__in=['M1', 'M2'])
+            .order_by('-helper__profile__formation',
+                      'helper__first_name',
+                      'helper__last_name')
+        )
 
     def helper_needs(self):
+        # Struct with 0:0, 1:needs in helper_formation 1, same for 2
         n_sessions = self.n_qualifications
-        return [0] + [n_sessions * 2, n_sessions]
+        return [0] + [n_sessions * (MAX_MONO1_PER_QUALI + 1), n_sessions]
 
-    def actor_availabilities(self):
-        return self.availabilities.exclude(helper__profile__actor_for__isnull=True)
+    def chosen_actors(self):
+        return self.chosen_staff.exclude(
+            helper__profile__actor_for__isnull=True
+        )
 
     def actor_needs(self):
         return self.n_qualifications

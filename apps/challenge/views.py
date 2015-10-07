@@ -377,7 +377,7 @@ class SessionDeleteView(SessionMixin, SuccessMessageMixin, DeleteView):
     success_url = reverse_lazy('session-list')
 
 
-class SessionAvailabilityView(SessionDetailView):
+class SessionStaffChoiceView(SessionDetailView):
     template_name = 'challenge/session_availability.html'
 
 
