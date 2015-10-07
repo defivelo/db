@@ -119,6 +119,9 @@ class Session(Address, models.Model):
                       'helper__last_name')
         )
 
+    def chosen_helpers_M2(self):
+        return self.chosen_helpers().filter(helper__profile__formation='M2')
+
     def helper_needs(self):
         # Struct with 0:0, 1:needs in helper_formation 1, same for 2
         n_sessions = self.n_qualifications

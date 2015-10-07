@@ -1,7 +1,7 @@
 {% load i18n %}
 <thead>
     <tr>
-        <td rowspan="5" colspan="{{ preamble_columns|default:1 }}">&nbsp;</td>
+        <td rowspan="{% if chosen_stats %}5{% else %}4{% endif %}" colspan="{{ preamble_columns|default:1 }}">&nbsp;</td>
         {% for session in sessions %}
             <th class="text-center">{{ session.day|date:"j F" }}</th>
         {% endfor %}</tr>
@@ -20,17 +20,37 @@
     <tr>{% for session in sessions %}
             <th class="text-center">{{ session.begin|date:"H\hi" }} - {{ session.end|date:"H\hi" }}</th>
         {% endfor %}</tr>
+
+    {% if chosen_stats %}
     <tr>{% for session in sessions %}
-            <td class="text-center">
-                <small>
-                    {% blocktrans count n=session.qualifications.count %}1 quali{% plural %}{{ n }} qualis{% endblocktrans %}
-                </small>
+            <td>
+            <p class="small">{% blocktrans count n=session.qualifications.count %}1 qualification{% plural %}{{ n }} qualifications{% endblocktrans %}</p>
+            <dl class="small dl-horizontal">
+                <dt>{% trans "Moniteurs 2" %}</dt>
+                <dd>{% if session.chosen_helpers_M2.count < session.helper_needs.2 %}
+                        {{ session.chosen_helpers_M2.count }}/{{ session.helper_needs.2 }}
+                    {% else %}
+                        <span class="glyphicon glyphicon-ok" title="{{ session.chosen_helpers_M2.count }}/{{ session.helper_needs.2 }}"></span>
+                    {% endif %}
+                </dd>
+                <dt>{% trans "Moniteurs" %}</dt>
+                <dd>{% if session.chosen_helpers.count < session.helper_needs.1 %}
+                        {{ session.chosen_helpers.count }}/{{ session.helper_needs.1 }}
+                    {% else %}
+                        <span class="glyphicon glyphicon-ok" title="{{ session.chosen_helpers.count }}/{{ session.helper_needs.1 }}"></span>
+                    {% endif %}
+                </dd>
+                </dd>
+
+                <dt>{% trans "Intervenants" %}</dt>
+                <dd>{% if session.chosen_actors.count < session.actor_needs %}
+                        {{ session.chosen_actors.count }}/{{ session.actor_needs }}
+                    {% else %}
+                        <span class="glyphicon glyphicon-ok" title="{{ session.chosen_actors.count }}/{{ session.actor_needs }}"></span>
+                    {% endif %}
+                </dd>
+            </dl>
             </td>
         {% endfor %}</tr>
-    {% comment %}
-    <!-- Add the id for debugging -->
-    <tr>{% for session in sessions %}
-            <th class="text-center">{{ session.id }}</th>
-        {% endfor %}</tr>
-    {% endcomment %}
+    {% endif %}
 </thead>

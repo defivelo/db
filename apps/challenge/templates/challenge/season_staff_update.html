@@ -13,7 +13,7 @@
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
         <table class="table text-center">
-        {% include "challenge/season_availability_thead.html" with sessions=season.sessions_with_qualifs season=season preamble_columns=2 only %}
+        {% include "challenge/season_availability_thead.html" with sessions=season.sessions_with_qualifs season=season preamble_columns=2 chosen_stats=1 only %}
         <tbody>
             {% for helper_category,helpers in available_helpers %}
                 {% if helpers %}
