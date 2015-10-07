@@ -65,6 +65,13 @@ class HelpersChoiceField(forms.ModelMultipleChoiceField):
         )
 
 
+class ActorChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return "{name} ({actor_for})".format(
+             name=obj.get_full_name(),
+             actor_for=obj.profile.actor_for.name)
+
+
 class QualificationForm(forms.ModelForm):
     class_teacher_natel = CHPhoneNumberField(label=_('Natel enseignant'),
                                              required=False)
@@ -73,18 +80,24 @@ class QualificationForm(forms.ModelForm):
         session = kwargs.pop('session')
         super(QualificationForm, self).__init__(*args, **kwargs)
 
-        available_helpers = get_user_model().objects.filter(
+        available_staff = get_user_model().objects.filter(
             availabilities__chosen=True,
             availabilities__session=session
         )
         self.fields['leader'] = LeaderChoiceField(
             label=_('Moniteur 2'),
-            queryset=available_helpers.filter(profile__formation='M2')
+            queryset=available_staff.filter(profile__formation='M2')
         )
         self.fields['helpers'] = HelpersChoiceField(
             label=_('Moniteurs 1'),
-            queryset=available_helpers.filter(
+            queryset=available_staff.filter(
                 profile__formation__in=['M1', 'M2']
+            )
+        )
+        self.fields['actor'] = ActorChoiceField(
+            label=_('Intervenant'),
+            queryset=available_staff.exclude(
+                profile__actor_for__isnull=True
             )
         )
 
@@ -92,7 +105,7 @@ class QualificationForm(forms.ModelForm):
         # Check that we don't have too many moniteurs 1
         helpers = self.cleaned_data.get('helpers')
         if helpers and helpers.count() > MAX_MONO1_PER_QUALI:
-            raise ValidationError(_('Pas plus de %s moniteurs 1 !') % MAX_MONO1_PER_QUALI)
+            raise ValidationError(_('Pas plus de %s moniteurs 1 !') % MAX_MONO1_PER_QUALI)
 
         # Check that all moniteurs are unique
         all_leaders_pk = []
@@ -223,7 +236,7 @@ class BSCheckBoxRenderer(forms.widgets.CheckboxFieldRenderer):
 
 class SeasonNewHelperAvailabilityForm(forms.Form):
     helper = autocomplete_light.ChoiceField('PersonsRelevantForSessions',
-                                            label=_('Disponibilités pour:'))
+                                            label=_('Disponibilités pour :'))
 
 
 class SeasonAvailabilityForm(forms.Form):
