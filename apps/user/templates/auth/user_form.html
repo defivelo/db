@@ -11,15 +11,56 @@
         {% endif %}</h2>
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
-        {% bootstrap_field form.first_name layout='horizontal' size='small' %}
-        {% bootstrap_field form.last_name layout='horizontal' size='small' %}
-        {% include "address_bootstrap_form.html" %}
-        {% bootstrap_field form.natel layout='horizontal' size='small' %}
-        {% bootstrap_field form.email layout='horizontal' size='small' %}
-        {% bootstrap_field form.iban layout='horizontal' size='small' %}
-        {% bootstrap_field form.social_security layout='horizontal' size='small' %}
-        {% bootstrap_field form.formation layout='horizontal' size='small' %}
-        {% bootstrap_field form.actor_for layout='horizontal' size='small' %}
+        
+        <div>
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#addr" aria-controls="coord" role="tab" data-toggle="tab">{% trans "Adresse" %}</a></li>
+            <li role="presentation"><a href="#contacts" aria-controls="contacts" role="tab" data-toggle="tab">{% trans "Contacts" %}</a></li>
+            <li role="presentation"><a href="#administrativia" aria-controls="administrativia" role="tab" data-toggle="tab">{% trans "Administratif" %}</a></li>
+            <li role="presentation"><a href="#defi" aria-controls="defi" role="tab" data-toggle="tab">{% trans "Défi" %}</a></li>
+            <li role="presentation"><a href="#notes" aria-controls="notes" role="tab" data-toggle="tab">{% trans "Notes" %}</a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="addr">        
+                {% bootstrap_field form.first_name layout='horizontal' size='small' %}
+                {% bootstrap_field form.last_name layout='horizontal' size='small' %}
+                {% include "address_bootstrap_form.html" %}
+            </div>
+            <div role="tabpanel" class="tab-pane" id="contacts">
+                {% bootstrap_field form.natel layout='horizontal' size='small' %}
+                {% bootstrap_field form.email layout='horizontal' size='small' %}
+            </div>
+            <div role="tabpanel" class="tab-pane" id="administrativia">
+                {% bootstrap_field form.iban layout='horizontal' size='small' %}
+                {% bootstrap_field form.social_security layout='horizontal' size='small' %}
+            </div>
+            <div role="tabpanel" class="tab-pane" id="defi">
+                {% bootstrap_field form.formation layout='horizontal' size='small' %}
+                {% bootstrap_field form.actor_for layout='horizontal' size='small' %}
+                {% bootstrap_field form.status layout='horizontal' size='small' %}
+                {% bootstrap_field form.pedagogical_experience layout='horizontal' size='small' %}
+                <div class="form-group form-group-sm">
+                    {% bootstrap_label form.firstmed_course.label label_class='col-md-3 control-label' %}
+                    <div class="col-md-1">
+                        <div class="checkbox">
+                            <label for="id_firstmed_course">{{ form.firstmed_course }}</label>
+                        </div>
+                    </div>
+                    {% bootstrap_field form.firstmed_course_comm field_class='col-md-8' form_group_class='none' show_label=False %}
+                </div>
+                {% bootstrap_field form.bagstatus layout='horizontal' size='small' %}
+            </div>
+            
+            <div role="tabpanel" class="tab-pane" id="notes">
+                {% bootstrap_field form.comments layout='horizontal' size='small' %}
+            </div>
+        </div>
+
+        </div>
 
         {% buttons %}
             <button type="submit" class="btn btn-primary pull-right">{% if userprofile %}{% trans 'Update' %}{% else %}{% trans 'Créer' %}{% endif %}</button>

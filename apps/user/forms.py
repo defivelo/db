@@ -14,7 +14,7 @@ from localflavor.ch.forms import (
 from localflavor.generic import forms as localforms
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 
-from .models import FORMATION_CHOICES
+from .models import BAGSTATUS_CHOICES, FORMATION_CHOICES, USERSTATUS_CHOICES
 
 
 class UserProfileForm(forms.ModelForm):
@@ -42,8 +42,26 @@ class UserProfileForm(forms.ModelForm):
                                   choices=FORMATION_CHOICES,
                                   required=False)
     actor_for = forms.ModelChoiceField(label=_('Intervenant'),
-                                       queryset=QualificationActivity.objects.filter(category='C'),
+                                       queryset=(
+                                           QualificationActivity.objects
+                                           .filter(category='C')
+                                       ),
                                        required=False)
+    status = forms.ChoiceField(label=_('Statut'),
+                               choices=USERSTATUS_CHOICES,
+                               required=False)
+    pedagogical_experience = forms.CharField(label=_('Expérience pédagogique'),
+                                             required=False)
+    firstmed_course = forms.BooleanField(label=_('Cours samaritain suivi'),
+                                         required=False)
+    firstmed_course_comm = forms.CharField(label=_('Cours samaritain suivi?'),
+                                           required=False)
+    bagstatus = forms.ChoiceField(label=_('Sac Défi Vélo'),
+                                  choices=BAGSTATUS_CHOICES,
+                                  required=False)
+    comments = forms.CharField(label=_('Remarques'), widget=forms.Textarea,
+                               required=False
+                               )
 
     class Meta:
         model = get_user_model()

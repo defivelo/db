@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from datetime import datetime
+
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
@@ -23,7 +25,10 @@ class ProfileMixin(MenuView):
     profile_fields = ['address_street', 'address_no', 'address_zip',
                       'address_city', 'address_canton', 'natel', 'iban',
                       'social_security',
-                      'formation', 'actor_for']
+                      'formation', 'actor_for', 'status',
+                      'pedagogical_experience',
+                      'firstmed_course', 'firstmed_course_comm',
+                      'bagstatus', 'comments']
 
     def get_context_data(self, **kwargs):
         context = super(ProfileMixin, self).get_context_data(**kwargs)
@@ -59,6 +64,13 @@ class ProfileMixin(MenuView):
         )
         for field in self.profile_fields:
             if field in form.cleaned_data:
+                # For field updates that have date markes, note them properly
+                if field in ['status', 'bagstatus']:
+                    oldstatus = getattr(userprofile, field)
+                    if int(oldstatus) != int(form.cleaned_data[field]):
+                        setattr(userprofile, '%s_updatetime' % field,
+                                datetime.now()
+                                )
                 setattr(userprofile, field, form.cleaned_data[field])
         userprofile.save()
         return ret
