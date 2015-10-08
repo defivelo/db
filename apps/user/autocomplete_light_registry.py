@@ -6,6 +6,8 @@ from django.utils.html import escape
 
 from apps.challenge import MAX_MONO1_PER_QUALI
 
+from .models import FORMATION_KEYS, FORMATION_M2
+
 
 class PersonAutocomplete(AutocompleteModelBase):
     search_fields = ['first_name', 'last_name']
@@ -30,11 +32,12 @@ al_register(PersonAutocomplete, name='AllPersons',
 
 al_register(PersonAutocomplete, name='PersonsRelevantForSessions',
             choices=get_user_model().objects.filter(
-                Q(profile__formation__in=['M1', 'M2']) | Q(profile__actor_for__isnull=False)
+                Q(profile__formation__in=FORMATION_KEYS) | Q(profile__actor_for__isnull=False)
             ),
             widget_attrs={
                 'data-widget-maximum-values': 1,
             })
+
 
 class HelpersAutocomplete(PersonAutocomplete):
     def choice_label(self, choice):
@@ -44,13 +47,16 @@ class HelpersAutocomplete(PersonAutocomplete):
 
 al_register(HelpersAutocomplete, name='Helpers',
             choices=get_user_model().objects.filter(
-                profile__formation__in=['M1', 'M2']
+                profile__formation__in=FORMATION_KEYS
                 ),
             widget_attrs={
                 'data-widget-maximum-values': MAX_MONO1_PER_QUALI,
             })
 al_register(HelpersAutocomplete, name='Leaders',
-            choices=get_user_model().objects.filter(profile__formation='M2'))
+            choices=get_user_model().objects.filter(
+                profile__formation=FORMATION_M2
+                )
+            )
 
 
 class ActorsAutocomplete(PersonAutocomplete):

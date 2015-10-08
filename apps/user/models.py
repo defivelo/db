@@ -16,11 +16,15 @@ from apps.common.models import Address
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from localflavor.generic.models import IBANField
 
+FORMATION_M1 = 'M1'
+FORMATION_M2 = 'M2'
+
 FORMATION_CHOICES = (
     ('', '----------'),
-    ('M1', _('Moniteur 1')),
-    ('M2', _('Moniteur 2')),
+    (FORMATION_M1, _('Moniteur 1')),
+    (FORMATION_M2, _('Moniteur 2')),
 )
+FORMATION_KEYS = [k[0] for k in FORMATION_CHOICES if k[0] != '']
 
 
 @python_2_unicode_compatible
@@ -55,9 +59,9 @@ class UserProfile(Address, models.Model):
     def formation_icon(self):
         icon = ''
         title = self.formation_full
-        if self.formation == 'M1':
+        if self.formation == FORMATION_M1:
             icon = 'tag'
-        elif self.formation == 'M2':
+        elif self.formation == FORMATION_M2:
             icon = 'tags'
         if icon:
             return mark_safe(

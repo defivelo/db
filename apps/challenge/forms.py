@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
+from apps.user.models import FORMATION_KEYS, FORMATION_M1, FORMATION_M2
 from bootstrap3_datetime.widgets import DateTimePicker
 from localflavor.ch.forms import CHPhoneNumberField
 
@@ -61,7 +62,10 @@ class HelpersChoiceField(forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
         return (
             obj.get_full_name() +
-            ' (%s)' % obj.profile.formation if obj.profile.formation != 'M1' else ''
+            ' (%s)' % (
+                obj.profile.formation
+                if obj.profile.formation != FORMATION_M1 else ''
+            )
         )
 
 
@@ -93,13 +97,13 @@ class QualificationForm(forms.ModelForm):
         )
         self.fields['leader'] = LeaderChoiceField(
             label=_('Moniteur 2'),
-            queryset=available_staff.filter(profile__formation='M2'),
+            queryset=available_staff.filter(profile__formation=FORMATION_M2),
             required=False,
         )
         self.fields['helpers'] = HelpersChoiceField(
             label=_('Moniteurs 1'),
             queryset=available_staff.filter(
-                profile__formation__in=['M1', 'M2']
+                profile__formation__in=FORMATION_KEYS
             ),
             required=False,
         )
