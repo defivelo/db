@@ -214,4 +214,8 @@ def defivelo_user_display(u):
 ACCOUNT_USER_DISPLAY = defivelo_user_display
 ACCOUNT_ADAPTER = 'defivelo.accounts.NoSignupAccountAdapter'
 
+# Email sender settings
+SERVER_EMAIL = get_env_variable('SERVER_EMAIL', 'noreply@defi-velo.ch')
+DEFAULT_FROM_EMAIL = get_env_variable('DEFAULT_FROM_EMAIL', 'noreply@defi-velo.ch')
+
 LOGIN_REDIRECT_URL = '/'
