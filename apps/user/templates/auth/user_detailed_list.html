@@ -35,8 +35,4 @@
     {% endfor %}
     </tbody>
     </table>
-    
-    <footer class="pull-right">
-    {% now "DATE_FORMAT" as now %}{% blocktrans with jour=now %}État au {{ jour }}{% endblocktrans %}
-    </footer>
 {% endblock %}

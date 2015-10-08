@@ -25,6 +25,8 @@
 </head>
 
 <body>
+{% include "print/header.html" %}
+
 {% block bootstrap3_content %}
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
@@ -46,12 +48,12 @@
     </nav>
     <div class="container" role="main">
     {% block container %}
-      {% bootstrap_messages %}
+      <span class="hidden-print">{% bootstrap_messages %}</span>
       {% block content %}{% endblock %}
     {% endblock %}
     </div> <!-- /container -->
 {% endblock %}
-<footer class="footer">
+<footer class="footer hidden-print">
     <div class="container">
     {% block footer %}
         <p class="text-muted pull-right"><span title="Copyright">©</span> {% trans "Défi Vélo" %} 2015{% if now.year > 2015 %}-{{ now.year }}{% endif %}</p>
@@ -63,6 +65,8 @@
     {% endblock %}
     </div>
 </footer>
+{% include "print/footer.html" %}
+
 {% if not 'javascript_in_head'|bootstrap_setting %}{% bootstrap_javascript jquery=True %}{% endif %}
 {% block bootstrap3_extra_script %}{% endblock %}
 {% compress js %}

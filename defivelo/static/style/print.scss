@@ -1,3 +1,38 @@
+// Page settings
+@page {
+    size: A4;
+    // Marges minimum pour A4
+    // margin: 10mm 10mm 15mm 10mm;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+}
+
+.container {
+    width: auto;
+}
+
+header#print-header {
+    #print-logo {
+        height: 1cm;
+        width: auto;
+    }
+}
+
+footer#print-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    margin: 0;
+    
+    #print-page-counter:after {
+        counter-increment: page;
+        content: counter(page); // Le compteur de pages total ne marche pas : "/"  counter(pages);
+    }
+}
+
 /* No underscores */
 a, a:visited {
     text-decoration: none;
