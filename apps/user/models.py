@@ -99,6 +99,12 @@ class UserProfile(Address, models.Model):
         return ''
 
     @property
+    def status_full(self):
+        if self.status:
+            return dict(USERSTATUS_CHOICES)[self.status]
+        return ''
+
+    @property
     def natel_int(self):
         if self.natel:
             # Delete spaces, drop initial 0, add +41

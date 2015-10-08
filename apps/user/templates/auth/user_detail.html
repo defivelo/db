@@ -14,20 +14,79 @@
                 {% endif %}
             </h2>
         </div>
-        <div class="adr panel-body">
-            <div class="street-address">{{ userprofile.profile.address_street }} {{ userprofile.profile.address_no }}</div>
-            <div>
-                <span class="postal-code">{{ userprofile.address_zip }}</span> <span class="locality">{{ userprofile.profile.address_city }}</span>
-                {% if userprofile.profile.address_canton %}
-                ({{ userprofile.profile.address_canton }})
-                {% endif %}
-            </div>
-            
-            <div>
-                {% if userprofile.email %}<a class="email" href="mailto:{{ userprofile.email }}">{{ userprofile.email }}</a><br />{% endif %}
-                {% if userprofile.profile.natel %}<a class="tel" href="tel:{{ userprofile.profile.natel }}">{{ userprofile.profile.natel }}</a><br />{% endif %}
-                {% if userprofile.profile.iban %}<div class="iban">{{ userprofile.profile.iban }}</div>{% endif %}
-                {% if userprofile.profile.social_security %}<div class="social_security">{{ userprofile.profile.social_security }}</div>{% endif %}
+        
+        <div class="panel-body">
+
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#addr" aria-controls="coord" role="tab" data-toggle="tab">{% trans "Adresse" %}</a></li>
+                <li role="presentation"><a href="#contacts" aria-controls="contacts" role="tab" data-toggle="tab">{% trans "Contacts" %}</a></li>
+                <li role="presentation"><a href="#administrativia" aria-controls="administrativia" role="tab" data-toggle="tab">{% trans "Administratif" %}</a></li>
+                <li role="presentation"><a href="#defi" aria-controls="defi" role="tab" data-toggle="tab">{% trans "Défi" %}</a></li>
+                <li role="presentation"><a href="#notes" aria-controls="notes" role="tab" data-toggle="tab">{% trans "Notes" %}</a></li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div role="tabpane" class="tab-pane active adr" id="addr">
+                    <dl class="dl-horizontal">
+                        <dt>{% trans "Nom" %}</dt>
+                            <dd>{{ userprofile.get_full_name }}</dd>
+                        <dt>{% trans "Adresse" %}</dt>
+                            <dd>
+                                <div class="street-address">{{ userprofile.profile.address_street }} {{ userprofile.profile.address_no }}</div>
+                                <div>
+                                    <span class="postal-code">{{ userprofile.address_zip }}</span> <span class="locality">{{ userprofile.profile.address_city }}</span>
+                                    {% if userprofile.profile.address_canton %}
+                                    ({{ userprofile.profile.address_canton }})
+                                    {% endif %}
+                                </div> 
+                        </dd>
+                    </dl>
+                </div>
+                <div role="tabpane" class="tab-pane" id="contacts">
+                    <dl class="dl-horizontal">
+                        {% if userprofile.email %}
+                            <dt>{% trans "Email" %}</dt>
+                                <dd><a class="email" href="mailto:{{ userprofile.email }}">{{ userprofile.email }}</a></dd>
+                        {% endif %}
+                        {% if userprofile.natel %}
+                            <dt>{% trans "Natel" %}</dt>
+                                <dd><a class="tel" href="mailto:{{ userprofile.profile.natel_int }}">{{ userprofile.profile.natel }}</a></dd>
+                        {% endif %}
+                    </dl>
+                </div>
+                <div role="tabpane" class="tab-pane" id="administrativia">
+                    <dl class="dl-horizontal">
+                        {% if userprofile.profile.iban %}
+                            <dt>{% trans "N° IBAN" %}</dt>
+                                <dd><tt>{{ userprofile.profile.iban }}</tt></dd>
+                        {% endif %}
+                        {% if userprofile.profile.social_security %}
+                            <dt>{% trans "N° AVS" %}</dt>
+                                <dd><tt>{{ userprofile.profile.social_security }}</tt></dd>
+                        {% endif %}
+                    </dl>
+                </div>
+                <div role="tabpane" class="tab-pane" id="defi">
+                    <dl class="dl-horizontal">
+                        <dt>{% trans "Formation" %}</dt><dd>{{ userprofile.profile.formation_full }}</dd>
+                        <dt>{% trans "Intervenant" %}</dt><dd>{{ userprofile.profile.actor_for.name }}</dd>
+                        <dt>{% trans "État" %}</dt>
+                            <dd>{% if userprofile.profile.status > 0 %}
+                                    {{ userprofile.profile.status_full }}
+                                    {% if userprofile.profile.status_updatetime %}
+                                        ({% trans "Dernière mise à jour: " %}{{ userprofile.profile.status_updatetime }})
+                                    {% endif %}
+                                {% endif %}
+                            </dd>
+                        <dt>{% trans "Exp. pédagogique" %}</dt><dd>{{ userprofile.profile.pedagogical_experience }}</dd>
+                        <dt>{% trans "Cours samaritain" %}</dt><dd><span class="glyphicon glyphicon-{% if userprofile.profile.firstmed_course %}check{% else %}unchecked{% endif %}"></span> {{ userprofile.profile.firstmed_course_comm }}</dd>
+                    </dl>
+                </div>
+                <div role="tabpane" class="tab-pane" id="notes">
+                    {{ userprofile.profile.comments }}
+                </div>
             </div>
         </div>
     </div>
