@@ -1,11 +1,12 @@
 {% load i18n %}
 {% load account %}
+{% now 'Y' as now_year %}
 
 <ul class="nav navbar-nav">
     <li{% if menu_category = 'home' %} class="active"{% endif %}><a href="{% url 'home' %}">{% trans "Accueil" %}</a></li>
     {% if request.user.is_authenticated %}
         {% if season %}
-            <li><a href="{% url 'season-list' year=now.year %}" title="{% trans "Toutes les saisons" %}"><span class="glyphicon glyphicon-th-list"></span>&nbsp;</a></li>
+            <li><a href="{% url 'season-list' year=now_year %}" title="{% trans "Toutes les saisons" %}"><span class="glyphicon glyphicon-th-list"></span>&nbsp;</a></li>
             <li class="active">
                 <a href="{% url 'season-detail' season.pk %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                     {{ season.desc }} <span class="caret"></span>
@@ -28,7 +29,7 @@
                     {% if current_seasons %}
                     <li role="separator" class="divider"></li>
                     {% endif %}
-                    <li><a href="{% url 'season-list' year=now.year %}">{% trans "Toutes les saisons" %}</a></li>
+                    <li><a href="{% url 'season-list' year=now_year %}">{% trans "Toutes les saisons" %}</a></li>
                     <li><a href="{% url 'season-create' %}">{% trans "Créer une saison" %}</a></li>
                     </ul>
             </li>
