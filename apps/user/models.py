@@ -10,9 +10,11 @@ from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+from multiselectfield import MultiSelectField
 
 from apps.challenge.models import QualificationActivity
 from apps.common.models import Address
+from localflavor.ch.ch_states import STATE_CHOICES
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from localflavor.generic.models import IBANField
 
@@ -26,6 +28,30 @@ FORMATION_CHOICES = (
 )
 FORMATION_KEYS = [k[0] for k in FORMATION_CHOICES if k[0] != '']
 
+USERSTATUS_UNDEF = 0
+USERSTATUS_ACTIVE = 10
+USERSTATUS_RESERVE = 20
+USERSTATUS_INACTIVE = 30
+USERSTATUS_ARCHIVE = 30
+
+USERSTATUS_CHOICES = (
+    (USERSTATUS_UNDEF, '---------'),
+    (USERSTATUS_ACTIVE, _('Actif')),
+    (USERSTATUS_RESERVE, _('Réserve')),
+    (USERSTATUS_INACTIVE, _('Inactif')),
+    (USERSTATUS_ARCHIVE, _('Archive')),
+)
+
+BAGSTATUS_NONE = 0
+BAGSTATUS_LOAN = 10
+BAGSTATUS_PAID = 20
+
+BAGSTATUS_CHOICES = (
+    (BAGSTATUS_NONE, '---'),
+    (BAGSTATUS_LOAN, _('En prêt')),
+    (BAGSTATUS_PAID, _('Payé')),
+)
+
 
 @python_2_unicode_compatible
 class UserProfile(Address, models.Model):
@@ -35,6 +61,9 @@ class UserProfile(Address, models.Model):
     iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)
     social_security = models.CharField(max_length=16, blank=True)
     natel = models.CharField(max_length=13, blank=True)
+    activity_cantons = MultiSelectField(_("Cantons d'affiliation"),
+                                        choices=STATE_CHOICES,
+                                        blank=True)
     formation = models.CharField(_("Formation"), max_length=2,
                                  choices=FORMATION_CHOICES,
                                  blank=True)
@@ -42,6 +71,26 @@ class UserProfile(Address, models.Model):
                                   related_name='actors',
                                   limit_choices_to={'category': 'C'},
                                   null=True, blank=True)
+    status = models.PositiveSmallIntegerField(
+        _("Statut"),
+        choices=USERSTATUS_CHOICES,
+        default=USERSTATUS_UNDEF)
+    status_updatetime = models.DateTimeField(null=True, blank=True)
+    pedagogical_experience = models.TextField(_('Expérience pédagogique'),
+                                              blank=True)
+    firstmed_course = models.BooleanField(_('Cours samaritains'),
+                                          default=False)
+    firstmed_course_comm = models.CharField(
+        _('Cours samaritains (spécifier)'),
+        max_length=255,
+        blank=True
+    )
+    bagstatus = models.PositiveSmallIntegerField(
+        _("Statut"),
+        choices=USERSTATUS_CHOICES,
+        default=USERSTATUS_UNDEF)
+    bagstatus_updatetime = models.DateTimeField(null=True, blank=True)
+    comments = models.TextField(_('Remarques'), blank=True)
 
     @property
     def formation_full(self):
