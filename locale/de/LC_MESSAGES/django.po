@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-07 14:18+0200\n"
+"POT-Creation-Date: 2015-10-08 12:03+0200\n"
 "PO-Revision-Date: 2015-08-28 13:58+0200\n"
 "Last-Translator: Didier Raboud <me+defivelo@odyx.org>\n"
 "Language-Team: Deutsch <>\n"
@@ -249,7 +249,7 @@ msgstr ""
 msgid "Saison"
 msgstr ""
 
-#: apps/challenge/models/season.py:29 defivelo/templates/header.html:23
+#: apps/challenge/models/season.py:29 defivelo/templates/header.html:24
 msgid "Saisons"
 msgstr ""
 
@@ -387,7 +387,7 @@ msgstr ""
 #: apps/challenge/templates/challenge/session_availability.html:5
 #: apps/challenge/templates/challenge/session_detail.html:34
 #: apps/challenge/templates/challenge/session_list_links.html:5
-#: defivelo/templates/header.html:15
+#: defivelo/templates/header.html:16
 msgid "Disponibilités"
 msgstr ""
 
@@ -445,7 +445,7 @@ msgstr ""
 
 #: apps/challenge/templates/challenge/season_detail.html:11
 #: apps/challenge/templates/challenge/session_archive_week.html:24
-#: defivelo/templates/header.html:14
+#: defivelo/templates/header.html:15
 msgid "Toutes les sessions"
 msgstr ""
 
@@ -696,7 +696,7 @@ msgstr "Kanton"
 
 #: apps/orga/models.py:21 apps/orga/templates/orga/organization_list.html:4
 #: apps/orga/templates/orga/organization_list.html:7
-#: defivelo/templates/header.html:36
+#: defivelo/templates/header.html:37
 msgid "Établissements"
 msgstr "Schule"
 
@@ -780,7 +780,7 @@ msgstr "E-Mail hinzufügen"
 msgid "État au %(jour)s"
 msgstr ""
 
-#: apps/user/templates/auth/user_form.html:6 defivelo/templates/header.html:48
+#: apps/user/templates/auth/user_form.html:6 defivelo/templates/header.html:49
 msgid "Profil"
 msgstr ""
 
@@ -828,11 +828,11 @@ msgstr ""
 msgid "Liste des utilisateurs"
 msgstr ""
 
-#: apps/user/views.py:128 defivelo/templates/header.html:17
+#: apps/user/views.py:128 defivelo/templates/header.html:18
 msgid "Liste des moniteurs"
 msgstr ""
 
-#: apps/user/views.py:138 defivelo/templates/header.html:18
+#: apps/user/views.py:138 defivelo/templates/header.html:19
 msgid "Liste des intervenants"
 msgstr ""
 
@@ -904,6 +904,60 @@ msgstr "E-Mail hinzufügen"
 #: defivelo/templates/account/email.html:60
 msgid "Do you really want to remove the selected e-mail address?"
 msgstr "Möchtest du wirklich die ausgewählte E-Mail-Adresse entfernen?"
+
+#: defivelo/templates/account/email/email_confirmation_message.txt:1
+#, python-format
+msgid ""
+"Hello from %(site_name)s!\n"
+"\n"
+"You're receiving this e-mail because user %(user_display)s at "
+"%(site_domain)s has given yours as an e-mail address to connect their "
+"account.\n"
+"\n"
+"To confirm this is correct, go to %(activate_url)s\n"
+msgstr ""
+
+#: defivelo/templates/account/email/email_confirmation_message.txt:7
+#, python-format
+msgid ""
+"Thank you from %(site_name)s!\n"
+"%(site_domain)s"
+msgstr ""
+
+#: defivelo/templates/account/email/email_confirmation_subject.txt:3
+#, fuzzy
+#| msgid "Confirm E-mail Address"
+msgid "Please Confirm Your E-mail Address"
+msgstr "E-Mail-Adresse bestätigen?"
+
+#: defivelo/templates/account/email/password_reset_key_message.txt:1
+#, python-format
+msgid ""
+"Hello from %(site_name)s!\n"
+"\n"
+"You're receiving this e-mail because you or someone else has requested a "
+"password for your user account at %(site_domain)s.\n"
+"It can be safely ignored if you did not request a password reset. Click the "
+"link below to reset your password."
+msgstr ""
+
+#: defivelo/templates/account/email/password_reset_key_message.txt:8
+#, python-format
+msgid "In case you forgot, your username is %(username)s."
+msgstr ""
+
+#: defivelo/templates/account/email/password_reset_key_message.txt:10
+#, python-format
+msgid ""
+"Thank you for using %(site_name)s!\n"
+"%(site_domain)s"
+msgstr ""
+
+#: defivelo/templates/account/email/password_reset_key_subject.txt:3
+#, fuzzy
+#| msgid "Password Reset"
+msgid "Password Reset E-mail"
+msgstr "Passwort zurücksetzen"
 
 #: defivelo/templates/account/email_confirm.html:6
 #: defivelo/templates/account/email_confirm.html:10
@@ -1002,7 +1056,7 @@ msgstr ""
 msgid "Your password is now changed."
 msgstr "Dein Passwort wurde geändert."
 
-#: defivelo/templates/base.html:8 defivelo/templates/header.html:5
+#: defivelo/templates/base.html:8 defivelo/templates/header.html:6
 msgid "Accueil"
 msgstr "Hauptseite"
 
@@ -1027,27 +1081,27 @@ msgstr ""
 msgid "Traduction"
 msgstr ""
 
-#: defivelo/templates/header.html:8 defivelo/templates/header.html.py:31
+#: defivelo/templates/header.html:9 defivelo/templates/header.html.py:32
 msgid "Toutes les saisons"
 msgstr ""
 
-#: defivelo/templates/header.html:32
+#: defivelo/templates/header.html:33
 msgid "Créer une saison"
 msgstr ""
 
-#: defivelo/templates/header.html:35
+#: defivelo/templates/header.html:36
 msgid "Personnes"
 msgstr ""
 
-#: defivelo/templates/header.html:49
+#: defivelo/templates/header.html:50
 msgid "Change password"
 msgstr ""
 
-#: defivelo/templates/header.html:50
+#: defivelo/templates/header.html:51
 msgid "Log out"
 msgstr ""
 
-#: defivelo/templates/header.html:54
+#: defivelo/templates/header.html:55
 msgid "Log in"
 msgstr ""
 
