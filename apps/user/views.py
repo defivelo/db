@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from datetime import datetime
-
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
 from django.db import IntegrityError
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DetailView
 from django.views.generic.edit import UpdateView
@@ -69,7 +68,7 @@ class ProfileMixin(MenuView):
                     oldstatus = getattr(userprofile, field)
                     if int(oldstatus) != int(form.cleaned_data[field]):
                         setattr(userprofile, '%s_updatetime' % field,
-                                datetime.now()
+                                timezone.now()
                                 )
                 setattr(userprofile, field, form.cleaned_data[field])
         userprofile.save()
