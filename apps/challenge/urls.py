@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.conf.urls import url
 from django.core.urlresolvers import reverse_lazy
 from django.utils import timezone
+from django.views.decorators.cache import never_cache
 from django.views.generic.base import RedirectView
 
 from .views import (
@@ -23,13 +24,13 @@ urlpatterns = [
         permanent=False
         ), name="season-list"),
     url(r'^y(?P<year>[0-9]{4})/$',
-        SeasonListView.as_view(),
+        never_cache(SeasonListView.as_view()),
         name='season-list'),
     url(r'^new/$', SeasonCreateView.as_view(), name="season-create"),
     url(r'^(?P<pk>[0-9]+)/update/$', SeasonUpdateView.as_view(),
         name="season-update"),
     url(r'^(?P<pk>[0-9]+)/$',
-        SeasonDetailView.as_view(),
+        never_cache(SeasonDetailView.as_view()),
         name='season-detail'),
     url(r'^(?P<pk>[0-9]+)/moniteurs/$',
         SeasonHelperListView.as_view(),
