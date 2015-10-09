@@ -70,17 +70,34 @@
                 </div>
                 <div role="tabpane" class="tab-pane" id="defi">
                     <dl class="dl-horizontal">
-                        <dt>{% trans "Formation" %}</dt><dd>{{ userprofile.profile.formation_full }}</dd>
-                        <dt>{% trans "Intervenant" %}</dt><dd>{{ userprofile.profile.actor_for.name }}</dd>
+                        {% if userprofile.profile.formation %}
+                            <dt>{% trans "Formation" %}</dt><dd>{{ userprofile.profile.formation_full }}</dd>
+                        {% endif %}
+                        {% if userprofile.profile.actor %}
+                            <dt>{% trans "Intervenant" %}</dt><dd>{{ userprofile.profile.actor_for.name }}</dd>
+                        {% endif %}
                         <dt>{% trans "État" %}</dt>
                             <dd>{% if userprofile.profile.status > 0 %}
+                                    {{ userprofile.profile.status_icon }}
                                     {{ userprofile.profile.status_full }}
                                     {% if userprofile.profile.status_updatetime %}
                                         ({% trans "Dernière mise à jour: " %}{{ userprofile.profile.status_updatetime }})
                                     {% endif %}
                                 {% endif %}
                             </dd>
-                        <dt>{% trans "Exp. pédagogique" %}</dt><dd>{{ userprofile.profile.pedagogical_experience }}</dd>
+                        
+                        <dt>{% trans "Sac Défi Vélo" %}</dt>
+                            <dd>{% if userprofile.profile.bagstatus > 0 %}
+                                    {{ userprofile.profile.bagstatus_icon }}
+                                    {{ userprofile.profile.bagstatus_full }}
+                                    {% if userprofile.profile.bagstatus_updatetime %}
+                                        ({% trans "Dernière mise à jour: " %}{{ userprofile.profile.status_updatetime }})
+                                    {% endif %}
+                                {% endif %}
+                            </dd>
+                        {% if userprofile.profile.pedagogical_experience %}
+                            <dt>{% trans "Exp. pédagogique" %}</dt><dd>{{ userprofile.profile.pedagogical_experience }}</dd>
+                        {% endif %}
                         <dt>{% trans "Cours samaritain" %}</dt><dd><span class="glyphicon glyphicon-{% if userprofile.profile.firstmed_course %}check{% else %}unchecked{% endif %}"></span> {{ userprofile.profile.firstmed_course_comm }}</dd>
                     </dl>
                 </div>

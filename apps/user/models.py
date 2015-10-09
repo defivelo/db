@@ -52,6 +52,11 @@ BAGSTATUS_CHOICES = (
     (BAGSTATUS_PAID, _('Payé')),
 )
 
+STDGLYPHICON = (
+    '<span class="glyphicon glyphicon-{icon}" aria-hidden="true"'
+    '      title="{title}"></span> '
+)
+
 
 @python_2_unicode_compatible
 class UserProfile(Address, models.Model):
@@ -104,6 +109,21 @@ class UserProfile(Address, models.Model):
             return dict(USERSTATUS_CHOICES)[self.status]
         return ''
 
+    def status_icon(self):
+        icon = ''
+        title = self.status_full
+        if self.status == USERSTATUS_ACTIVE:
+            icon = 'star'
+        elif self.status == USERSTATUS_RESERVE:
+            icon = 'star-empty'
+        elif self.status == USERSTATUS_INACTIVE:
+            icon = 'hourglass'
+        elif self.status == USERSTATUS_ARCHIVE:
+            icon = 'folder-close'
+        if icon:
+            return mark_safe(STDGLYPHICON.format(icon=icon, title=title))
+        return ''
+
     @property
     def natel_int(self):
         if self.natel:
@@ -119,12 +139,7 @@ class UserProfile(Address, models.Model):
         elif self.formation == FORMATION_M2:
             icon = 'tags'
         if icon:
-            return mark_safe(
-                '<span class="glyphicon glyphicon-{icon}" aria-hidden="true"'
-                ' title="{title}"></span>'.format(
-                    icon=icon,
-                    title=title)
-            )
+            return mark_safe(STDGLYPHICON.format(icon=icon, title=title))
         return ''
 
     @property
@@ -133,11 +148,27 @@ class UserProfile(Address, models.Model):
 
     def actor_icon(self):
         if self.actor:
-            return mark_safe(
-                '<span class="glyphicon glyphicon-sunglasses"'
-                ' aria-hidden="true" title="{title}"></span>'.format(
-                    title=self.actor_for.name)
-            )
+            return mark_safe(STDGLYPHICON.format(icon='sunglasses',
+                                                 title=self.actor_for))
+        return ''
+
+    @property
+    def bagstatus_full(self):
+        if self.bagstatus:
+            return dict(BAGSTATUS_CHOICES)[self.bagstatus]
+        return ''
+
+    def bagstatus_icon(self):
+        icon = ''
+        title = self.bagstatus_full
+        if self.bagstatus == BAGSTATUS_NONE:
+            icon = 'unchecked'
+        elif self.bagstatus == BAGSTATUS_LOAN:
+            icon = 'new-window'
+        elif self.bagstatus == BAGSTATUS_PAID:
+            icon = 'check'
+        if icon:
+            return mark_safe(STDGLYPHICON.format(icon=icon, title=title))
         return ''
 
     def __str__(self):
