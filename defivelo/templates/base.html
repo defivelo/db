@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load bootstrap3 static compress i18n %}
+{% load dv_filters %}
 <html{% if request.LANGUAGE_CODE %} lang="{{ request.LANGUAGE_CODE }}"{% endif %}>
 <head>
     <meta charset="utf-8">
@@ -56,9 +57,12 @@
 <footer class="footer hidden-print">
     <div class="container">
     {% block footer %}
-        <p class="text-muted pull-right"><span title="Copyright">©</span> {% trans "Défi Vélo" %} 2015{% if now.year > 2015 %}-{{ now.year }}{% endif %}</p>
-        <ul class="hidden-print list-inline text-muted">
-            <li><a href="https://github.com/defivelo/db"><span class="glyphicon glyphicon-wrench"></span> {% trans "Code source" %}</li>
+        <ul class="list-inline text-muted pull-right">
+            <li><a href="https://github.com/defivelo/db/commit/{% vcs_commit %}">{% blocktrans with vcs_version as ver %}Version {{ ver }}{% endblocktrans %}</a></li>
+            <li><span title="Copyright">©</span> {% trans "Défi Vélo" %} 2015{% if now.year > 2015 %}-{{ now.year }}{% endif %}</li>>
+        </ul>
+        <ul class="list-inline text-muted">
+            <li><a href="https://github.com/defivelo/db/"><span class="glyphicon glyphicon-wrench"></span> {% trans "Code source" %}</li>
             <li><a href="https://github.com/defivelo/db/issues"><span class="glyphicon glyphicon-tasks"></span> {% trans "Rapports de bugs" %}</li>
             <li><a href="https://www.transifex.com/defivelo/db"><span class="glyphicon glyphicon-globe"></span> {% trans "Traduction" %}</a></li>
         </ul>

@@ -16,6 +16,16 @@ from apps.challenge import (
 register = template.Library()
 
 
+@register.simple_tag
+def vcs_version():
+    return settings.VCS_VERSION
+
+
+@register.simple_tag
+def vcs_commit():
+    return settings.VCS_COMMIT
+
+
 @register.filter
 def setlang(request, newlang):
     """ Replace language code in request.path with the new language code

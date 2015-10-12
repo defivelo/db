@@ -219,3 +219,7 @@ SERVER_EMAIL = get_env_variable('SERVER_EMAIL', 'noreply@defi-velo.ch')
 DEFAULT_FROM_EMAIL = get_env_variable('DEFAULT_FROM_EMAIL', 'noreply@defi-velo.ch')
 
 LOGIN_REDIRECT_URL = '/'
+
+
+VCS_VERSION = get_env_variable('VCS_VERSION', '0')
+VCS_COMMIT = get_env_variable('VCS_COMMIT', '0')
