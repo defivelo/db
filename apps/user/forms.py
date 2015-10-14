@@ -14,6 +14,7 @@ from localflavor.ch.forms import (
 from localflavor.generic import forms as localforms
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 
+from . import STATE_CHOICES_WITH_DEFAULT
 from .models import BAGSTATUS_CHOICES, FORMATION_CHOICES, USERSTATUS_CHOICES
 
 
@@ -27,9 +28,7 @@ class UserProfileForm(forms.ModelForm):
                                    required=False)
     address_canton = forms.ChoiceField(label=_('Canton'),
                                        widget=CHStateSelect,
-                                       choices=tuple(
-                                           list((('', _('Canton'),),)) +
-                                           list(STATE_CHOICES)),
+                                       choices=STATE_CHOICES_WITH_DEFAULT,
                                        required=False)
     natel = CHPhoneNumberField(label=_('Natel'), required=False)
     iban = localforms.IBANFormField(label=_('Coordonnées bancaires (IBAN)'),

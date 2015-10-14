@@ -73,6 +73,7 @@ class UserProfile(Address, models.Model):
                                  choices=FORMATION_CHOICES,
                                  blank=True)
     actor_for = models.ForeignKey(QualificationActivity,
+                                  verbose_name=_('Intervenant'),
                                   related_name='actors',
                                   limit_choices_to={'category': 'C'},
                                   null=True, blank=True)
