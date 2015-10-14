@@ -38,11 +38,16 @@ class SessionForm(autocomplete_light.ModelForm):
         label=_('Date'),
         widget=DateTimePicker(options={"format": "YYYY-MM-DD",
                                        "pickTime": False}))
+    begin = forms.TimeField(
+        label=_('Début'),
+        widget=DateTimePicker(icon_attrs={'class': 'glyphicon'},
+                              options={"format": "HH:mm",
+                                       "pickDate": False,
+                                       "minuteStepping": 15}))
 
     class Meta:
         model = Session
         labels = {
-            'begin': _('Horaire'),
             'organization': _('Établissement'),
         }
         fields = ['organization', 'day', 'begin', 'fallback_plan',
