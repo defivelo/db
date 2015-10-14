@@ -56,9 +56,9 @@
                             <dt>{% trans "Email" %}</dt>
                                 <dd><a class="email" href="mailto:{{ userprofile.email }}">{{ userprofile.email }}</a></dd>
                         {% endif %}
-                        {% if userprofile.natel %}
+                        {% if userprofile.profile.natel %}
                             <dt>{% trans "Natel" %}</dt>
-                                <dd><a class="tel" href="mailto:{{ userprofile.profile.natel_int }}">{{ userprofile.profile.natel }}</a></dd>
+                                <dd><a class="tel" href="tel:{{ userprofile.profile.natel_int }}">{{ userprofile.profile.natel }}</a></dd>
                         {% endif %}
                     </dl>
                 </div>
