@@ -44,6 +44,7 @@ class SessionForm(autocomplete_light.ModelForm):
                               "pickTime": False}))
     begin = forms.TimeField(
         label=_('Début'),
+        required=False,
         widget=DateTimePicker({'placeholder': 'HH:mm'},
                               icon_attrs={'class': 'glyphicon'},
                               options={"format": "HH:mm",
@@ -54,11 +55,20 @@ class SessionForm(autocomplete_light.ModelForm):
                                        choices=STATE_CHOICES_WITH_DEFAULT,
                                        required=False)
     apples = forms.CharField(label=_('Pommes'),
+                             required=False,
                              widget=forms.TextInput(
                                  {'placeholder': _(
                                      'Organisation de la livraison de pommes '
                                      '(quantité & logistique)'
                                      )}))
+    helpers_time = forms.TimeField(
+        label=_('Heure rendez-vous moniteurs'),
+        required=False,
+        widget=DateTimePicker({'placeholder': 'HH:mm'},
+                              icon_attrs={'class': 'glyphicon'},
+                              options={"format": "HH:mm",
+                                       "pickDate": False,
+                                       "minuteStepping": 15}))
 
     class Meta:
         model = Session
