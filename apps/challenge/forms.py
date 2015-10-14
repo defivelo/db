@@ -20,12 +20,14 @@ from .models.availability import HelperSessionAvailability
 class SeasonForm(autocomplete_light.ModelForm):
     begin = forms.DateField(
         label=_('Début'),
-        widget=DateTimePicker(options={"format": "YYYY-MM-DD",
-                                       "pickTime": False}))
+        widget=DateTimePicker({'placeholder': 'YYYY-MM-DD'},
+                              options={"format": "YYYY-MM-DD",
+                              "pickTime": False}))
     end = forms.DateField(
         label=_('Fin'),
-        widget=DateTimePicker(options={"format": "YYYY-MM-DD",
-                                       "pickTime": False}))
+        widget=DateTimePicker({'placeholder': 'YYYY-MM-DD'},
+                              options={"format": "YYYY-MM-DD",
+                              "pickTime": False}))
 
     class Meta:
         model = Season
