@@ -8,9 +8,9 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
+from apps.common.forms import SwissDateField, SwissTimeField
 from apps.user import STATE_CHOICES_WITH_DEFAULT
 from apps.user.models import FORMATION_KEYS, FORMATION_M1, FORMATION_M2
-from bootstrap3_datetime.widgets import DateTimePicker
 from localflavor.ch.forms import CHPhoneNumberField, CHStateSelect
 
 from . import AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, STAFF_FIELDKEY
@@ -19,16 +19,8 @@ from .models.availability import HelperSessionAvailability
 
 
 class SeasonForm(autocomplete_light.ModelForm):
-    begin = forms.DateField(
-        label=_('Début'),
-        widget=DateTimePicker({'placeholder': 'YYYY-MM-DD'},
-                              options={"format": "YYYY-MM-DD",
-                              "pickTime": False}))
-    end = forms.DateField(
-        label=_('Fin'),
-        widget=DateTimePicker({'placeholder': 'YYYY-MM-DD'},
-                              options={"format": "YYYY-MM-DD",
-                              "pickTime": False}))
+    begin = SwissDateField(label=_('Début'))
+    end = SwissDateField(label=_('Fin'))
 
     class Meta:
         model = Season
@@ -37,19 +29,8 @@ class SeasonForm(autocomplete_light.ModelForm):
 
 
 class SessionForm(autocomplete_light.ModelForm):
-    day = forms.DateField(
-        label=_('Date'),
-        widget=DateTimePicker({'placeholder': 'YYYY-MM-DD'},
-                              options={"format": "YYYY-MM-DD",
-                              "pickTime": False}))
-    begin = forms.TimeField(
-        label=_('Début'),
-        required=False,
-        widget=DateTimePicker({'placeholder': 'HH:mm'},
-                              icon_attrs={'class': 'glyphicon'},
-                              options={"format": "HH:mm",
-                                       "pickDate": False,
-                                       "minuteStepping": 15}))
+    day = SwissDateField(label=_('Date'))
+    begin = SwissTimeField(label=_('Début'), required=False)
     address_canton = forms.ChoiceField(label=_('Canton'),
                                        widget=CHStateSelect,
                                        choices=STATE_CHOICES_WITH_DEFAULT,
@@ -61,14 +42,8 @@ class SessionForm(autocomplete_light.ModelForm):
                                      'Organisation de la livraison de pommes '
                                      '(quantité & logistique)'
                                      )}))
-    helpers_time = forms.TimeField(
-        label=_('Heure rendez-vous moniteurs'),
-        required=False,
-        widget=DateTimePicker({'placeholder': 'HH:mm'},
-                              icon_attrs={'class': 'glyphicon'},
-                              options={"format": "HH:mm",
-                                       "pickDate": False,
-                                       "minuteStepping": 15}))
+    helpers_time = SwissTimeField(label=_('Heure rendez-vous moniteurs'),
+                                  required=False)
 
     class Meta:
         model = Session
