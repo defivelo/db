@@ -36,11 +36,13 @@ class SeasonForm(autocomplete_light.ModelForm):
 class SessionForm(autocomplete_light.ModelForm):
     day = forms.DateField(
         label=_('Date'),
-        widget=DateTimePicker(options={"format": "YYYY-MM-DD",
-                                       "pickTime": False}))
+        widget=DateTimePicker({'placeholder': 'YYYY-MM-DD'},
+                              options={"format": "YYYY-MM-DD",
+                              "pickTime": False}))
     begin = forms.TimeField(
         label=_('Début'),
-        widget=DateTimePicker(icon_attrs={'class': 'glyphicon'},
+        widget=DateTimePicker({'placeholder': 'HH:mm'},
+                              icon_attrs={'class': 'glyphicon'},
                               options={"format": "HH:mm",
                                        "pickDate": False,
                                        "minuteStepping": 15}))
