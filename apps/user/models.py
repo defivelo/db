@@ -179,3 +179,5 @@ class UserProfile(Address, models.Model):
 def User_pre_save(sender, **kwargs):
     if not kwargs['instance'].username:
         kwargs['instance'].username = uuid.uuid4().hex[0:30]
+        # Mark new users as inactive, to not let them get a login
+        kwargs['instance'].is_active = False
