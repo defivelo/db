@@ -8,9 +8,10 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
+from apps.user import STATE_CHOICES_WITH_DEFAULT
 from apps.user.models import FORMATION_KEYS, FORMATION_M1, FORMATION_M2
 from bootstrap3_datetime.widgets import DateTimePicker
-from localflavor.ch.forms import CHPhoneNumberField
+from localflavor.ch.forms import CHPhoneNumberField, CHStateSelect
 
 from . import AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, STAFF_FIELDKEY
 from .models import Qualification, Season, Session
@@ -48,6 +49,10 @@ class SessionForm(autocomplete_light.ModelForm):
                               options={"format": "HH:mm",
                                        "pickDate": False,
                                        "minuteStepping": 15}))
+    address_canton = forms.ChoiceField(label=_('Canton'),
+                                       widget=CHStateSelect,
+                                       choices=STATE_CHOICES_WITH_DEFAULT,
+                                       required=False)
 
     class Meta:
         model = Session
