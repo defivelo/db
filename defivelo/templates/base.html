@@ -58,7 +58,7 @@
     <div class="container">
     {% block footer %}
         <ul class="list-inline text-muted pull-right">
-            <li><a href="https://github.com/defivelo/db/commit/{% vcs_commit %}">{% blocktrans with vcs_version as ver %}Version {{ ver }}{% endblocktrans %}</a></li>
+            <li><a href="https://github.com/defivelo/db/commit/{% vcs_commit %}">{% vcs_version as vcs_version %}{% blocktrans %}Version {{ vcs_version }}{% endblocktrans %}</a></li>
             <li><span title="Copyright">©</span> {% trans "Défi Vélo" %} 2015{% if now.year > 2015 %}-{{ now.year }}{% endif %}</li>>
         </ul>
         <ul class="list-inline text-muted">

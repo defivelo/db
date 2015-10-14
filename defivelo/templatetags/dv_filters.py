@@ -16,7 +16,7 @@ from apps.challenge import (
 register = template.Library()
 
 
-@register.simple_tag
+@register.assignment_tag
 def vcs_version():
     return settings.VCS_VERSION
 
