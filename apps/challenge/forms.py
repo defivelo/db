@@ -53,6 +53,12 @@ class SessionForm(autocomplete_light.ModelForm):
                                        widget=CHStateSelect,
                                        choices=STATE_CHOICES_WITH_DEFAULT,
                                        required=False)
+    apples = forms.CharField(label=_('Pommes'),
+                             widget=forms.TextInput(
+                                 {'placeholder': _(
+                                     'Organisation de la livraison de pommes '
+                                     '(quantité & logistique)'
+                                     )}))
 
     class Meta:
         model = Session
