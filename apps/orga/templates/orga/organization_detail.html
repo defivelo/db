@@ -9,7 +9,12 @@
             <h2 class="panel-title"><a href="{{ organization.get_absolute_url }}" class="organization-name">{{ organization.name }}</a></h2>
         </div>
         <div class="adr panel-body">
-            <div class="street-address">{{ organization.address_street }} {{ organization.address_no }}</div>
+            <div class="street-address">
+                {{ organization.address_street }} {{ organization.address_no }}
+                {% if organization.address_additional %}
+                    <br />{{ organization.address_additional }}
+                {% endif %}
+            </div>
             <div>
                 <span class="postal-code">{{ organization.address_zip }}</span> <span class="locality">{{ organization.address_city }}</span>
                 {% if organization.address_canton %}

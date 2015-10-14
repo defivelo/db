@@ -19,5 +19,5 @@ class OrganizationForm(forms.ModelForm):
 
     class Meta:
         model = Organization
-        fields = ['name', 'address_street', 'address_no', 'address_zip',
-                  'address_city', 'address_canton']
+        fields = ['name', 'address_street', 'address_no', 'address_additional',
+                  'address_zip', 'address_city', 'address_canton']
