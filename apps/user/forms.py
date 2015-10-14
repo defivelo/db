@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django import forms
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
+from multiselectfield.forms.fields import MultiSelectFormField
 
 from apps.challenge.models import QualificationActivity
 from localflavor.ch.ch_states import STATE_CHOICES
@@ -61,6 +62,10 @@ class UserProfileForm(forms.ModelForm):
     comments = forms.CharField(label=_('Remarques'), widget=forms.Textarea,
                                required=False
                                )
+    activity_cantons = MultiSelectFormField(
+        label=_("Cantons d'affiliation"),
+        choices=STATE_CHOICES,
+        required=False)
 
     class Meta:
         model = get_user_model()

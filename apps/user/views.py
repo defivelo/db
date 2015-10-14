@@ -1,20 +1,31 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import operator
+from functools import reduce
+
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
 from django.db import IntegrityError
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DetailView
 from django.views.generic.edit import UpdateView
 from django.views.generic.list import ListView
+from django_filters import (
+    FilterSet, MethodFilter, ModelMultipleChoiceFilter, MultipleChoiceFilter,
+)
+from django_filters.views import FilterView
+from filters.views import FilterMixin
 
+from apps.challenge.models import QualificationActivity
 from defivelo.views import MenuView
 
+from . import STATE_CHOICES_WITH_DEFAULT
 from .forms import UserProfileForm
-from .models import UserProfile
+from .models import FORMATION_CHOICES, USERSTATUS_CHOICES, UserProfile
 
 
 class ProfileMixin(MenuView):
@@ -27,7 +38,7 @@ class ProfileMixin(MenuView):
                       'formation', 'actor_for', 'status',
                       'pedagogical_experience',
                       'firstmed_course', 'firstmed_course_comm',
-                      'bagstatus', 'comments']
+                      'bagstatus', 'activity_cantons', 'comments']
 
     def get_context_data(self, **kwargs):
         context = super(ProfileMixin, self).get_context_data(**kwargs)
@@ -109,13 +120,54 @@ class UserCreate(ProfileMixin, SuccessMessageMixin, UpdateView):
         return reverse_lazy('user-list')
 
 
-class UserList(ProfileMixin, ListView):
+class UserProfileFilterSet(FilterSet):
+    def filter_activity_cantons(queryset, value):
+        if value:
+            allcantons_filter = [
+                Q(profile__activity_cantons__contains=canton) for canton in value
+            ]
+            return queryset.filter(reduce(operator.or_, allcantons_filter))
+        return queryset
+
+    profile__activity_cantons = MultipleChoiceFilter(
+        label=_("Cantons d'affiliation"),
+        choices=STATE_CHOICES_WITH_DEFAULT,
+        action=filter_activity_cantons
+    )
+    profile__status = MultipleChoiceFilter(
+        label=_('Statut'),
+        choices=USERSTATUS_CHOICES
+    )
+    profile__formation = MultipleChoiceFilter(
+        label=_('Formation'),
+        choices=FORMATION_CHOICES
+    )
+    profile__actor_for = ModelMultipleChoiceFilter(
+        label=_('Intervenant'),
+        queryset=QualificationActivity.objects.all()
+    )
+
+    class Meta:
+        model = get_user_model()
+        fields = ['profile__status',
+                  'profile__formation',
+                  'profile__actor_for',
+                  'profile__activity_cantons',
+                  ]
+
+
+class UserList(ProfileMixin, FilterMixin, FilterView):
+    filterset_class = UserProfileFilterSet
     context_object_name = 'users'
     paginate_by = 10
     paginate_orphans = 3
 
     def get_queryset(self):
-        return self.model.objects.order_by('first_name', 'last_name')
+        return (
+            super(UserList, self).get_queryset()
+            .prefetch_related('profile')
+            .order_by('first_name', 'last_name')
+        )
 
 
 class UserDetailedList(UserList):

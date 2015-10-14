@@ -56,6 +56,7 @@ UPSTREAM_APPS = (
     'localflavor',
     'parler',
     'multiselectfield',
+    'django_filters',
 )
 
 # Project apps tested by jenkins (everything in apps/)

@@ -14,20 +14,26 @@
                 {% endif %}
             </h2>
         </div>
-        
-        <div class="panel-body">
 
+        <div class="panel-body">
+        {% comment %}
             <!-- Nav tabs -->
             <ul class="nav nav-tabs" role="tablist">
                 <li role="presentation" class="active"><a href="#addr" aria-controls="coord" role="tab" data-toggle="tab">{% trans "Adresse" %}</a></li>
                 <li role="presentation"><a href="#contacts" aria-controls="contacts" role="tab" data-toggle="tab">{% trans "Contacts" %}</a></li>
-                <li role="presentation"><a href="#administrativia" aria-controls="administrativia" role="tab" data-toggle="tab">{% trans "Administratif" %}</a></li>
+                {% if userprofile.profile.iban or userprofile.profile.social_security %}
+                    <li role="presentation"><a href="#administrativia" aria-controls="administrativia" role="tab" data-toggle="tab">{% trans "Administratif" %}</a></li>
+                {% endif %}
                 <li role="presentation"><a href="#defi" aria-controls="defi" role="tab" data-toggle="tab">{% trans "Défi" %}</a></li>
-                <li role="presentation"><a href="#notes" aria-controls="notes" role="tab" data-toggle="tab">{% trans "Notes" %}</a></li>
+
+                {% if userprofile.profile.comments %}
+                    <li role="presentation"><a href="#notes" aria-controls="notes" role="tab" data-toggle="tab">{% trans "Notes" %}</a></li>
+                {% endif %}
             </ul>
+        {% endcomment %}
 
             <!-- Tab panes -->
-            <div class="tab-content">
+            <div>
                 <div role="tabpane" class="tab-pane active adr" id="addr">
                     <dl class="dl-horizontal">
                         <dt>{% trans "Nom" %}</dt>
@@ -40,7 +46,7 @@
                                     {% if userprofile.profile.address_canton %}
                                     ({{ userprofile.profile.address_canton }})
                                     {% endif %}
-                                </div> 
+                                </div>
                         </dd>
                     </dl>
                 </div>
@@ -85,25 +91,36 @@
                                     {% endif %}
                                 {% endif %}
                             </dd>
-                        
-                        <dt>{% trans "Sac Défi Vélo" %}</dt>
-                            <dd>{% if userprofile.profile.bagstatus > 0 %}
-                                    {{ userprofile.profile.bagstatus_icon }}
-                                    {{ userprofile.profile.bagstatus_full }}
-                                    {% if userprofile.profile.bagstatus_updatetime %}
-                                        ({% trans "Dernière mise à jour: " %}{{ userprofile.profile.status_updatetime }})
-                                    {% endif %}
-                                {% endif %}
-                            </dd>
+                        {% if userprofile.profile.bagstatus > 0 %}
+                            <dt>{% trans "Sac Défi Vélo" %}</dt>
+                                <dd>
+                                        {{ userprofile.profile.bagstatus_icon }}
+                                        {{ userprofile.profile.bagstatus_full }}
+                                        {% if userprofile.profile.bagstatus_updatetime %}
+                                            ({% trans "Dernière mise à jour: " %}{{ userprofile.profile.status_updatetime }})
+                                        {% endif %}
+                                </dd>
+                        {% endif %}
                         {% if userprofile.profile.pedagogical_experience %}
                             <dt>{% trans "Exp. pédagogique" %}</dt><dd>{{ userprofile.profile.pedagogical_experience }}</dd>
                         {% endif %}
                         <dt>{% trans "Cours samaritain" %}</dt><dd><span class="glyphicon glyphicon-{% if userprofile.profile.firstmed_course %}check{% else %}unchecked{% endif %}"></span> {{ userprofile.profile.firstmed_course_comm }}</dd>
                     </dl>
                 </div>
-                <div role="tabpane" class="tab-pane" id="notes">
-                    {{ userprofile.profile.comments }}
-                </div>
+                {% if userprofile.profile.activity_cantons %}
+                    <div role="tabpane" class="tab-pane" id="cantons">
+                        <dl class="dl-horizontal">
+                            <dt>{% trans "Cantons d'affiliation" %}</dt>
+                            <dd>{{ userprofile.profile.activity_cantons_verb|join:"<br />" }}
+                            </dd>
+                        </dl>
+                    </div>
+                {% endif %}
+                {% if userprofile.profile.comments %}
+                    <div role="tabpane" class="tab-pane" id="notes">
+                       {{ userprofile.profile.comments }}
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

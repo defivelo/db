@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load account %}
+{% load bootstrap3 %}
+{% block head_title %}{% trans "Users" %}{% endblock %}
+
+{% block content %}
+    {% if filter.form %}
+        <div class="modal fade bs-user-filters-modal" tabindex="-1" role="dialog" aria-labelledby="filters">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="{% trans "Fermer" %}"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">{% trans "Filtrer la liste des utilisateurs" %}</h4>
+                    </div>
+                    <div class="modal-body">
+                    <form method="GET" action="." class="form-inline">
+                        {% bootstrap_form filter.form size='small' show_help=False %}
+
+                        <div class="modal-footer">
+                            {% buttons %}
+                                <a href="{% url 'user-list' %}" class="btn btn-default">{% trans 'Reset' %}</a>
+                                <button type="submit" class="btn btn-primary">{% trans 'Filter' %}</button>
+                            {% endbuttons %}
+                        </div>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="hidden-print">
+        <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target=".bs-user-filters-modal">
+            <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
+            {% trans "Filtres" %}
+        </button>
+    </div>
+
+    <table class="table">
+    <thead>
+        <tr>
+            <th>{% trans "Prénom" %}</th>
+            <th>{% trans "Nom" %}</th>
+            <th>{% trans "Statut" %}</th>
+            <th>{% trans "Rôle" %}</th>
+            <th>{# Boutons #}</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for user in users %}
+        <tr>
+            <td><a href="{% url 'user-detail' pk=user.pk %}">{{ user.first_name }}</a></td>
+            <td><a href="{% url 'user-detail' pk=user.pk %}">{{ user.last_name }}</a></td>
+            <td>
+                {{ user.profile.status_icon|safe }}
+            </td>
+            <td>
+                {{ user.profile.formation_icon|safe }}
+                {{ user.profile.actor_icon|default:"" }}
+            </td>
+            <td>
+                <a class="btn btn-primary btn-xs" href="{% url 'user-update' pk=user.pk %}">
+                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                    {% trans "Éditer" %}
+                </a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+
+    {% if page_obj %}
+    <nav class="hidden-print">
+        <ul class="pager">
+        {% if page_obj.has_previous %}
+            <li class="previous btn-xs">
+                <a href="{% url 'user-list' %}?page={{ page_obj.previous_page_number }}{% for key,value in request.GET.items %}{% ifnotequal key 'page' %}&{{ key }}={{ value }}{% endifnotequal %}{% endfor %}">
+                    <span aria-hidden="true">&larr;</span> {% blocktrans with page_obj.previous_page_number as number %}Page {{number}}{% endblocktrans %}
+                </a>
+            </li>
+        {% endif %}
+        {% if page_obj.has_next %}
+            <li class="next btn-xs">
+                <a href="{% url 'user-list' %}?page={{ page_obj.next_page_number }}{% for key,value in request.GET.items %}{% ifnotequal key 'page' %}&{{ key }}={{ value }}{% endifnotequal %}{% endfor %}">
+                    {% blocktrans with page_obj.next_page_number as number %}Page {{number}}{% endblocktrans %} <span aria-hidden="true">&rarr;</span>
+                </a>
+            </li>
+        {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    <div class="hidden-print">
+        <a class="btn btn-primary pull-right" href="{% url 'user-create' %}">
+            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+            {% trans "Nouvel utilisateur" %}
+        </a>
+    </div>
+
+{% endblock %}

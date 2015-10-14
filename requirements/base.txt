@@ -14,3 +14,5 @@ django-allauth==0.23.0
 django-autocomplete-light==2.2.5
 -e git+https://github.com/defivelo/django-parler@9d7848f48d30ca5ab28a97ed1cf7aa7354279fb4#egg=django_parler==1.5+defivelo0
 django-multiselectfield==0.1.3
+django-filter==0.11.0
+django-filters-mixin==0.1.2

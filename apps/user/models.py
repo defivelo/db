@@ -172,6 +172,11 @@ class UserProfile(Address, models.Model):
             return mark_safe(STDGLYPHICON.format(icon=icon, title=title))
         return ''
 
+    @property
+    def activity_cantons_verb(self):
+        if self.activity_cantons:
+            return [c[1] for c in STATE_CHOICES if c[0] in self.activity_cantons]
+
     def __str__(self):
         return self.user.get_full_name()
 

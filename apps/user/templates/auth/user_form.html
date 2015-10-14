@@ -11,21 +11,25 @@
         {% endif %}</h2>
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
-        
+
         <div>
 
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active"><a href="#addr" aria-controls="coord" role="tab" data-toggle="tab">{% trans "Adresse" %}</a></li>
-            <li role="presentation"><a href="#contacts" aria-controls="contacts" role="tab" data-toggle="tab">{% trans "Contacts" %}</a></li>
-            <li role="presentation"><a href="#administrativia" aria-controls="administrativia" role="tab" data-toggle="tab">{% trans "Administratif" %}</a></li>
-            <li role="presentation"><a href="#defi" aria-controls="defi" role="tab" data-toggle="tab">{% trans "Défi" %}</a></li>
-            <li role="presentation"><a href="#notes" aria-controls="notes" role="tab" data-toggle="tab">{% trans "Notes" %}</a></li>
-        </ul>
+        {% comment %}
+        {# Pas pour l'instant #}
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#addr" aria-controls="coord" role="tab" data-toggle="tab">{% trans "Adresse" %}</a></li>
+                <li role="presentation"><a href="#contacts" aria-controls="contacts" role="tab" data-toggle="tab">{% trans "Contacts" %}</a></li>
+                <li role="presentation"><a href="#administrativia" aria-controls="administrativia" role="tab" data-toggle="tab">{% trans "Administratif" %}</a></li>
+                <li role="presentation"><a href="#defi" aria-controls="defi" role="tab" data-toggle="tab">{% trans "Défi" %}</a></li>
+                <li role="presentation"><a href="#cantons" aria-controls="cantons" role="tab" data-toggle="tab">{% trans "Cantons" %}</a></li>
+                <li role="presentation"><a href="#notes" aria-controls="notes" role="tab" data-toggle="tab">{% trans "Notes" %}</a></li>
+            </ul>
+        {% endcomment %}
 
         <!-- Tab panes -->
-        <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="addr">        
+        <div{% comment %} class="tab-content"{% endcomment %}>
+            <div role="tabpanel" class="tab-pane active" id="addr">
                 {% bootstrap_field form.first_name layout='horizontal' size='small' %}
                 {% bootstrap_field form.last_name layout='horizontal' size='small' %}
                 {% include "address_bootstrap_form.html" %}
@@ -54,7 +58,10 @@
                 </div>
                 {% bootstrap_field form.bagstatus layout='horizontal' size='small' %}
             </div>
-            
+            <div role="tabpanel" class="tab-pane" id="cantons">
+                {% bootstrap_field form.activity_cantons layout='horizontal' size='small' %}
+            </div>
+
             <div role="tabpanel" class="tab-pane" id="notes">
                 {% bootstrap_field form.comments layout='horizontal' size='small' %}
             </div>
