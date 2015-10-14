@@ -132,6 +132,16 @@ class UserProfile(Address, models.Model):
             return '+41' + self.natel.replace(' ', '')[1:]
         return ''
 
+    @property
+    def iban_nice(self):
+        if self.iban:
+            value = self.iban
+            # Code stolen from https://django-localflavor.readthedocs.org/en/latest/_modules/localflavor/generic/forms/#IBANFormField.prepare_value
+            grouping = 4
+            value = value.upper().replace(' ', '').replace('-', '')
+            return ' '.join(value[i:i + grouping] for i in range(0, len(value), grouping))
+        return ''
+
     def formation_icon(self):
         icon = ''
         title = self.formation_full
