@@ -46,7 +46,7 @@ class QualificationActivity(TranslatableModel):
 @python_2_unicode_compatible
 class Qualification(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
-    name = models.CharField(_('Nom'), max_length=255)  # TODO: Replace with automated or classes objects
+    name = models.CharField(_('Nom de la classe'), max_length=255)  # TODO: Replace with automated or classes objects
     session = models.ForeignKey(Session,
                                 related_name='qualifications')
     class_teacher_fullname = models.CharField(_('Enseignant'), max_length=512,
