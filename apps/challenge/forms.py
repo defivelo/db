@@ -152,7 +152,9 @@ class QualificationForm(forms.ModelForm):
                     code='unqualified-actor')
 
         # Check that there are <= helmets or bikes than participants
-        n_participants = self.cleaned_data.get('n_participants', 0)
+        n_participants = self.cleaned_data.get('n_participants')
+        if not n_participants:
+            n_participants = 0
         n_bikes = self.cleaned_data.get('n_bikes')
         if n_bikes and int(n_bikes) > int(n_participants):
             raise ValidationError(

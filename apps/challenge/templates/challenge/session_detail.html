@@ -5,15 +5,16 @@
 {% block head_title %}{% trans "Session" %} {{ session.pk }}{% endblock %}
 
 {% block content %}
-    <h1>{{ session.organization.name }}{% if session.address_city %}, {{ session.address_city }}{% elif session.organization.address_city %}, {{ session.organization.address_city }}{% endif %}
+    <h1>
+        {{ session.organization.name }}{% if session.address_city %}, {{ session.address_city }}{% elif session.organization.address_city %}, {{ session.organization.address_city }}{% endif %}
+        <small>{{ session.day|date }}{% if session.begin %}, {{ session.begin|time }}{% endif %}</small>
     </h1>
-    <h2>{{ session.day|date:"j F" }}{% if session.begin %}, {{ session.begin }}{% endif %}</h2>
 
     <div class="hidden-print">
         <a class="btn btn-primary pull-right" href="{% url 'session-update' seasonpk=season.pk pk=session.pk %}">{% trans "Éditer" %}</a>
     </div>
     <table class="table">
-    <tr class="hidden-print"><th>{% trans "Établissement" %}</th>
+    <tr><th>{% trans "Établissement" %}</th>
         <td><a href="{% url 'organization-detail' session.organization.pk %}">{{ session.organization }}</a></td>
     </tr>
     <tr><th>{% trans "Emplacement de la session" %}</th>
@@ -27,7 +28,18 @@
     {% endif %}
     {% if session.fallback %}
         <tr><th>{% trans "Mauvais temps" %}</th><td>{{ session.fallback }}</td></tr>
-    {% endif %} 
+    {% endif %}
+    {% if session.n_bikes > 0 or session.n_helmets > 0 %}
+        <tr><th>{% trans "Besoins" %}</th>
+            <td>{% if session.n_bikes > 0 %}
+                    {% blocktrans count n=session.n_bikes %}1 vélo{% plural %}{{ n }} vélos{% endblocktrans %}
+                {% endif %}
+                {% if session.n_helmets > 0 %}<br />
+                    {% blocktrans count n=session.n_helmets %}1 casque{% plural %}{{ n }} casques{% endblocktrans %}
+                {% endif %}
+            </td>
+        </tr>
+    {% endif %}
     {% if session.apples %}
         <tr><th>{% trans "Pommes" %}</th><td>{{ session.apples }}</td></tr>
     {% endif %} 

@@ -6,9 +6,10 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.template.defaultfilters import date
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
@@ -85,20 +86,20 @@ class Session(Address, models.Model):
                     ])
                 )
 
-    @property
+    @cached_property
     def fallback(self):
         if self.fallback_plan:
             return dict(self.FALLBACK_CHOICES)[self.fallback_plan]
         return ''
 
-    @property
+    @cached_property
     def end(self):
         if self.begin and self.duration:
             day = self.day if self.day else datetime.today()
             end = datetime.combine(day, self.begin) + self.duration
             return end.time()
 
-    @property
+    @cached_property
     def chosen_staff(self):
         return (
             self.availability_statuses
@@ -107,7 +108,7 @@ class Session(Address, models.Model):
             .order_by('-availability')
         )
 
-    @property
+    @cached_property
     def n_qualifications(self):
         return self.qualifications.count()
 
@@ -143,6 +144,19 @@ class Session(Address, models.Model):
                 Q(leader=user) | Q(helpers=user) | Q(actor=user)
             ).exists()
         )
+
+    def n_quali_things(self, field):
+        return sum(
+            [q for q in self.qualifications.values_list(field, flat=True)]
+        )
+
+    @cached_property
+    def n_bikes(self):
+        return self.n_quali_things('n_bikes')
+
+    @cached_property
+    def n_helmets(self):
+        return self.n_quali_things('n_helmets')
 
     def helpers_time_with_default(self):
         if self.helpers_time:
