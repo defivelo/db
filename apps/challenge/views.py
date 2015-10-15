@@ -252,7 +252,7 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
                             ).update(chosen=form.cleaned_data[fieldkey])
                     except:  # if the fieldkey's not in cleaned_data, or other reasons
                         pass
-        return HttpResponseRedirect(reverse_lazy('season-staff-update',
+        return HttpResponseRedirect(reverse_lazy('season-availabilities',
                                                  kwargs={'pk': self.object.pk}))
 
 
