@@ -14,7 +14,6 @@
             <th>{# Attributs #}</th>
             <th>{% trans "Prénom" %}</th>
             <th>{% trans "Nom" %}</th>
-            <th>{% trans "Canton" %}</th>
             <th>{% trans "Natel" %}</th>
             <th>{% trans "Email" %}</th>
         </tr>
@@ -28,7 +27,6 @@
             </td>
             <td>{{ user.first_name }}</td>
             <td>{{ user.last_name }}</td>
-            <td>{{ user.profile.canton }}</td>
             <td>{% if user.profile.natel %}<a href="tel:{{ user.profile.natel_int }}">{{ user.profile.natel }}</a>{% endif %}</td>
             <td>{% if user.profile.email %}<a href="mailto:{{ user.profile.email }}">{{ user.profile.email }}</a>{% endif %}</td>
         </tr>
