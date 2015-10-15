@@ -102,9 +102,9 @@ class UserProfile(Address, models.Model):
         blank=True
     )
     bagstatus = models.PositiveSmallIntegerField(
-        _("Statut"),
-        choices=USERSTATUS_CHOICES,
-        default=USERSTATUS_UNDEF)
+        _('Sac Défi Vélo'),
+        choices=BAGSTATUS_CHOICES,
+        default=BAGSTATUS_NONE)
     bagstatus_updatetime = models.DateTimeField(null=True, blank=True)
     comments = models.TextField(_('Remarques'), blank=True)
 
