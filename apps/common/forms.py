@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from bootstrap3_datetime.widgets import DateTimePicker
-
-from localflavor.generic.forms import (
-    DEFAULT_DATE_INPUT_FORMATS, DateField,
-)
 from django.forms import TimeField
+
+from bootstrap3_datetime.widgets import DateTimePicker
+from localflavor.generic.forms import DEFAULT_DATE_INPUT_FORMATS, DateField
 
 SWISS_DATE_INPUT_FORMAT = '%d.%m.%Y'
 SWISS_DATE_DISPLAY_FORMAT = 'DD.MM.YYYY'
