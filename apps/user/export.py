@@ -29,7 +29,7 @@ class ObjectMethodWidget(widgets.Widget):
         return super(ObjectMethodWidget, self).__init__(*args, **kwargs)
 
     def render(self, object):
-        return force_text(getattr(object, self.method))
+        return force_text(getattr(object, self.method, ''))
 
 ALL_PROFILE_FIELDS = tuple(
     ['first_name', 'last_name', 'email'] +
