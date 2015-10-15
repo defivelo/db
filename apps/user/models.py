@@ -3,11 +3,11 @@ from __future__ import unicode_literals
 
 import uuid
 
-from django.utils import timezone
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -58,6 +58,13 @@ STDGLYPHICON = (
     '      title="{title}"></span> '
 )
 
+STD_PROFILE_FIELDS = ['address_street', 'address_no', 'address_zip',
+                      'address_city', 'address_canton', 'birthdate', 'natel',
+                      'iban', 'social_security',
+                      'formation', 'actor_for', 'status',
+                      'pedagogical_experience',
+                      'firstmed_course', 'firstmed_course_comm',
+                      'bagstatus', 'activity_cantons', 'comments']
 
 @python_2_unicode_compatible
 class UserProfile(Address, models.Model):

@@ -25,20 +25,16 @@ from defivelo.views import MenuView
 
 from . import STATE_CHOICES_WITH_DEFAULT
 from .forms import UserProfileForm
-from .models import FORMATION_CHOICES, USERSTATUS_CHOICES, UserProfile
+from .models import (
+    FORMATION_CHOICES, STD_PROFILE_FIELDS, USERSTATUS_CHOICES, UserProfile,
+)
 
 
 class ProfileMixin(MenuView):
     model = get_user_model()
     context_object_name = 'userprofile'
     form_class = UserProfileForm
-    profile_fields = ['address_street', 'address_no', 'address_zip',
-                      'address_city', 'address_canton', 'birthdate', 'natel',
-                      'iban', 'social_security',
-                      'formation', 'actor_for', 'status',
-                      'pedagogical_experience',
-                      'firstmed_course', 'firstmed_course_comm',
-                      'bagstatus', 'activity_cantons', 'comments']
+    profile_fields = STD_PROFILE_FIELDS
 
     def get_context_data(self, **kwargs):
         context = super(ProfileMixin, self).get_context_data(**kwargs)

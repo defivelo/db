@@ -6,8 +6,8 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 from multiselectfield.forms.fields import MultiSelectFormField
 
-from apps.common.forms import SwissDateField
 from apps.challenge.models import QualificationActivity
+from apps.common.forms import SwissDateField
 from localflavor.ch.ch_states import STATE_CHOICES
 from localflavor.ch.forms import (
     CHPhoneNumberField, CHSocialSecurityNumberField, CHStateSelect,

@@ -42,7 +42,7 @@
                             <dd>
                                 <div class="street-address">{{ userprofile.profile.address_street }} {{ userprofile.profile.address_no }}</div>
                                 <div>
-                                    <span class="postal-code">{{ userprofile.address_zip }}</span> <span class="locality">{{ userprofile.profile.address_city }}</span>
+                                    <span class="postal-code">{{ userprofile.profile.address_zip }}</span> <span class="locality">{{ userprofile.profile.address_city }}</span>
                                     {% if userprofile.profile.address_canton %}
                                     ({{ userprofile.profile.address_canton }})
                                     {% endif %}
