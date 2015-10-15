@@ -74,7 +74,7 @@
         <tr><th>{% trans "Classe" %}</th>
                 {% for quali in session.qualifications.all %}
                     <td>{{ quali.class_teacher_fullname }}<br />
-                        <small><a href="tel:{{ quali.class_teacher_natel }}">{{ quali.class_teacher_natel }}</a></small>
+                        <small><a href="tel:{{ quali.class_teacher_natel|tel_int }}">{{ quali.class_teacher_natel }}</a></small>
                         {% if quali.n_participants %}<br />
                             {% blocktrans with n=quali.n_participants %}{{ n }} participants{% endblocktrans %}
                         {% endif %}

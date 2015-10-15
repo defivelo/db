@@ -45,13 +45,20 @@ def profile_tag(user):
     usertag += user.get_full_name()
     if user.profile.natel:
         usertag += (
-            '<br /><small><a href="tel:{natel}">{natel}</a></small>'
-            .format(natel=user.profile.natel)
+            '<br /><small><a href="tel:{natel_int}">{natel}</a></small>'
+            .format(natel_int=user.profile.natel_int,
+                    natel=user.profile.natel)
             )
     usertag += '</span>'
 
     return mark_safe(usertag)
 
+@register.filter
+def tel_int(tel):
+    if not tel:
+        return ''
+    # Delete spaces, drop initial 0, add +41
+    return '+41' + tel.replace(' ', '')[1:]
 
 @register.filter
 def useravailsessions(form, user):
