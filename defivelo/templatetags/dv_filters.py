@@ -55,6 +55,9 @@ def profile_tag(user):
 
 @register.filter
 def useravailsessions(form, user):
+    """
+    Output cells with form widget for all sessions concerning that user
+    """
     if not form or not user:
         return ''
     output = ''
@@ -70,6 +73,10 @@ def useravailsessions(form, user):
 @register.filter
 def useravailsessions_readonly(struct, user, avail_content=None, sesskey=None,
                                onlyavail=False):
+    """
+    Output cells with the state of the availability / choice for all sessions,
+    for that user
+    """
     if not struct or not user:
         return ''
     output = ''
@@ -135,9 +142,12 @@ def useravailsessions_readonly(struct, user, avail_content=None, sesskey=None,
     return mark_safe(output)
 
 
-
 @register.filter
 def userstaffsessions(form, user):
+    """
+    Output cells with the form widgets for session choice
+    for that user
+    """
     if not form or not user:
         return ''
     output = ''
