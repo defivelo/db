@@ -33,8 +33,8 @@ class ProfileMixin(MenuView):
     context_object_name = 'userprofile'
     form_class = UserProfileForm
     profile_fields = ['address_street', 'address_no', 'address_zip',
-                      'address_city', 'address_canton', 'natel', 'iban',
-                      'social_security',
+                      'address_city', 'address_canton', 'birthdate', 'natel',
+                      'iban', 'social_security',
                       'formation', 'actor_for', 'status',
                       'pedagogical_experience',
                       'firstmed_course', 'firstmed_course_comm',

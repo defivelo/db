@@ -52,6 +52,10 @@
                 </div>
                 <div role="tabpane" class="tab-pane" id="contacts">
                     <dl class="dl-horizontal">
+                        {% if userprofile.profile.birthdate %}
+                            <dt>{% trans "Date de naissance" %}</dt>
+                                <dd>{{ userprofile.profile.birthdate|date }} ({% blocktrans with age=userprofile.profile.age %}{{ age }} ans{% endblocktrans %})</dd>
+                        {% endif %}
                         {% if userprofile.email %}
                             <dt>{% trans "Email" %}</dt>
                                 <dd><a class="email" href="mailto:{{ userprofile.email }}">{{ userprofile.email }}</a></dd>

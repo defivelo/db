@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import uuid
 
+from django.utils import timezone
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import pre_save
@@ -63,6 +64,7 @@ class UserProfile(Address, models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                                 related_name='profile',
                                 primary_key=True)
+    birthdate = models.DateField(_('Date'), blank=True, null=True)
     iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)
     social_security = models.CharField(max_length=16, blank=True)
     natel = models.CharField(max_length=13, blank=True)
@@ -125,6 +127,11 @@ class UserProfile(Address, models.Model):
             return mark_safe(STDGLYPHICON.format(icon=icon, title=title))
         return ''
 
+    @property
+    def age(self):
+        today = timezone.now()
+        return today.year - self.birthdate.year - ((today.month, today.day) < (self.birthdate.month, self.birthdate.day))
+    
     @property
     def natel_int(self):
         if self.natel:

@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 from multiselectfield.forms.fields import MultiSelectFormField
 
+from apps.common.forms import SwissDateField
 from apps.challenge.models import QualificationActivity
 from localflavor.ch.ch_states import STATE_CHOICES
 from localflavor.ch.forms import (
@@ -31,6 +32,7 @@ class UserProfileForm(forms.ModelForm):
                                        widget=CHStateSelect,
                                        choices=STATE_CHOICES_WITH_DEFAULT,
                                        required=False)
+    birthdate = SwissDateField(label=_('Date de naissance'), required=False)
     natel = CHPhoneNumberField(label=_('Natel'), required=False)
     iban = localforms.IBANFormField(label=_('Coordonnées bancaires (IBAN)'),
                                     include_countries=IBAN_SEPA_COUNTRIES,
