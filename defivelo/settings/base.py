@@ -136,7 +136,7 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-DATE_FORMAT = 'j F y'
+DATE_FORMAT = 'j F Y'
 TIME_FORMAT = 'G\hi'
 
 LANGUAGES = (
