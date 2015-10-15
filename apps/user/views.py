@@ -9,6 +9,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
 from django.db import IntegrityError
 from django.db.models import Q
+from django.http import HttpResponse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DetailView
@@ -24,6 +25,7 @@ from apps.challenge.models import QualificationActivity
 from defivelo.views import MenuView
 
 from . import STATE_CHOICES_WITH_DEFAULT
+from .export import UserResource
 from .forms import UserProfileForm
 from .models import (
     FORMATION_CHOICES, STD_PROFILE_FIELDS, USERSTATUS_CHOICES, UserProfile,
@@ -164,6 +166,35 @@ class UserList(ProfileMixin, FilterMixin, FilterView):
             .prefetch_related('profile')
             .order_by('first_name', 'last_name')
         )
+
+
+class UserListExport(UserList):
+    def render_to_response(self, context, **response_kwargs):
+        resolvermatch = self.request.resolver_match
+        format = resolvermatch.kwargs.get('format', 'csv')
+        dataset = UserResource().export(self.object_list)
+        # Default to csv
+        content_type = 'text/csv'
+        dataset_parameter = 'csv'
+        filename_postfix = 'csv'
+
+        if format == 'ods':
+            content_type = 'application/vnd.oasis.opendocument.spreadsheet'
+            dataset_parameter = 'ods'
+            filename_postfix = 'ods'
+        elif format == 'xls':
+            content_type = 'application/vnd.ms-excel'
+            dataset_parameter = 'xls'
+            filename_postfix = 'xls'
+
+        filename = (
+            _('utilisateurs.{extension}').format(extension=filename_postfix)
+        )
+
+        response = HttpResponse(getattr(dataset, dataset_parameter),
+                                content_type + ';charset=utf-8')
+        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+        return response
 
 
 class UserDetailedList(UserList):

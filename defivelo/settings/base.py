@@ -57,6 +57,7 @@ UPSTREAM_APPS = (
     'parler',
     'multiselectfield',
     'django_filters',
+    'import_export',
 )
 
 # Project apps tested by jenkins (everything in apps/)
