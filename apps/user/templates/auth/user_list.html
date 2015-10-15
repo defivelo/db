@@ -35,6 +35,8 @@
         <tr>
             <th>{% trans "Prénom" %}</th>
             <th>{% trans "Nom" %}</th>
+            <th>{% trans "Email" %}</th>
+            <th>{% trans "Natel" %}</th>
             <th>{% trans "Attributs" %}</th>
             <th>{# Buttons #}</th>
         </tr>
@@ -44,6 +46,8 @@
         <tr>
             <td><a href="{% url 'user-detail' pk=user.pk %}">{{ user.first_name }}</a></td>
             <td><a href="{% url 'user-detail' pk=user.pk %}">{{ user.last_name }}</a></td>
+            <td><a href="mailto:{{ user.profile.email }}">{{ user.profile.email }}</a></td>
+            <td><a href="tel:{{ user.profile.natel_int }}">{{ user.profile.natel }}</a></td>
             <td>
                 {{ user.profile.formation_icon|safe }}
                 {{ user.profile.actor_icon|default:"" }}
