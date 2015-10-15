@@ -42,3 +42,12 @@ a, a:visited {
 a[href]:after {
     content: "";
 }
+
+/* Reduce margins */
+table.table {
+    margin: 0;
+    td,
+    th {
+        border: 1px solid #ddd;
+    }
+}

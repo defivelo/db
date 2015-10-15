@@ -152,14 +152,14 @@ class Session(Address, models.Model):
             helpers_time = date((
                 datetime.combine(datetime.today(), self.begin) -
                 timedelta(minutes=DEFAULT_EARLY_MINUTES_FOR_HELPERS_MEETINGS)
-                ).time(), 'G\hi')
+                ).time(), settings.TIME_FORMAT)
             return mark_safe('<em>{}</em>'.format(helpers_time))
         return ''
 
     def __str__(self):
         return (
             date(self.day, settings.DATE_FORMAT) +
-            (' (%s)' % date(self.begin, 'G\hi') if self.begin else '') +
+            (' (%s)' % date(self.begin, settings.TIME_FORMAT) if self.begin else '') +
             (' - %s' % self.organization.name if self.organization else '') +
             (' (%s)' % (self.address_city if self.address_city else (self.organization.address_city if (self.organization and self.organization.address_city) else '')))
             )

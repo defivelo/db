@@ -23,7 +23,7 @@
     </tr>
     <tr class="hidden-print"><th>{% trans "Date" %}</th><td>{{ session.day|date:"l, j F Y" }}</td></tr>
     {% if session.begin and session.duration %}
-        <tr><th>{% trans "Horaire" %}</th><td>{{ session.begin }} - {{ session.end }}</td></tr>
+        <tr><th>{% trans "Horaire" %}</th><td>{{ session.begin|time }} - {{ session.end|time }}</td></tr>
     {% endif %}
     {% if session.fallback %}
         <tr><th>{% trans "Mauvais temps" %}</th><td>{{ session.fallback }}</td></tr>
@@ -31,9 +31,10 @@
     {% if session.apples %}
         <tr><th>{% trans "Pommes" %}</th><td>{{ session.apples }}</td></tr>
     {% endif %} 
-    <tr><th><a href="{% url 'session-staff-choices' season.pk session.pk %}" title="{% trans "Disponibilités" %}">{% trans "Moniteurs" %}</a></th>
-        <td>{% trans "Rendez-vous :" %}
-            {{ session.helpers_time_with_default }}{% if session.helpers_place %} ({{ session.helpers_place }}){% endif %}
+    <tr><th><span class="visible-print-inline">{% trans "Rendez-vous moniteurs" %}</span>
+            <a class="hidden-print" href="{% url 'session-staff-choices' season.pk session.pk %}" title="{% trans "Disponibilités" %}">{% trans "Moniteurs" %}</a></th>
+        <td><span class="hidden-print">{% trans "Rendez-vous :" %}</span>
+            {{ session.helpers_time_with_default }}{% if session.helpers_place %}<br />{{ session.helpers_place }}{% endif %}
         </td>
     </tr>
 
@@ -45,7 +46,7 @@
     {% endif %}
     </table>
 
-    <h2>{% trans "Qualifications" %}</h2>
+    <h2 class="hidden-print">{% trans "Qualifications" %}</h2>
     <table class="table">
     {% if session.qualifications.count > 0 %}
         <tr><td></td>
