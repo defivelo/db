@@ -124,7 +124,7 @@ def useravailsessions_readonly(struct, user, avail_content=None, sesskey=None,
                 avail_content = ' '
 
             output += (
-                '<td class="{avail_class}"{avail_verbose}>'
+                '<td style="vertical-align:middle;" class="{avail_class}"{avail_verbose}>'
                 '<!-- {key} -->'
                 '{avail_label}'
                 '</td>'

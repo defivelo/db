@@ -232,24 +232,46 @@ class BSRadioRenderer(forms.widgets.RadioFieldRenderer):
 class BSCheckBoxRenderer(forms.widgets.CheckboxFieldRenderer):
     def render(self):
         id_ = self.attrs.get('id', None)
-        checked = 'checked' if self.value else ''
-        active = 'active' if self.value else ''
-        checkbox = (
-            '<label title="{label}"'
-            '       class="btn btn-default {active}"'
-            '       data-active-class="primary">'
-            '  <input type="checkbox" autocomplete="off" '
-            '         name="{key}" id="{key}-{value}" value="{value}" {checked}>'
-            '    <span class="glyphicon glyphicon-unchecked"'
-            '          data-active-icon="check"'
-            '          title="{label}"></span> '
-            '</label>\n').format(
-                glyphicon='user',
-                key=id_,
-                value=1,
-                label=_('Choisir pour cette session'),
-                checked=checked,
-                active=active)
+        disabled = False
+        try:
+            value = (self.value[0] == '1')
+            try:
+                disabled = (self.value[1] == '*')
+            except IndexError:
+                pass
+        except IndexError:
+            value = False
+
+        checked = 'checked' if value else ''
+        active = 'active' if value else ''
+
+        if disabled:  # That means "checked"
+            checkbox = (
+                '<input type="hidden" autocomplete="off" '
+                '       name="{key}" id="{key}-1" value="1">'
+                '<span class="glyphicon glyphicon-lock"'
+                '      title="{label}"></span>\n').format(
+                    key=id_,
+                    label=_('Sélectionné pour une qualif')
+                )
+        else:
+            checkbox = (
+                '<label title="{label}"'
+                '       class="btn btn-default {active}"'
+                '       data-active-class="primary">'
+                '  <input type="checkbox" autocomplete="off" '
+                '         name="{key}" id="{key}-{value}" value="{value}"'
+                '         {checked}>'
+                '    <span class="glyphicon glyphicon-unchecked"'
+                '          data-active-icon="check"'
+                '          title="{label}"></span> '
+                '</label>\n').format(
+                    glyphicon='user',
+                    key=id_,
+                    value=1,
+                    label=_('Choisir pour cette session'),
+                    checked=checked,
+                    active=active)
         return (
             '<div data-toggle="buttons">'
             '{checkbox}</div>').format(checkbox=checkbox)
@@ -308,15 +330,20 @@ class SeasonStaffChoiceForm(forms.Form):
                                                                 spk=session.pk)
                         staffkey = STAFF_FIELDKEY.format(hpk=helper.pk,
                                                          spk=session.pk)
-                        ## If the availability is not 'y' or 'i', skip that one
-                        #if self.initial[availkey] not in ['i', 'y']:
-                            #continue
                         try:
-                            fieldinit = self.initial[staffkey]
+                            # Stupid boolean to integer-as-string conversion.
+                            fieldinit = '1' if self.initial[staffkey] else '0'
+                            # Trick to pass the 'is selected in a quali in that
+                            # session' information through
+                            if session.has_user_assigned(helper):
+                                fieldinit += '*'
                         except:
-                            pass
+                            fieldinit = '0'
+
                         self.fields[staffkey] = forms.BooleanField(
-                            widget=forms.RadioSelect(renderer=BSCheckBoxRenderer),
+                            widget=forms.RadioSelect(
+                                renderer=BSCheckBoxRenderer
+                            ),
                             required=False, initial=fieldinit
                         )
 

@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import Q
 from django.template.defaultfilters import date
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
@@ -134,6 +135,14 @@ class Session(Address, models.Model):
 
     def actor_needs(self):
         return self.n_qualifications
+
+    def has_user_assigned(self, user):
+        # Check if a given user is assigned to that session
+        return (
+            self.qualifications.filter(
+                Q(leader=user) | Q(helpers=user) | Q(actor=user)
+            ).exists()
+        )
 
     def helpers_time_with_default(self):
         if self.helpers_time:
