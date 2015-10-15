@@ -58,8 +58,9 @@ STDGLYPHICON = (
     '      title="{title}"></span> '
 )
 
-STD_PROFILE_FIELDS = ['address_street', 'address_no', 'address_zip',
-                      'address_city', 'address_canton', 'birthdate', 'natel',
+STD_PROFILE_FIELDS = ['natel', 'birthdate',
+                      'address_street', 'address_no', 'address_zip',
+                      'address_city', 'address_canton',
                       'iban', 'social_security',
                       'formation', 'actor_for', 'status',
                       'pedagogical_experience',
