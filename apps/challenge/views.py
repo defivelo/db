@@ -307,60 +307,61 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
     def form_valid(self, form):
         # Update all staff choices
         for session in self.object.sessions_with_qualifs:
+            session_helpers = {}  # Those picked for the season
+            session_non_helpers = {}  # Those not picked for the season
             for helper_category, helpers in self.available_helpers():
                 for helper in helpers:
                     fieldkey = STAFF_FIELDKEY.format(hpk=helper.pk,
                                                      spk=session.pk)
-                    avail_created = False
                     try:
                         HelperSessionAvailability.objects.filter(
                                 session=session,
                                 helper=helper
                             ).update(chosen=form.cleaned_data[fieldkey])
-                        avail_created = True
+                        if form.cleaned_data[fieldkey]:
+                            session_helpers[helper.pk] = helper
+                        else:
+                            session_non_helpers[helper.pk] = helper
+
                     except:  # if the fieldkey's not in cleaned_data, or other reasons
                         pass
 
-                    if avail_created and form.cleaned_data[fieldkey]:
-                        # If we're ticking the user in the session
-                        # Check that there is only one qualif, try to attribute
-                        # him smartly
-                        if session.qualifications.count() == 1:
-                            quali = session.qualifications.first()
-                            touched = False
-                            if (
-                                helper.profile.formation == FORMATION_M2 and
-                                quali.leader is None
-                                ):
-                                quali.leader = helper
-                                touched = True
-                            elif (
-                                helper.profile.formation is not None and
-                                quali.helpers.count() < MAX_MONO1_PER_QUALI
-                                ):
-                                quali.helpers.add(helper)
-                                touched = True
-                            elif (
-                                helper.profile.actor_for is not None and
-                                quali.actor is None
-                                ):
-                                quali.actor = helper
-                                touched = True
-                            if touched:
-                                quali.save()
-                    else:
-                        # If we're ticking the user out of the session
-                        # Take him off any role he might have in any of
-                        # the qualifications of that session
-                        for q in session.qualifications.all():
-                            if helper == q.leader:
-                                q.leader = None
-                            if helper in q.helpers.all():
-                                q.helpers.remove(helper)
-                            if helper == q.actor:
-                                q.actor = None
-                            q.save()
-
+            # Do a session-wide check across all helpers picked for that session
+            n_qualifs = session.qualifications.count()
+            for quali in session.qualifications.all():
+                for non_helper in session_non_helpers.values():
+                    # Drop those not in the session anymore
+                    if non_helper == quali.leader:
+                        quali.leader = None
+                    if non_helper in quali.helpers.all():
+                        quali.helpers.remove(helper)
+                    if non_helper == quali.actor:
+                        quali.actor = None
+                if n_qualifs == 1:
+                    for helper in session_helpers.values():
+                        if (
+                            helper.profile.formation == FORMATION_M2 and
+                            quali.leader is None
+                            ):
+                            quali.leader = helper
+                            try:
+                                quali.helpers.remove(helper)
+                            except:
+                                pass
+                        elif (
+                            helper.profile.formation is not None and
+                            quali.helpers.count() < MAX_MONO1_PER_QUALI
+                            ):
+                            quali.helpers.add(helper)
+                            if quali.leader == helper:
+                                quali.leader = None
+                        elif (
+                            helper.profile.actor_for is not None and
+                            quali.actor is None
+                            ):
+                            quali.actor = helper
+                            touched = True
+                quali.save()
         return HttpResponseRedirect(reverse_lazy('season-availabilities',
                                                  kwargs={'pk': self.object.pk}))
 
