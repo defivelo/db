@@ -38,6 +38,7 @@ from django_filters.views import FilterView
 from filters.views import FilterMixin
 
 from apps.challenge.models import QualificationActivity
+from apps.common.export_funcs import get_export_data
 from defivelo.views import MenuView
 
 from . import STATE_CHOICES_WITH_DEFAULT
@@ -189,19 +190,9 @@ class UserListExport(UserList):
         resolvermatch = self.request.resolver_match
         format = resolvermatch.kwargs.get('format', 'csv')
         dataset = UserResource().export(self.object_list)
-        # Default to csv
-        content_type = 'text/csv'
-        dataset_parameter = 'csv'
-        filename_postfix = 'csv'
 
-        if format == 'ods':
-            content_type = 'application/vnd.oasis.opendocument.spreadsheet'
-            dataset_parameter = 'ods'
-            filename_postfix = 'ods'
-        elif format == 'xls':
-            content_type = 'application/vnd.ms-excel'
-            dataset_parameter = 'xls'
-            filename_postfix = 'xls'
+        (content_type, dataset_parameter, filename_postfix) = \
+            get_export_data(format)
 
         filename = (
             _('DV-Utilisateurs-{YMD_date}.{extension}').format(
