@@ -35,7 +35,7 @@
             {% with 'csv ods xls' as formats %}
                 {% for format in formats.split %}
                     <a class="btn btn-info btn-sm" title="{% blocktrans %}Télécharger au format {{ format }}{% endblocktrans %}"
-                       href="{% url 'user-list-export' format %}?{% for key,value in request.GET.items %}{% ifnotequal key 'page' %}&{{ key }}={{ value }}{% endifnotequal %}{% endfor %}
+                       href="{% url 'user-list-export' format %}?{{ filter_querystring }}"
                         ">
                         {% ifchanged %}
                             <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
@@ -93,14 +93,14 @@
         <ul class="pager">
         {% if page_obj.has_previous %}
             <li class="previous btn-xs">
-                <a href="{% url 'user-list' %}?page={{ page_obj.previous_page_number }}{% for key,value in request.GET.items %}{% ifnotequal key 'page' %}&{{ key }}={{ value }}{% endifnotequal %}{% endfor %}">
+                <a href="{% url 'user-list' %}?page={{ page_obj.previous_page_number }}?{{ filter_querystring }}">
                     <span aria-hidden="true">&larr;</span> {% blocktrans with page_obj.previous_page_number as number %}Page {{number}}{% endblocktrans %}
                 </a>
             </li>
         {% endif %}
         {% if page_obj.has_next %}
             <li class="next btn-xs">
-                <a href="{% url 'user-list' %}?page={{ page_obj.next_page_number }}{% for key,value in request.GET.items %}{% ifnotequal key 'page' %}&{{ key }}={{ value }}{% endifnotequal %}{% endfor %}">
+                <a href="{% url 'user-list' %}?page={{ page_obj.next_page_number }}?{{ filter_querystring }}">
                     {% blocktrans with page_obj.next_page_number as number %}Page {{number}}{% endblocktrans %} <span aria-hidden="true">&rarr;</span>
                 </a>
             </li>

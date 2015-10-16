@@ -177,6 +177,17 @@ class UserList(ProfileMixin, FilterMixin, FilterView):
     paginate_by = 10
     paginate_orphans = 3
 
+    def get_context_data(self, *args, **kwargs):
+        context = super(UserList, self).get_context_data(*args, **kwargs)
+        # Re-create the filtered querystring from GET, drop page off it
+        querydict = self.request.GET.copy()
+        try:
+            del querydict['page']
+        except:
+            pass
+        context['filter_querystring'] = querydict.urlencode()
+        return context
+
     def get_queryset(self):
         return (
             super(UserList, self).get_queryset()
