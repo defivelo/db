@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 
 import dj_database_url
+import django_agpl
 import pytz
 from django.contrib import messages
 
@@ -58,6 +59,7 @@ UPSTREAM_APPS = (
     'multiselectfield',
     'django_filters',
     'import_export',
+    'django_agpl',
 )
 
 # Project apps tested by jenkins (everything in apps/)
@@ -226,3 +228,20 @@ LOGIN_REDIRECT_URL = '/'
 
 VCS_VERSION = get_env_variable('VCS_VERSION', '0')
 VCS_COMMIT = get_env_variable('VCS_COMMIT', '0')
+
+# Base directory from which download tree will be generated
+AGPL_ROOT = PROJECT_ROOT
+
+# Prefix of generated filename
+AGPL_FILENAME_PREFIX = 'defivelo-intranet'
+
+# Directories to exclude from download tree (optional)
+AGPL_EXCLUDE_DIRS = django_agpl.EXCLUDE_DIRS + [r'\.tox$', r'^__pycache__$',
+                                                r'^static_files$', r'^venv$',
+                                                r'^envdir$']
+
+# Files to exclude from download tree (optional)
+AGPL_EXCLUDE_FILES = django_agpl.EXCLUDE_FILES + [r'.mo$', r'~$']
+
+# Prefix to create inside download tree (optional)
+AGPL_TREE_PREFIX = 'defivelo-intranet'

@@ -23,3 +23,7 @@ class HomeView(MenuView, TemplateView):
         # Add our menu_category context
         context['menu_category'] = 'home'
         return context
+
+
+class LicenseView(MenuView, TemplateView):
+    template_name = "license.html"

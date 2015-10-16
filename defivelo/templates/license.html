@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+{% include "includes/agpl-3.0.html" %}
+
+<h2>{% trans "Télécharger le projet" %}</h2>
+<div class="btn-group" role="group" aria-label="exports">
+    {% with 'targz zip' as formats %}
+        {% for format in formats.split %}
+            {% with "download-"|add:format as dlurl %}
+                <a class="btn btn-info btn-sm" title="{% blocktrans %}Télécharger au format {{ format }}{% endblocktrans %}"
+                    href="{% url dlurl %}
+                    ">
+                    {% ifchanged %}
+                        <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
+                    {% endifchanged %}
+                    {{ format }}
+                </a>
+            {% endwith %}
+        {% endfor %}
+    {% endwith %}
+</div>
+{% endblock %}
