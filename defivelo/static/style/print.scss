@@ -26,11 +26,6 @@ footer#print-footer {
     bottom: 0;
     width: 100%;
     margin: 0;
-    
-    #print-page-counter:after {
-        counter-increment: page;
-        content: counter(page); // Le compteur de pages total ne marche pas : "/"  counter(pages);
-    }
 }
 
 /* No underscores */
