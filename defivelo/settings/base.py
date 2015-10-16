@@ -31,8 +31,6 @@ import dj_database_url
 import pytz
 from django.contrib import messages
 
-import django_agpl
-
 from . import get_env_variable
 from .. import get_project_root_path
 
@@ -247,19 +245,24 @@ LOGIN_REDIRECT_URL = '/'
 VCS_VERSION = get_env_variable('VCS_VERSION', '0')
 VCS_COMMIT = get_env_variable('VCS_COMMIT', '0')
 
-# Base directory from which download tree will be generated
-AGPL_ROOT = PROJECT_ROOT
+try:
+    import django_agpl
 
-# Prefix of generated filename
-AGPL_FILENAME_PREFIX = 'defivelo-intranet'
+    # Base directory from which download tree will be generated
+    AGPL_ROOT = PROJECT_ROOT
 
-# Directories to exclude from download tree (optional)
-AGPL_EXCLUDE_DIRS = django_agpl.EXCLUDE_DIRS + [r'\.tox$', r'^__pycache__$',
-                                                r'^static_files$', r'^venv$',
-                                                r'^envdir$']
+    # Prefix of generated filename
+    AGPL_FILENAME_PREFIX = 'defivelo-intranet'
 
-# Files to exclude from download tree (optional)
-AGPL_EXCLUDE_FILES = django_agpl.EXCLUDE_FILES + [r'.mo$', r'~$']
+    # Directories to exclude from download tree (optional)
+    AGPL_EXCLUDE_DIRS = django_agpl.EXCLUDE_DIRS + [r'\.tox$', r'^__pycache__$',
+                                                    r'^static_files$', r'^venv$',
+                                                    r'^envdir$']
 
-# Prefix to create inside download tree (optional)
-AGPL_TREE_PREFIX = 'defivelo-intranet'
+    # Files to exclude from download tree (optional)
+    AGPL_EXCLUDE_FILES = django_agpl.EXCLUDE_FILES + [r'.mo$', r'~$']
+
+    # Prefix to create inside download tree (optional)
+    AGPL_TREE_PREFIX = 'defivelo-intranet'
+except ImportError:
+   pass  # Sorry
