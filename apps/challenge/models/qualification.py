@@ -27,11 +27,11 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as u, ugettext_lazy as _
 from multiselectfield import MultiSelectField
+from parler.models import TranslatableModel, TranslatedFields
 
 from apps.common.models import Address
 from apps.orga.models import Organization
 from localflavor.ch.ch_states import STATE_CHOICES
-from parler.models import TranslatableModel, TranslatedFields
 
 from .. import MAX_MONO1_PER_QUALI
 from .session import Session

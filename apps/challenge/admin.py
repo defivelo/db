@@ -18,7 +18,6 @@
 from django.conf import settings
 from django.contrib import admin
 from django.templatetags.static import static
-
 from parler.admin import TranslatableAdmin
 
 from .models import (
