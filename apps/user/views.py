@@ -188,7 +188,10 @@ class UserListExport(UserList):
             filename_postfix = 'xls'
 
         filename = (
-            _('utilisateurs.{extension}').format(extension=filename_postfix)
+            _('DV-Utilisateurs-{YMD_date}.{extension}').format(
+                YMD_date=timezone.now().strftime('%Y%m%d'),
+                extension=filename_postfix
+            )
         )
 
         response = HttpResponse(getattr(dataset, dataset_parameter),
