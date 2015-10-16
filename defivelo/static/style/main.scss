@@ -70,6 +70,17 @@ form.language-selector {
     border-color: #ac2925;
 }
 // Click-buttons, but change the icon too
-.btn.active span[data-active-icon="check"]:before {
-    content: "\e067"; // -check
+.btn.active {
+    span[data-active-icon="check"]:before {
+        content: "\e067"; // -check
+    }
+    span[data-active-icon="tag"]:before {
+        content: "\e041"; // -tag
+    }
+    span[data-active-icon="tags"]:before {
+        content: "\e042"; // -tags
+    }
+    span[data-active-icon="sunglasses"]:before {
+        content: "\e240"; // -sunglasses
+    }
 }

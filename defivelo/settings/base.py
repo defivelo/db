@@ -28,9 +28,10 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 
 import dj_database_url
-import django_agpl
 import pytz
 from django.contrib import messages
+
+import django_agpl
 
 from . import get_env_variable
 from .. import get_project_root_path

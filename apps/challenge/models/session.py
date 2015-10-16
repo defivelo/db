@@ -158,22 +158,16 @@ class Session(Address, models.Model):
 
     def user_assignment(self, user):
         # Check as what a user is assigned to that session
-        userqualifs = (
-            self.qualifications.filter(
-                Q(leader=user) | Q(helpers=user) | Q(actor=user)
-            )
-        )
-        if not userqualifs.exists():
-            if user in self.chosen_staff:
-                return SHORTCODE_SELECTED
-            else:
-                return ''
-        if any([True for q in userqualifs if user == q.leader]):
-            return SHORTCODE_MON2
-        if any([True for q in userqualifs if user in q.helpers.all()]):
-            return SHORTCODE_MON1
-        if any([True for q in userqualifs if user == q.actor]):
-            return SHORTCODE_ACTOR
+        for q in self.qualifications.all():
+            if user == q.leader:
+                return SHORTCODE_MON2
+            if user in q.helpers.all():
+                return SHORTCODE_MON1
+            if user == q.actor:
+                return SHORTCODE_ACTOR
+        if any([a.helper == user for a in self.chosen_staff]):
+            return SHORTCODE_SELECTED
+        return ''
 
     def n_quali_things(self, field):
         return sum(

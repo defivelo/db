@@ -253,11 +253,11 @@ class BSRadioRenderer(forms.widgets.RadioFieldRenderer):
 class BSCheckBoxRenderer(forms.widgets.CheckboxFieldRenderer):
     def render(self):
         id_ = self.attrs.get('id', None)
-        disabled = False
+        chosen_as = False
         try:
             value = (self.value[0] == 'Y')
             try:
-                disabled = self.value[1]
+                chosen_as = self.value[1]
             except IndexError:
                 pass
         except IndexError:
@@ -266,43 +266,35 @@ class BSCheckBoxRenderer(forms.widgets.CheckboxFieldRenderer):
         checked = 'checked' if value else ''
         active = 'active' if value else ''
 
-        if disabled:  # That means "checked"
-            if disabled == SHORTCODE_MON2:  # Moniteur 2
-                glyphicon = 'tags'
-                title = _('Moniteur 2')
-            if disabled == SHORTCODE_MON1:  # Moniteur 1
-                glyphicon = 'tag'
-                title = _('Moniteur 1')
-            if disabled == SHORTCODE_ACTOR:  # Intervenant
-                glyphicon = 'sunglasses'
-                title = _('Intervenant')
-            checkbox = (
-                '<input type="hidden" autocomplete="off" '
-                '       name="{key}" id="{key}-1" value="1">'
-                '<span class="glyphicon glyphicon-{glyphicon}"'
-                '      title="{label}"></span>\n').format(
-                    key=id_,
-                    glyphicon=glyphicon,
-                    label=_('Sélectionné comme %s') % title,
-                )
-        else:
-            checkbox = (
-                '<label title="{label}"'
-                '       class="btn btn-default {active}"'
-                '       data-active-class="primary">'
-                '  <input type="checkbox" autocomplete="off" '
-                '         name="{key}" id="{key}-{value}" value="{value}"'
-                '         {checked}>'
-                '    <span class="glyphicon glyphicon-unchecked"'
-                '          data-active-icon="check"'
-                '          title="{label}"></span> '
-                '</label>\n').format(
-                    glyphicon='user',
-                    key=id_,
-                    value=1,
-                    label=_('Choisir pour cette session'),
-                    checked=checked,
-                    active=active)
+        glyphicon = 'check'
+        title = _('Choisir pour cette session')
+        if chosen_as == SHORTCODE_MON2:  # Moniteur 2
+            glyphicon = 'tags'
+            title = _('Moniteur 2')
+        if chosen_as == SHORTCODE_MON1:  # Moniteur 1
+            glyphicon = 'tag'
+            title = _('Moniteur 1')
+        if chosen_as == SHORTCODE_ACTOR:  # Intervenant
+            glyphicon = 'sunglasses'
+            title = _('Intervenant')
+
+        checkbox = (
+            '<label title="{label}"'
+            '       class="btn btn-default {active}"'
+            '       data-active-class="primary">'
+            '  <input type="checkbox" autocomplete="off" '
+            '         name="{key}" id="{key}-{value}" value="{value}"'
+            '         {checked}>'
+            '    <span class="glyphicon glyphicon-unchecked"'
+            '          data-active-icon="{glyphicon}"'
+            '          title="{label}"></span> '
+            '</label>\n').format(
+                glyphicon=glyphicon,
+                key=id_,
+                value=1,
+                label=title,
+                checked=checked,
+                active=active)
         return (
             '<div data-toggle="buttons">'
             '{checkbox}</div>').format(checkbox=checkbox)
@@ -363,8 +355,8 @@ class SeasonStaffChoiceForm(forms.Form):
                                                          spk=session.pk)
                         # Stupid boolean to integer-as-string conversion.
                         fieldinit = 'Y' if self.initial[staffkey] else 'N'
-                        # Trick to pass the 'is selected in a quali in that
-                        # session' information through
+                        # Trick to pass the 'at which role that user is
+                        # selected in that quali' information through
                         fieldinit += session.user_assignment(helper)
 
                         self.fields[staffkey] = forms.BooleanField(

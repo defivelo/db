@@ -38,10 +38,11 @@ from django.views.generic.list import ListView
 from tablib import Dataset
 
 from apps.common.export_funcs import get_export_data
+from apps.user.models import FORMATION_M1, FORMATION_M2
 from apps.user.views import ActorsList, HelpersList
 from defivelo.views import MenuView
 
-from . import AVAILABILITY_FIELDKEY, STAFF_FIELDKEY
+from . import AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, STAFF_FIELDKEY
 from .forms import (
     QualificationForm, SeasonAvailabilityForm, SeasonForm,
     SeasonNewHelperAvailabilityForm, SeasonStaffChoiceForm, SessionForm,
@@ -129,7 +130,7 @@ class SeasonAvailabilityMixin(SeasonMixin):
             for helper_category, helpers in all_helpers:
                 for helper in helpers:
                     helper_availability = {
-                        a.session_id: (a.availability, a.chosen) for a in all_hsas
+                        a.session_id: a for a in all_hsas
                         if a.helper == helper
                     }
                     for session in self.object.sessions_with_qualifs:
@@ -138,17 +139,12 @@ class SeasonAvailabilityMixin(SeasonMixin):
                         staffkey = STAFF_FIELDKEY.format(
                             hpk=helper.pk, spk=session.pk)
                         try:
-                            initials[fieldkey] = (
-                                helper_availability[session.id][0]
-                            )
-                            if helper_availability[session.id][1]:
-                                assignment = session.user_assignment(helper)
-                                if assignment:
-                                    initials[staffkey] = assignment
-                                else:
-                                    initials[staffkey] = 'x'
+                            hsa = helper_availability[session.id]
+                            initials[fieldkey] = hsa.availability
+                            if hsa.chosen:
+                                initials[staffkey] = session.user_assignment(helper)
                             else:
-                                initials[staffkey] = False
+                                initials[staffkey] = ''
                         except:
                             initials[fieldkey] = ''
                             initials[staffkey] = ''
@@ -315,13 +311,56 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
                 for helper in helpers:
                     fieldkey = STAFF_FIELDKEY.format(hpk=helper.pk,
                                                      spk=session.pk)
+                    avail_created = False
                     try:
                         HelperSessionAvailability.objects.filter(
                                 session=session,
                                 helper=helper
                             ).update(chosen=form.cleaned_data[fieldkey])
+                        avail_created = True
                     except:  # if the fieldkey's not in cleaned_data, or other reasons
                         pass
+
+                    if avail_created and form.cleaned_data[fieldkey]:
+                        # If we're ticking the user in the session
+                        # Check that there is only one qualif, try to attribute
+                        # him smartly
+                        if session.qualifications.count() == 1:
+                            quali = session.qualifications.first()
+                            touched = False
+                            if (
+                                helper.profile.formation == FORMATION_M2 and
+                                quali.leader is None
+                                ):
+                                quali.leader = helper
+                                touched = True
+                            elif (
+                                helper.profile.formation is not None and
+                                quali.helpers.count() < MAX_MONO1_PER_QUALI
+                                ):
+                                quali.helpers.add(helper)
+                                touched = True
+                            elif (
+                                helper.profile.actor_for is not None and
+                                quali.actor is None
+                                ):
+                                quali.actor = helper
+                                touched = True
+                            if touched:
+                                quali.save()
+                    else:
+                        # If we're ticking the user out of the session
+                        # Take him off any role he might have in any of
+                        # the qualifications of that session
+                        for q in session.qualifications.all():
+                            if helper == q.leader:
+                                q.leader = None
+                            if helper in q.helpers.all():
+                                q.helpers.remove(helper)
+                            if helper == q.actor:
+                                q.actor = None
+                            q.save()
+
         return HttpResponseRedirect(reverse_lazy('season-availabilities',
                                                  kwargs={'pk': self.object.pk}))
 
