@@ -141,12 +141,17 @@ class SeasonAvailabilityMixin(SeasonMixin):
                             initials[fieldkey] = (
                                 helper_availability[session.id][0]
                             )
-                            initials[staffkey] = (
-                                helper_availability[session.id][1]
-                            )
+                            if helper_availability[session.id][1]:
+                                assignment = session.user_assignment(helper)
+                                if assignment:
+                                    initials[staffkey] = assignment
+                                else:
+                                    initials[staffkey] = 'x'
+                            else:
+                                initials[staffkey] = False
                         except:
                             initials[fieldkey] = ''
-                            initials[staffkey] = False
+                            initials[staffkey] = ''
             return initials
 
     def get_context_data(self, **kwargs):

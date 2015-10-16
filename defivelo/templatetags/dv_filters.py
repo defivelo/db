@@ -25,7 +25,8 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from apps.challenge import (
-    AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX, STAFF_FIELDKEY,
+    AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX, SHORTCODE_ACTOR,
+    SHORTCODE_MON1, SHORTCODE_MON2, SHORTCODE_SELECTED, STAFF_FIELDKEY,
     STAFF_FIELDKEY_HELPER_PREFIX,
 )
 
@@ -137,7 +138,16 @@ def useravailsessions_readonly(struct, user, avail_content=None, sesskey=None,
                     staffkey = STAFF_FIELDKEY.format(hpk=user.pk,
                                                      spk=thissesskey)
                     if staffkey in struct:
-                        if struct[staffkey]:
+                        if struct[staffkey] == SHORTCODE_MON2:  # Moniteur 2
+                            avail_label = 'tags'
+                            avail_verb = _('Moniteur 2')
+                        elif struct[staffkey] == SHORTCODE_MON1:  # Moniteur 1
+                            avail_label = 'tag'
+                            avail_verb = _('Moniteur 1')
+                        elif struct[staffkey] == SHORTCODE_ACTOR:  # Intervenant
+                            avail_label = 'sunglasses'
+                            avail_verb = _('Intervenant')
+                        elif struct[staffkey] == SHORTCODE_SELECTED:  # Choisi, mais pas attribué
                             avail_label = 'check'
                             avail_verb = _('Choisi')
                         else:

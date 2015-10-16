@@ -29,7 +29,10 @@ from apps.user import STATE_CHOICES_WITH_DEFAULT
 from apps.user.models import FORMATION_KEYS, FORMATION_M1, FORMATION_M2
 from localflavor.ch.forms import CHPhoneNumberField, CHStateSelect
 
-from . import AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, STAFF_FIELDKEY
+from . import (
+    AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, SHORTCODE_ACTOR, SHORTCODE_MON1,
+    SHORTCODE_MON2, SHORTCODE_SELECTED, STAFF_FIELDKEY,
+)
 from .models import Qualification, Season, Session
 from .models.availability import HelperSessionAvailability
 
@@ -252,9 +255,9 @@ class BSCheckBoxRenderer(forms.widgets.CheckboxFieldRenderer):
         id_ = self.attrs.get('id', None)
         disabled = False
         try:
-            value = (self.value[0] == '1')
+            value = (self.value[0] == 'Y')
             try:
-                disabled = (self.value[1] == '*')
+                disabled = self.value[1]
             except IndexError:
                 pass
         except IndexError:
@@ -264,13 +267,23 @@ class BSCheckBoxRenderer(forms.widgets.CheckboxFieldRenderer):
         active = 'active' if value else ''
 
         if disabled:  # That means "checked"
+            if disabled == SHORTCODE_MON2:  # Moniteur 2
+                glyphicon = 'tags'
+                title = _('Moniteur 2')
+            if disabled == SHORTCODE_MON1:  # Moniteur 1
+                glyphicon = 'tag'
+                title = _('Moniteur 1')
+            if disabled == SHORTCODE_ACTOR:  # Intervenant
+                glyphicon = 'sunglasses'
+                title = _('Intervenant')
             checkbox = (
                 '<input type="hidden" autocomplete="off" '
                 '       name="{key}" id="{key}-1" value="1">'
-                '<span class="glyphicon glyphicon-lock"'
+                '<span class="glyphicon glyphicon-{glyphicon}"'
                 '      title="{label}"></span>\n').format(
                     key=id_,
-                    label=_('Sélectionné pour une qualif')
+                    glyphicon=glyphicon,
+                    label=_('Sélectionné comme %s') % title,
                 )
         else:
             checkbox = (
@@ -348,15 +361,11 @@ class SeasonStaffChoiceForm(forms.Form):
                                                                 spk=session.pk)
                         staffkey = STAFF_FIELDKEY.format(hpk=helper.pk,
                                                          spk=session.pk)
-                        try:
-                            # Stupid boolean to integer-as-string conversion.
-                            fieldinit = '1' if self.initial[staffkey] else '0'
-                            # Trick to pass the 'is selected in a quali in that
-                            # session' information through
-                            if session.has_user_assigned(helper):
-                                fieldinit += '*'
-                        except:
-                            fieldinit = '0'
+                        # Stupid boolean to integer-as-string conversion.
+                        fieldinit = 'Y' if self.initial[staffkey] else 'N'
+                        # Trick to pass the 'is selected in a quali in that
+                        # session' information through
+                        fieldinit += session.user_assignment(helper)
 
                         self.fields[staffkey] = forms.BooleanField(
                             widget=forms.RadioSelect(

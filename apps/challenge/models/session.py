@@ -32,7 +32,10 @@ from django.utils.translation import ugettext_lazy as _
 from apps.common.models import Address
 from apps.orga.models import Organization
 
-from .. import MAX_MONO1_PER_QUALI
+from .. import (
+    MAX_MONO1_PER_QUALI, SHORTCODE_ACTOR, SHORTCODE_MON1, SHORTCODE_MON2,
+    SHORTCODE_SELECTED,
+)
 
 DEFAULT_SESSION_DURATION_HOURS = 3
 DEFAULT_EARLY_MINUTES_FOR_HELPERS_MEETINGS = 60
@@ -153,13 +156,24 @@ class Session(Address, models.Model):
     def actor_needs(self):
         return self.n_qualifications
 
-    def has_user_assigned(self, user):
-        # Check if a given user is assigned to that session
-        return (
+    def user_assignment(self, user):
+        # Check as what a user is assigned to that session
+        userqualifs = (
             self.qualifications.filter(
                 Q(leader=user) | Q(helpers=user) | Q(actor=user)
-            ).exists()
+            )
         )
+        if not userqualifs.exists():
+            if user in self.chosen_staff:
+                return SHORTCODE_SELECTED
+            else:
+                return ''
+        if any([True for q in userqualifs if user == q.leader]):
+            return SHORTCODE_MON2
+        if any([True for q in userqualifs if user in q.helpers.all()]):
+            return SHORTCODE_MON1
+        if any([True for q in userqualifs if user == q.actor]):
+            return SHORTCODE_ACTOR
 
     def n_quali_things(self, field):
         return sum(
