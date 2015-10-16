@@ -3,5 +3,21 @@
     <a class="btn btn-default" href="{% url 'season-list' year=now.year %}">{% trans "Retour à la liste des saisons" %}</a>
     <a class="btn btn-default" href="{% url 'season-update' season.pk %}"><span class="glyphicon glyphicon-pencil"></span> {% trans "Éditer la saison" %}</a>
     <a class="btn btn-primary" href="{% url 'season-availabilities' season.pk %}"><span class="glyphicon glyphicon-th"></span> {% trans "Disponibilités" %}</a>
+    
+    <div class="btn-group" role="group" aria-label="exports">
+        {% with 'csv ods xls' as formats %}
+            {% for format in formats.split %}
+                <a class="btn btn-info btn-sm" title="{% blocktrans %}Télécharger la saison au format {{ format }}{% endblocktrans %}"
+                    href="{% url 'season-export' season.pk format %}
+                    ">
+                    {% ifchanged %}
+                        <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
+                    {% endifchanged %}
+                    {{ format }}
+                </a>
+            {% endfor %}
+        {% endwith %}
+    </div>
+    
     <a class="btn btn-primary pull-right" href="{% url 'session-create' season.pk %}">{% trans "Créer une nouvelle session" %}</a>
 </div>

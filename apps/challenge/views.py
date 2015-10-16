@@ -19,12 +19,14 @@ from __future__ import unicode_literals
 
 from collections import OrderedDict
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
+from django.template.defaultfilters import date, time
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as u, ugettext_lazy as _
 from django.views.generic.dates import WeekArchiveView, YearArchiveView
 from django.views.generic.detail import (
     DetailView, SingleObjectMixin, SingleObjectTemplateResponseMixin,
@@ -33,7 +35,9 @@ from django.views.generic.edit import (
     CreateView, DeleteView, FormMixin, FormView, UpdateView,
 )
 from django.views.generic.list import ListView
+from tablib import Dataset
 
+from apps.common.export_funcs import get_export_data
 from apps.user.views import ActorsList, HelpersList
 from defivelo.views import MenuView
 
@@ -150,6 +154,51 @@ class SeasonAvailabilityMixin(SeasonMixin):
         # Add our submenu_category context
         context['submenu_category'] = 'season-availability'
         return context
+
+
+class SeasonExportView(SeasonAvailabilityMixin, DetailView):
+    def render_to_response(self, context, **response_kwargs):
+        resolvermatch = self.request.resolver_match
+        format = resolvermatch.kwargs.get('format', 'csv')
+        (content_type, dataset_parameter, filename_postfix) = \
+            get_export_data(format)
+
+        season = self.get_season()
+
+        filename = (
+            _('DV-Saison-{cantons}-{YM_startdate}.{extension}').format(
+                cantons='-'.join(season.cantons),
+                YM_startdate=season.begin.strftime('%Y%m'),
+                extension=filename_postfix
+            )
+        )
+        dataset = Dataset()
+        # Prépare le fichier
+        dataset.append_col([
+            u('Date'),
+            u('Canton'),
+            u('Établissement'),
+            u('Emplacement'),
+            u('Heures'),
+            u('Qualifs'),
+            u('Prénom & Nom'),
+        ])
+        for session in season.sessions_with_qualifs:
+            dataset.append_col([
+                date(session.day),
+                session.organization.address_canton,
+                session.organization.name,
+                session.address_city if session.address_city else session.organization.address_city,
+                '%s - %s' % (time(session.begin), time(session.end)),
+                session.n_qualifications,
+                ''
+            ])
+        dataset.insert_separator(6, u('Présences des moniteurs'))
+
+        response = HttpResponse(getattr(dataset, dataset_parameter),
+                                content_type + ';charset=utf-8')
+        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+        return response
 
 
 class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):

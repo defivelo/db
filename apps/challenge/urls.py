@@ -26,9 +26,9 @@ from django.views.generic.base import RedirectView
 from .views import (
     QualiCreateView, QualiDeleteView, QualiUpdateView, SeasonActorListView,
     SeasonAvailabilityUpdateView, SeasonAvailabilityView, SeasonCreateView,
-    SeasonDeleteView, SeasonDetailView, SeasonHelperListView, SeasonListView,
-    SeasonStaffChoiceUpdateView, SeasonUpdateView, SessionCreateView,
-    SessionDeleteView, SessionDetailView, SessionsListView,
+    SeasonDeleteView, SeasonDetailView, SeasonExportView, SeasonHelperListView,
+    SeasonListView, SeasonStaffChoiceUpdateView, SeasonUpdateView,
+    SessionCreateView, SessionDeleteView, SessionDetailView, SessionsListView,
     SessionStaffChoiceView, SessionUpdateView,
 )
 
@@ -48,6 +48,9 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/$',
         never_cache(SeasonDetailView.as_view()),
         name='season-detail'),
+    url(r'^(?P<pk>[0-9]+)/(?P<format>[a-z]+)export$',
+        never_cache(SeasonExportView.as_view()),
+        name='season-export'),
     url(r'^(?P<pk>[0-9]+)/moniteurs/$',
         SeasonHelperListView.as_view(),
         name='season-helperlist'),
