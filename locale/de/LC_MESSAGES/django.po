@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Intranet\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-15 18:26+0200\n"
-"PO-Revision-Date: 2015-11-02 10:28+0000\n"
+"PO-Revision-Date: 2015-11-09 14:43+0000\n"
 "Last-Translator: Laura Mosimann <laura.mosimann@label-vert.ch>\n"
 "Language-Team: German (http://www.transifex.com/defivelo/db/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -426,8 +426,8 @@ msgstr "Halbtage zuteilen"
 #, python-format
 msgid "1 qualification"
 msgid_plural "%(n)s qualifications"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 Qualifikation"
+msgstr[1] "%(n)s Qualifikationen"
 
 #: apps/challenge/templates/challenge/season_availability_thead.html:29
 #: apps/challenge/templates/challenge/session_availability.html:24
@@ -465,7 +465,7 @@ msgstr "Zurück zur Liste der Saisons"
 #: apps/challenge/templates/challenge/session_archive_week.html:24
 #: defivelo/templates/header.html:15
 msgid "Toutes les sessions"
-msgstr "Alle Saisons"
+msgstr "Alle Halbtage"
 
 #: apps/challenge/templates/challenge/season_detail.html:14
 msgid "Par semaine"
@@ -487,7 +487,7 @@ msgstr "Neuer Halbtag"
 
 #: apps/challenge/templates/challenge/season_staff_update.html:11
 msgid "Attributions dans les sessions"
-msgstr "Zuteilungen in den Halbtagen"
+msgstr "Zuteilungen für die Halbtage"
 
 #: apps/challenge/templates/challenge/season_staff_update.html:33
 msgid "Retour"
@@ -510,8 +510,8 @@ msgstr "Aktuelle Woche"
 #, python-format
 msgid "1/%(need)s moniteur"
 msgid_plural "%(n)s/%(need)s moniteurs"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1/%(need)s LeiterIn"
+msgstr[1] "%(n)s/%(need)s LeiterInnen"
 
 #: apps/challenge/templates/challenge/session_availability.html:24
 #, python-format
@@ -522,8 +522,8 @@ msgstr "mindestens %(need)s"
 #, python-format
 msgid "1/%(need)s intervenant"
 msgid_plural "%(n)s/%(need)s intervenants"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1/%(need)s Referent"
+msgstr[1] "%(n)s/%(need)s Referenten"
 
 #: apps/challenge/templates/challenge/session_availability.html:52
 msgid "Retour à la session"
@@ -574,16 +574,16 @@ msgstr "Bedarf"
 #, python-format
 msgid "1 vélo"
 msgid_plural "%(n)s vélos"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 Velos"
+msgstr[1] "%(n)s Velos"
 
 #: apps/challenge/templates/challenge/session_detail.html:38
 #: apps/challenge/templates/challenge/session_detail.html:108
 #, python-format
 msgid "1 casque"
 msgid_plural "%(n)s casques"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 Helme"
+msgstr[1] "%(n)s Helme"
 
 #: apps/challenge/templates/challenge/session_detail.html:46
 msgid "Rendez-vous moniteurs"
@@ -1085,14 +1085,14 @@ msgid ""
 "You're receiving this e-mail because user %(user_display)s at %(site_domain)s has given yours as an e-mail address to connect their account.\n"
 "\n"
 "To confirm this is correct, go to %(activate_url)s\n"
-msgstr ""
+msgstr "Nachricht von %(site_name)s!\nDer Benutzer %(user_display)s der Seite %(site_domain)s hat uns angegeben, diese Mailadresse zu besitzen.\nZum Bestätigen, dass du der Besitzer/die Besitzerin bist, klicke hier %(activate_url)s\n"
 
 #: defivelo/templates/account/email/email_confirmation_message.txt:7
 #, python-format
 msgid ""
 "Thank you from %(site_name)s!\n"
 "%(site_domain)s"
-msgstr ""
+msgstr "%(site_name)s dankt dir!\n%(site_domain)s"
 
 #: defivelo/templates/account/email/email_confirmation_subject.txt:3
 msgid "Please Confirm Your E-mail Address"
@@ -1105,7 +1105,7 @@ msgid ""
 "\n"
 "You're receiving this e-mail because you or someone else has requested a password for your user account at %(site_domain)s.\n"
 "It can be safely ignored if you did not request a password reset. Click the link below to reset your password."
-msgstr ""
+msgstr "Mail von %(site_name)s!\nDas Passwort für diese Seite %(site_domain)s wurde angefragt.\nIgnoriere diese Nachricht, falls nicht du das Passwort angefragt hast. Ansonsten klicke auf folgenden Link, um das Passwort zurückzusetzen."
 
 #: defivelo/templates/account/email/password_reset_key_message.txt:8
 #, python-format
@@ -1117,7 +1117,7 @@ msgstr "Falls du es vergessen hast, dein Benutzername ist %(username)s."
 msgid ""
 "Thank you for using %(site_name)s!\n"
 "%(site_domain)s"
-msgstr ""
+msgstr "Bitte %(site_name)s!\n%(site_domain)s benutzen"
 
 #: defivelo/templates/account/email/password_reset_key_subject.txt:3
 msgid "Password Reset E-mail"
@@ -1226,56 +1226,56 @@ msgstr ""
 #: defivelo/templates/base.html:61
 #, python-format
 msgid "Version %(vcs_version)s"
-msgstr ""
+msgstr "Version %(vcs_version)s"
 
 #: defivelo/templates/base.html:65
 msgid "Code source"
-msgstr ""
+msgstr "Programmcode"
 
 #: defivelo/templates/base.html:66
 msgid "Rapports de bugs"
-msgstr ""
+msgstr "Fehlerbericht"
 
 #: defivelo/templates/base.html:67
 msgid "Traduction"
-msgstr ""
+msgstr "Übersetzung"
 
 #: defivelo/templates/header.html:9 defivelo/templates/header.html.py:32
 msgid "Toutes les saisons"
-msgstr ""
+msgstr "Alle Saisons"
 
 #: defivelo/templates/header.html:33
 msgid "Créer une saison"
-msgstr ""
+msgstr "Saison erstellen"
 
 #: defivelo/templates/header.html:36
 msgid "Personnes"
-msgstr ""
+msgstr "Personen"
 
 #: defivelo/templates/header.html:50
 msgid "Change password"
-msgstr ""
+msgstr "Passwort ändern"
 
 #: defivelo/templates/header.html:51
 msgid "Log out"
-msgstr ""
+msgstr "Abmelden"
 
 #: defivelo/templates/header.html:55
 msgid "Log in"
-msgstr ""
+msgstr "Anmelden"
 
 #: defivelo/templates/print/footer.html:5
 msgid "Page"
-msgstr ""
+msgstr "Seite"
 
 #: defivelo/templatetags/dv_filters.py:126
 msgid "Choisi"
-msgstr ""
+msgstr "Ausgewählt"
 
 #: defivelo/templatetags/dv_filters.py:129
 msgid "Pas choisi"
-msgstr ""
+msgstr "Nicht ausgewählt"
 
 #: defivelo/urls.py:29
 msgid "DB Défi Vélo"
-msgstr ""
+msgstr "Datenbank DEFI VELO"
