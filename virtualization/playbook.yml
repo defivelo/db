@@ -1,0 +1,21 @@
+---
+- hosts: all
+  vars_files:
+   - parameters.yml
+  become: no
+
+  roles:
+    ## Install some base packages and configuration files, this should be ok for all projects
+    - { role: base }
+    - { role: git }
+
+    ## Database, choose either mysql or postgres, some subsequent roles will be configured
+    ## depending on your choice here.
+    - { role: postgresql }
+
+    ## Scripting / Language support
+    - { role: django }        # Django framework
+
+    ## Webserver, choose one of those only if you have not choosed a scripting language
+    ## above
+    - { role: apache }         # Apache for basic HTML website
