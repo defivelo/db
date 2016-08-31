@@ -301,8 +301,9 @@ class BSCheckBoxRenderer(forms.widgets.CheckboxFieldRenderer):
 
 
 class SeasonNewHelperAvailabilityForm(forms.Form):
-    helper = autocomplete_light.ChoiceField('PersonsRelevantForSessions',
-                                            label=_('Disponibilités pour :'))
+    def __init__(self, *args, **kwargs):
+        self.helper = autocomplete_light.ChoiceField('PersonsRelevantForSessions',
+                                                     label=_('Disponibilités pour :'))
 
 
 class SeasonAvailabilityForm(forms.Form):
