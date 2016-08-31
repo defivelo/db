@@ -22,7 +22,7 @@
 
   tasks:
     - name: Allow password-less connection to the postgres user (mimics Travis-CI)
-      template: src=pg_hba.conf.j2 dest=/etc/postgresql/9.4/main/pg_hba.conf
+      template: src=templates/pg_hba.conf.j2 dest=/etc/postgresql/9.4/main/pg_hba.conf
       become: yes
     - name: ensure postgresql is restarted
       action: service name=postgresql state=restarted
