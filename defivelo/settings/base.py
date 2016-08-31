@@ -80,9 +80,11 @@ UPSTREAM_APPS = (
 
 # Project apps tested by jenkins (everything in apps/)
 APPS_DIR = os.path.join(PROJECT_ROOT, 'apps')
+EXCLUDED_DIRS = ('__pycache__')
 PROJECT_APPS = tuple(['apps.' + aname
                      for aname in os.listdir(APPS_DIR)
-                     if os.path.isdir(os.path.join(APPS_DIR, aname))])
+                     if os.path.isdir(os.path.join(APPS_DIR, aname))
+                     and aname not in EXCLUDED_DIRS])
 
 INSTALLED_APPS = UPSTREAM_APPS + PROJECT_APPS + ('defivelo', )
 
