@@ -28,9 +28,10 @@ def import_env_vars(directory):
     env_vars = glob.glob(os.path.join(directory, '*'))
 
     for env_var in env_vars:
-        with open(env_var, 'r') as env_var_file:
-            os.environ.setdefault(env_var.split(os.sep)[-1],
-                                  env_var_file.read().strip())
+        if os.path.isfile(env_var):
+            with open(env_var, 'r') as env_var_file:
+                os.environ.setdefault(env_var.split(os.sep)[-1],
+                                      env_var_file.read().strip())
 
 
 def get_project_root_path():
