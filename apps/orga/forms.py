@@ -17,12 +17,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+from bootstrap3_datetime.widgets import DateTimePicker
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from localflavor.ch.forms import CHStateSelect
 
 from apps.user import STATE_CHOICES_WITH_DEFAULT
-from bootstrap3_datetime.widgets import DateTimePicker
-from localflavor.ch.forms import CHStateSelect
 
 from .models import Organization
 

@@ -20,10 +20,6 @@ from __future__ import unicode_literals
 from django import forms
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
-from multiselectfield.forms.fields import MultiSelectFormField
-
-from apps.challenge.models import QualificationActivity
-from apps.common.forms import SwissDateField
 from localflavor.ch.ch_states import STATE_CHOICES
 from localflavor.ch.forms import (
     CHPhoneNumberField, CHSocialSecurityNumberField, CHStateSelect,
@@ -31,6 +27,10 @@ from localflavor.ch.forms import (
 )
 from localflavor.generic import forms as localforms
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
+from multiselectfield.forms.fields import MultiSelectFormField
+
+from apps.challenge.models import QualificationActivity
+from apps.common.forms import SwissDateField
 
 from . import STATE_CHOICES_WITH_DEFAULT
 from .models import BAGSTATUS_CHOICES, FORMATION_CHOICES, USERSTATUS_CHOICES

@@ -23,9 +23,8 @@ from django.db import models
 from django.template.defaultfilters import date
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
-from multiselectfield import MultiSelectField
-
 from localflavor.ch.ch_states import STATE_CHOICES
+from multiselectfield import MultiSelectField
 
 from .session import Session
 

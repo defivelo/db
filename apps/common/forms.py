@@ -17,9 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from django.forms import TimeField
-
 from bootstrap3_datetime.widgets import DateTimePicker
+from django.forms import TimeField
 from localflavor.generic.forms import DEFAULT_DATE_INPUT_FORMATS, DateField
 
 SWISS_DATE_INPUT_FORMAT = '%d.%m.%Y'

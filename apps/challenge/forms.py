@@ -23,11 +23,11 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
+from localflavor.ch.forms import CHPhoneNumberField, CHStateSelect
 
 from apps.common.forms import SwissDateField, SwissTimeField
 from apps.user import STATE_CHOICES_WITH_DEFAULT
 from apps.user.models import FORMATION_KEYS, FORMATION_M1, FORMATION_M2
-from localflavor.ch.forms import CHPhoneNumberField, CHStateSelect
 
 from . import (
     AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, SHORTCODE_ACTOR, SHORTCODE_MON1,
