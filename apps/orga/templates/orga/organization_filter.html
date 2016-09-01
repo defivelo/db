@@ -26,7 +26,7 @@
     {% for orga in organizations %}
         <tr>
             <td><a href="{% url 'organization-detail' pk=orga.pk %}">{{ orga.name }}</a></td>
-            <td>{{ orga.address_npa }} {{ orga.address_city }}</td>
+            <td>{{ orga.address_zip }} {{ orga.address_city }}</td>
             <td>{{ orga.address_canton_full }} ({{ orga.address_canton }})</td>
             <td>
                 <a class="btn btn-primary btn-xs" href="{% url 'organization-update' pk=orga.pk %}">

@@ -44,7 +44,7 @@ class OrganizationFilterSet(FilterSet):
             allfields_filter = [
                 Q(name__icontains=value),
                 Q(address_street__icontains=value),
-                Q(address_npa__contains=value),
+                Q(address_zip__contains=value),
                 Q(address_city__icontains=value),
             ]
             return queryset.filter(reduce(operator.or_, allfields_filter))
