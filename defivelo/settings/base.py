@@ -247,6 +247,15 @@ LOGIN_REDIRECT_URL = '/'
 VCS_VERSION = get_env_variable('VCS_VERSION', '0')
 VCS_COMMIT = get_env_variable('VCS_COMMIT', '0')
 
+if VCS_VERSION == '0':
+    import subprocess
+    try:
+        VCS_VERSION = subprocess.check_output(["git", "describe", "HEAD"])
+        VCS_COMMIT = subprocess.check_output(["git", "rev-parse", "HEAD"])
+    except FileNotFoundError:
+        VCS_VERSION = 'undefined'
+        VCS_COMMIT = 'HEAD'
+
 try:
     import django_agpl
 
