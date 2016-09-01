@@ -173,7 +173,7 @@ class UserProfileFilterSet(FilterSet):
         label=_('Intervenant'),
         queryset=QualificationActivity.objects.all()
     )
-    search = CharFilter(
+    q = CharFilter(
         label=_('Recherche'),
         action=filter_wide
     )
