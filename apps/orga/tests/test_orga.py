@@ -41,7 +41,7 @@ class OrgaBasicTest(TestCase):
         # Issue a GET request.
         response = self.client.get(reverse('organization-list'))
 
-        self.assertTemplateUsed(response, 'orga/organization_list.html')
+        self.assertTemplateUsed(response, 'orga/organization_filter.html')
         self.assertEqual(response.status_code, 200)
 
     def test_access_to_orga_detail(self):
