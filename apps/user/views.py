@@ -32,7 +32,8 @@ from django.views.generic import DetailView
 from django.views.generic.edit import UpdateView
 from django.views.generic.list import ListView
 from django_filters import (
-    FilterSet, MethodFilter, ModelMultipleChoiceFilter, MultipleChoiceFilter,
+    CharFilter, FilterSet, MethodFilter, ModelMultipleChoiceFilter,
+    MultipleChoiceFilter,
 )
 from django_filters.views import FilterView
 from filters.views import FilterMixin
@@ -144,6 +145,17 @@ class UserProfileFilterSet(FilterSet):
             return queryset.filter(reduce(operator.or_, allcantons_filter))
         return queryset
 
+    def filter_wide(queryset, value):
+        if value:
+            allfields_filter = [
+                Q(last_name__icontains=value),
+                Q(first_name__icontains=value),
+                Q(email__icontains=value),
+                Q(profile__natel__icontains=value)
+            ]
+            return queryset.filter(reduce(operator.or_, allfields_filter))
+        return queryset
+
     profile__activity_cantons = MultipleChoiceFilter(
         label=_("Cantons d'affiliation"),
         choices=STATE_CHOICES_WITH_DEFAULT,
@@ -160,6 +172,10 @@ class UserProfileFilterSet(FilterSet):
     profile__actor_for = ModelMultipleChoiceFilter(
         label=_('Intervenant'),
         queryset=QualificationActivity.objects.all()
+    )
+    search = CharFilter(
+        label=_('Recherche'),
+        action=filter_wide
     )
 
     class Meta:
@@ -187,6 +203,10 @@ class UserList(ProfileMixin, FilterMixin, FilterView):
             pass
         context['filter_querystring'] = querydict.urlencode()
         return context
+
+    def __init__(self, *args, **kwargs):
+        super(UserList, self).__init__(*args, **kwargs)
+        return
 
     def get_queryset(self):
         return (

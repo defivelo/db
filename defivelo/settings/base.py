@@ -252,7 +252,7 @@ if VCS_VERSION == '0':
     try:
         VCS_VERSION = subprocess.check_output(["git", "describe", "HEAD"])
         VCS_COMMIT = subprocess.check_output(["git", "rev-parse", "HEAD"])
-    except FileNotFoundError:
+    except (IOError, subprocess.CalledProcessError):
         VCS_VERSION = 'undefined'
         VCS_COMMIT = 'HEAD'
 
