@@ -8,6 +8,23 @@
 {% endblock %}
 {% block bootstrap3_extra_script %}
 {{ form.media.js }}
+<script type="text/javascript">
+function updateHelpersTime() {
+  var begin_time = $( "#id_begin" ).val();
+  var helpers_time = $( "#id_helpers_time" ).val();
+  if ( begin_time != '') {
+      begin_time_parsed = begin_time.split(":");
+      helpers_time = parseInt(begin_time_parsed[0] - 1, 10) + ':' + begin_time_parsed[1];
+
+      console.log("{% blocktrans %}Définit le rendez-vous moniteurs une heure avant {time}.{% endblocktrans %}".replace('{time}', begin_time));
+      $( "#id_helpers_time" ).val(helpers_time);
+  }
+}
+
+$( "#id_begin" ).change( updateHelpersTime );
+updateHelpersTime();
+
+</script>
 {% endblock %}
 
 {% block content %}
