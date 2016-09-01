@@ -57,5 +57,3 @@ pip_requirements: "requirements/dev.txt"
 # php7 (with fpm and nginx) anyway.
 # box_name: "drifter/trusty64-base"
 # box_url: "https://vagrantbox-public.liip.ch/drifter-trusty64-base.json"
-
-python_version: "3"
