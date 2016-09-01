@@ -17,18 +17,47 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+import operator
+from functools import reduce
+
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
+from django_filters import CharFilter, FilterSet
+from django_filters.views import FilterView
+from filters.views import FilterMixin
 
 from defivelo.views import MenuView
 
 from .forms import OrganizationForm
 from .models import Organization
+
+
+class OrganizationFilterSet(FilterSet):
+    def filter_wide(queryset, value):
+        if value:
+            allfields_filter = [
+                Q(name__icontains=value),
+                Q(address_street__icontains=value),
+                Q(address_npa__contains=value),
+                Q(address_city__icontains=value),
+            ]
+            return queryset.filter(reduce(operator.or_, allfields_filter))
+        return queryset
+
+    q = CharFilter(
+        label=_('Recherche'),
+        action=filter_wide
+    )
+
+    class Meta:
+        model = Organization
+        fields = ['q']
 
 
 class OrganizationMixin(MenuView):
@@ -44,7 +73,8 @@ class OrganizationMixin(MenuView):
 
 
 class OrganizationsListView(OrganizationMixin,
-                            ListView):
+                            FilterMixin, FilterView):
+    filterset_class = OrganizationFilterSet
     context_object_name = 'organizations'
 
     def get_queryset(self):

@@ -18,7 +18,9 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
+from localflavor.ch.ch_states import STATE_CHOICES
 
 
 class Address(models.Model):
@@ -30,3 +32,7 @@ class Address(models.Model):
     address_zip = models.CharField(_('NPA'), max_length=4, blank=True)
     address_city = models.CharField(_('Ville'), max_length=64, blank=True)
     address_canton = models.CharField(_('Canton'), max_length=2, blank=True)
+
+    @property
+    def address_canton_full(self):
+        return [c[1] for c in STATE_CHOICES if c[0] == self.address_canton][0]
