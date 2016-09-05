@@ -17,5 +17,5 @@ django-multiselectfield==0.1.3
 django-filter==0.11.0
 django-filters-mixin==0.1.2
 django-import-export==0.2.8
--e git+https://github.com/defivelo/django-agpl@08bd47d0d3aef604d299d861a260b972e5ff3035#egg=django_agpl==3.0.1+defivelo3
+django-agpl==4.0.0
 tablib==0.10.0
