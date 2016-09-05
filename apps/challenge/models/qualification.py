@@ -22,6 +22,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import Q
 from django.template.defaultfilters import date
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
@@ -32,6 +33,7 @@ from parler.models import TranslatableModel, TranslatedFields
 
 from apps.common.models import Address
 from apps.orga.models import Organization
+from apps.user import FORMATION_KEYS, FORMATION_M1, FORMATION_M2
 
 from .. import MAX_MONO1_PER_QUALI
 from .session import Session
@@ -99,13 +101,13 @@ class Qualification(models.Model):
     leader = models.ForeignKey(settings.AUTH_USER_MODEL,
                                verbose_name=_('Moniteur 2'),
                                related_name='qualifs_mon2',
-                               limit_choices_to={'profile__formation': 'M2'},
+                               limit_choices_to={'profile__formation': FORMATION_M2},
                                blank=True, null=True)
     helpers = models.ManyToManyField(settings.AUTH_USER_MODEL,
                                      verbose_name=_('Moniteurs 1'),
                                      related_name='qualifs_mon1',
                                      limit_choices_to={
-                                         'profile__formation__in': ['M1', 'M2']},
+                                         'profile__formation__in': FORMATION_KEYS},
                                      blank=True)
     actor = models.ForeignKey(settings.AUTH_USER_MODEL,
                               verbose_name=_('Intervenant'),

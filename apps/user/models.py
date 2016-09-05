@@ -35,15 +35,7 @@ from multiselectfield import MultiSelectField
 from apps.challenge.models import QualificationActivity
 from apps.common.models import Address
 
-FORMATION_M1 = 'M1'
-FORMATION_M2 = 'M2'
-
-FORMATION_CHOICES = (
-    ('', '----------'),
-    (FORMATION_M1, _('Moniteur 1')),
-    (FORMATION_M2, _('Moniteur 2')),
-)
-FORMATION_KEYS = [k[0] for k in FORMATION_CHOICES if k[0] != '']
+from . import FORMATION_CHOICES, FORMATION_KEYS, FORMATION_M1, FORMATION_M2
 
 USERSTATUS_UNDEF = 0
 USERSTATUS_ACTIVE = 10

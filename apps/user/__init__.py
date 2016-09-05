@@ -25,3 +25,13 @@ STATE_CHOICES_WITH_DEFAULT = tuple(
     list((('', '---------',),)) +
     list(STATE_CHOICES)
 )
+
+FORMATION_M1 = 'M1'
+FORMATION_M2 = 'M2'
+
+FORMATION_CHOICES = (
+    ('', '----------'),
+    (FORMATION_M1, _('Moniteur 1')),
+    (FORMATION_M2, _('Moniteur 2')),
+)
+FORMATION_KEYS = [k[0] for k in FORMATION_CHOICES if k[0] != '']
