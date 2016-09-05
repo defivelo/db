@@ -14,15 +14,27 @@ function updateHelpersTime() {
   var helpers_time = $( "#id_helpers_time" ).val();
   if ( begin_time != '') {
       begin_time_parsed = begin_time.split(":");
-      helpers_time = parseInt(begin_time_parsed[0] - 1, 10) + ':' + begin_time_parsed[1];
+      
+      if (typeof begin_time_parsed[1] === 'undefined') {
+          begin_time_parsed[1] = 0;
+      }
+      // 0 left-pad the numbers
+      helpers_time = ("00" + (begin_time_parsed[0] - 1)).slice(-2) + ':' + ("00" + begin_time_parsed[1]).slice(-2);
 
-      console.log("{% blocktrans %}Définit le rendez-vous moniteurs une heure avant {time}.{% endblocktrans %}".replace('{time}', begin_time));
       $( "#id_helpers_time" ).val(helpers_time);
   }
 }
 
+function updateHelpersPlace() {
+  var place = $( "#id_place" ).val();
+  var helpers_place = $( "#id_helpers_place" ).val();
+  if ( place != '') {
+      $( "#id_helpers_place" ).val(place);
+  }
+}
+
 $( "#id_begin" ).change( updateHelpersTime );
-updateHelpersTime();
+$( "#id_place" ).change( updateHelpersPlace );
 
 </script>
 {% endblock %}
@@ -36,6 +48,7 @@ updateHelpersTime();
         {% bootstrap_field form.organization layout='horizontal' size='small' %}
         {% bootstrap_field form.day layout='horizontal' size='small' %}
         {% bootstrap_field form.begin layout='horizontal' size='small' %}
+        {% bootstrap_field form.place layout='horizontal' size='small' %}
         {% include "address_bootstrap_form.html" %}
         <h3>{% trans "Logistique" %}</h3>
         {% bootstrap_field form.fallback_plan layout='horizontal' size='small' %}

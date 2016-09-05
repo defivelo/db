@@ -70,6 +70,7 @@ class SessionForm(autocomplete_light.ModelForm):
             'organization': _('Établissement'),
         }
         fields = ['organization', 'day', 'begin', 'fallback_plan',
+                  'place',
                   'address_street', 'address_no', 'address_zip',
                   'address_city', 'address_canton',
                   'apples',
