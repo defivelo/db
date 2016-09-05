@@ -6,7 +6,7 @@
         <div class="panel-heading">
             <h2 class="panel-title">
                 <a href="{{ userprofile.get_absolute_url }}" class="fn">{{ userprofile.get_full_name }}</a>
-                {% if userprofile.profile.formation %}
+                {% if userprofile.profile.formation or userprofile.profile.office_member %}
                     <span class="badge pull-right">{{ userprofile.profile.formation_full }} {{ userprofile.profile.formation_icon }}</span>
                 {% endif %}
                 {% if userprofile.profile.actor_for %}
@@ -80,8 +80,12 @@
                 </div>
                 <div role="tabpane" class="tab-pane" id="defi">
                     <dl class="dl-horizontal">
-                        {% if userprofile.profile.formation %}
-                            <dt>{% trans "Formation" %}</dt><dd>{{ userprofile.profile.formation_full }}</dd>
+                        {% if userprofile.profile.office_member %}
+                            <dt>{% trans "Bureau Défi Vélo" %}</dt><dd><span class="glyphicon glyphicon-king"></span> {{ userprofile.profile.firstmed_course_comm }}</dd>
+                        {% else %}
+                            {% if userprofile.profile.formation %}
+                                <dt>{% trans "Formation" %}</dt><dd>{{ userprofile.profile.formation_full }}</dd>
+                            {% endif %}
                         {% endif %}
                         {% if userprofile.profile.actor %}
                             <dt>{% trans "Intervenant" %}</dt><dd>{{ userprofile.profile.actor_for.name }}</dd>

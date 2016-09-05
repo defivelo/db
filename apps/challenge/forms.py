@@ -111,8 +111,8 @@ class QualificationForm(forms.ModelForm):
         other_qualifs = session.qualifications.exclude(pk=self.instance.pk)
         available_staff = (
             get_user_model().objects.filter(
-                availabilities__chosen=True,
-                availabilities__session=session,
+                Q(availabilities__chosen=True,availabilities__session=session) |
+                Q(profile__office_member=True),
             )
             .exclude(
                 Q(qualifs_mon2__in=other_qualifs) |
@@ -122,13 +122,17 @@ class QualificationForm(forms.ModelForm):
         )
         self.fields['leader'] = LeaderChoiceField(
             label=_('Moniteur 2'),
-            queryset=available_staff.filter(profile__formation=FORMATION_M2),
+            queryset=available_staff.filter(
+                Q(profile__formation=FORMATION_M2) |
+                Q(profile__office_member=True)
+            ),
             required=False,
         )
         self.fields['helpers'] = HelpersChoiceField(
             label=_('Moniteurs 1'),
             queryset=available_staff.filter(
-                profile__formation__in=FORMATION_KEYS
+                Q(profile__formation__in=FORMATION_KEYS) |
+                Q(profile__office_member=True)
             ),
             required=False,
         )
