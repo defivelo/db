@@ -101,13 +101,12 @@ class Qualification(models.Model):
     leader = models.ForeignKey(settings.AUTH_USER_MODEL,
                                verbose_name=_('Moniteur 2'),
                                related_name='qualifs_mon2',
-                               limit_choices_to={'profile__formation': FORMATION_M2},
+                               limit_choices_to=Q(profile__formation=FORMATION_M2) | Q(profile__office_member=True),
                                blank=True, null=True)
     helpers = models.ManyToManyField(settings.AUTH_USER_MODEL,
                                      verbose_name=_('Moniteurs 1'),
                                      related_name='qualifs_mon1',
-                                     limit_choices_to={
-                                         'profile__formation__in': FORMATION_KEYS},
+                                     limit_choices_to=Q(profile__formation__in=FORMATION_KEYS) | Q(profile__office_member=True),
                                      blank=True)
     actor = models.ForeignKey(settings.AUTH_USER_MODEL,
                               verbose_name=_('Intervenant'),
