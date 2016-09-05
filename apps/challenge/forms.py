@@ -80,18 +80,20 @@ class SessionForm(autocomplete_light.ModelForm):
 
 class LeaderChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
-        return obj.get_full_name()
+        postfix = ''
+        if obj.profile.office_member:
+            postfix = ' (♔)'
+        return obj.get_full_name() + postfix
 
 
 class HelpersChoiceField(forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
-        return (
-            obj.get_full_name() +
-            ' (%s)' % (
-                obj.profile.formation
-                if obj.profile.formation != FORMATION_M1 else ''
-            )
-        )
+        postfix = ''
+        if obj.profile.formation not in ['', FORMATION_M1]:
+            postfix = ' (%s)' % obj.profile.formation
+        if obj.profile.office_member:
+            postfix = ' (♔)'
+        return obj.get_full_name() + postfix
 
 
 class ActorChoiceField(forms.ModelChoiceField):
