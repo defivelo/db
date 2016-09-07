@@ -484,7 +484,10 @@ class SessionCreateView(SessionMixin, SuccessMessageMixin, CreateView):
 
 class SessionDeleteView(SessionMixin, SuccessMessageMixin, DeleteView):
     success_message = _("Session supprimée")
-    success_url = reverse_lazy('session-list')
+    def get_success_url(self):
+        return reverse_lazy('season-detail', kwargs={
+            'pk': self.kwargs['seasonpk']
+            })
 
 
 class SessionStaffChoiceView(SessionDetailView):
