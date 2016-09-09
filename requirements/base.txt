@@ -19,3 +19,4 @@ django-filters-mixin==0.1.2
 django-import-export==0.2.8
 django-agpl==4.0.0
 tablib==0.10.0
+simple-article==0.2.1

@@ -76,6 +76,9 @@ UPSTREAM_APPS = (
     'django_filters',
     'import_export',
     'django_agpl',
+    'tinymce',
+    'taggit',
+    'article',
 )
 
 # Project apps tested by jenkins (everything in apps/)

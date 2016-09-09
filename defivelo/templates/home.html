@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load article_tags %}
+
+{% block content %}
+    {% recent_articles limit=5 as other_articles %}
+    {% for article in other_articles %}
+        <div class="articles panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">{{ article.title }}</h3>
+                
+                <small class="pull-right"><em>{{ article.modified }}</em></small>
+            </div>
+            <div class="panel-body">
+                {{ article.body|safe }}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
