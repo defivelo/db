@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% block head_title %}{% if article %}{% trans "Édition de l'article" %}{% else %}{% trans "Nouvel article" %}{% endif %}{% endblock %}
+
+{% block bootstrap3_extra_head %}
+{{ form.media.css }}
+{% endblock %}
+{% block bootstrap3_extra_script %}
+{{ form.media.js }}
+{% endblock %}
+
+{% block content %}
+    <h1>{% if article %}{% trans "Édition de l'article" %}{% else %}{% trans "Nouvel article" %}{% endif %}</h1>
+
+
+    <form method="POST" action="" class="form-horizontal" novalidate>
+        {% csrf_token %}
+        {% bootstrap_form form layout='horizontal' size='small' %}
+
+        {% buttons %}
+            <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
+            {% if article %}
+                <a class="btn btn-default" href="{% url 'article-detail' pk=article.pk %}">{% trans "Annuler" %}</a>
+            {% else %}
+                <a class="btn btn-default" href="{% url 'home' %}">{% trans "Annuler" %}</a>
+            {% endif %}
+        {% endbuttons %}
+    </form>
+{% endblock %}
