@@ -20,9 +20,11 @@ from __future__ import unicode_literals
 from django.conf.urls import url
 from django.views.decorators.cache import never_cache
 
-from .views import ArticleCreateView
+from .views import ArticleCreateView, ArticleUpdateView
 
 urlpatterns = [
     url(r'^new/$', ArticleCreateView.as_view(),
         name="article-create"),
+    url(r'^(?P<pk>[0-9]+)/update/$', ArticleUpdateView.as_view(),
+        name="article-update"),
 ]

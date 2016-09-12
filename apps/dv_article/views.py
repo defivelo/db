@@ -21,7 +21,7 @@ from article.models import Article
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 
 from defivelo.views import MenuView
 
@@ -39,3 +39,8 @@ class ArticleCreateView(ArticleMixin,
                         SuccessMessageMixin,
                         CreateView):
     success_message = _("Article créé")
+    
+class ArticleUpdateView(ArticleMixin,
+                        SuccessMessageMixin,
+                        UpdateView):
+    success_message = _("Article mis à jour")

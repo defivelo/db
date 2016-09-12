@@ -1,15 +1,21 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load article_tags %}
 
 {% block content %}
-    {% recent_articles limit=5 as other_articles %}
-    {% for article in other_articles %}
-        <div class="articles panel panel-default">
+    {% for article in articles %}
+        <div class="articles panel {% if article.published %}panel-info{% else %}panel-default{% endif %}">
             <div class="panel-heading">
-                <h3 class="panel-title">{{ article.title }}</h3>
+                <h3 class="panel-title">
+                    {% if not article.published %}<span class="glyphicon glyphicon-hourglass" aria-hidden="true"></span>{% endif %}
+                    {{ article.title }}
+                </h3>
                 
-                <small class="pull-right"><em>{{ article.modified }}</em></small>
+                <span class="pull-right">
+                    <small><em>{{ article.modified }}</em></small>
+                    <a class="btn {% if article.published %}btn-info{% else %}btn-default{% endif %}" href="{% url 'article-update' pk=article.pk %}">
+                        <span class="glyphicon glyphicon-pencil" title="{% trans "Éditer l'article" %}" aria-hidden="true"></span>
+                    </a>
+                </span>
             </div>
             <div class="panel-body">
                 {{ article.body|safe }}
