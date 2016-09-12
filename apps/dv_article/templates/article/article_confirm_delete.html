@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% block head_title %}{% blocktrans with title=article.title %}Suppression de l'article {{ title }}?{% endblocktrans %}{% endblock %}
+
+{% block content %}
+    <h1>{% blocktrans with title=article.title %}Suppression de l'article <em>{{ title }}</em> ?{% endblocktrans %}</h1>
+    <form method="POST" action="" class="form-horizontal">
+        {% csrf_token %}
+        <p>{% blocktrans with title=article.title %}Supprimer l'article <em>{{ title }}</em> définitivement ?{% endblocktrans %}
+        {% buttons %}
+            <button type="submit" class="btn btn-danger pull-right">{% trans "Supprimer vraiment" %}</button>
+            <a class="btn btn-default" href="{% url 'home' %}">{% trans "Retour à l'accueil" %}</a>
+        {% endbuttons %}
+    </form>
+    <div class="articles panel {% if article.published %}panel-info{% else %}panel-default{% endif %}">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    {% if not article.published %}<span class="glyphicon glyphicon-hourglass" aria-hidden="true"></span>{% endif %}
+                    {{ article.title }}
+                </h3>
+                
+                <span class="pull-right">
+                    <small><em>{{ article.modified }}</em></small>
+                </span>
+            </div>
+            <div class="panel-body">
+                {{ article.body|safe }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

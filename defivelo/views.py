@@ -17,9 +17,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import date
 
+from article.models import Article
 from django.utils import timezone
 from django.views.generic.base import TemplateView
-from article.models import Article
 
 from apps.challenge.models import Season
 
