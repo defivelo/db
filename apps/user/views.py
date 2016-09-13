@@ -206,10 +206,6 @@ class UserList(ProfileMixin, FilterMixin, FilterView):
         context['filter_querystring'] = querydict.urlencode()
         return context
 
-    def __init__(self, *args, **kwargs):
-        super(UserList, self).__init__(*args, **kwargs)
-        return
-
     def get_queryset(self):
         return (
             super(UserList, self).get_queryset()
