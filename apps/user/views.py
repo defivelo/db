@@ -37,9 +37,9 @@ from django_filters import (
 )
 from django_filters.views import FilterView
 from filters.views import FilterMixin
+from import_export.formats import base_formats
 
 from apps.challenge.models import QualificationActivity
-from apps.common.export_funcs import get_export_data
 from defivelo.views import MenuView
 
 from . import STATE_CHOICES_WITH_DEFAULT
@@ -217,21 +217,24 @@ class UserList(ProfileMixin, FilterMixin, FilterView):
 class UserListExport(UserList):
     def render_to_response(self, context, **response_kwargs):
         resolvermatch = self.request.resolver_match
-        format = resolvermatch.kwargs.get('format', 'csv')
-        dataset = UserResource().export(self.object_list)
+        formattxt = resolvermatch.kwargs.get('format', 'csv')
+        # Instantiate the format object from base_formats in import_export
+        try:
+            format = getattr(base_formats, formattxt.upper())()
+        except AttributeError:
+            format = base_formats.CSV()
 
-        (content_type, dataset_parameter, filename_postfix) = \
-            get_export_data(format)
+        dataset = UserResource().export(self.object_list)
 
         filename = (
             _('DV-Utilisateurs-{YMD_date}.{extension}').format(
                 YMD_date=timezone.now().strftime('%Y%m%d'),
-                extension=filename_postfix
+                extension=format.get_extension()
             )
         )
 
-        response = HttpResponse(getattr(dataset, dataset_parameter),
-                                content_type + ';charset=utf-8')
+        response = HttpResponse(getattr(dataset, formattxt),
+                                format.get_content_type() + ';charset=utf-8')
         response['Content-Disposition'] = 'attachment; filename="%s"' % filename
         return response
 
