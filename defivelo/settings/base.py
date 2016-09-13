@@ -230,6 +230,11 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 
+TINYMCE_DEFAULT_CONFIG = {
+    'theme': 'simple',
+    'plugins': "autolink,",
+    'cleanup_on_startup': True,
+}
 
 def defivelo_user_display(u):
     if u.first_name and u.last_name:
