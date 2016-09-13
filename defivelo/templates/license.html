@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% block content %}
-{% include "includes/agpl-3.0.html" %}
 
 <h2>{% trans "Télécharger le projet" %}</h2>
 <div class="btn-group" role="group" aria-label="exports">
@@ -20,4 +19,6 @@
         {% endfor %}
     {% endwith %}
 </div>
+
+{% include "includes/agpl-3.0.html" %}
 {% endblock %}
