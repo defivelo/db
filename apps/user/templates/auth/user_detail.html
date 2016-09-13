@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load bootstrap3 %}
 {% block content %}
-    <div class="panel panel-default vcard">
+    <div class="panel panel-{{ userprofile.profile.status_class }} vcard">
         <div class="panel-heading">
             <h2 class="panel-title">
                 <a href="{{ userprofile.get_absolute_url }}" class="fn">{{ userprofile.get_full_name }}</a>
@@ -90,15 +90,16 @@
                         {% if userprofile.profile.actor %}
                             <dt>{% trans "Intervenant" %}</dt><dd>{{ userprofile.profile.actor_for.name }}</dd>
                         {% endif %}
+                        {% if userprofile.profile.status > 0 %}
                         <dt>{% trans "État" %}</dt>
-                            <dd>{% if userprofile.profile.status > 0 %}
+                            <dd class="text-{{ userprofile.profile.status_class }}">
                                     {{ userprofile.profile.status_icon }}
                                     {{ userprofile.profile.status_full }}
                                     {% if userprofile.profile.status_updatetime %}
                                         ({% trans "Dernière mise à jour: " %}{{ userprofile.profile.status_updatetime }})
                                     {% endif %}
-                                {% endif %}
                             </dd>
+                        {% endif %}
                         {% if userprofile.profile.bagstatus > 0 %}
                             <dt>{% trans "Sac Défi Vélo" %}</dt>
                                 <dd>

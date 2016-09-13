@@ -147,15 +147,13 @@ class UserProfile(Address, models.Model):
         return ''
 
     def status_class(self):
-        css_class = ''
+        css_class = 'default'
         if self.status == USERSTATUS_ACTIVE:
             css_class = 'success' # Green
         elif self.status == USERSTATUS_RESERVE:
             css_class = 'warning' # Orange
         elif self.status == USERSTATUS_INACTIVE:
             css_class= 'danger'  # Red
-        elif self.status == USERSTATUS_ARCHIVE:
-            css_class = 'text-muted active'  # Grey text, grey background
         return css_class
 
     @property
