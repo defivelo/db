@@ -46,7 +46,8 @@ from . import STATE_CHOICES_WITH_DEFAULT
 from .export import UserResource
 from .forms import UserProfileForm
 from .models import (
-    FORMATION_CHOICES, STD_PROFILE_FIELDS, USERSTATUS_CHOICES, UserProfile,
+    FORMATION_CHOICES, STD_PROFILE_FIELDS, USERSTATUS_ACTIVE,
+    USERSTATUS_CHOICES, USERSTATUS_RESERVE, UserProfile,
 )
 
 
@@ -163,7 +164,8 @@ class UserProfileFilterSet(FilterSet):
     )
     profile__status = MultipleChoiceFilter(
         label=_('Statut'),
-        choices=USERSTATUS_CHOICES
+        choices=USERSTATUS_CHOICES,
+        initial=[USERSTATUS_ACTIVE,USERSTATUS_RESERVE,]
     )
     profile__formation = MultipleChoiceFilter(
         label=_('Formation'),
