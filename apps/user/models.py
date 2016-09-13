@@ -41,7 +41,7 @@ USERSTATUS_UNDEF = 0
 USERSTATUS_ACTIVE = 10
 USERSTATUS_RESERVE = 20
 USERSTATUS_INACTIVE = 30
-USERSTATUS_ARCHIVE = 30
+USERSTATUS_ARCHIVE = 40
 
 USERSTATUS_CHOICES = (
     (USERSTATUS_UNDEF, '---------'),
@@ -145,6 +145,18 @@ class UserProfile(Address, models.Model):
         if icon:
             return mark_safe(STDGLYPHICON.format(icon=icon, title=title))
         return ''
+
+    def status_class(self):
+        css_class = ''
+        if self.status == USERSTATUS_ACTIVE:
+            css_class = 'success' # Green
+        elif self.status == USERSTATUS_RESERVE:
+            css_class = 'warning' # Orange
+        elif self.status == USERSTATUS_INACTIVE:
+            css_class= 'danger'  # Red
+        elif self.status == USERSTATUS_ARCHIVE:
+            css_class = 'text-muted active'  # Grey text, grey background
+        return css_class
 
     @property
     def age(self):

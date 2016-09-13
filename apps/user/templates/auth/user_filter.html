@@ -78,7 +78,7 @@
             <td><a href="{% url 'user-detail' pk=user.pk %}">{{ user.last_name }}</a></td>
             <td><a href="mailto:{{ user.profile.email }}">{{ user.profile.email }}</a></td>
             <td><a href="tel:{{ user.profile.natel_int }}">{{ user.profile.natel }}</a></td>
-            <td>
+            <td class="{{ user.profile.status_class }}">
                 {{ user.profile.status_icon|safe }}
             </td>
             <td>
