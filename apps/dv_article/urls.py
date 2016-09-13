@@ -17,21 +17,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from localflavor.ch.ch_states import STATE_CHOICES
+from django.conf.urls import url
+from django.views.decorators.cache import never_cache
 
-from django.utils.translation import ugettext_lazy as _
+from .views import ArticleCreateView, ArticleDeleteView, ArticleUpdateView
 
-STATE_CHOICES_WITH_DEFAULT = tuple(
-    list((('', '---------',),)) +
-    list(STATE_CHOICES)
-)
-
-FORMATION_M1 = 'M1'
-FORMATION_M2 = 'M2'
-
-FORMATION_CHOICES = (
-    ('', '----------'),
-    (FORMATION_M1, _('Moniteur 1')),
-    (FORMATION_M2, _('Moniteur 2')),
-)
-FORMATION_KEYS = [k[0] for k in FORMATION_CHOICES if k[0] != '']
+urlpatterns = [
+    url(r'^new/$', ArticleCreateView.as_view(),
+        name="article-create"),
+    url(r'^(?P<pk>[0-9]+)/update/$', ArticleUpdateView.as_view(),
+        name="article-update"),
+    url(r'^(?P<pk>[0-9]+)/delete/$', ArticleDeleteView.as_view(),
+        name="article-delete"),
+]

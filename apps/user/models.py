@@ -35,21 +35,13 @@ from multiselectfield import MultiSelectField
 from apps.challenge.models import QualificationActivity
 from apps.common.models import Address
 
-FORMATION_M1 = 'M1'
-FORMATION_M2 = 'M2'
-
-FORMATION_CHOICES = (
-    ('', '----------'),
-    (FORMATION_M1, _('Moniteur 1')),
-    (FORMATION_M2, _('Moniteur 2')),
-)
-FORMATION_KEYS = [k[0] for k in FORMATION_CHOICES if k[0] != '']
+from . import FORMATION_CHOICES, FORMATION_KEYS, FORMATION_M1, FORMATION_M2
 
 USERSTATUS_UNDEF = 0
 USERSTATUS_ACTIVE = 10
 USERSTATUS_RESERVE = 20
 USERSTATUS_INACTIVE = 30
-USERSTATUS_ARCHIVE = 30
+USERSTATUS_ARCHIVE = 40
 
 USERSTATUS_CHOICES = (
     (USERSTATUS_UNDEF, '---------'),
@@ -78,6 +70,7 @@ STD_PROFILE_FIELDS = ['natel', 'birthdate',
                       'address_street', 'address_no', 'address_zip',
                       'address_city', 'address_canton',
                       'iban', 'social_security',
+                      'office_member',
                       'formation', 'actor_for', 'status',
                       'pedagogical_experience',
                       'firstmed_course', 'firstmed_course_comm',
@@ -95,6 +88,8 @@ class UserProfile(Address, models.Model):
     activity_cantons = MultiSelectField(_("Cantons d'affiliation"),
                                         choices=STATE_CHOICES,
                                         blank=True)
+    office_member = models.BooleanField(_('Bureau Défi Vélo'),
+                                          default=False)
     formation = models.CharField(_("Formation"), max_length=2,
                                  choices=FORMATION_CHOICES,
                                  blank=True)
@@ -151,6 +146,16 @@ class UserProfile(Address, models.Model):
             return mark_safe(STDGLYPHICON.format(icon=icon, title=title))
         return ''
 
+    def status_class(self):
+        css_class = 'default'
+        if self.status == USERSTATUS_ACTIVE:
+            css_class = 'success' # Green
+        elif self.status == USERSTATUS_RESERVE:
+            css_class = 'warning' # Orange
+        elif self.status == USERSTATUS_INACTIVE:
+            css_class= 'danger'  # Red
+        return css_class
+
     @property
     def age(self):
         today = timezone.now()
@@ -176,7 +181,10 @@ class UserProfile(Address, models.Model):
     def formation_icon(self):
         icon = ''
         title = self.formation_full
-        if self.formation == FORMATION_M1:
+        if self.office_member:
+            icon = 'tower'
+            title = _('Bureau Défi Vélo')
+        elif self.formation == FORMATION_M1:
             icon = 'tag'
         elif self.formation == FORMATION_M2:
             icon = 'tags'

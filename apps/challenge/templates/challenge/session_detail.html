@@ -18,7 +18,8 @@
         <td><a href="{% url 'organization-detail' session.organization.pk %}">{{ session.organization }}</a></td>
     </tr>
     <tr><th>{% trans "Emplacement de la session" %}</th>
-        <td>{{ session.address_street }} {{ session.address_no }}<br />
+        <td>{% if session.place %}<em>{{ session.place }}</em><br />{% endif %}
+            {{ session.address_street }} {{ session.address_no }}<br />
             {{ session.address_city }}{% if session.canton %} ({{ session.address_canton }}){% endif %}
         </td>
     </tr>

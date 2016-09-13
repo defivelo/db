@@ -17,32 +17,32 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from django.conf.urls import include, patterns, url
-from django.conf.urls.i18n import i18n_patterns
-from django.contrib import admin
+from article.models import Article
+from django.contrib.messages.views import SuccessMessageMixin
+from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from .views import HomeView, LicenseView
+from defivelo.views import MenuView
 
-admin.autodiscover()
+from .forms import ArticleForm
 
-urlpatterns = patterns(
-    '',
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^i18n/', include('django.conf.urls.i18n')),
-    url(r'^accounts/', include('allauth.urls')),
-    url(r'^license/', LicenseView.as_view(), name='license'),
-    url(r'^agpl-', include('django_agpl.urls')),
-    url(r'^article/', include('apps.dv_article.urls')),
-)
 
-urlpatterns += i18n_patterns(
-    '',
-    url(r'^$', HomeView.as_view(), name='home'),
-    url(r'^season/', include('apps.challenge.urls')),
-    url(r'^orga/', include('apps.orga.urls')),
-    url(r'^user/', include('apps.user.urls')),
-    url(r'^autocomplete/', include('autocomplete_light.urls')),
-)
+class ArticleMixin(SuccessMessageMixin, MenuView):
+    model = Article
+    context_object_name = 'article'
+    form_class = ArticleForm
+    success_url = reverse_lazy('home')
 
-admin.site.site_header = _('DB Défi Vélo')
+
+class ArticleCreateView(ArticleMixin,
+                        CreateView):
+    success_message = _("Article créé")
+    
+class ArticleUpdateView(ArticleMixin,
+                        UpdateView):
+    success_message = _("Article mis à jour")
+
+class ArticleDeleteView(ArticleMixin,
+                             DeleteView):
+    pass

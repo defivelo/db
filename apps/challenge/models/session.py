@@ -56,6 +56,8 @@ class Session(Address, models.Model):
                                      verbose_name=_('Établissement'),
                                      related_name='sessions',
                                      blank=True, null=True)
+    place = models.CharField(_("Lieu de la qualification"),
+                             max_length=512, blank=True)
     FALLBACK_CHOICES = (
         ('A', _('Programme déluge')),
         ('B', _('Annulation')),

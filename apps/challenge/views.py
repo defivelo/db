@@ -35,9 +35,9 @@ from django.views.generic.edit import (
     CreateView, DeleteView, FormMixin, FormView, UpdateView,
 )
 from django.views.generic.list import ListView
+from import_export.formats import base_formats
 from tablib import Dataset
 
-from apps.common.export_funcs import get_export_data
 from apps.user.models import FORMATION_M1, FORMATION_M2
 from apps.user.views import ActorsList, HelpersList
 from defivelo.views import MenuView
@@ -160,9 +160,12 @@ class SeasonAvailabilityMixin(SeasonMixin):
 class SeasonExportView(SeasonAvailabilityMixin, DetailView):
     def render_to_response(self, context, **response_kwargs):
         resolvermatch = self.request.resolver_match
-        format = resolvermatch.kwargs.get('format', 'csv')
-        (content_type, dataset_parameter, filename_postfix) = \
-            get_export_data(format)
+        formattxt = resolvermatch.kwargs.get('format', 'csv')
+        # Instantiate the format object from base_formats in import_export
+        try:
+            format = getattr(base_formats, formattxt.upper())()
+        except AttributeError:
+            format = base_formats.CSV()
 
         season = self.get_season()
 
@@ -170,7 +173,7 @@ class SeasonExportView(SeasonAvailabilityMixin, DetailView):
             _('DV-Saison-{cantons}-{YM_startdate}.{extension}').format(
                 cantons='-'.join(season.cantons),
                 YM_startdate=season.begin.strftime('%Y%m'),
-                extension=filename_postfix
+                extension=format.get_extension()
             )
         )
         dataset = Dataset()
@@ -196,8 +199,8 @@ class SeasonExportView(SeasonAvailabilityMixin, DetailView):
             ])
         dataset.insert_separator(6, u('Présences des moniteurs'))
 
-        response = HttpResponse(getattr(dataset, dataset_parameter),
-                                content_type + ';charset=utf-8')
+        response = HttpResponse(getattr(dataset, formattxt),
+                                format.get_content_type() + ';charset=utf-8')
         response['Content-Disposition'] = 'attachment; filename="%s"' % filename
         return response
 

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+    {% for article in articles %}
+        <div class="articles panel {% if article.published %}panel-info{% else %}panel-default{% endif %}">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    {% if not article.published %}<span class="glyphicon glyphicon-hourglass" aria-hidden="true"></span>{% endif %}
+                    {{ article.title }}
+                </h3>
+                
+                <span class="pull-right">
+                    <small><em>{{ article.modified }}</em></small>
+                    <a class="btn {% if article.published %}btn-info{% else %}btn-default{% endif %}" href="{% url 'article-update' pk=article.pk %}">
+                        <span class="glyphicon glyphicon-pencil" title="{% trans "Éditer l'article" %}" aria-hidden="true"></span>
+                    </a>
+                    <a class="btn btn-danger" href="{% url 'article-delete' pk=article.pk %}">
+                        <span class="glyphicon glyphicon-minus" aria-hidden="true" title="{% trans "Supprimer l'article" %}" aria-hidden="true"></span>
+                    </a>
+                </span>
+            </div>
+            <div class="panel-body">
+                {{ article.body|safe }}
+            </div>
+        </div>
+    {% endfor %}
+
+    <div class="hidden-print">
+        <a class="btn btn-primary pull-right" href="{% url 'article-create' %}">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            {% trans "Nouvel article" %}
+        </a>
+    </div>
+{% endblock %}

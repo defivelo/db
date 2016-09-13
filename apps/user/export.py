@@ -114,6 +114,9 @@ class UserResource(resources.ModelResource):
         column_name=_("IBAN"),
         attribute='profile',
         widget=ObjectMethodWidget(method='iban_nice'))
+    profile__office_member = fields.Field(
+        column_name=_('Bureau Défi Vélo'),
+        attribute='profile__office_member')
 
     class Meta:
         model = get_user_model()

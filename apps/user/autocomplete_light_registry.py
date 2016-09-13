@@ -49,7 +49,9 @@ al_register(PersonAutocomplete, name='AllPersons',
 
 al_register(PersonAutocomplete, name='PersonsRelevantForSessions',
             choices=get_user_model().objects.filter(
-                Q(profile__formation__in=FORMATION_KEYS) | Q(profile__actor_for__isnull=False)
+                Q(profile__formation__in=FORMATION_KEYS) |
+                Q(profile__actor_for__isnull=False) |
+                Q(profile__office_member=True)
             ),
             widget_attrs={
                 'data-widget-maximum-values': 1,
@@ -64,14 +66,16 @@ class HelpersAutocomplete(PersonAutocomplete):
 
 al_register(HelpersAutocomplete, name='Helpers',
             choices=get_user_model().objects.filter(
-                profile__formation__in=FORMATION_KEYS
+                Q(profile__formation__in=FORMATION_KEYS) |
+                Q(profile__office_member=True)
                 ),
             widget_attrs={
                 'data-widget-maximum-values': MAX_MONO1_PER_QUALI,
             })
 al_register(HelpersAutocomplete, name='Leaders',
             choices=get_user_model().objects.filter(
-                profile__formation=FORMATION_M2
+                Q(profile__formation=FORMATION_M2) |
+                Q(profile__office_member=True)
                 )
             )
 

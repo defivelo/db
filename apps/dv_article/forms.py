@@ -17,20 +17,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+from article.models import Article
+from django import forms
+from django.utils.translation import ugettext_lazy as _
 
-def get_export_data(format):
-    # Default to csv
-    content_type = 'text/csv'
-    dataset_parameter = 'csv'
-    filename_postfix = 'csv'
 
-    if format == 'ods':
-        content_type = 'application/vnd.oasis.opendocument.spreadsheet'
-        dataset_parameter = 'ods'
-        filename_postfix = 'ods'
-    elif format == 'xls':
-        content_type = 'application/vnd.ms-excel'
-        dataset_parameter = 'xls'
-        filename_postfix = 'xls'
-
-    return (content_type, dataset_parameter, filename_postfix)
+class ArticleForm(forms.ModelForm):
+    published = forms.BooleanField(label=_('Publié'),
+                                   initial=True)
+    class Meta:
+        model = Article
+        fields = ['title', 'body', 'published']

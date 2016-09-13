@@ -70,6 +70,7 @@ class SessionForm(autocomplete_light.ModelForm):
             'organization': _('Établissement'),
         }
         fields = ['organization', 'day', 'begin', 'fallback_plan',
+                  'place',
                   'address_street', 'address_no', 'address_zip',
                   'address_city', 'address_canton',
                   'apples',
@@ -79,18 +80,20 @@ class SessionForm(autocomplete_light.ModelForm):
 
 class LeaderChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
-        return obj.get_full_name()
+        postfix = ''
+        if obj.profile.office_member:
+            postfix = ' (♔)'
+        return obj.get_full_name() + postfix
 
 
 class HelpersChoiceField(forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
-        return (
-            obj.get_full_name() +
-            ' (%s)' % (
-                obj.profile.formation
-                if obj.profile.formation != FORMATION_M1 else ''
-            )
-        )
+        postfix = ''
+        if obj.profile.formation not in ['', FORMATION_M1]:
+            postfix = ' (%s)' % obj.profile.formation
+        if obj.profile.office_member:
+            postfix = ' (♔)'
+        return obj.get_full_name() + postfix
 
 
 class ActorChoiceField(forms.ModelChoiceField):
@@ -110,8 +113,8 @@ class QualificationForm(forms.ModelForm):
         other_qualifs = session.qualifications.exclude(pk=self.instance.pk)
         available_staff = (
             get_user_model().objects.filter(
-                availabilities__chosen=True,
-                availabilities__session=session,
+                Q(availabilities__chosen=True,availabilities__session=session) |
+                Q(profile__office_member=True),
             )
             .exclude(
                 Q(qualifs_mon2__in=other_qualifs) |
@@ -121,13 +124,17 @@ class QualificationForm(forms.ModelForm):
         )
         self.fields['leader'] = LeaderChoiceField(
             label=_('Moniteur 2'),
-            queryset=available_staff.filter(profile__formation=FORMATION_M2),
+            queryset=available_staff.filter(
+                Q(profile__formation=FORMATION_M2) |
+                Q(profile__office_member=True)
+            ),
             required=False,
         )
         self.fields['helpers'] = HelpersChoiceField(
             label=_('Moniteurs 1'),
             queryset=available_staff.filter(
-                profile__formation__in=FORMATION_KEYS
+                Q(profile__formation__in=FORMATION_KEYS) |
+                Q(profile__office_member=True)
             ),
             required=False,
         )

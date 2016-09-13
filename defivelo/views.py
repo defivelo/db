@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import date
 
+from article.models import Article
 from django.utils import timezone
 from django.views.generic.base import TemplateView
 
@@ -33,10 +34,11 @@ class MenuView(object):
 
 
 class HomeView(MenuView, TemplateView):
-    template_name = "base.html"
+    template_name = "home.html"
 
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
+        context['articles'] = Article.objects.order_by('-modified')[:5]
         # Add our menu_category context
         context['menu_category'] = 'home'
         return context

@@ -76,6 +76,9 @@ UPSTREAM_APPS = (
     'django_filters',
     'import_export',
     'django_agpl',
+    'tinymce',
+    'taggit',
+    'article',
 )
 
 # Project apps tested by jenkins (everything in apps/)
@@ -257,7 +260,7 @@ if VCS_VERSION == '0':
         VCS_COMMIT = 'HEAD'
 
 try:
-    import django_agpl
+    from django_agpl import app_settings as agpl_settings
 
     # Base directory from which download tree will be generated
     AGPL_ROOT = PROJECT_ROOT
@@ -266,12 +269,14 @@ try:
     AGPL_FILENAME_PREFIX = 'defivelo-intranet'
 
     # Directories to exclude from download tree (optional)
-    AGPL_EXCLUDE_DIRS = django_agpl.EXCLUDE_DIRS + [r'\.tox$', r'^__pycache__$',
-                                                    r'^static_files$', r'^venv$',
-                                                    r'^envdir$']
+    AGPL_EXCLUDE_DIRS = agpl_settings.EXCLUDE_DIRS + [r'\.tox$',
+                                                      r'^__pycache__$',
+                                                      r'\.vagrant$', r'^virtualization',
+                                                      r'^static_files$', r'^venv$',
+                                                      r'^envdir$']
 
     # Files to exclude from download tree (optional)
-    AGPL_EXCLUDE_FILES = django_agpl.EXCLUDE_FILES + [r'.mo$', r'~$']
+    AGPL_EXCLUDE_FILES = agpl_settings.EXCLUDE_FILES + [r'.mo$', r'~$']
 
     # Prefix to create inside download tree (optional)
     AGPL_TREE_PREFIX = 'defivelo-intranet'
