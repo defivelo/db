@@ -121,6 +121,8 @@ class QualificationForm(forms.ModelForm):
                 Q(qualifs_mon1__in=other_qualifs) |
                 Q(qualifs_actor__in=other_qualifs)
             )
+            .distinct()
+            .order_by('profile__office_member', 'first_name')
         )
         self.fields['leader'] = LeaderChoiceField(
             label=_('Moniteur 2'),
