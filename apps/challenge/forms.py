@@ -31,7 +31,7 @@ from apps.user.models import FORMATION_KEYS, FORMATION_M1, FORMATION_M2
 
 from . import (
     AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, SHORTCODE_ACTOR, SHORTCODE_MON1,
-    SHORTCODE_MON2, STAFF_FIELDKEY,
+    SHORTCODE_MON2, SHORTCODE_OFFICE, STAFF_FIELDKEY,
 )
 from .models import Qualification, Season, Session
 from .models.availability import HelperSessionAvailability
@@ -82,7 +82,7 @@ class LeaderChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         postfix = ''
         if obj.profile.office_member:
-            postfix = ' (♔)'
+            postfix = ' ({})'.format(SHORTCODE_OFFICE)
         return obj.get_full_name() + postfix
 
 
@@ -92,7 +92,7 @@ class HelpersChoiceField(forms.ModelMultipleChoiceField):
         if obj.profile.formation not in ['', FORMATION_M1]:
             postfix = ' (%s)' % obj.profile.formation
         if obj.profile.office_member:
-            postfix = ' (♔)'
+            postfix = ' ({})'.format(SHORTCODE_OFFICE)
         return obj.get_full_name() + postfix
 
 
