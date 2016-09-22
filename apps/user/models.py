@@ -224,8 +224,10 @@ class UserProfile(Address, models.Model):
 
     @property
     def affiliation_canton_verb(self):
-        if self.affiliation_canton:
+        try:
             return [c[1] for c in DV_STATE_CHOICES if c[0] == self.affiliation_canton][0]
+        except IndexError:
+            return ''
 
     def __str__(self):
         return self.user.get_full_name()
