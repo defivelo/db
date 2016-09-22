@@ -105,8 +105,17 @@ function officeMembersSuperPowers() {
   }
 }
 
+function dvCantonsNotAffiliatedToMobile() {
+    // Ne permet pas la coche dans le canton d'activité pour Défi Vélo Mobile
+    homecanton = $( "#id_affiliation_canton" ).val();
+    $( '#id_activity_cantons input[disabled]').prop("disabled", false);
+    $( '#id_activity_cantons input[value="' + homecanton + '"]').prop("disabled", true);
+}
+
 $( "#id_office_member" ).change( officeMembersSuperPowers );
+$( "#id_affiliation_canton" ).change( dvCantonsNotAffiliatedToMobile );
 
 officeMembersSuperPowers();
+dvCantonsNotAffiliatedToMobile();
 </script>
 {% endblock %}

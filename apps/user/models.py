@@ -126,6 +126,15 @@ class UserProfile(Address, models.Model):
     bagstatus_updatetime = models.DateTimeField(null=True, blank=True)
     comments = models.TextField(_('Remarques'), blank=True)
 
+    def save(self, *args, **kwargs):
+        if self.activity_cantons:
+            # Remove the affiliation canton from the activity_cantons
+            try:
+                self.activity_cantons.remove(self.affiliation_canton)
+            except (ValueError, AttributeError):
+                pass
+        super(UserProfile, self).save(*args, **kwargs)
+
     @property
     def formation_full(self):
         if self.formation:
