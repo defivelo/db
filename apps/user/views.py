@@ -136,9 +136,11 @@ class UserCreate(ProfileMixin, SuccessMessageMixin, UpdateView):
 
 
 class UserProfileFilterSet(FilterSet):
-    def filter_affiliation_canton(queryset, value):
+    def filter_cantons(queryset, value):
         if value:
             allcantons_filter = [
+                Q(profile__activity_cantons__contains=canton) for canton in value
+            ] + [
                 Q(profile__affiliation_canton=canton) for canton in value
             ]
             return queryset.filter(reduce(operator.or_, allcantons_filter))
@@ -155,10 +157,10 @@ class UserProfileFilterSet(FilterSet):
             return queryset.filter(reduce(operator.or_, allfields_filter))
         return queryset
 
-    profile__affiliation_canton = MultipleChoiceFilter(
-        label=_("Canton d'affiliation"),
+    profile__activity_cantons = MultipleChoiceFilter(
+        label=_("Cantons"),
         choices=DV_STATE_CHOICES_WITH_DEFAULT,
-        action=filter_affiliation_canton
+        action=filter_cantons
     )
     profile__status = MultipleChoiceFilter(
         label=_('Statut'),
@@ -183,7 +185,7 @@ class UserProfileFilterSet(FilterSet):
         fields = ['profile__status',
                   'profile__formation',
                   'profile__actor_for',
-                  'profile__affiliation_canton',
+                  'profile__activity_cantons',
                   ]
 
 
