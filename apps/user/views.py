@@ -30,8 +30,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DetailView
 from django.views.generic.edit import UpdateView
 from django_filters import (
-    CharFilter, FilterSet, ModelMultipleChoiceFilter,
-    MultipleChoiceFilter,
+    CharFilter, FilterSet, ModelMultipleChoiceFilter, MultipleChoiceFilter,
 )
 from django_filters.views import FilterView
 from filters.views import FilterMixin

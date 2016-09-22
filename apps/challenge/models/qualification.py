@@ -17,23 +17,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from datetime import datetime, timedelta
-
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
-from django.template.defaultfilters import date
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as u, ugettext_lazy as _
-from localflavor.ch.ch_states import STATE_CHOICES
-from multiselectfield import MultiSelectField
 from parler.models import TranslatableModel, TranslatedFields
 
-from apps.common.models import Address
-from apps.orga.models import Organization
-from apps.user import FORMATION_KEYS, FORMATION_M1, FORMATION_M2
+from apps.user import FORMATION_KEYS, FORMATION_M2
 
 from .. import MAX_MONO1_PER_QUALI
 from .session import Session
@@ -47,7 +39,7 @@ class QualificationActivity(TranslatableModel):
         ('C', _('Rencontre')),
     )
     translations = TranslatedFields(
-        name = models.CharField(_('Nom'), max_length=255)
+        name=models.CharField(_('Nom'), max_length=255)
     )
     category = models.CharField(_("Catégorie"), max_length=1,
                                 choices=CATEGORY_CHOICES, blank=True)
@@ -64,7 +56,8 @@ class QualificationActivity(TranslatableModel):
 @python_2_unicode_compatible
 class Qualification(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
-    name = models.CharField(_('Nom de la classe'), max_length=255)  # TODO: Replace with automated or classes objects
+    # TODO: Replace with automated or classes objects
+    name = models.CharField(_('Nom de la classe'), max_length=255)
     session = models.ForeignKey(Session,
                                 related_name='qualifications')
     class_teacher_fullname = models.CharField(_('Enseignant'), max_length=512,
@@ -101,12 +94,16 @@ class Qualification(models.Model):
     leader = models.ForeignKey(settings.AUTH_USER_MODEL,
                                verbose_name=_('Moniteur 2'),
                                related_name='qualifs_mon2',
-                               limit_choices_to=Q(profile__formation=FORMATION_M2) | Q(profile__office_member=True),
+                               limit_choices_to=Q(
+                                   profile__formation=FORMATION_M2
+                                   ) | Q(profile__office_member=True),
                                blank=True, null=True)
     helpers = models.ManyToManyField(settings.AUTH_USER_MODEL,
                                      verbose_name=_('Moniteurs 1'),
                                      related_name='qualifs_mon1',
-                                     limit_choices_to=Q(profile__formation__in=FORMATION_KEYS) | Q(profile__office_member=True),
+                                     limit_choices_to=Q(
+                                         profile__formation__in=FORMATION_KEYS
+                                         ) | Q(profile__office_member=True),
                                      blank=True)
     actor = models.ForeignKey(settings.AUTH_USER_MODEL,
                               verbose_name=_('Intervenant'),
@@ -140,7 +137,11 @@ class Qualification(models.Model):
             errors.append(u('Postes'))
         if errors:
             return mark_safe(
-                '<br />'.join(['<span class="btn-warning btn-xs disabled"><span class="glyphicon glyphicon-warning-sign"></span> %s</span>' % e for e in errors])
+                '<br />'.join([
+                    '<span class="btn-warning btn-xs disabled">'
+                    '  <span class="glyphicon glyphicon-warning-sign"></span>'
+                    ' %s'
+                    '</span>' % e for e in errors])
                 )
 
     class Meta:

@@ -35,7 +35,9 @@ from apps.challenge.models import QualificationActivity
 from apps.common import DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.models import Address
 
-from . import FORMATION_CHOICES, FORMATION_KEYS, FORMATION_M1, FORMATION_M2  # NOQA
+from . import (  # NOQA
+    FORMATION_CHOICES, FORMATION_KEYS, FORMATION_M1, FORMATION_M2,
+)
 
 USERSTATUS_UNDEF = 0
 USERSTATUS_ACTIVE = 10

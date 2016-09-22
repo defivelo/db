@@ -31,7 +31,7 @@ from apps.user.models import FORMATION_KEYS, FORMATION_M1, FORMATION_M2
 
 from . import (
     AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, SHORTCODE_ACTOR, SHORTCODE_MON1,
-    SHORTCODE_MON2, SHORTCODE_SELECTED, STAFF_FIELDKEY,
+    SHORTCODE_MON2, STAFF_FIELDKEY,
 )
 from .models import Qualification, Season, Session
 from .models.availability import HelperSessionAvailability
@@ -113,7 +113,10 @@ class QualificationForm(forms.ModelForm):
         other_qualifs = session.qualifications.exclude(pk=self.instance.pk)
         available_staff = (
             get_user_model().objects.filter(
-                Q(availabilities__chosen=True,availabilities__session=session) |
+                Q(
+                    availabilities__chosen=True,
+                    availabilities__session=session
+                ) |
                 Q(profile__office_member=True),
             )
             .exclude(
@@ -152,7 +155,9 @@ class QualificationForm(forms.ModelForm):
         # Check that we don't have too many moniteurs 1
         helpers = self.cleaned_data.get('helpers')
         if helpers and helpers.count() > MAX_MONO1_PER_QUALI:
-            raise ValidationError(_('Pas plus de %s moniteurs 1 !') % MAX_MONO1_PER_QUALI)
+            raise ValidationError(
+                _('Pas plus de %s moniteurs 1 !') % MAX_MONO1_PER_QUALI
+            )
 
         # Check that all moniteurs are unique
         all_leaders_pk = []
@@ -164,7 +169,10 @@ class QualificationForm(forms.ModelForm):
                 all_leaders_pk.append(helper.pk)
         # Check unicity
         seen_pk = set()
-        if len([x for x in all_leaders_pk if x not in seen_pk and not seen_pk.add(x)]) < len(all_leaders_pk):
+        if len([
+            x for x in all_leaders_pk
+            if x not in seen_pk and not seen_pk.add(x)
+        ]) < len(all_leaders_pk):
             raise ValidationError(_('Il y a des moniteurs à double !'),
                                   code='double-helpers'
                                   )
@@ -312,8 +320,9 @@ class BSCheckBoxRenderer(forms.widgets.CheckboxFieldRenderer):
 class SeasonNewHelperAvailabilityForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(SeasonNewHelperAvailabilityForm, self).__init__(*args, **kwargs)
-        self.fields['helper'] = autocomplete_light.ChoiceField('PersonsRelevantForSessions',
-                                                               label=_('Disponibilités pour :'))
+        self.fields['helper'] = \
+            autocomplete_light.ChoiceField('PersonsRelevantForSessions',
+                                           label=_('Disponibilités pour :'))
 
 
 class SeasonAvailabilityForm(forms.Form):
@@ -341,7 +350,7 @@ class SeasonAvailabilityForm(forms.Form):
                             pass
 
                         self.fields[availkey] = forms.ChoiceField(
-                            choices=HelperSessionAvailability.AVAILABILITY_CHOICES,
+                            choices=HelperSessionAvailability.AVAILABILITY_CHOICES,  # NOQA
                             widget=forms.RadioSelect(renderer=BSRadioRenderer),
                             required=False, initial=fieldinit
                         )
@@ -360,8 +369,8 @@ class SeasonStaffChoiceForm(forms.Form):
             for helper_category, helpers in self.available_helpers:
                 for helper in helpers:
                     for session in self.season.sessions_with_qualifs:
-                        availkey = AVAILABILITY_FIELDKEY.format(hpk=helper.pk,
-                                                                spk=session.pk)
+                        AVAILABILITY_FIELDKEY.format(
+                            hpk=helper.pk, spk=session.pk)
                         staffkey = STAFF_FIELDKEY.format(hpk=helper.pk,
                                                          spk=session.pk)
                         # Stupid boolean to integer-as-string conversion.

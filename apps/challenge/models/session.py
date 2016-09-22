@@ -20,9 +20,7 @@ from __future__ import unicode_literals
 from datetime import datetime, timedelta
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.db import models
-from django.db.models import Q, Sum
 from django.template.defaultfilters import date
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
@@ -98,13 +96,12 @@ class Session(Address, models.Model):
             errors.append(_('Pas de qualifications'))
         if errors:
             return mark_safe(
-                '<br />'.join(
-                    [
-                        '<span class="btn-warning btn-xs disabled">'
-                        '  <span class="glyphicon glyphicon-warning-sign"></span>'
-                        '  {error}'
-                        '</span>'.format(error=e) for e in errors
-                    ])
+                '<br />'.join([
+                    '<span class="btn-warning btn-xs disabled">'
+                    '  <span class="glyphicon glyphicon-warning-sign"></span>'
+                    '  {error}'
+                    '</span>'.format(error=e) for e in errors
+                ])
                 )
 
     @cached_property
@@ -199,7 +196,12 @@ class Session(Address, models.Model):
     def __str__(self):
         return (
             date(self.day, settings.DATE_FORMAT) +
-            (' (%s)' % date(self.begin, settings.TIME_FORMAT) if self.begin else '') +
+            (' (%s)' % date(self.begin, settings.TIME_FORMAT) if self.begin
+             else '') +
             (' - %s' % self.organization.name if self.organization else '') +
-            (' (%s)' % (self.address_city if self.address_city else (self.organization.address_city if (self.organization and self.organization.address_city) else '')))
+            (' (%s)' % (self.address_city if self.address_city else
+                        (self.organization.address_city
+                         if (self.organization
+                             and self.organization.address_city)
+                         else '')))
             )
