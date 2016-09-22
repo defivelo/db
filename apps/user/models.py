@@ -35,7 +35,7 @@ from apps.challenge.models import QualificationActivity
 from apps.common import DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.models import Address
 
-from . import FORMATION_CHOICES, FORMATION_KEYS, FORMATION_M1, FORMATION_M2
+from . import FORMATION_CHOICES, FORMATION_KEYS, FORMATION_M1, FORMATION_M2  # NOQA
 
 USERSTATUS_UNDEF = 0
 USERSTATUS_ACTIVE = 10
@@ -74,7 +74,9 @@ STD_PROFILE_FIELDS = ['natel', 'birthdate',
                       'formation', 'actor_for', 'status',
                       'pedagogical_experience',
                       'firstmed_course', 'firstmed_course_comm',
-                      'bagstatus', 'affiliation_canton', 'comments']
+                      'bagstatus', 'affiliation_canton', 'activity_cantons',
+                      'comments']
+
 
 @python_2_unicode_compatible
 class UserProfile(Address, models.Model):
@@ -85,12 +87,16 @@ class UserProfile(Address, models.Model):
     iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)
     social_security = models.CharField(max_length=16, blank=True)
     natel = models.CharField(max_length=13, blank=True)
-    affiliation_canton = models.CharField(_("Canton d'affiliation"),
-                                        choices=DV_STATE_CHOICES_WITH_DEFAULT,
-                                        max_length=2,
-                                        blank=False)
+    affiliation_canton = models.CharField(
+        _("Canton d'affiliation"),
+        choices=DV_STATE_CHOICES_WITH_DEFAULT,
+        max_length=2,
+        blank=False)
+    activity_cantons = MultiSelectField(_("Défi Vélo mobile"),
+                                        choices=DV_STATE_CHOICES,
+                                        blank=True)
     office_member = models.BooleanField(_('Bureau Défi Vélo'),
-                                          default=False)
+                                        default=False)
     formation = models.CharField(_("Formation"), max_length=2,
                                  choices=FORMATION_CHOICES,
                                  blank=True)
@@ -150,18 +156,24 @@ class UserProfile(Address, models.Model):
     def status_class(self):
         css_class = 'default'
         if self.status == USERSTATUS_ACTIVE:
-            css_class = 'success' # Green
+            css_class = 'success'  # Green
         elif self.status == USERSTATUS_RESERVE:
-            css_class = 'warning' # Orange
+            css_class = 'warning'  # Orange
         elif self.status == USERSTATUS_INACTIVE:
-            css_class= 'danger'  # Red
+            css_class = 'danger'  # Red
         return css_class
 
     @property
     def age(self):
         today = timezone.now()
-        return today.year - self.birthdate.year - ((today.month, today.day) < (self.birthdate.month, self.birthdate.day))
-    
+        return (
+                today.year - self.birthdate.year -
+                (
+                    (today.month, today.day) <
+                    (self.birthdate.month, self.birthdate.day)
+                )
+               )
+
     @property
     def natel_int(self):
         if self.natel:
@@ -173,10 +185,12 @@ class UserProfile(Address, models.Model):
     def iban_nice(self):
         if self.iban:
             value = self.iban
-            # Code stolen from https://django-localflavor.readthedocs.org/en/latest/_modules/localflavor/generic/forms/#IBANFormField.prepare_value
+            # Code stolen from
+            # https://django-localflavor.readthedocs.org/en/latest/_modules/localflavor/generic/forms/#IBANFormField.prepare_value
             grouping = 4
             value = value.upper().replace(' ', '').replace('-', '')
-            return ' '.join(value[i:i + grouping] for i in range(0, len(value), grouping))
+            return ' '.join(value[i:i + grouping] for i in
+                            range(0, len(value), grouping))
         return ''
 
     def formation_icon(self):
@@ -225,9 +239,19 @@ class UserProfile(Address, models.Model):
     @property
     def affiliation_canton_verb(self):
         try:
-            return [c[1] for c in DV_STATE_CHOICES if c[0] == self.affiliation_canton][0]
+            return [
+                c[1] for c in DV_STATE_CHOICES
+                if c[0] == self.affiliation_canton
+                ][0]
         except IndexError:
             return ''
+
+    @property
+    def activity_cantons_verb(self):
+        return [
+            c[1] for c in DV_STATE_CHOICES
+            if c[0] in self.activity_cantons
+            ]
 
     def __str__(self):
         return self.user.get_full_name()

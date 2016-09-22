@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 from django import forms
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
-from localflavor.ch.ch_states import STATE_CHOICES
 from localflavor.ch.forms import (
     CHPhoneNumberField, CHSocialSecurityNumberField, CHStateSelect,
     CHZipCodeField,
@@ -83,9 +82,13 @@ class UserProfileForm(forms.ModelForm):
     comments = forms.CharField(label=_('Remarques'), widget=forms.Textarea,
                                required=False
                                )
-    affiliation_canton = forms.ChoiceField(label=_("Canton d'affiliation"),
-                                           choices=DV_STATE_CHOICES_WITH_DEFAULT,
-                                           required=False)
+    affiliation_canton = forms.ChoiceField(
+        label=_("Canton d'affiliation"),
+        choices=DV_STATE_CHOICES_WITH_DEFAULT,
+        required=False)
+    activity_cantons = MultiSelectFormField(label=_("Défi Vélo Mobile"),
+                                            choices=DV_STATE_CHOICES,
+                                            required=False)
 
     class Meta:
         model = get_user_model()

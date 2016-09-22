@@ -88,4 +88,5 @@ class ActorsAutocomplete(PersonAutocomplete):
 
 
 al_register(ActorsAutocomplete, name='Actors',
-            choices=get_user_model().objects.exclude(profile__actor_for__isnull=True))
+            choices=get_user_model().objects
+                                    .exclude(profile__actor_for__isnull=True))

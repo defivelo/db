@@ -116,15 +116,19 @@
                         <dt>{% trans "Cours samaritain" %}</dt><dd><span class="glyphicon glyphicon-{% if userprofile.profile.firstmed_course %}check{% else %}unchecked{% endif %}"></span> {{ userprofile.profile.firstmed_course_comm }}</dd>
                     </dl>
                 </div>
-                {% if userprofile.profile.affiliation_canton %}
                     <div role="tabpane" class="tab-pane" id="cantons">
                         <dl class="dl-horizontal">
+                        {% if userprofile.profile.affiliation_canton %}
                             <dt>{% trans "Canton d'affiliation" %}</dt>
-                            <dd>{{ userprofile.profile.affiliation_canton_verb }}
+                            <dd>{{ userprofile.profile.affiliation_canton_verb }}</dd>
+                        {% endif %}
+                        {% if userprofile.profile.activity_cantons %}
+                            <dt>{% trans "Défi Vélo Mobile" %}</dt>
+                            <dd>{{ userprofile.profile.activity_cantons_verb|join:"<br />" }}
                             </dd>
+                        {% endif %}
                         </dl>
                     </div>
-                {% endif %}
                 {% if userprofile.profile.comments %}
                     <div role="tabpane" class="tab-pane" id="notes">
                        {{ userprofile.profile.comments }}

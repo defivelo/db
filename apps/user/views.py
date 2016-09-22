@@ -23,16 +23,14 @@ from functools import reduce
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
-from django.db import IntegrityError
 from django.db.models import Q
 from django.http import HttpResponse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DetailView
 from django.views.generic.edit import UpdateView
-from django.views.generic.list import ListView
 from django_filters import (
-    CharFilter, FilterSet, MethodFilter, ModelMultipleChoiceFilter,
+    CharFilter, FilterSet, ModelMultipleChoiceFilter,
     MultipleChoiceFilter,
 )
 from django_filters.views import FilterView
@@ -107,7 +105,7 @@ class ProfileMixin(MenuView):
 class UserDetail(ProfileMixin, DetailView):
     def get_queryset(self):
         return (
-            super(SessionDetailView, self).get_queryset()
+            super(UserDetail, self).get_queryset()
             .prefetch_related('profile')
         )
 
@@ -165,7 +163,7 @@ class UserProfileFilterSet(FilterSet):
     profile__status = MultipleChoiceFilter(
         label=_('Statut'),
         choices=USERSTATUS_CHOICES,
-        initial=[USERSTATUS_ACTIVE,USERSTATUS_RESERVE,]
+        initial=[USERSTATUS_ACTIVE, USERSTATUS_RESERVE, ]
     )
     profile__formation = MultipleChoiceFilter(
         label=_('Formation'),
@@ -235,7 +233,8 @@ class UserListExport(UserList):
 
         response = HttpResponse(getattr(dataset, formattxt),
                                 format.get_content_type() + ';charset=utf-8')
-        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+        response['Content-Disposition'] = 'attachment; filename="{f}"'.format(
+            f=filename)
         return response
 
 
