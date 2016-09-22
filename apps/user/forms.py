@@ -83,9 +83,9 @@ class UserProfileForm(forms.ModelForm):
     comments = forms.CharField(label=_('Remarques'), widget=forms.Textarea,
                                required=False
                                )
-    activity_cantons = forms.ChoiceField(label=_("Canton d'affiliation"),
-                                         choices=DV_STATE_CHOICES,
-                                         required=False)
+    affiliation_canton = forms.ChoiceField(label=_("Canton d'affiliation"),
+                                           choices=DV_STATE_CHOICES_WITH_DEFAULT,
+                                           required=False)
 
     class Meta:
         model = get_user_model()

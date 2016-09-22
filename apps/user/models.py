@@ -32,7 +32,7 @@ from localflavor.generic.models import IBANField
 from multiselectfield import MultiSelectField
 
 from apps.challenge.models import QualificationActivity
-from apps.common import DV_STATE_CHOICES
+from apps.common import DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.models import Address
 
 from . import FORMATION_CHOICES, FORMATION_KEYS, FORMATION_M1, FORMATION_M2
@@ -74,7 +74,7 @@ STD_PROFILE_FIELDS = ['natel', 'birthdate',
                       'formation', 'actor_for', 'status',
                       'pedagogical_experience',
                       'firstmed_course', 'firstmed_course_comm',
-                      'bagstatus', 'activity_cantons', 'comments']
+                      'bagstatus', 'affiliation_canton', 'comments']
 
 @python_2_unicode_compatible
 class UserProfile(Address, models.Model):
@@ -85,8 +85,8 @@ class UserProfile(Address, models.Model):
     iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)
     social_security = models.CharField(max_length=16, blank=True)
     natel = models.CharField(max_length=13, blank=True)
-    activity_cantons = models.CharField(_("Canton d'affiliation"),
-                                        choices=DV_STATE_CHOICES,
+    affiliation_canton = models.CharField(_("Canton d'affiliation"),
+                                        choices=DV_STATE_CHOICES_WITH_DEFAULT,
                                         max_length=2,
                                         blank=False)
     office_member = models.BooleanField(_('Bureau Défi Vélo'),
@@ -223,9 +223,9 @@ class UserProfile(Address, models.Model):
         return ''
 
     @property
-    def activity_cantons_verb(self):
-        if self.activity_cantons:
-            return [c[1] for c in DV_STATE_CHOICES if c[0] in self.activity_cantons]
+    def affiliation_canton_verb(self):
+        if self.affiliation_canton:
+            return [c[1] for c in DV_STATE_CHOICES if c[0] == self.affiliation_canton][0]
 
     def __str__(self):
         return self.user.get_full_name()

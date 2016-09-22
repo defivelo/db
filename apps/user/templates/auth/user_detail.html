@@ -116,11 +116,11 @@
                         <dt>{% trans "Cours samaritain" %}</dt><dd><span class="glyphicon glyphicon-{% if userprofile.profile.firstmed_course %}check{% else %}unchecked{% endif %}"></span> {{ userprofile.profile.firstmed_course_comm }}</dd>
                     </dl>
                 </div>
-                {% if userprofile.profile.activity_cantons %}
+                {% if userprofile.profile.affiliation_canton %}
                     <div role="tabpane" class="tab-pane" id="cantons">
                         <dl class="dl-horizontal">
                             <dt>{% trans "Canton d'affiliation" %}</dt>
-                            <dd>{{ userprofile.profile.activity_cantons_verb|join:"<br />" }}
+                            <dd>{{ userprofile.profile.affiliation_canton_verb }}
                             </dd>
                         </dl>
                     </div>
