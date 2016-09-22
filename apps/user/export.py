@@ -109,8 +109,9 @@ class UserResource(resources.ModelResource):
         column_name=_("Canton d'affiliation"),
         attribute='profile__affiliation_canton')
     profile__activity_cantons = fields.Field(
-        column_name=_("Canton d'affiliation"),
-        attribute='profile__affiliation_canton')
+        column_name=_("Défi Vélo Mobile"),
+        attribute='profile__activity_cantons',
+        widget=MultipleSelectWidget())
     profile__iban = fields.Field(
         column_name=_("IBAN"),
         attribute='profile',
