@@ -30,6 +30,7 @@ from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from multiselectfield.forms.fields import MultiSelectFormField
 
 from apps.challenge.models import QualificationActivity
+from apps.common import DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.forms import SwissDateField
 
 from . import STATE_CHOICES_WITH_DEFAULT
@@ -82,10 +83,9 @@ class UserProfileForm(forms.ModelForm):
     comments = forms.CharField(label=_('Remarques'), widget=forms.Textarea,
                                required=False
                                )
-    activity_cantons = MultiSelectFormField(
-        label=_("Cantons d'affiliation"),
-        choices=STATE_CHOICES,
-        required=False)
+    activity_cantons = forms.ChoiceField(label=_("Canton d'affiliation"),
+                                         choices=DV_STATE_CHOICES,
+                                         required=False)
 
     class Meta:
         model = get_user_model()

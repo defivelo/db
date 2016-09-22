@@ -107,7 +107,7 @@ class UserResource(resources.ModelResource):
         attribute='profile',
         widget=ObjectMethodWidget(method='formation_full'))
     profile__activity_cantons = fields.Field(
-        column_name=_("Cantons d'affiliation"),
+        column_name=_("Canton d'affiliation"),
         attribute='profile__activity_cantons',
         widget=MultipleSelectWidget())
     profile__iban = fields.Field(

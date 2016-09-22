@@ -27,12 +27,12 @@ from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from localflavor.ch.ch_states import STATE_CHOICES
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from localflavor.generic.models import IBANField
 from multiselectfield import MultiSelectField
 
 from apps.challenge.models import QualificationActivity
+from apps.common import DV_STATE_CHOICES
 from apps.common.models import Address
 
 from . import FORMATION_CHOICES, FORMATION_KEYS, FORMATION_M1, FORMATION_M2
@@ -85,9 +85,10 @@ class UserProfile(Address, models.Model):
     iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)
     social_security = models.CharField(max_length=16, blank=True)
     natel = models.CharField(max_length=13, blank=True)
-    activity_cantons = MultiSelectField(_("Cantons d'affiliation"),
-                                        choices=STATE_CHOICES,
-                                        blank=True)
+    activity_cantons = models.CharField(_("Canton d'affiliation"),
+                                        choices=DV_STATE_CHOICES,
+                                        max_length=2,
+                                        blank=False)
     office_member = models.BooleanField(_('Bureau Défi Vélo'),
                                           default=False)
     formation = models.CharField(_("Formation"), max_length=2,
@@ -224,7 +225,7 @@ class UserProfile(Address, models.Model):
     @property
     def activity_cantons_verb(self):
         if self.activity_cantons:
-            return [c[1] for c in STATE_CHOICES if c[0] in self.activity_cantons]
+            return [c[1] for c in DV_STATE_CHOICES if c[0] in self.activity_cantons]
 
     def __str__(self):
         return self.user.get_full_name()

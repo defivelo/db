@@ -40,9 +40,9 @@ from filters.views import FilterMixin
 from import_export.formats import base_formats
 
 from apps.challenge.models import QualificationActivity
+from apps.common import DV_STATE_CHOICES_WITH_DEFAULT
 from defivelo.views import MenuView
 
-from . import STATE_CHOICES_WITH_DEFAULT
 from .export import UserResource
 from .forms import UserProfileForm
 from .models import (
@@ -158,8 +158,8 @@ class UserProfileFilterSet(FilterSet):
         return queryset
 
     profile__activity_cantons = MultipleChoiceFilter(
-        label=_("Cantons d'affiliation"),
-        choices=STATE_CHOICES_WITH_DEFAULT,
+        label=_("Canton d'affiliation"),
+        choices=DV_STATE_CHOICES_WITH_DEFAULT,
         action=filter_activity_cantons
     )
     profile__status = MultipleChoiceFilter(
