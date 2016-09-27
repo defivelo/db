@@ -26,4 +26,6 @@ class OfficeMember(AbstractUserRole):
         'user_detail_other': True,
         'user_edit_other': True,
         'user_create': True,
+
+        'home_article_crud': True,
     }

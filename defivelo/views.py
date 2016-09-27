@@ -20,6 +20,7 @@ from datetime import date
 from article.models import Article
 from django.utils import timezone
 from django.views.generic.base import TemplateView
+from rolepermissions.verifications import has_permission
 
 from apps.challenge.models import Season
 
@@ -39,7 +40,10 @@ class HomeView(MenuView, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
-        context['articles'] = Article.objects.order_by('-modified')[:5]
+        articles_qs = Article.objects
+        if not has_permission(self.request.user, 'home_article_crud'):
+            articles_qs = articles_qs.filter(published=True)
+        context['articles'] = articles_qs.order_by('-modified')[:5]
         # Add our menu_category context
         context['menu_category'] = 'home'
         return context

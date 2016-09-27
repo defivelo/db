@@ -24,7 +24,8 @@ from django.utils.translation import ugettext_lazy as _
 
 class ArticleForm(forms.ModelForm):
     published = forms.BooleanField(label=_('Publié'),
-                                   initial=True)
+                                   initial=True,
+                                   required=False)
     class Meta:
         model = Article
         fields = ['title', 'body', 'published']

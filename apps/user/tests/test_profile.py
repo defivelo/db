@@ -87,4 +87,3 @@ class OfficeUserTest(TestCase):
                 url = tryurl(symbolicurl, otheruser)
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, 200, url)
-
