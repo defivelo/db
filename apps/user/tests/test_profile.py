@@ -23,7 +23,8 @@ from django.test import TestCase
 from apps.user.tests.factories import UserFactory
 from defivelo.tests.utils import AuthClient, PowerUserAuthClient
 
-myurlsforall = ['profile-update', 'user-detail', 'user-update', ]
+myurlsforall = ['profile-update', 'user-detail', 'user-update',
+                'profile-detail', ]
 myurlsforoffice = ['user-list', 'user-list-export', ]
 
 othersurls = ['user-detail', 'user-update', 'user-create']

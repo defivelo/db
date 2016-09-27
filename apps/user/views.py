@@ -75,7 +75,7 @@ class ProfileMixin(MenuView):
     def get_success_url(self):
         updatepk = self.get_object().pk
         if updatepk == self.request.user.pk:
-            return reverse_lazy('profile-update')
+            return reverse_lazy('profile-detail')
         return reverse_lazy('user-detail', kwargs={'pk': updatepk})
 
     def form_valid(self, form):

@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^new/$', UserCreate.as_view(), name="user-create"),
     url(r'^(?P<pk>[0-9]+)/$',
         never_cache(UserDetail.as_view()), name="user-detail"),
+    url(r'^me/$', never_cache(UserDetail.as_view()), name="profile-detail"),
     url(r'^(?P<pk>[0-9]+)/update/$', UserUpdate.as_view(), name="user-update"),
-    url(r'^me/$', UserUpdate.as_view(), name="profile-update"),
+    url(r'^me/edit/$', UserUpdate.as_view(), name="profile-update"),
 ]
