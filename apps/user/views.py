@@ -35,6 +35,7 @@ from django_filters import (
 from django_filters.views import FilterView
 from filters.views import FilterMixin
 from import_export.formats import base_formats
+from rolepermissions.mixins import HasPermissionsMixin
 
 from apps.challenge.models import QualificationActivity
 from apps.common import DV_STATE_CHOICES_WITH_DEFAULT
@@ -188,7 +189,8 @@ class UserProfileFilterSet(FilterSet):
                   ]
 
 
-class UserList(ProfileMixin, FilterMixin, FilterView):
+class UserList(HasPermissionsMixin, ProfileMixin, FilterMixin, FilterView):
+    required_permission = 'view_user_list'
     filterset_class = UserProfileFilterSet
     context_object_name = 'users'
     paginate_by = 10

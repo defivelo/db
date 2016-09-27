@@ -79,6 +79,7 @@ UPSTREAM_APPS = (
     'tinymce',
     'taggit',
     'article',
+    'rolepermissions',
 )
 
 # Project apps tested by jenkins (everything in apps/)
@@ -244,6 +245,8 @@ def defivelo_user_display(u):
 
 ACCOUNT_USER_DISPLAY = defivelo_user_display
 ACCOUNT_ADAPTER = 'defivelo.accounts.NoSignupAccountAdapter'
+
+ROLEPERMISSIONS_MODULE = 'defivelo.roles'
 
 # Email sender settings
 SERVER_EMAIL = get_env_variable('SERVER_EMAIL', 'noreply@defi-velo.ch')

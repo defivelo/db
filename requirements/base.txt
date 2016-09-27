@@ -20,3 +20,4 @@ django-import-export==0.2.8
 django-agpl==4.0.0
 tablib==0.10.0
 simple-article==0.2.1
+django-role-permissions==1.2.1

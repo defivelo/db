@@ -20,17 +20,37 @@ from __future__ import unicode_literals
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from defivelo.tests.utils import AuthClient
+from defivelo.tests.utils import AuthClient, OfficeAuthClient
+
+urlsforall = ['profile-update']
+urlsforoffice = ['user-list']
 
 
-class OrgaBasicTest(TestCase):
+class AuthUserTest(TestCase):
     def setUp(self):
         # Every test needs a client.
         self.client = AuthClient()
 
-    def test_access_to_profile(self):
-        # Issue a GET request.
-        response = self.client.get(reverse('profile-update'))
+    def test_my_allowances(self):
+        for symbolicurl in urlsforall:
+            # Issue a GET request.
+            response = self.client.get(reverse(symbolicurl))
+            self.assertEqual(response.status_code, 200)
 
-        self.assertTemplateUsed(response, 'auth/user_form.html')
-        self.assertEqual(response.status_code, 200)
+    def test_my_restrictions(self):
+        for symbolicurl in urlsforoffice:
+            # Issue a GET request.
+            response = self.client.get(reverse(symbolicurl))
+            self.assertEqual(response.status_code, 403)
+
+
+class OfficeUserTest(TestCase):
+    def setUp(self):
+        # Every test needs a client.
+        self.client = OfficeAuthClient()
+
+    def test_my_allowances(self):
+        for symbolicurl in urlsforall + urlsforoffice:
+            # Issue a GET request.
+            response = self.client.get(reverse(symbolicurl))
+            self.assertEqual(response.status_code, 200)

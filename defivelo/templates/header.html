@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load account %}
+{% load permission_tags %}
 {% now 'Y' as now_year %}
 
 <ul class="nav navbar-nav">
@@ -33,7 +34,9 @@
                     <li><a href="{% url 'season-create' %}">{% trans "Créer une saison" %}</a></li>
                     </ul>
             </li>
-            <li{% if 'user' in menu_category %} class="active"{% endif %}><a href="{% url 'user-list' %}">{% trans "Personnes" %}</a></li>
+            {% if user|can:'view_user_list' %}
+                <li{% if 'user' in menu_category %} class="active"{% endif %}><a href="{% url 'user-list' %}">{% trans "Personnes" %}</a></li>
+            {% endif %}
             <li{% if 'organization' in menu_category  %} class="active"{% endif %}><a href="{% url 'organization-list' %}">{% trans "Établissements" %}</a></li>
         {% endif %}
     {% endif %}

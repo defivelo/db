@@ -22,6 +22,7 @@ from django.contrib.auth import get_user_model
 from django.test import Client
 from django.utils import timezone
 from django.utils.translation import activate
+from rolepermissions.shortcuts import assign_role
 
 
 class AuthClient(Client):
@@ -43,3 +44,13 @@ class AuthClient(Client):
 
         self.language = 'fr'
         activate(self.language)
+
+class OfficeAuthClient(AuthClient):
+    USERNAME = 'foobar-superuser'
+    PASSWORD = 'sicrit'
+    EMAIL = 'superuser@example.com'
+
+    def __init__(self):
+        super(OfficeAuthClient, self).__init__()
+        # Assign it office_member
+        assign_role(self.user, 'office_member')
