@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 from rolepermissions.roles import AbstractUserRole
 
 
-class OfficeMember(AbstractUserRole):
+class PowerUser(AbstractUserRole):
     available_permissions = {
         'user_view_list': True,
         'user_detail_other': True,

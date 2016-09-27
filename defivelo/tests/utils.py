@@ -52,5 +52,5 @@ class OfficeAuthClient(AuthClient):
 
     def __init__(self):
         super(OfficeAuthClient, self).__init__()
-        # Assign it office_member
-        assign_role(self.user, 'office_member')
+        # Assign it power_user
+        assign_role(self.user, 'power_user')
