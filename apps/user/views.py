@@ -108,10 +108,14 @@ class UserSelfAccessMixin(object):
     required_permission = 'user_edit_other'
 
     def dispatch(self, request, *args, **kwargs):
-        if (request.user.pk == self.get_object().pk or
+        if (
+            request.user.pk == self.get_object().pk or
             has_permission(request.user, self.required_permission)
-            ):
-            return super(UserSelfAccessMixin, self).dispatch(request, *args, **kwargs)
+           ):
+            return (
+                super(UserSelfAccessMixin, self)
+                .dispatch(request, *args, **kwargs)
+            )
         else:
             raise PermissionDenied
 
@@ -125,7 +129,9 @@ class UserDetail(UserSelfAccessMixin, ProfileMixin, DetailView):
             .prefetch_related('profile')
         )
 
-class UserUpdate(UserSelfAccessMixin, ProfileMixin, SuccessMessageMixin, UpdateView):
+
+class UserUpdate(UserSelfAccessMixin, ProfileMixin, SuccessMessageMixin,
+                 UpdateView):
     required_permission = 'user_edit_other'
     success_message = _("Profil mis à jour")
 

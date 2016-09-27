@@ -20,21 +20,25 @@ from __future__ import unicode_literals
 from django.core.urlresolvers import NoReverseMatch, reverse
 from django.test import TestCase
 
+from apps.user.tests.factories import UserFactory
 from defivelo.tests.utils import AuthClient, OfficeAuthClient
 
-urlsforall = ['profile-update', 'user-detail', 'user-update' ]
-urlsforoffice = ['user-list', 'user-list-export',]
+myurlsforall = ['profile-update', 'user-detail', 'user-update', ]
+myurlsforoffice = ['user-list', 'user-list-export', ]
+
+othersurls = ['user-detail', 'user-update']
+
 
 def tryurl(symbolicurl, user):
     try:
         try:
-            url = reverse(symbolicurl,
-                          kwargs={'pk': user.pk}
-                         )
+            url = reverse(
+                symbolicurl, kwargs={'pk': user.pk}
+                )
         except NoReverseMatch:
-            url = reverse(symbolicurl,
-                          kwargs={'format': 'csv'}
-                         )
+            url = reverse(
+                symbolicurl, kwargs={'format': 'csv'}
+                )
     except NoReverseMatch:
         url = reverse(symbolicurl)
     return url
@@ -44,26 +48,43 @@ class AuthUserTest(TestCase):
     def setUp(self):
         # Every test needs a client.
         self.client = AuthClient()
+        self.users = [UserFactory() for i in range(3)]
 
     def test_my_allowances(self):
-        for symbolicurl in urlsforall:
+        for symbolicurl in myurlsforall:
             url = tryurl(symbolicurl, self.client.user)
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200, url)
 
     def test_my_restrictions(self):
-        for symbolicurl in urlsforoffice:
+        for symbolicurl in myurlsforoffice:
             url = tryurl(symbolicurl, self.client.user)
             response = self.client.get(url)
             self.assertEqual(response.status_code, 403, url)
+
+    def test_otherusers_access(self):
+        for symbolicurl in othersurls:
+            for otheruser in self.users:
+                url = tryurl(symbolicurl, otheruser)
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 403, url)
 
 
 class OfficeUserTest(TestCase):
     def setUp(self):
         # Every test needs a client.
         self.client = OfficeAuthClient()
+        self.users = [UserFactory() for i in range(3)]
 
     def test_my_allowances(self):
-        for symbolicurl in urlsforall + urlsforoffice:
+        for symbolicurl in myurlsforall + myurlsforoffice:
             response = self.client.get(tryurl(symbolicurl, self.client.user))
             self.assertEqual(response.status_code, 200)
+
+    def test_otherusers_access(self):
+        for symbolicurl in othersurls:
+            for otheruser in self.users:
+                url = tryurl(symbolicurl, otheruser)
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 200, url)
+
