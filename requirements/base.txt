@@ -1,5 +1,5 @@
 dj-database-url==0.3.0
-Django==1.8.14
+Django==1.8.15
 pytz==2016.6.1
 django-admin-bootstrapped==2.5.7
 django-bootstrap3==7.0.1
