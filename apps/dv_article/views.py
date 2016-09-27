@@ -41,10 +41,12 @@ class ArticleMixin(HasPermissionsMixin,
 class ArticleCreateView(ArticleMixin,
                         CreateView):
     success_message = _("Article créé")
-    
+
+
 class ArticleUpdateView(ArticleMixin,
                         UpdateView):
     success_message = _("Article mis à jour")
+
 
 class ArticleDeleteView(ArticleMixin,
                         DeleteView):

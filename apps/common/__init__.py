@@ -19,7 +19,9 @@
 from localflavor.ch.ch_states import STATE_CHOICES
 
 # Cantons où DÉFI VÉLO est actif
-DV_STATES = ['VD', 'VS', 'FR', 'NE', 'GE', 'JU', 'BS', 'SG', 'ZH', 'BE', 'LU', ]
+DV_STATES = ['VD', 'VS', 'FR', 'NE', 'GE', 'JU',
+             'BS', 'SG', 'ZH', 'BE', 'LU',
+             ]
 
 DV_STATE_CHOICES = [c for c in STATE_CHOICES if c[0] in DV_STATES]
 
