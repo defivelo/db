@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2015 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2015, 2016 Didier Raboud <me+defivelo@odyx.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -28,7 +28,8 @@ class MenuView(object):
     def get_context_data(self, **kwargs):
         context = super(MenuView, self).get_context_data(**kwargs)
         # Add our menu_category context
-        context['current_seasons'] = Season.objects.filter(end__gte=date.today())
+        context['current_seasons'] = \
+            Season.objects.filter(end__gte=date.today())
         context['now'] = timezone.now()
         return context
 

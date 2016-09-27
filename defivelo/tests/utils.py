@@ -17,10 +17,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from allauth.account.models import EmailAddress, EmailConfirmation
+from allauth.account.models import EmailAddress
 from django.contrib.auth import get_user_model
 from django.test import Client
-from django.utils import timezone
 from django.utils.translation import activate
 from rolepermissions.shortcuts import assign_role
 
@@ -44,6 +43,7 @@ class AuthClient(Client):
 
         self.language = 'fr'
         activate(self.language)
+
 
 class OfficeAuthClient(AuthClient):
     USERNAME = 'foobar-superuser'

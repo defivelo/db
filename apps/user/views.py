@@ -139,7 +139,8 @@ class UserProfileFilterSet(FilterSet):
     def filter_cantons(queryset, value):
         if value:
             allcantons_filter = [
-                Q(profile__activity_cantons__contains=canton) for canton in value
+                Q(profile__activity_cantons__contains=canton)
+                for canton in value
             ] + [
                 Q(profile__affiliation_canton=canton) for canton in value
             ]

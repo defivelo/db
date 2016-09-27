@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2015 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2015, 2016 Didier Raboud <me+defivelo@odyx.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -70,12 +70,14 @@ def profile_tag(user):
 
     return mark_safe(usertag)
 
+
 @register.filter
 def tel_int(tel):
     if not tel:
         return ''
     # Delete spaces, drop initial 0, add +41
     return '+41' + tel.replace(' ', '')[1:]
+
 
 @register.filter
 def useravailsessions(form, user):
@@ -138,28 +140,28 @@ def useravailsessions_readonly(struct, user, avail_content=None, sesskey=None,
                     staffkey = STAFF_FIELDKEY.format(hpk=user.pk,
                                                      spk=thissesskey)
                     if staffkey in struct:
-                        if struct[staffkey] == SHORTCODE_MON2:  # Moniteur 2
-                            avail_label = 'tags'
+                        if struct[staffkey] == SHORTCODE_MON2:
                             avail_verb = _('Moniteur 2')
-                        elif struct[staffkey] == SHORTCODE_MON1:  # Moniteur 1
-                            avail_label = 'tag'
+                            avail_label = 'tags'
+                        elif struct[staffkey] == SHORTCODE_MON1:
                             avail_verb = _('Moniteur 1')
-                        elif struct[staffkey] == SHORTCODE_ACTOR:  # Intervenant
-                            avail_label = 'sunglasses'
+                            avail_label = 'tag'
+                        elif struct[staffkey] == SHORTCODE_ACTOR:
                             avail_verb = _('Intervenant')
-                        elif struct[staffkey] == SHORTCODE_SELECTED:  # Choisi, mais pas attribué
-                            avail_label = 'check'
+                            avail_label = 'sunglasses'
+                        elif struct[staffkey] == SHORTCODE_SELECTED:
                             avail_verb = _('Choisi')
+                            avail_label = 'check'
                         else:
-                            avail_label = 'unchecked'
                             avail_verb = _('Pas choisi')
+                            avail_label = 'unchecked'
             elif onlyavail:
                 avail_content = ' '
 
             output += (
-                '<td style="vertical-align:middle;" class="{avail_class}"{avail_verbose}>'
-                '<!-- {key} -->'
-                '{avail_label}'
+                '<td style="vertical-align: middle;"'
+                '    class="{avail_class}"{avail_verbose}>'
+                '<!-- {key} -->{avail_label}'
                 '</td>'
             ).format(
                 avail_class=avail_class,
