@@ -25,6 +25,7 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.http import urlencode
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
@@ -263,6 +264,14 @@ class UserProfile(Address, models.Model):
             c[1] for c in DV_STATE_CHOICES
             if c[0] in self.activity_cantons
             ]
+
+    @property
+    def mailtolink(self):
+        return (
+            '{name} <{email}>'.format(
+                name=self.user.get_full_name(),
+                email=self.user.email)
+            )
 
     def __str__(self):
         return self.user.get_full_name()

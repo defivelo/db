@@ -28,7 +28,7 @@
             <td>{{ user.first_name }}</td>
             <td>{{ user.last_name }}</td>
             <td>{% if user.profile.natel %}<a href="tel:{{ user.profile.natel_int }}">{{ user.profile.natel }}</a>{% endif %}</td>
-            <td>{% if user.profile.email %}<a href="mailto:{{ user.profile.email }}">{{ user.profile.email }}</a>{% endif %}</td>
+            <td>{% if user.profile.email %}<a href="mailto:{{ user.profile.mailtolink|urlencode }}">{{ user.profile.email }}</a>{% endif %}</td>
         </tr>
     {% endfor %}
     </tbody>

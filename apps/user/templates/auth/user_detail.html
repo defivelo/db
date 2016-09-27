@@ -60,7 +60,7 @@
                         {% endif %}
                         {% if userprofile.email %}
                             <dt>{% trans "Email" %}</dt>
-                                <dd><a class="email" href="mailto:{{ userprofile.email }}">{{ userprofile.email }}</a></dd>
+                                <dd><a class="email" href="mailto:{{ userprofile.mailtolink|urlencode }}">{{ userprofile.email }}</a></dd>
                         {% endif %}
                         {% if userprofile.profile.natel %}
                             <dt>{% trans "Natel" %}</dt>
