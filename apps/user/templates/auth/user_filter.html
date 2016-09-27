@@ -32,6 +32,7 @@
     {% endif %}
 
     <div class="hidden-print">
+        {% if request.user|can:"user_view_list" %}
         <div class="btn-group" role="group" aria-label="exports">
             {% with 'csv ods xls' as formats %}
                 {% for format in formats.split %}
@@ -46,6 +47,7 @@
                 {% endfor %}
             {% endwith %}
         </div>
+        {% endif %}
 
         {% if filter.form %}
             <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target=".bs-user-filters-modal">
