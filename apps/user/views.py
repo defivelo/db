@@ -102,7 +102,9 @@ class ProfileMixin(MenuView):
         return ret
 
 
-class UserDetail(ProfileMixin, DetailView):
+class UserDetail(HasPermissionsMixin, ProfileMixin, DetailView):
+    required_permission = 'user_detail_other'
+
     def get_queryset(self):
         return (
             super(UserDetail, self).get_queryset()
@@ -191,7 +193,7 @@ class UserProfileFilterSet(FilterSet):
 
 
 class UserList(HasPermissionsMixin, ProfileMixin, FilterMixin, FilterView):
-    required_permission = 'view_user_list'
+    required_permission = 'user_view_list'
     filterset_class = UserProfileFilterSet
     context_object_name = 'users'
     paginate_by = 10

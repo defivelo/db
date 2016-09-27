@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load account %}
 {% load bootstrap3 %}
+{% load permission_tags %}
 {% block head_title %}{% trans "Users" %}{% endblock %}
 
 {% block content %}
@@ -75,8 +76,8 @@
     <tbody>
     {% for user in users %}
         <tr>
-            <td><a href="{% url 'user-detail' pk=user.pk %}">{{ user.first_name }}</a></td>
-            <td><a href="{% url 'user-detail' pk=user.pk %}">{{ user.last_name }}</a></td>
+            <td>{% if request.user|can:'user_detail_other' %}<a href="{% url 'user-detail' pk=user.pk %}">{{ user.first_name }}</a>{% else %}{{ user.first_name }}{% endif %}</td>
+            <td>{% if request.user|can:'user_detail_other' %}<a href="{% url 'user-detail' pk=user.pk %}">{{ user.last_name }}{% else %}{{ user.last_name }}{% endif %}</a></td>
             <td><a href="mailto:{{ user.email }}">{{ user.email }}</a></td>
             <td><a href="tel:{{ user.profile.natel_int }}">{{ user.profile.natel }}</a></td>
             <td class="{{ user.profile.status_class }}">

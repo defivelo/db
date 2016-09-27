@@ -22,5 +22,6 @@ from rolepermissions.roles import AbstractUserRole
 
 class OfficeMember(AbstractUserRole):
     available_permissions = {
-        'view_user_list': True
+        'user_view_list': True,
+        'user_detail_other': True,
     }
