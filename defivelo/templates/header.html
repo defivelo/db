@@ -4,7 +4,6 @@
 {% now 'Y' as now_year %}
 
 <ul class="nav navbar-nav">
-    <li{% if menu_category = 'home' %} class="active"{% endif %}><a href="{% url 'home' %}">{% trans "Accueil" %}</a></li>
     {% if request.user.is_authenticated %}
         {% if season %}
             <li><a href="{% url 'season-list' year=now_year %}" title="{% trans "Toutes les saisons" %}"><span class="glyphicon glyphicon-th-list"></span>&nbsp;</a></li>
