@@ -142,6 +142,8 @@
     </div>
     {% buttons %}
         <a class="btn btn-primary pull-right" href="{% url 'user-update' pk=userprofile.pk %}">{% trans "Éditer" %}</a>
-        <a class="btn btn-default" href="{% url 'user-list' %}">{% trans "Retour à la liste des utilisateurs" %}</a>
+        {% if request.user|can:'user_view_list' %}
+            <a class="btn btn-default" href="{% url 'user-list' %}">{% trans "Retour à la liste des utilisateurs" %}</a>
+        {% endif %}
     {% endbuttons %}
 {% endblock %}
