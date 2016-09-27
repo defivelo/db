@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from defivelo.tests.utils import AuthClient
+from defivelo.tests.utils import AuthClient, PowerUserAuthClient
 
 from ..models import Organization
 
@@ -29,6 +29,8 @@ class OrgaBasicTest(TestCase):
     def setUp(self):
         # Every test needs a client.
         self.client = AuthClient()
+        self.expected_code = 403
+        self.expect_templates = False
 
         self.orga = Organization.objects.create(name='Test-Orga',
                                                 address_street='Street',
@@ -40,22 +42,32 @@ class OrgaBasicTest(TestCase):
     def test_access_to_orga_list(self):
         # Issue a GET request.
         response = self.client.get(reverse('organization-list'))
-
-        self.assertTemplateUsed(response, 'orga/organization_filter.html')
-        self.assertEqual(response.status_code, 200)
+        if self.expect_templates:
+            self.assertTemplateUsed(response, 'orga/organization_filter.html')
+        self.assertEqual(response.status_code, self.expected_code)
 
     def test_access_to_orga_detail(self):
         # Issue a GET request.
         response = self.client.get(reverse('organization-detail',
                                            kwargs={'pk': self.orga.pk}))
 
-        self.assertTemplateUsed(response, 'orga/organization_detail.html')
-        self.assertEqual(response.status_code, 200)
+        if self.expect_templates:
+            self.assertTemplateUsed(response, 'orga/organization_detail.html')
+        self.assertEqual(response.status_code, self.expected_code)
 
     def test_access_to_orga_edit(self):
         # Issue a GET request.
         response = self.client.get(reverse('organization-update',
                                            kwargs={'pk': self.orga.pk}))
 
-        self.assertTemplateUsed(response, 'orga/organization_form.html')
-        self.assertEqual(response.status_code, 200)
+        if self.expect_templates:
+            self.assertTemplateUsed(response, 'orga/organization_form.html')
+        self.assertEqual(response.status_code, self.expected_code)
+
+
+class OrgaPowerUserTest(OrgaBasicTest):
+    def setUp(self):
+        super(OrgaPowerUserTest, self).setUp()
+        self.client = PowerUserAuthClient()
+        self.expected_code = 200
+        self.expect_templates = True

@@ -45,12 +45,12 @@ class AuthClient(Client):
         activate(self.language)
 
 
-class OfficeAuthClient(AuthClient):
+class PowerUserAuthClient(AuthClient):
     USERNAME = 'foobar-superuser'
     PASSWORD = 'sicrit'
     EMAIL = 'superuser@example.com'
 
     def __init__(self):
-        super(OfficeAuthClient, self).__init__()
+        super(PowerUserAuthClient, self).__init__()
         # Assign it power_user
         assign_role(self.user, 'power_user')

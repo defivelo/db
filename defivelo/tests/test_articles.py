@@ -17,11 +17,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from django.core.urlresolvers import reverse
 from article.models import Article
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from defivelo.tests.utils import AuthClient, OfficeAuthClient
+from defivelo.tests.utils import AuthClient, PowerUserAuthClient
 
 
 class AuthUserTest(TestCase):
@@ -45,10 +45,10 @@ class AuthUserTest(TestCase):
         self.assertEqual(response.status_code, 403, 'Article creation')
 
 
-class OfficeUserTest(TestCase):
+class PowerUserTest(TestCase):
     def setUp(self):
         # Every test needs a client.
-        self.client = OfficeAuthClient()
+        self.client = PowerUserAuthClient()
         self.article = Article.objects.create(
             title='TestArticle',
             body='<h1>Test Body</h1>',

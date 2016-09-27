@@ -28,4 +28,6 @@ class PowerUser(AbstractUserRole):
         'user_create': True,
 
         'home_article_crud': True,
+
+        'orga_crud': True,
     }

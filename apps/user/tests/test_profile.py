@@ -21,7 +21,7 @@ from django.core.urlresolvers import NoReverseMatch, reverse
 from django.test import TestCase
 
 from apps.user.tests.factories import UserFactory
-from defivelo.tests.utils import AuthClient, OfficeAuthClient
+from defivelo.tests.utils import AuthClient, PowerUserAuthClient
 
 myurlsforall = ['profile-update', 'user-detail', 'user-update', ]
 myurlsforoffice = ['user-list', 'user-list-export', ]
@@ -70,10 +70,10 @@ class AuthUserTest(TestCase):
                 self.assertEqual(response.status_code, 403, url)
 
 
-class OfficeUserTest(TestCase):
+class PowerUserTest(TestCase):
     def setUp(self):
         # Every test needs a client.
-        self.client = OfficeAuthClient()
+        self.client = PowerUserAuthClient()
         self.users = [UserFactory() for i in range(3)]
 
     def test_my_allowances(self):

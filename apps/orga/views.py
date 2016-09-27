@@ -31,6 +31,7 @@ from django.views.generic.list import ListView
 from django_filters import CharFilter, FilterSet
 from django_filters.views import FilterView
 from filters.views import FilterMixin
+from rolepermissions.mixins import HasPermissionsMixin
 
 from defivelo.views import MenuView
 
@@ -60,7 +61,8 @@ class OrganizationFilterSet(FilterSet):
         fields = ['q']
 
 
-class OrganizationMixin(MenuView):
+class OrganizationMixin(HasPermissionsMixin, MenuView):
+    required_permission = 'orga_crud'
     model = Organization
     context_object_name = 'organization'
     form_class = OrganizationForm

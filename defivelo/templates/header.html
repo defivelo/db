@@ -36,7 +36,9 @@
             {% if user|can:'user_view_list' %}
                 <li{% if 'user' in menu_category %} class="active"{% endif %}><a href="{% url 'user-list' %}">{% trans "Personnes" %}</a></li>
             {% endif %}
-            <li{% if 'organization' in menu_category  %} class="active"{% endif %}><a href="{% url 'organization-list' %}">{% trans "Établissements" %}</a></li>
+            {% if user|can:'orga_crud' %}
+                <li{% if 'organization' in menu_category  %} class="active"{% endif %}><a href="{% url 'organization-list' %}">{% trans "Établissements" %}</a></li>
+            {% endif %}
         {% endif %}
     {% endif %}
 </ul>
