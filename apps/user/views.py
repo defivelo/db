@@ -147,7 +147,9 @@ class UserUpdate(UserSelfAccessMixin, ProfileMixin, SuccessMessageMixin,
             return struct
 
 
-class UserCreate(ProfileMixin, SuccessMessageMixin, UpdateView):
+class UserCreate(HasPermissionsMixin, ProfileMixin, SuccessMessageMixin,
+                 UpdateView):
+    required_permission = 'user_create'
     success_message = _("Utilisateur créé")
 
     def get_object(self):

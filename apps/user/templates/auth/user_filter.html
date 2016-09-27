@@ -124,12 +124,13 @@
         </ul>
     </nav>
     {% endif %}
-
+    {% if request.user|can:"user_create" %}
     <div class="hidden-print">
         <a class="btn btn-primary pull-right" href="{% url 'user-create' %}">
             <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
             {% trans "Nouvel utilisateur" %}
         </a>
     </div>
+    {% endif %}
 
 {% endblock %}

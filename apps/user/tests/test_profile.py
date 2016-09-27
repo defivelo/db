@@ -26,7 +26,7 @@ from defivelo.tests.utils import AuthClient, OfficeAuthClient
 myurlsforall = ['profile-update', 'user-detail', 'user-update', ]
 myurlsforoffice = ['user-list', 'user-list-export', ]
 
-othersurls = ['user-detail', 'user-update']
+othersurls = ['user-detail', 'user-update', 'user-create']
 
 
 def tryurl(symbolicurl, user):
