@@ -46,8 +46,9 @@ from defivelo.views import MenuView
 from .export import UserResource
 from .forms import UserProfileForm
 from .models import (
-    FORMATION_CHOICES, STD_PROFILE_FIELDS, USERSTATUS_ACTIVE,
-    USERSTATUS_CHOICES, USERSTATUS_RESERVE, UserProfile,
+    DV_PRIVATE_FIELDS, DV_PUBLIC_FIELDS, FORMATION_CHOICES, PERSONAL_FIELDS,
+    STD_PROFILE_FIELDS, USERSTATUS_ACTIVE, USERSTATUS_CHOICES,
+    USERSTATUS_RESERVE, UserProfile,
 )
 
 
@@ -56,6 +57,7 @@ class ProfileMixin(MenuView):
     context_object_name = 'userprofile'
     form_class = UserProfileForm
     profile_fields = STD_PROFILE_FIELDS
+    update_profile_fields = PERSONAL_FIELDS
 
     def get_context_data(self, **kwargs):
         context = super(ProfileMixin, self).get_context_data(**kwargs)
@@ -87,12 +89,18 @@ class ProfileMixin(MenuView):
         if not user:
             user = self.object
 
+        # if the edit user has access, extend the update_profile_fields
+        if has_permission(self.request.user, 'user_crud_dv_public_fields'):
+            self.update_profile_fields += DV_PUBLIC_FIELDS
+        if has_permission(self.request.user, 'user_crud_dv_private_fields'):
+            self.update_profile_fields += DV_PRIVATE_FIELDS
+
         (userprofile, created) = (
             UserProfile.objects.get_or_create(user=user)
         )
-        for field in self.profile_fields:
+        for field in self.update_profile_fields:
             if field in form.cleaned_data:
-                # For field updates that have date markes, note them properly
+                # For field updates that have date markers, note them properly
                 if field in ['status', 'bagstatus']:
                     oldstatus = getattr(userprofile, field)
                     if int(oldstatus) != int(form.cleaned_data[field]):

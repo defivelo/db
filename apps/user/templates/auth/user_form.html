@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load account %}
 {% load bootstrap3 %}
+{% load permission_tags %}
 
 {% block head_title %}{% trans "Profil" %}{% endblock %}
 
@@ -43,38 +44,52 @@
                 {% bootstrap_field form.iban layout='horizontal' size='small' %}
                 {% bootstrap_field form.social_security layout='horizontal' size='small' %}
             </div>
+            
+            {% with disabled=request.user|can:'user_crud_dv_public_fields'|yesno:',True' %}
             <div role="tabpanel" class="tab-pane" id="defi">
+                {% if request.user|can:'user_crud_dv_private_fields' %}
                 <div class="form-group form-group-sm">
                     {% bootstrap_label form.office_member.label label_class='col-md-3 control-label' %}
                     <div class="col-md-1">
                         <div class="checkbox">
-                            <label for="id_office_member">{{ form.office_member }}</label>
+                            <label for="id_office_member">
+                                <input {% if form.office_member.value %}checked="checked" {% endif %}
+                                       {% if disabled %}disabled="disabled" {% endif %}
+                                       id="id_office_member" name="office_member" type="checkbox" />
+                            </label>
                         </div>
                     </div>
                 </div>
-                {% bootstrap_field form.formation layout='horizontal' size='small' %}
-                {% bootstrap_field form.actor_for layout='horizontal' size='small' %}
-                {% bootstrap_field form.status layout='horizontal' size='small' %}
-                {% bootstrap_field form.pedagogical_experience layout='horizontal' size='small' %}
+                {% endif %}
+                {% bootstrap_field form.formation layout='horizontal' size='small' set_disabled=disabled %}
+                {% bootstrap_field form.actor_for layout='horizontal' size='small' set_disabled=disabled %}
+                {% bootstrap_field form.status layout='horizontal' size='small' set_disabled=disabled %}
+                {% bootstrap_field form.pedagogical_experience layout='horizontal' size='small' set_disabled=disabled %}
                 <div class="form-group form-group-sm">
                     {% bootstrap_label form.firstmed_course.label label_class='col-md-3 control-label' %}
                     <div class="col-md-1">
                         <div class="checkbox">
-                            <label for="id_firstmed_course">{{ form.firstmed_course }}</label>
+                            <label for="id_firstmed_course">
+                                <input {% if form.firstmed_course.value %}checked="checked" {% endif %}
+                                       {% if disabled %}disabled="disabled" {% endif %}
+                                       id="id_firstmed_course" name="firstmed_course" type="checkbox" />
+                            </label>
                         </div>
                     </div>
-                    {% bootstrap_field form.firstmed_course_comm field_class='col-md-8' form_group_class='none' show_label=False %}
+                    {% bootstrap_field form.firstmed_course_comm field_class='col-md-8' form_group_class='none' show_label=False set_disabled=disabled %}
                 </div>
-                {% bootstrap_field form.bagstatus layout='horizontal' size='small' %}
+                {% bootstrap_field form.bagstatus layout='horizontal' size='small' set_disabled=disabled %}
             </div>
             <div role="tabpanel" class="tab-pane" id="cantons">
-                {% bootstrap_field form.affiliation_canton layout='horizontal' size='small' %}
-                {% bootstrap_field form.activity_cantons layout='horizontal' size='small' %}
+                {% bootstrap_field form.affiliation_canton layout='horizontal' size='small' set_disabled=disabled %}
+                {% bootstrap_field form.activity_cantons layout='horizontal' size='small' set_disabled=disabled %}
             </div>
-
-            <div role="tabpanel" class="tab-pane" id="notes">
-                {% bootstrap_field form.comments layout='horizontal' size='small' %}
-            </div>
+            {% endwith %}
+            {% if request.user|can:'user_crud_dv_private_fields' %}
+                <div role="tabpanel" class="tab-pane" id="notes">
+                    {% bootstrap_field form.comments layout='horizontal' size='small' %}
+                </div>
+            {% endif %}
         </div>
 
         </div>
@@ -112,10 +127,12 @@ function dvCantonsNotAffiliatedToMobile() {
     $( '#id_activity_cantons input[value="' + homecanton + '"]').prop("disabled", true);
 }
 
-$( "#id_office_member" ).change( officeMembersSuperPowers );
-$( "#id_affiliation_canton" ).change( dvCantonsNotAffiliatedToMobile );
+{% if request.user|can:'user_crud_dv_public_fields' %}
+    $( "#id_office_member" ).change( officeMembersSuperPowers );
+    $( "#id_affiliation_canton" ).change( dvCantonsNotAffiliatedToMobile );
 
-officeMembersSuperPowers();
-dvCantonsNotAffiliatedToMobile();
+    officeMembersSuperPowers();
+    dvCantonsNotAffiliatedToMobile();
+{% endif %}
 </script>
 {% endblock %}

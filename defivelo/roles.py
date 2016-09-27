@@ -26,6 +26,8 @@ class PowerUser(AbstractUserRole):
         'user_detail_other': True,
         'user_edit_other': True,
         'user_create': True,
+        'user_crud_dv_public_fields': True,
+        'user_crud_dv_private_fields': True,
 
         'home_article_crud': True,
 

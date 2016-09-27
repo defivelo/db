@@ -68,16 +68,22 @@ STDGLYPHICON = (
     '      title="{title}"></span> '
 )
 
-STD_PROFILE_FIELDS = ['natel', 'birthdate',
-                      'address_street', 'address_no', 'address_zip',
-                      'address_city', 'address_canton',
-                      'iban', 'social_security',
-                      'office_member',
-                      'formation', 'actor_for', 'status',
-                      'pedagogical_experience',
-                      'firstmed_course', 'firstmed_course_comm',
-                      'bagstatus', 'affiliation_canton', 'activity_cantons',
-                      'comments']
+PERSONAL_FIELDS = ['natel', 'birthdate',
+                   'address_street', 'address_no', 'address_zip',
+                   'address_city', 'address_canton',
+                   'iban', 'social_security',
+                   ]
+
+DV_PUBLIC_FIELDS = ['formation', 'actor_for', 'status',
+                    'pedagogical_experience',
+                    'firstmed_course', 'firstmed_course_comm',
+                    'bagstatus', 'affiliation_canton', 'activity_cantons',
+                    ]
+
+DV_PRIVATE_FIELDS = ['office_member',
+                     'comments']
+
+STD_PROFILE_FIELDS = PERSONAL_FIELDS + DV_PUBLIC_FIELDS + DV_PRIVATE_FIELDS
 
 
 @python_2_unicode_compatible

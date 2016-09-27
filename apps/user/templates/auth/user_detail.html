@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
+{% load permission_tags %}
 
 {% block head_title %}{{ userprofile.get_full_name }}{% endblock %}
 {% block content %}
@@ -131,7 +132,7 @@
                         {% endif %}
                         </dl>
                     </div>
-                {% if userprofile.profile.comments %}
+                {% if request.user|can:'user_crud_dv_private_fields' and userprofile.profile.comments %}
                     <div role="tabpane" class="tab-pane" id="notes">
                        {{ userprofile.profile.comments }}
                     </div>
