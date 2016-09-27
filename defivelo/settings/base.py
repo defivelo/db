@@ -28,13 +28,11 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 
 import dj_database_url
-import pytz
-from django.contrib import messages
 
 from . import get_env_variable
 from .. import get_project_root_path
 
-gettext = lambda s: s
+gettext = lambda s: s  # NOQA
 
 PROJECT_ROOT = get_project_root_path()
 
@@ -108,7 +106,8 @@ ROOT_URLCONF = 'defivelo.urls'
 WSGI_APPLICATION = 'defivelo.wsgi.application'
 
 # Bootstrap the admin
-DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
+DAB_FIELD_RENDERER = \
+    'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
 
 TEMPLATES = [
     {
@@ -237,6 +236,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'cleanup_on_startup': True,
 }
 
+
 def defivelo_user_display(u):
     if u.first_name and u.last_name:
         return u'{first} {last}'.format(first=u.first_name, last=u.last_name)
@@ -250,7 +250,8 @@ ROLEPERMISSIONS_MODULE = 'defivelo.roles'
 
 # Email sender settings
 SERVER_EMAIL = get_env_variable('SERVER_EMAIL', 'noreply@defi-velo.ch')
-DEFAULT_FROM_EMAIL = get_env_variable('DEFAULT_FROM_EMAIL', 'noreply@defi-velo.ch')
+DEFAULT_FROM_EMAIL = \
+    get_env_variable('DEFAULT_FROM_EMAIL', 'noreply@defi-velo.ch')
 
 LOGIN_REDIRECT_URL = '/'
 
@@ -277,11 +278,12 @@ try:
     AGPL_FILENAME_PREFIX = 'defivelo-intranet'
 
     # Directories to exclude from download tree (optional)
-    AGPL_EXCLUDE_DIRS = agpl_settings.EXCLUDE_DIRS + [r'\.tox$',
-                                                      r'^__pycache__$',
-                                                      r'\.vagrant$', r'^virtualization',
-                                                      r'^static_files$', r'^venv$',
-                                                      r'^envdir$']
+    AGPL_EXCLUDE_DIRS = agpl_settings.EXCLUDE_DIRS + \
+        [r'\.tox$',
+         r'^__pycache__$',
+         r'\.vagrant$', r'^virtualization',
+         r'^static_files$', r'^venv$',
+         r'^envdir$']
 
     # Files to exclude from download tree (optional)
     AGPL_EXCLUDE_FILES = agpl_settings.EXCLUDE_FILES + [r'.mo$', r'~$']
@@ -289,4 +291,4 @@ try:
     # Prefix to create inside download tree (optional)
     AGPL_TREE_PREFIX = 'defivelo-intranet'
 except ImportError:
-   pass  # Sorry
+    pass  # Sorry

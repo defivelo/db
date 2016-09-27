@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2015 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2015, 2016 Didier Raboud <me+defivelo@odyx.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -16,14 +16,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from . import get_env_variable
-from .base import *  # noqa
+from .base import *  # NOQA
 
 DEBUG = bool(get_env_variable('DEBUG', True))
-TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
+TEMPLATES[0]['OPTIONS']['debug'] = DEBUG  # NOQA
 SECRET_KEY = 'notsosecret'
 NEVERCACHE_KEY = 'notsosecret'
 
-INSTALLED_APPS += (
+INSTALLED_APPS += (  # NOQA
     'debug_toolbar',
     'django_extensions',
 )
@@ -31,11 +31,11 @@ INSTALLED_APPS += (
 DEBUG_TOOLBAR_CONFIG = {"INTERCEPT_REDIRECTS": False}
 
 INTERNAL_IPS = ('127.0.0.1',)
-MIDDLEWARE_CLASSES += (
+MIDDLEWARE_CLASSES += (  # NOQA
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 # Adapt Stronghold for Debug
-STRONGHOLD_PUBLIC_URLS += [r'^/__debug__/.*$']
+STRONGHOLD_PUBLIC_URLS += [r'^/__debug__/.*$']  # NOQA
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

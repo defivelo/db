@@ -19,11 +19,11 @@ from . import get_env_variable
 from .base import *  # noqa
 
 DEBUG = bool(get_env_variable('DEBUG', True))
-TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
+TEMPLATES[0]['OPTIONS']['debug'] = DEBUG  # NOQA
 SECRET_KEY = 'notsosecret'
 NEVERCACHE_KEY = 'notsosecret'
 
-INSTALLED_APPS += (
+INSTALLED_APPS += (  # NOQA
     'django_jenkins',
 )
 
