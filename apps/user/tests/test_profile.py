@@ -17,19 +17,24 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from django.core.urlresolvers import reverse, NoReverseMatch
+from django.core.urlresolvers import NoReverseMatch, reverse
 from django.test import TestCase
 
 from defivelo.tests.utils import AuthClient, OfficeAuthClient
 
-urlsforall = ['profile-update']
-urlsforoffice = ['user-list', 'user-detail']
+urlsforall = ['profile-update', 'user-detail', 'user-update' ]
+urlsforoffice = ['user-list', 'user-list-export',]
 
 def tryurl(symbolicurl, user):
     try:
-        url = reverse(symbolicurl,
-                        kwargs={'pk': user.pk}
-                        )
+        try:
+            url = reverse(symbolicurl,
+                          kwargs={'pk': user.pk}
+                         )
+        except NoReverseMatch:
+            url = reverse(symbolicurl,
+                          kwargs={'format': 'csv'}
+                         )
     except NoReverseMatch:
         url = reverse(symbolicurl)
     return url
@@ -42,13 +47,15 @@ class AuthUserTest(TestCase):
 
     def test_my_allowances(self):
         for symbolicurl in urlsforall:
-            response = self.client.get(tryurl(symbolicurl, self.client.user))
-            self.assertEqual(response.status_code, 200)
+            url = tryurl(symbolicurl, self.client.user)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, url)
 
     def test_my_restrictions(self):
         for symbolicurl in urlsforoffice:
-            response = self.client.get(tryurl(symbolicurl, self.client.user))
-            self.assertEqual(response.status_code, 403)
+            url = tryurl(symbolicurl, self.client.user)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 403, url)
 
 
 class OfficeUserTest(TestCase):

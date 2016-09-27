@@ -22,6 +22,7 @@ from functools import reduce
 
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse_lazy
 from django.db.models import Q
 from django.http import HttpResponse
@@ -36,6 +37,7 @@ from django_filters.views import FilterView
 from filters.views import FilterMixin
 from import_export.formats import base_formats
 from rolepermissions.mixins import HasPermissionsMixin
+from rolepermissions.verifications import has_permission
 
 from apps.challenge.models import QualificationActivity
 from apps.common import DV_STATE_CHOICES_WITH_DEFAULT
@@ -102,7 +104,19 @@ class ProfileMixin(MenuView):
         return ret
 
 
-class UserDetail(HasPermissionsMixin, ProfileMixin, DetailView):
+class UserSelfAccessMixin(object):
+    required_permission = 'user_edit_other'
+
+    def dispatch(self, request, *args, **kwargs):
+        if (request.user.pk == self.get_object().pk or
+            has_permission(request.user, self.required_permission)
+            ):
+            return super(UserSelfAccessMixin, self).dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
+
+
+class UserDetail(UserSelfAccessMixin, ProfileMixin, DetailView):
     required_permission = 'user_detail_other'
 
     def get_queryset(self):
@@ -111,8 +125,8 @@ class UserDetail(HasPermissionsMixin, ProfileMixin, DetailView):
             .prefetch_related('profile')
         )
 
-
-class UserUpdate(ProfileMixin, SuccessMessageMixin, UpdateView):
+class UserUpdate(UserSelfAccessMixin, ProfileMixin, SuccessMessageMixin, UpdateView):
+    required_permission = 'user_edit_other'
     success_message = _("Profil mis à jour")
 
     def get_initial(self):

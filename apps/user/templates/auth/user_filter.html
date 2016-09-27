@@ -93,9 +93,11 @@
                 {{ user.profile.actor_icon|default:"" }}
             </td>
             <td>
+                {% if request.user|can:"user_edit_other" or request.user.pk == user.pk %}
                 <a class="btn btn-primary btn-xs" href="{% url 'user-update' pk=user.pk %}">
                     <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="{% trans "Éditer" %}"></span>
                 </a>
+                {% endif %}
             </td>
         </tr>
     {% endfor %}

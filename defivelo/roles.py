@@ -24,4 +24,5 @@ class OfficeMember(AbstractUserRole):
     available_permissions = {
         'user_view_list': True,
         'user_detail_other': True,
+        'user_edit_other': True,
     }
