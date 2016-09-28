@@ -22,14 +22,16 @@ from functools import reduce
 
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.sites.models import Site
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.db.models import Q
+from django.forms import Form as DjangoEmptyForm
 from django.http import HttpResponse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DetailView
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import FormView, UpdateView
 from django_filters import (
     CharFilter, FilterSet, ModelMultipleChoiceFilter, MultipleChoiceFilter,
 )
@@ -310,3 +312,36 @@ class ActorsList(UserDetailedList):
             super(ActorsList, self).get_queryset()
             .exclude(profile__actor_for__isnull=True)
         )
+
+
+class SendUserCredentials(HasPermissionsMixin, ProfileMixin, FormView):
+    required_permission = 'user_can_send_credentials'
+    template_name = 'auth/user_send_credentials.html'
+    success_message = _("Données de connexion expédiées.")
+    form_class = DjangoEmptyForm
+
+    def get_context_data(self, **kwargs):
+        context = super(SendUserCredentials, self).get_context_data(**kwargs)
+        # Add our menu_category context
+        context['userprofile'] = self.get_object()
+        context['current_site'] = Site.objects.get_current()
+        context['login_uri'] = \
+            self.request.build_absolute_uri(reverse('account_login'))
+        return context
+
+    def dispatch(self, request, *args, **kwargs):
+        # Forbid view if can already login
+        if not self.get_object().profile.can_login:
+            return (
+                super(SendUserCredentials, self)
+                .dispatch(request, *args, **kwargs)
+            )
+        else:
+            raise PermissionDenied
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        context['fromuser'] = self.request.user
+        user = self.get_object()
+        user.profile.send_initial_credentials(context)
+        return super(SendUserCredentials, self).form_valid(form)

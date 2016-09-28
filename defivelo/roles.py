@@ -28,6 +28,7 @@ class PowerUser(AbstractUserRole):
         'user_create': True,
         'user_crud_dv_public_fields': True,
         'user_crud_dv_private_fields': True,
+        'user_can_send_credentials': True,
 
         'home_article_crud': True,
 

@@ -18,11 +18,16 @@
 from __future__ import unicode_literals
 
 import uuid
+from smtplib import SMTPException
 
+from allauth.account.models import EmailAddress
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
@@ -277,6 +282,41 @@ class UserProfile(Address, models.Model):
                 name=self.user.get_full_name(),
                 email=self.user.email)
             )
+
+    @property
+    def can_login(self):
+        return self.user.is_active and self.user.has_usable_password
+
+    def send_initial_credentials(self, context):
+        if self.can_login:
+            # Has credentials already
+            return False
+        if not context:
+            return False
+
+        newpassword = get_user_model().objects.make_random_password()
+        self.user.set_password(newpassword)
+        self.user.is_active = True
+
+        try:
+            context['userprofile'] = self.user
+            context['password'] = newpassword
+            send_mail(
+                _('Accès au site \'{site_name}\'').format(
+                    site_name=context['current_site'].name),
+                render_to_string(
+                    'auth/email_user_send_credentials.txt',
+                    context),
+                settings.DEFAULT_FROM_EMAIL,
+                [self.mailtolink, ]
+                )
+        except SMTPException:
+            return False
+
+        # Create a validated email
+        EmailAddress.objects.create(user=self.user, email=self.user.email,
+                                    verified=True, primary=True)
+        self.user.save()
 
     def __str__(self):
         return self.user.get_full_name()

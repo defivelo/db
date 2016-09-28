@@ -20,7 +20,10 @@ from __future__ import unicode_literals
 from django.conf.urls import url
 from django.views.decorators.cache import never_cache
 
-from .views import UserCreate, UserDetail, UserList, UserListExport, UserUpdate
+from .views import (
+    SendUserCredentials, UserCreate, UserDetail, UserList, UserListExport,
+    UserUpdate,
+)
 
 urlpatterns = [
     url(r'^$', never_cache(UserList.as_view()), name="user-list"),
@@ -30,6 +33,9 @@ urlpatterns = [
     url(r'^new/$', UserCreate.as_view(), name="user-create"),
     url(r'^(?P<pk>[0-9]+)/$',
         never_cache(UserDetail.as_view()), name="user-detail"),
+    url(r'^(?P<pk>[0-9]+)/sendcreds/$',
+        never_cache(SendUserCredentials.as_view()),
+        name="user-sendcredentials"),
     url(r'^me/$', never_cache(UserDetail.as_view()), name="profile-detail"),
     url(r'^(?P<pk>[0-9]+)/update/$', UserUpdate.as_view(), name="user-update"),
     url(r'^me/edit/$', UserUpdate.as_view(), name="profile-update"),
