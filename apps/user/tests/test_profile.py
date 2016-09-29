@@ -17,6 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+from django.contrib.auth import get_user_model
+from django.core import mail
 from django.core.urlresolvers import NoReverseMatch, reverse
 from django.test import TestCase
 
@@ -27,7 +29,8 @@ myurlsforall = ['profile-update', 'user-detail', 'user-update',
                 'profile-detail', ]
 myurlsforoffice = ['user-list', 'user-list-export', ]
 
-othersurls = ['user-detail', 'user-update', 'user-create']
+othersurls = ['user-detail', 'user-update', 'user-create',
+              'user-sendcredentials', ]
 
 
 def tryurl(symbolicurl, user):
@@ -79,8 +82,9 @@ class PowerUserTest(TestCase):
 
     def test_my_allowances(self):
         for symbolicurl in myurlsforall + myurlsforoffice:
-            response = self.client.get(tryurl(symbolicurl, self.client.user))
-            self.assertEqual(response.status_code, 200)
+            url = tryurl(symbolicurl, self.client.user)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, url)
 
     def test_otherusers_access(self):
         for symbolicurl in othersurls:
@@ -88,3 +92,27 @@ class PowerUserTest(TestCase):
                 url = tryurl(symbolicurl, otheruser)
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, 200, url)
+
+    def test_send_creds(self):
+        nmails = 0
+        for otheruser in self.users:
+            url = tryurl('user-sendcredentials', otheruser)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, url)
+            # Now post to it, to get the mail sent
+            response = self.client.post(url, {})
+            self.assertEqual(response.status_code, 302, url)
+
+            nmails += 1
+            self.assertEqual(len(mail.outbox), nmails)
+
+            # Verify what they are from the DB
+            dbuser = get_user_model().objects.get(pk=otheruser.pk)
+            self.assertTrue(dbuser.is_active)
+            self.assertTrue(dbuser.has_usable_password())
+            self.assertTrue(dbuser.profile.can_login)
+
+            # Second try should fail, now that each of the users has a
+            # a valid email and got a password sent
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 403, url)
