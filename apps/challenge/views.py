@@ -386,6 +386,7 @@ class SeasonDeleteView(SeasonMixin, SuccessMessageMixin, DeleteView):
 
 
 class SeasonHelperListView(HelpersList, SeasonMixin):
+    model = get_user_model()
     page_title = _('Moniteurs de la saison')
 
     def get_context_data(self, **kwargs):
@@ -405,6 +406,7 @@ class SeasonHelperListView(HelpersList, SeasonMixin):
 
 
 class SeasonActorListView(ActorsList, SeasonMixin):
+    model = get_user_model()
     page_title = _('Intervenants de la saison')
 
     def get_context_data(self, **kwargs):
