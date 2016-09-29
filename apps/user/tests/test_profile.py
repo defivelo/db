@@ -23,7 +23,9 @@ from django.core.urlresolvers import NoReverseMatch, reverse
 from django.test import TestCase
 
 from apps.user.tests.factories import UserFactory
-from defivelo.tests.utils import AuthClient, PowerUserAuthClient
+from defivelo.tests.utils import (
+    AuthClient, PowerUserAuthClient, SuperUserAuthClient,
+)
 
 myurlsforall = ['profile-update', 'user-detail', 'user-update',
                 'profile-detail', ]
@@ -31,6 +33,8 @@ myurlsforoffice = ['user-list', 'user-list-export', ]
 
 othersurls = ['user-detail', 'user-update', 'user-create',
               'user-sendcredentials', ]
+
+superadminurls = ['user-resendcredentials', ]
 
 
 def tryurl(symbolicurl, user):
@@ -48,12 +52,14 @@ def tryurl(symbolicurl, user):
     return url
 
 
-class AuthUserTest(TestCase):
+class ProfileTestCase(TestCase):
     def setUp(self):
         # Every test needs a client.
         self.client = AuthClient()
         self.users = [UserFactory() for i in range(3)]
 
+
+class AuthUserTest(ProfileTestCase):
     def test_my_allowances(self):
         for symbolicurl in myurlsforall:
             url = tryurl(symbolicurl, self.client.user)
@@ -74,11 +80,10 @@ class AuthUserTest(TestCase):
                 self.assertEqual(response.status_code, 403, url)
 
 
-class PowerUserTest(TestCase):
+class PowerUserTest(ProfileTestCase):
     def setUp(self):
-        # Every test needs a client.
+        super(PowerUserTest, self).setUp()
         self.client = PowerUserAuthClient()
-        self.users = [UserFactory() for i in range(3)]
 
     def test_my_allowances(self):
         for symbolicurl in myurlsforall + myurlsforoffice:
@@ -116,3 +121,50 @@ class PowerUserTest(TestCase):
             # a valid email and got a password sent
             response = self.client.get(url)
             self.assertEqual(response.status_code, 403, url)
+
+            # Unallowed to re-send creds either
+            url = tryurl('user-resendcredentials', otheruser)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 403, url)
+
+
+class SuperUserTest(ProfileTestCase):
+    def setUp(self):
+        super(SuperUserTest, self).setUp()
+        self.client = SuperUserAuthClient()
+
+    def test_send_creds(self):
+        nmails = 0
+        for otheruser in self.users:
+            url = tryurl('user-sendcredentials', otheruser)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, url)
+            # Now post to it, to get the mail sent
+            response = self.client.post(url, {})
+            self.assertEqual(response.status_code, 302, url)
+
+            nmails += 1
+            self.assertEqual(len(mail.outbox), nmails)
+
+            # Verify what they are from the DB
+            dbuser = get_user_model().objects.get(pk=otheruser.pk)
+            self.assertTrue(dbuser.is_active)
+            self.assertTrue(dbuser.has_usable_password())
+            self.assertTrue(dbuser.profile.can_login)
+
+            # Second try should fail, now that each of the users has a
+            # a valid email and got a password sent
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 403, url)
+
+            # Allowed to re-send creds though, any number of times
+            for i in range(2):
+                url = tryurl('user-resendcredentials', otheruser)
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 200, url)
+
+                response = self.client.post(url, {})
+                self.assertEqual(response.status_code, 302, url)
+
+                nmails += 1
+                self.assertEqual(len(mail.outbox), nmails)

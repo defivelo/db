@@ -49,7 +49,7 @@ class AuthClient(Client):
 
 
 class PowerUserAuthClient(AuthClient):
-    USERNAME = 'foobar-superuser'
+    USERNAME = 'foobar-poweruser'
     PASSWORD = 'sicrit'
     EMAIL = 'superuser@example.com'
 
@@ -57,3 +57,14 @@ class PowerUserAuthClient(AuthClient):
         super(PowerUserAuthClient, self).__init__()
         # Assign it power_user
         assign_role(self.user, 'power_user')
+
+
+class SuperUserAuthClient(AuthClient):
+    USERNAME = 'foobar-superuser'
+    PASSWORD = 'sicrit'
+    EMAIL = 'superuser@example.com'
+
+    def __init__(self):
+        super(SuperUserAuthClient, self).__init__()
+        self.user.is_superuser = True
+        self.user.save()
