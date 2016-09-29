@@ -43,7 +43,8 @@
             </div>
             <div role="tabpanel" class="tab-pane" id="administrativia">
                 {% bootstrap_field form.birthdate layout='horizontal' size='small' %}
-                {% bootstrap_field form.iban layout='horizontal' size='small' %}
+                {% trans "CCP ?" as ccp %}
+                {% bootstrap_field form.iban layout='horizontal' size='small' addon_after=ccp %}
                 {% bootstrap_field form.social_security layout='horizontal' size='small' %}
             </div>
             
@@ -110,8 +111,21 @@
 
 {% block bootstrap3_extra_script %}
 {{ form.media.js }}
-{% if request.user|can:'user_crud_dv_public_fields' %}
 <script type="text/javascript">
+$(function () {
+    {% trans "Vers le calculateur d'IBAN" as toiban %}
+    {% trans "https://www.postfinance.ch/fr/cust/acc/iban.html" as toibanlink %}
+    $("#id_iban + span.input-group-addon").attr('data-toggle', 'tooltip')
+                                      .attr('data-placement', 'right')
+                                      .attr('title', '{{ toiban|escapejs }}')
+                                      .tooltip()
+                                      .css('cursor', 'pointer')
+                                      .click(function() {
+                                         window.open("{{ toibanlink|escapejs }}");
+                                      });
+})
+
+{% if request.user|can:'user_crud_dv_public_fields' %}
 
 function officeMembersSuperPowers() {
   if ($( "#id_office_member" ).is(":checked")) {
@@ -135,6 +149,6 @@ $( "#id_affiliation_canton" ).change( dvCantonsNotAffiliatedToMobile );
 
 officeMembersSuperPowers();
 dvCantonsNotAffiliatedToMobile();
-</script>
 {% endif %}
+</script>
 {% endblock %}
