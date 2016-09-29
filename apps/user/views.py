@@ -325,20 +325,32 @@ class ActorsList(UserDetailedList):
         )
 
 
-class SendUserCredentials(HasPermissionsMixin, ProfileMixin, FormView):
-    required_permission = 'user_can_send_credentials'
+class UserCredentials(ProfileMixin, FormView):
     template_name = 'auth/user_send_credentials.html'
     success_message = _("Données de connexion expédiées.")
     form_class = DjangoEmptyForm
+    initial_send = True
 
     def get_context_data(self, **kwargs):
-        context = super(SendUserCredentials, self).get_context_data(**kwargs)
+        context = super(UserCredentials, self).get_context_data(**kwargs)
         # Add our menu_category context
         context['userprofile'] = self.get_object()
         context['current_site'] = Site.objects.get_current()
         context['login_uri'] = \
             self.request.build_absolute_uri(reverse('account_login'))
+        context['initial_send'] = self.initial_send
         return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        context['fromuser'] = self.request.user
+        user = self.get_object()
+        user.profile.send_credentials(context, force=(not self.initial_send))
+        return super(UserCredentials, self).form_valid(form)
+
+
+class SendUserCredentials(HasPermissionsMixin, UserCredentials):
+    required_permission = 'user_can_send_credentials'
 
     def dispatch(self, request, *args, **kwargs):
         # Forbid view if can already login
@@ -350,9 +362,18 @@ class SendUserCredentials(HasPermissionsMixin, ProfileMixin, FormView):
         else:
             raise PermissionDenied
 
-    def form_valid(self, form):
-        context = self.get_context_data()
-        context['fromuser'] = self.request.user
-        user = self.get_object()
-        user.profile.send_initial_credentials(context)
-        return super(SendUserCredentials, self).form_valid(form)
+
+class ResendUserCredentials(HasPermissionsMixin, UserCredentials):
+    required_permission = 'user_can_resend_credentials'
+    success_message = _("Données de connexion ré-expédiées.")
+    initial_send = False
+
+    def dispatch(self, request, *args, **kwargs):
+        # Forbid view if initial login hasn't been sent
+        if self.get_object().profile.can_login and not self.initial_send:
+            return (
+                super(ResendUserCredentials, self)
+                .dispatch(request, *args, **kwargs)
+            )
+        else:
+            raise PermissionDenied
