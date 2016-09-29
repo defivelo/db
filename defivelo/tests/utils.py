@@ -23,6 +23,8 @@ from django.test import Client
 from django.utils.translation import activate
 from rolepermissions.shortcuts import assign_role
 
+from apps.user.models import UserProfile
+
 
 class AuthClient(Client):
     USERNAME = 'foobar-authenticated'
@@ -36,6 +38,7 @@ class AuthClient(Client):
             username=self.USERNAME, password=self.PASSWORD,
             email=self.EMAIL
         )
+        UserProfile.objects.get_or_create(user=self.user)
         # Create his trusted Email
         EmailAddress.objects.create(user=self.user, email=self.EMAIL,
                                     verified=True, primary=True)

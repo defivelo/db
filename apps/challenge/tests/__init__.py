@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2015 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2016 Didier Raboud <me+defivelo@odyx.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -15,12 +15,3 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from . import get_env_variable
-from .base import *  # noqa
-
-DEBUG = bool(get_env_variable('DEBUG', True))
-TEMPLATES[0]['OPTIONS']['debug'] = DEBUG  # NOQA
-SECRET_KEY = 'notsosecret'
-NEVERCACHE_KEY = 'notsosecret'
-
-INSTALLED_APPS = (('test_without_migrations', ) + INSTALLED_APPS)  # NOQA
