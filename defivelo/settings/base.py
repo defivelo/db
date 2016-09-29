@@ -280,13 +280,15 @@ try:
     # Directories to exclude from download tree (optional)
     AGPL_EXCLUDE_DIRS = agpl_settings.EXCLUDE_DIRS + \
         [r'\.tox$',
+         r'\.kdev4$',
          r'^__pycache__$',
          r'\.vagrant$', r'^virtualization',
          r'^static_files$', r'^venv$',
          r'^envdir$']
 
     # Files to exclude from download tree (optional)
-    AGPL_EXCLUDE_FILES = agpl_settings.EXCLUDE_FILES + [r'.mo$', r'~$']
+    AGPL_EXCLUDE_FILES = agpl_settings.EXCLUDE_FILES + \
+        [r'.mo$', r'~$', r'pgdump$', r'pg$', r'kdev4$']
 
     # Prefix to create inside download tree (optional)
     AGPL_TREE_PREFIX = 'defivelo-intranet'
