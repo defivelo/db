@@ -33,4 +33,7 @@ class PowerUser(AbstractUserRole):
         'home_article_crud': True,
 
         'orga_crud': True,
+
+        'challenge_season_crud': True,
+        'challenge_session_crud': True,
     }

@@ -29,6 +29,7 @@ from django.views.generic.dates import WeekArchiveView, YearArchiveView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from import_export.formats import base_formats
+from rolepermissions.mixins import HasPermissionsMixin
 from tablib import Dataset
 
 from apps.user.models import FORMATION_M2
@@ -43,7 +44,8 @@ from .forms import (
 from .models import HelperSessionAvailability, Qualification, Season, Session
 
 
-class SeasonMixin(MenuView):
+class SeasonMixin(HasPermissionsMixin, MenuView):
+    required_permission = 'challenge_season_crud'
     model = Season
     context_object_name = 'season'
     form_class = SeasonForm
@@ -421,7 +423,8 @@ class SeasonActorListView(ActorsList, SeasonMixin):
         )
 
 
-class SessionMixin(MenuView):
+class SessionMixin(HasPermissionsMixin, MenuView):
+    required_permission = 'challenge_session_crud'
     model = Session
     context_object_name = 'session'
     form_class = SessionForm
