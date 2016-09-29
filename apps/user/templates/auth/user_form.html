@@ -110,6 +110,7 @@
 
 {% block bootstrap3_extra_script %}
 {{ form.media.js }}
+{% if request.user|can:'user_crud_dv_public_fields' %}
 <script type="text/javascript">
 
 function officeMembersSuperPowers() {
@@ -129,12 +130,11 @@ function dvCantonsNotAffiliatedToMobile() {
     $( '#id_activity_cantons input[value="' + homecanton + '"]').prop("disabled", true);
 }
 
-{% if request.user|can:'user_crud_dv_public_fields' %}
-    $( "#id_office_member" ).change( officeMembersSuperPowers );
-    $( "#id_affiliation_canton" ).change( dvCantonsNotAffiliatedToMobile );
+$( "#id_office_member" ).change( officeMembersSuperPowers );
+$( "#id_affiliation_canton" ).change( dvCantonsNotAffiliatedToMobile );
 
-    officeMembersSuperPowers();
-    dvCantonsNotAffiliatedToMobile();
-{% endif %}
+officeMembersSuperPowers();
+dvCantonsNotAffiliatedToMobile();
 </script>
+{% endif %}
 {% endblock %}
