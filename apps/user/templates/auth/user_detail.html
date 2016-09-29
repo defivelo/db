@@ -141,9 +141,23 @@
         </div>
     </div>
     {% buttons %}
-        <a class="btn btn-primary pull-right" href="{% url 'user-update' pk=userprofile.pk %}">{% trans "Éditer" %}</a>
+    <div class="hidden-print">
+        <a class="btn btn-primary pull-right" href="{% url 'user-update' pk=userprofile.pk %}">
+            <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="{% trans "Éditer" %}"></span>
+            {% trans "Éditer" %}
+        </a>
         {% if request.user|can:'user_view_list' %}
             <a class="btn btn-default" href="{% url 'user-list' %}">{% trans "Retour à la liste des utilisateurs" %}</a>
         {% endif %}
+    {% endbuttons %}
+    {% buttons %}
+        {% if request.user|can:"user_create" %}
+            <br />
+            <a class="btn btn-primary pull-right" href="{% url 'user-create' %}">
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                {% trans "Nouvel utilisateur" %}
+            </a>
+        {% endif %}
+    </div>
     {% endbuttons %}
 {% endblock %}
