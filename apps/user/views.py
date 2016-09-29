@@ -31,7 +31,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DetailView
-from django.views.generic.edit import FormView, UpdateView
+from django.views.generic.edit import CreateView, FormView, UpdateView
 from django_filters import (
     CharFilter, FilterSet, ModelMultipleChoiceFilter, MultipleChoiceFilter,
 )
@@ -164,12 +164,9 @@ class UserUpdate(UserSelfAccessMixin, ProfileMixin, SuccessMessageMixin,
 
 
 class UserCreate(HasPermissionsMixin, ProfileMixin, SuccessMessageMixin,
-                 UpdateView):
+                 CreateView):
     required_permission = 'user_create'
     success_message = _("Utilisateur créé")
-
-    def get_object(self):
-        return None
 
     def get_form_kwargs(self):
         kwargs = super(UserCreate, self).get_form_kwargs()
@@ -177,7 +174,10 @@ class UserCreate(HasPermissionsMixin, ProfileMixin, SuccessMessageMixin,
         return kwargs
 
     def get_success_url(self):
-        return reverse_lazy('user-list')
+        try:
+            return reverse_lazy('user-detail', kwargs={'pk': self.object.pk})
+        except:
+            return reverse_lazy('user-list')
 
 
 class UserProfileFilterSet(FilterSet):

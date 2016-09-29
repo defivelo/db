@@ -42,6 +42,9 @@ class UserProfileForm(forms.ModelForm):
         super(UserProfileForm, self).__init__(*args, **kwargs)
         if not allow_email and 'email' in self.fields:
             del(self.fields['email'])
+        for field in 'first_name', 'last_name', 'email':
+            if field in self.fields:
+                self.fields[field].required = True
 
     address_street = forms.CharField(label=_('Rue'), max_length=255,
                                      required=False)
