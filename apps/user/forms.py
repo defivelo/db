@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 from django import forms
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
-from localflavor.ch.ch_states import STATE_CHOICES
 from localflavor.ch.forms import (
     CHPhoneNumberField, CHSocialSecurityNumberField, CHStateSelect,
     CHZipCodeField,
@@ -30,6 +29,7 @@ from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from multiselectfield.forms.fields import MultiSelectFormField
 
 from apps.challenge.models import QualificationActivity
+from apps.common import DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.forms import SwissDateField
 
 from . import STATE_CHOICES_WITH_DEFAULT
@@ -37,6 +37,15 @@ from .models import BAGSTATUS_CHOICES, FORMATION_CHOICES, USERSTATUS_CHOICES
 
 
 class UserProfileForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        allow_email = kwargs.pop('allow_email', False)
+        super(UserProfileForm, self).__init__(*args, **kwargs)
+        if not allow_email and 'email' in self.fields:
+            del(self.fields['email'])
+        for field in 'first_name', 'last_name', 'email':
+            if field in self.fields:
+                self.fields[field].required = True
+
     address_street = forms.CharField(label=_('Rue'), max_length=255,
                                      required=False)
     address_no = forms.CharField(label=_('N°'), max_length=8,
@@ -82,11 +91,14 @@ class UserProfileForm(forms.ModelForm):
     comments = forms.CharField(label=_('Remarques'), widget=forms.Textarea,
                                required=False
                                )
-    activity_cantons = MultiSelectFormField(
-        label=_("Cantons d'affiliation"),
-        choices=STATE_CHOICES,
+    affiliation_canton = forms.ChoiceField(
+        label=_("Canton d'affiliation"),
+        choices=DV_STATE_CHOICES_WITH_DEFAULT,
         required=False)
+    activity_cantons = MultiSelectFormField(label=_("Défi Vélo Mobile"),
+                                            choices=DV_STATE_CHOICES,
+                                            required=False)
 
     class Meta:
         model = get_user_model()
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['first_name', 'last_name', 'email', ]

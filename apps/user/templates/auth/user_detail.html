@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
+{% load permission_tags %}
+
+{% block head_title %}{{ userprofile.get_full_name }}{% endblock %}
 {% block content %}
     <div class="panel panel-{{ userprofile.profile.status_class }} vcard">
         <div class="panel-heading">
@@ -58,7 +61,7 @@
                         {% endif %}
                         {% if userprofile.email %}
                             <dt>{% trans "Email" %}</dt>
-                                <dd><a class="email" href="mailto:{{ userprofile.email }}">{{ userprofile.email }}</a></dd>
+                                <dd><a class="email" href="mailto:{{ userprofile.mailtolink|urlencode }}">{{ userprofile.email }}</a></dd>
                         {% endif %}
                         {% if userprofile.profile.natel %}
                             <dt>{% trans "Natel" %}</dt>
@@ -116,16 +119,20 @@
                         <dt>{% trans "Cours samaritain" %}</dt><dd><span class="glyphicon glyphicon-{% if userprofile.profile.firstmed_course %}check{% else %}unchecked{% endif %}"></span> {{ userprofile.profile.firstmed_course_comm }}</dd>
                     </dl>
                 </div>
-                {% if userprofile.profile.activity_cantons %}
                     <div role="tabpane" class="tab-pane" id="cantons">
                         <dl class="dl-horizontal">
-                            <dt>{% trans "Cantons d'affiliation" %}</dt>
+                        {% if userprofile.profile.affiliation_canton %}
+                            <dt>{% trans "Canton d'affiliation" %}</dt>
+                            <dd>{{ userprofile.profile.affiliation_canton_verb }}</dd>
+                        {% endif %}
+                        {% if userprofile.profile.activity_cantons %}
+                            <dt>{% trans "Défi Vélo Mobile" %}</dt>
                             <dd>{{ userprofile.profile.activity_cantons_verb|join:"<br />" }}
                             </dd>
+                        {% endif %}
                         </dl>
                     </div>
-                {% endif %}
-                {% if userprofile.profile.comments %}
+                {% if request.user|can:'user_crud_dv_private_fields' and userprofile.profile.comments %}
                     <div role="tabpane" class="tab-pane" id="notes">
                        {{ userprofile.profile.comments }}
                     </div>
@@ -134,7 +141,23 @@
         </div>
     </div>
     {% buttons %}
-        <a class="btn btn-primary pull-right" href="{% url 'user-update' pk=userprofile.pk %}">{% trans "Éditer" %}</a>
-        <a class="btn btn-default" href="{% url 'user-list' %}">{% trans "Retour à la liste des utilisateurs" %}</a>
+    <div class="hidden-print">
+        <a class="btn btn-primary pull-right" href="{% url 'user-update' pk=userprofile.pk %}">
+            <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="{% trans "Éditer" %}"></span>
+            {% trans "Éditer" %}
+        </a>
+        {% if request.user|can:'user_view_list' %}
+            <a class="btn btn-default" href="{% url 'user-list' %}">{% trans "Retour à la liste des utilisateurs" %}</a>
+        {% endif %}
+    {% endbuttons %}
+    {% buttons %}
+        {% if request.user|can:"user_create" %}
+            <br />
+            <a class="btn btn-primary pull-right" href="{% url 'user-create' %}">
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                {% trans "Nouvel utilisateur" %}
+            </a>
+        {% endif %}
+    </div>
     {% endbuttons %}
 {% endblock %}

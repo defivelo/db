@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2015 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2016 Didier Raboud <me+defivelo@odyx.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -17,21 +17,25 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from localflavor.ch.ch_states import STATE_CHOICES
+import factory
+from django.contrib.auth import get_user_model
+from factory.django import DjangoModelFactory
 
-from django.utils.translation import ugettext_lazy as _
+from apps.user.models import UserProfile
 
-STATE_CHOICES_WITH_DEFAULT = tuple(
-    list((('', '---------',),)) +
-    list(STATE_CHOICES)
-)
 
-FORMATION_M1 = 'M1'
-FORMATION_M2 = 'M2'
+class UserProfileFactory(DjangoModelFactory):
+    class Meta:
+        model = UserProfile
 
-FORMATION_CHOICES = (
-    ('', '----------'),
-    (FORMATION_M1, _('Moniteur 1')),
-    (FORMATION_M2, _('Moniteur 2')),
-)
-FORMATION_KEYS = [k[0] for k in FORMATION_CHOICES if k[0] != '']
+
+class UserFactory(DjangoModelFactory):
+    class Meta:
+        model = get_user_model()
+
+    profile = factory.RelatedFactory(UserProfileFactory, 'user')
+    username = factory.Sequence(lambda n: "user%d" % n)
+    email = factory.Sequence(lambda n: "user%d@example.com" % n)
+    # Normal users can't login, and don't have passwords
+    password = factory.PostGenerationMethodCall('set_unusable_password')
+    is_active = False

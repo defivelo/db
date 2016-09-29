@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load account %}
 {% load bootstrap3 %}
+{% load permission_tags %}
 {% block head_title %}{% trans "Users" %}{% endblock %}
 
 {% block content %}
@@ -31,6 +32,7 @@
     {% endif %}
 
     <div class="hidden-print">
+        {% if request.user|can:"user_view_list" %}
         <div class="btn-group" role="group" aria-label="exports">
             {% with 'csv ods xls' as formats %}
                 {% for format in formats.split %}
@@ -45,6 +47,7 @@
                 {% endfor %}
             {% endwith %}
         </div>
+        {% endif %}
 
         {% if filter.form %}
             <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target=".bs-user-filters-modal">
@@ -67,6 +70,7 @@
             <th>{% trans "Email" %}</th>
             <th>{% trans "Natel" %}</th>
             <th>{% trans "Statut" %}</th>
+            <th>{% trans "Cantons" %}</th>
             <th>{% trans "Rôle" %}</th>
             <th>{# Boutons #}</th>
         </tr>
@@ -74,22 +78,26 @@
     <tbody>
     {% for user in users %}
         <tr>
-            <td><a href="{% url 'user-detail' pk=user.pk %}">{{ user.first_name }}</a></td>
-            <td><a href="{% url 'user-detail' pk=user.pk %}">{{ user.last_name }}</a></td>
-            <td><a href="mailto:{{ user.profile.email }}">{{ user.profile.email }}</a></td>
+            <td>{% if request.user|can:'user_detail_other' %}<a href="{% url 'user-detail' pk=user.pk %}">{{ user.first_name }}</a>{% else %}{{ user.first_name }}{% endif %}</td>
+            <td>{% if request.user|can:'user_detail_other' %}<a href="{% url 'user-detail' pk=user.pk %}">{{ user.last_name }}{% else %}{{ user.last_name }}{% endif %}</a></td>
+            <td><a href="mailto:{{ user.profile.mailtolink|urlencode }}">{{ user.email }}</a></td>
             <td><a href="tel:{{ user.profile.natel_int }}">{{ user.profile.natel }}</a></td>
             <td class="{{ user.profile.status_class }}">
                 {{ user.profile.status_icon|safe }}
+            </td>
+            <td>
+               {{ user.profile.affiliation_canton }}{% if user.profile.activity_cantons %}, {{ user.profile.activity_cantons|join:", " }}{% endif %}
             </td>
             <td>
                 {{ user.profile.formation_icon|safe }}
                 {{ user.profile.actor_icon|default:"" }}
             </td>
             <td>
+                {% if request.user|can:"user_edit_other" or request.user.pk == user.pk %}
                 <a class="btn btn-primary btn-xs" href="{% url 'user-update' pk=user.pk %}">
-                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-                    {% trans "Éditer" %}
+                    <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="{% trans "Éditer" %}"></span>
                 </a>
+                {% endif %}
             </td>
         </tr>
     {% endfor %}
@@ -116,12 +124,13 @@
         </ul>
     </nav>
     {% endif %}
-
+    {% if request.user|can:"user_create" %}
     <div class="hidden-print">
         <a class="btn btn-primary pull-right" href="{% url 'user-create' %}">
             <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
             {% trans "Nouvel utilisateur" %}
         </a>
     </div>
+    {% endif %}
 
 {% endblock %}

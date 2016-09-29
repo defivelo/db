@@ -10,3 +10,4 @@ script:
 env:
   - TOXENV=py27-coverage
   - TOXENV=py34
+  - TOXENV=flake8

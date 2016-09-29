@@ -18,24 +18,31 @@
 from __future__ import unicode_literals
 
 import uuid
+from smtplib import SMTPException
 
+from allauth.account.models import EmailAddress
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from localflavor.ch.ch_states import STATE_CHOICES
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from localflavor.generic.models import IBANField
 from multiselectfield import MultiSelectField
 
 from apps.challenge.models import QualificationActivity
+from apps.common import DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.models import Address
 
-from . import FORMATION_CHOICES, FORMATION_KEYS, FORMATION_M1, FORMATION_M2
+from . import (  # NOQA
+    FORMATION_CHOICES, FORMATION_KEYS, FORMATION_M1, FORMATION_M2,
+)
 
 USERSTATUS_UNDEF = 0
 USERSTATUS_ACTIVE = 10
@@ -66,15 +73,23 @@ STDGLYPHICON = (
     '      title="{title}"></span> '
 )
 
-STD_PROFILE_FIELDS = ['natel', 'birthdate',
-                      'address_street', 'address_no', 'address_zip',
-                      'address_city', 'address_canton',
-                      'iban', 'social_security',
-                      'office_member',
-                      'formation', 'actor_for', 'status',
-                      'pedagogical_experience',
-                      'firstmed_course', 'firstmed_course_comm',
-                      'bagstatus', 'activity_cantons', 'comments']
+PERSONAL_FIELDS = ['natel', 'birthdate',
+                   'address_street', 'address_no', 'address_zip',
+                   'address_city', 'address_canton',
+                   'iban', 'social_security',
+                   ]
+
+DV_PUBLIC_FIELDS = ['formation', 'actor_for', 'status',
+                    'pedagogical_experience',
+                    'firstmed_course', 'firstmed_course_comm',
+                    'bagstatus', 'affiliation_canton', 'activity_cantons',
+                    ]
+
+DV_PRIVATE_FIELDS = ['office_member',
+                     'comments']
+
+STD_PROFILE_FIELDS = PERSONAL_FIELDS + DV_PUBLIC_FIELDS + DV_PRIVATE_FIELDS
+
 
 @python_2_unicode_compatible
 class UserProfile(Address, models.Model):
@@ -85,11 +100,16 @@ class UserProfile(Address, models.Model):
     iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)
     social_security = models.CharField(max_length=16, blank=True)
     natel = models.CharField(max_length=13, blank=True)
-    activity_cantons = MultiSelectField(_("Cantons d'affiliation"),
-                                        choices=STATE_CHOICES,
+    affiliation_canton = models.CharField(
+        _("Canton d'affiliation"),
+        choices=DV_STATE_CHOICES_WITH_DEFAULT,
+        max_length=2,
+        blank=False)
+    activity_cantons = MultiSelectField(_("Défi Vélo mobile"),
+                                        choices=DV_STATE_CHOICES,
                                         blank=True)
     office_member = models.BooleanField(_('Bureau Défi Vélo'),
-                                          default=False)
+                                        default=False)
     formation = models.CharField(_("Formation"), max_length=2,
                                  choices=FORMATION_CHOICES,
                                  blank=True)
@@ -118,6 +138,15 @@ class UserProfile(Address, models.Model):
         default=BAGSTATUS_NONE)
     bagstatus_updatetime = models.DateTimeField(null=True, blank=True)
     comments = models.TextField(_('Remarques'), blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.activity_cantons:
+            # Remove the affiliation canton from the activity_cantons
+            try:
+                self.activity_cantons.remove(self.affiliation_canton)
+            except (ValueError, AttributeError):
+                pass
+        super(UserProfile, self).save(*args, **kwargs)
 
     @property
     def formation_full(self):
@@ -149,18 +178,24 @@ class UserProfile(Address, models.Model):
     def status_class(self):
         css_class = 'default'
         if self.status == USERSTATUS_ACTIVE:
-            css_class = 'success' # Green
+            css_class = 'success'  # Green
         elif self.status == USERSTATUS_RESERVE:
-            css_class = 'warning' # Orange
+            css_class = 'warning'  # Orange
         elif self.status == USERSTATUS_INACTIVE:
-            css_class= 'danger'  # Red
+            css_class = 'danger'  # Red
         return css_class
 
     @property
     def age(self):
         today = timezone.now()
-        return today.year - self.birthdate.year - ((today.month, today.day) < (self.birthdate.month, self.birthdate.day))
-    
+        return (
+                today.year - self.birthdate.year -
+                (
+                    (today.month, today.day) <
+                    (self.birthdate.month, self.birthdate.day)
+                )
+               )
+
     @property
     def natel_int(self):
         if self.natel:
@@ -172,10 +207,12 @@ class UserProfile(Address, models.Model):
     def iban_nice(self):
         if self.iban:
             value = self.iban
-            # Code stolen from https://django-localflavor.readthedocs.org/en/latest/_modules/localflavor/generic/forms/#IBANFormField.prepare_value
+            # Code stolen from
+            # https://django-localflavor.readthedocs.org/en/latest/_modules/localflavor/generic/forms/#IBANFormField.prepare_value
             grouping = 4
             value = value.upper().replace(' ', '').replace('-', '')
-            return ' '.join(value[i:i + grouping] for i in range(0, len(value), grouping))
+            return ' '.join(value[i:i + grouping] for i in
+                            range(0, len(value), grouping))
         return ''
 
     def formation_icon(self):
@@ -222,9 +259,64 @@ class UserProfile(Address, models.Model):
         return ''
 
     @property
+    def affiliation_canton_verb(self):
+        try:
+            return [
+                c[1] for c in DV_STATE_CHOICES
+                if c[0] == self.affiliation_canton
+                ][0]
+        except IndexError:
+            return ''
+
+    @property
     def activity_cantons_verb(self):
-        if self.activity_cantons:
-            return [c[1] for c in STATE_CHOICES if c[0] in self.activity_cantons]
+        return [
+            c[1] for c in DV_STATE_CHOICES
+            if c[0] in self.activity_cantons
+            ]
+
+    @property
+    def mailtolink(self):
+        return (
+            '{name} <{email}>'.format(
+                name=self.user.get_full_name(),
+                email=self.user.email)
+            )
+
+    @property
+    def can_login(self):
+        return self.user.is_active and self.user.has_usable_password
+
+    def send_initial_credentials(self, context):
+        if self.can_login:
+            # Has credentials already
+            return False
+        if not context:
+            return False
+
+        newpassword = get_user_model().objects.make_random_password()
+        self.user.set_password(newpassword)
+        self.user.is_active = True
+
+        try:
+            context['userprofile'] = self.user
+            context['password'] = newpassword
+            send_mail(
+                _('Accès au site \'{site_name}\'').format(
+                    site_name=context['current_site'].name),
+                render_to_string(
+                    'auth/email_user_send_credentials.txt',
+                    context),
+                settings.DEFAULT_FROM_EMAIL,
+                [self.mailtolink, ]
+                )
+        except SMTPException:
+            return False
+
+        # Create a validated email
+        EmailAddress.objects.create(user=self.user, email=self.user.email,
+                                    verified=True, primary=True)
+        self.user.save()
 
     def __str__(self):
         return self.user.get_full_name()

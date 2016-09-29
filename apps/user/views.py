@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2015 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2015, 2016 Didier Raboud <me+defivelo@odyx.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -22,32 +22,35 @@ from functools import reduce
 
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.urlresolvers import reverse_lazy
-from django.db import IntegrityError
+from django.contrib.sites.models import Site
+from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.db.models import Q
+from django.forms import Form as DjangoEmptyForm
 from django.http import HttpResponse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DetailView
-from django.views.generic.edit import UpdateView
-from django.views.generic.list import ListView
+from django.views.generic.edit import CreateView, FormView, UpdateView
 from django_filters import (
-    CharFilter, FilterSet, MethodFilter, ModelMultipleChoiceFilter,
-    MultipleChoiceFilter,
+    CharFilter, FilterSet, ModelMultipleChoiceFilter, MultipleChoiceFilter,
 )
 from django_filters.views import FilterView
 from filters.views import FilterMixin
 from import_export.formats import base_formats
+from rolepermissions.mixins import HasPermissionsMixin
+from rolepermissions.verifications import has_permission
 
 from apps.challenge.models import QualificationActivity
+from apps.common import DV_STATE_CHOICES_WITH_DEFAULT
 from defivelo.views import MenuView
 
-from . import STATE_CHOICES_WITH_DEFAULT
 from .export import UserResource
 from .forms import UserProfileForm
 from .models import (
-    FORMATION_CHOICES, STD_PROFILE_FIELDS, USERSTATUS_ACTIVE,
-    USERSTATUS_CHOICES, USERSTATUS_RESERVE, UserProfile,
+    DV_PRIVATE_FIELDS, DV_PUBLIC_FIELDS, FORMATION_CHOICES, PERSONAL_FIELDS,
+    STD_PROFILE_FIELDS, USERSTATUS_ACTIVE, USERSTATUS_CHOICES,
+    USERSTATUS_RESERVE, UserProfile,
 )
 
 
@@ -56,6 +59,7 @@ class ProfileMixin(MenuView):
     context_object_name = 'userprofile'
     form_class = UserProfileForm
     profile_fields = STD_PROFILE_FIELDS
+    update_profile_fields = PERSONAL_FIELDS
 
     def get_context_data(self, **kwargs):
         context = super(ProfileMixin, self).get_context_data(**kwargs)
@@ -75,7 +79,7 @@ class ProfileMixin(MenuView):
     def get_success_url(self):
         updatepk = self.get_object().pk
         if updatepk == self.request.user.pk:
-            return reverse_lazy('profile-update')
+            return reverse_lazy('profile-detail')
         return reverse_lazy('user-detail', kwargs={'pk': updatepk})
 
     def form_valid(self, form):
@@ -87,12 +91,18 @@ class ProfileMixin(MenuView):
         if not user:
             user = self.object
 
+        # if the edit user has access, extend the update_profile_fields
+        if has_permission(self.request.user, 'user_crud_dv_public_fields'):
+            self.update_profile_fields += DV_PUBLIC_FIELDS
+        if has_permission(self.request.user, 'user_crud_dv_private_fields'):
+            self.update_profile_fields += DV_PRIVATE_FIELDS
+
         (userprofile, created) = (
             UserProfile.objects.get_or_create(user=user)
         )
-        for field in self.profile_fields:
+        for field in self.update_profile_fields:
             if field in form.cleaned_data:
-                # For field updates that have date markes, note them properly
+                # For field updates that have date markers, note them properly
                 if field in ['status', 'bagstatus']:
                     oldstatus = getattr(userprofile, field)
                     if int(oldstatus) != int(form.cleaned_data[field]):
@@ -104,15 +114,41 @@ class ProfileMixin(MenuView):
         return ret
 
 
-class UserDetail(ProfileMixin, DetailView):
+class UserSelfAccessMixin(object):
+    required_permission = 'user_edit_other'
+
+    def dispatch(self, request, *args, **kwargs):
+        if (
+            request.user.pk == self.get_object().pk or
+            has_permission(request.user, self.required_permission)
+           ):
+            return (
+                super(UserSelfAccessMixin, self)
+                .dispatch(request, *args, **kwargs)
+            )
+        else:
+            raise PermissionDenied
+
+    def get_form_kwargs(self):
+        kwargs = super(UserSelfAccessMixin, self).get_form_kwargs()
+        if has_permission(self.request.user, self.required_permission):
+            kwargs['allow_email'] = True
+        return kwargs
+
+
+class UserDetail(UserSelfAccessMixin, ProfileMixin, DetailView):
+    required_permission = 'user_detail_other'
+
     def get_queryset(self):
         return (
-            super(SessionDetailView, self).get_queryset()
+            super(UserDetail, self).get_queryset()
             .prefetch_related('profile')
         )
 
 
-class UserUpdate(ProfileMixin, SuccessMessageMixin, UpdateView):
+class UserUpdate(UserSelfAccessMixin, ProfileMixin, SuccessMessageMixin,
+                 UpdateView):
+    required_permission = 'user_edit_other'
     success_message = _("Profil mis à jour")
 
     def get_initial(self):
@@ -127,21 +163,31 @@ class UserUpdate(ProfileMixin, SuccessMessageMixin, UpdateView):
             return struct
 
 
-class UserCreate(ProfileMixin, SuccessMessageMixin, UpdateView):
+class UserCreate(HasPermissionsMixin, ProfileMixin, SuccessMessageMixin,
+                 CreateView):
+    required_permission = 'user_create'
     success_message = _("Utilisateur créé")
 
-    def get_object(self):
-        return None
+    def get_form_kwargs(self):
+        kwargs = super(UserCreate, self).get_form_kwargs()
+        kwargs['allow_email'] = True
+        return kwargs
 
     def get_success_url(self):
-        return reverse_lazy('user-list')
+        try:
+            return reverse_lazy('user-detail', kwargs={'pk': self.object.pk})
+        except:
+            return reverse_lazy('user-list')
 
 
 class UserProfileFilterSet(FilterSet):
-    def filter_activity_cantons(queryset, value):
+    def filter_cantons(queryset, value):
         if value:
             allcantons_filter = [
-                Q(profile__activity_cantons__contains=canton) for canton in value
+                Q(profile__activity_cantons__contains=canton)
+                for canton in value
+            ] + [
+                Q(profile__affiliation_canton=canton) for canton in value
             ]
             return queryset.filter(reduce(operator.or_, allcantons_filter))
         return queryset
@@ -158,14 +204,14 @@ class UserProfileFilterSet(FilterSet):
         return queryset
 
     profile__activity_cantons = MultipleChoiceFilter(
-        label=_("Cantons d'affiliation"),
-        choices=STATE_CHOICES_WITH_DEFAULT,
-        action=filter_activity_cantons
+        label=_("Cantons"),
+        choices=DV_STATE_CHOICES_WITH_DEFAULT,
+        action=filter_cantons
     )
     profile__status = MultipleChoiceFilter(
         label=_('Statut'),
         choices=USERSTATUS_CHOICES,
-        initial=[USERSTATUS_ACTIVE,USERSTATUS_RESERVE,]
+        initial=[USERSTATUS_ACTIVE, USERSTATUS_RESERVE, ]
     )
     profile__formation = MultipleChoiceFilter(
         label=_('Formation'),
@@ -189,7 +235,8 @@ class UserProfileFilterSet(FilterSet):
                   ]
 
 
-class UserList(ProfileMixin, FilterMixin, FilterView):
+class UserList(HasPermissionsMixin, ProfileMixin, FilterMixin, FilterView):
+    required_permission = 'user_view_list'
     filterset_class = UserProfileFilterSet
     context_object_name = 'users'
     paginate_by = 10
@@ -235,7 +282,8 @@ class UserListExport(UserList):
 
         response = HttpResponse(getattr(dataset, formattxt),
                                 format.get_content_type() + ';charset=utf-8')
-        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+        response['Content-Disposition'] = 'attachment; filename="{f}"'.format(
+            f=filename)
         return response
 
 
@@ -275,3 +323,36 @@ class ActorsList(UserDetailedList):
             super(ActorsList, self).get_queryset()
             .exclude(profile__actor_for__isnull=True)
         )
+
+
+class SendUserCredentials(HasPermissionsMixin, ProfileMixin, FormView):
+    required_permission = 'user_can_send_credentials'
+    template_name = 'auth/user_send_credentials.html'
+    success_message = _("Données de connexion expédiées.")
+    form_class = DjangoEmptyForm
+
+    def get_context_data(self, **kwargs):
+        context = super(SendUserCredentials, self).get_context_data(**kwargs)
+        # Add our menu_category context
+        context['userprofile'] = self.get_object()
+        context['current_site'] = Site.objects.get_current()
+        context['login_uri'] = \
+            self.request.build_absolute_uri(reverse('account_login'))
+        return context
+
+    def dispatch(self, request, *args, **kwargs):
+        # Forbid view if can already login
+        if not self.get_object().profile.can_login:
+            return (
+                super(SendUserCredentials, self)
+                .dispatch(request, *args, **kwargs)
+            )
+        else:
+            raise PermissionDenied
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        context['fromuser'] = self.request.user
+        user = self.get_object()
+        user.profile.send_initial_credentials(context)
+        return super(SendUserCredentials, self).form_valid(form)

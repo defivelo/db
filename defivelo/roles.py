@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2015 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2016 Didier Raboud <me+defivelo@odyx.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -17,21 +17,23 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from localflavor.ch.ch_states import STATE_CHOICES
+from rolepermissions.roles import AbstractUserRole
 
-from django.utils.translation import ugettext_lazy as _
 
-STATE_CHOICES_WITH_DEFAULT = tuple(
-    list((('', '---------',),)) +
-    list(STATE_CHOICES)
-)
+class PowerUser(AbstractUserRole):
+    available_permissions = {
+        'user_view_list': True,
+        'user_detail_other': True,
+        'user_edit_other': True,
+        'user_create': True,
+        'user_crud_dv_public_fields': True,
+        'user_crud_dv_private_fields': True,
+        'user_can_send_credentials': True,
 
-FORMATION_M1 = 'M1'
-FORMATION_M2 = 'M2'
+        'home_article_crud': True,
 
-FORMATION_CHOICES = (
-    ('', '----------'),
-    (FORMATION_M1, _('Moniteur 1')),
-    (FORMATION_M2, _('Moniteur 2')),
-)
-FORMATION_KEYS = [k[0] for k in FORMATION_CHOICES if k[0] != '']
+        'orga_crud': True,
+
+        'challenge_season_crud': True,
+        'challenge_session_crud': True,
+    }

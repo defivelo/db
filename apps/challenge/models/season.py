@@ -23,8 +23,9 @@ from django.db import models
 from django.template.defaultfilters import date
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
-from localflavor.ch.ch_states import STATE_CHOICES
 from multiselectfield import MultiSelectField
+
+from apps.common import DV_STATE_CHOICES
 
 from .session import Session
 
@@ -34,7 +35,7 @@ class Season(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     begin = models.DateField(_('Début'))
     end = models.DateField(_('Fin'))
-    cantons = MultiSelectField(_('Cantons'), choices=STATE_CHOICES)
+    cantons = MultiSelectField(_('Cantons'), choices=DV_STATE_CHOICES)
     leader = models.ForeignKey(settings.AUTH_USER_MODEL,
                                verbose_name=_('Chargé de projet'),
                                blank=True, null=True)
@@ -47,7 +48,7 @@ class Season(models.Model):
     @property
     def cantons_verb(self):
         if self.cantons:
-            return [c[1] for c in STATE_CHOICES if c[0] in self.cantons]
+            return [c[1] for c in DV_STATE_CHOICES if c[0] in self.cantons]
 
     @property
     def sessions(self):
@@ -60,9 +61,10 @@ class Season(models.Model):
     @property
     def sessions_with_qualifs(self):
         if not hasattr(self, 'sessions_with_q'):
-            self.sessions_with_q = self.sessions.annotate(models.Count('qualifications')).filter(
-                qualifications__count__gt=0,
-                )
+            self.sessions_with_q = \
+                self.sessions.annotate(
+                    models.Count('qualifications')
+                ).filter(qualifications__count__gt=0, )
         return self.sessions_with_q
 
     def get_absolute_url(self):

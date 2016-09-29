@@ -19,26 +19,20 @@ from __future__ import unicode_literals
 
 from collections import OrderedDict
 
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template.defaultfilters import date, time
-from django.utils import timezone
 from django.utils.translation import ugettext as u, ugettext_lazy as _
 from django.views.generic.dates import WeekArchiveView, YearArchiveView
-from django.views.generic.detail import (
-    DetailView, SingleObjectMixin, SingleObjectTemplateResponseMixin,
-)
-from django.views.generic.edit import (
-    CreateView, DeleteView, FormMixin, FormView, UpdateView,
-)
-from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from import_export.formats import base_formats
+from rolepermissions.mixins import HasPermissionsMixin
 from tablib import Dataset
 
-from apps.user.models import FORMATION_M1, FORMATION_M2
+from apps.user.models import FORMATION_M2
 from apps.user.views import ActorsList, HelpersList
 from defivelo.views import MenuView
 
@@ -50,7 +44,8 @@ from .forms import (
 from .models import HelperSessionAvailability, Qualification, Season, Session
 
 
-class SeasonMixin(MenuView):
+class SeasonMixin(HasPermissionsMixin, MenuView):
+    required_permission = 'challenge_season_crud'
     model = Season
     context_object_name = 'season'
     form_class = SeasonForm
@@ -142,7 +137,8 @@ class SeasonAvailabilityMixin(SeasonMixin):
                             hsa = helper_availability[session.id]
                             initials[fieldkey] = hsa.availability
                             if hsa.chosen:
-                                initials[staffkey] = session.user_assignment(helper)
+                                initials[staffkey] = \
+                                    session.user_assignment(helper)
                             else:
                                 initials[staffkey] = ''
                         except:
@@ -151,7 +147,8 @@ class SeasonAvailabilityMixin(SeasonMixin):
             return initials
 
     def get_context_data(self, **kwargs):
-        context = super(SeasonAvailabilityMixin, self).get_context_data(**kwargs)
+        context = \
+            super(SeasonAvailabilityMixin, self).get_context_data(**kwargs)
         # Add our submenu_category context
         context['submenu_category'] = 'season-availability'
         return context
@@ -192,7 +189,8 @@ class SeasonExportView(SeasonAvailabilityMixin, DetailView):
                 date(session.day),
                 session.organization.address_canton,
                 session.organization.name,
-                session.address_city if session.address_city else session.organization.address_city,
+                session.address_city if session.address_city
+                else session.organization.address_city,
                 '%s - %s' % (time(session.begin), time(session.end)),
                 session.n_qualifications,
                 ''
@@ -201,7 +199,8 @@ class SeasonExportView(SeasonAvailabilityMixin, DetailView):
 
         response = HttpResponse(getattr(dataset, formattxt),
                                 format.get_content_type() + ';charset=utf-8')
-        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+        response['Content-Disposition'] = \
+            'attachment; filename="%s"' % filename
         return response
 
 
@@ -209,7 +208,8 @@ class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
     template_name = 'challenge/season_availability.html'
 
     def get_context_data(self, **kwargs):
-        context = super(SeasonAvailabilityView, self).get_context_data(**kwargs)
+        context = \
+            super(SeasonAvailabilityView, self).get_context_data(**kwargs)
         # Add the form for picking a new helper
         context['form'] = SeasonNewHelperAvailabilityForm()
         hsas = self.current_availabilities()
@@ -247,12 +247,14 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
     form_class = SeasonAvailabilityForm
 
     def get_form_kwargs(self):
-        form_kwargs = super(SeasonAvailabilityMixin, self).get_form_kwargs()
+        form_kwargs = \
+            super(SeasonAvailabilityMixin, self).get_form_kwargs()
         form_kwargs['potential_helpers'] = self.potential_helpers()
         return form_kwargs
 
     def get_context_data(self, **kwargs):
-        context = super(SeasonAvailabilityMixin, self).get_context_data(**kwargs)
+        context = \
+            super(SeasonAvailabilityMixin, self).get_context_data(**kwargs)
         context['potential_helpers'] = self.potential_helpers()
         return context
 
@@ -267,7 +269,8 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
                         availability = form.cleaned_data[fieldkey]
                         if availability:
                             (hsa, created) = (
-                                HelperSessionAvailability.objects.get_or_create(
+                                HelperSessionAvailability.objects
+                                .get_or_create(
                                     session=session,
                                     helper=helper,
                                     defaults={'availability': availability})
@@ -275,8 +278,9 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
                             if not created:
                                 hsa.availability = availability
                                 hsa.save()
-        return HttpResponseRedirect(reverse_lazy('season-availabilities',
-                                                 kwargs={'pk': self.object.pk}))
+        return HttpResponseRedirect(
+            reverse_lazy('season-availabilities',
+                         kwargs={'pk': self.object.pk}))
 
 
 class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
@@ -298,12 +302,14 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
             return self.ahelpers
 
     def get_form_kwargs(self):
-        form_kwargs = super(SeasonStaffChoiceUpdateView, self).get_form_kwargs()
+        form_kwargs = \
+            super(SeasonStaffChoiceUpdateView, self).get_form_kwargs()
         form_kwargs['available_helpers'] = self.available_helpers()
         return form_kwargs
 
     def get_context_data(self, **kwargs):
-        context = super(SeasonStaffChoiceUpdateView, self).get_context_data(**kwargs)
+        context = \
+            super(SeasonStaffChoiceUpdateView, self).get_context_data(**kwargs)
         context['available_helpers'] = self.available_helpers()
         return context
 
@@ -325,11 +331,12 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
                             session_helpers[helper.pk] = helper
                         else:
                             session_non_helpers[helper.pk] = helper
-
-                    except:  # if the fieldkey's not in cleaned_data, or other reasons
+                    # if the fieldkey's not in cleaned_data, or other reasons
+                    except:
                         pass
 
-            # Do a session-wide check across all helpers picked for that session
+            # Do a session-wide check across all helpers picked for that
+            # session
             n_qualifs = session.qualifications.count()
             for quali in session.qualifications.all():
                 for non_helper in session_non_helpers.values():
@@ -345,7 +352,7 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
                         if (
                             helper.profile.formation == FORMATION_M2 and
                             quali.leader is None
-                            ):
+                        ):
                             quali.leader = helper
                             try:
                                 quali.helpers.remove(helper)
@@ -354,19 +361,19 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
                         elif (
                             helper.profile.formation is not None and
                             quali.helpers.count() < MAX_MONO1_PER_QUALI
-                            ):
+                        ):
                             quali.helpers.add(helper)
                             if quali.leader == helper:
                                 quali.leader = None
                         elif (
                             helper.profile.actor_for is not None and
                             quali.actor is None
-                            ):
+                        ):
                             quali.actor = helper
-                            touched = True
                 quali.save()
-        return HttpResponseRedirect(reverse_lazy('season-availabilities',
-                                                 kwargs={'pk': self.object.pk}))
+        return HttpResponseRedirect(
+            reverse_lazy('season-availabilities',
+                         kwargs={'pk': self.object.pk}))
 
 
 class SeasonCreateView(SeasonMixin, SuccessMessageMixin, CreateView):
@@ -379,6 +386,7 @@ class SeasonDeleteView(SeasonMixin, SuccessMessageMixin, DeleteView):
 
 
 class SeasonHelperListView(HelpersList, SeasonMixin):
+    model = get_user_model()
     page_title = _('Moniteurs de la saison')
 
     def get_context_data(self, **kwargs):
@@ -398,6 +406,7 @@ class SeasonHelperListView(HelpersList, SeasonMixin):
 
 
 class SeasonActorListView(ActorsList, SeasonMixin):
+    model = get_user_model()
     page_title = _('Intervenants de la saison')
 
     def get_context_data(self, **kwargs):
@@ -416,7 +425,8 @@ class SeasonActorListView(ActorsList, SeasonMixin):
         )
 
 
-class SessionMixin(MenuView):
+class SessionMixin(HasPermissionsMixin, MenuView):
+    required_permission = 'challenge_session_crud'
     model = Session
     context_object_name = 'session'
     form_class = SessionForm
@@ -487,6 +497,7 @@ class SessionCreateView(SessionMixin, SuccessMessageMixin, CreateView):
 
 class SessionDeleteView(SessionMixin, SuccessMessageMixin, DeleteView):
     success_message = _("Session supprimée")
+
     def get_success_url(self):
         return reverse_lazy('season-detail', kwargs={
             'pk': self.kwargs['seasonpk']
@@ -521,7 +532,8 @@ class QualiMixin(SessionMixin):
     def get_form_kwargs(self):
         form_kwargs = super(QualiMixin, self).get_form_kwargs()
         try:
-            form_kwargs['session'] = Session.objects.get(pk=self.get_session_pk())
+            form_kwargs['session'] = \
+                Session.objects.get(pk=self.get_session_pk())
         except:
             pass
         return form_kwargs

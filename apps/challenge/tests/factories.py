@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2015 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2016 Didier Raboud <me+defivelo@odyx.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -17,21 +17,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from localflavor.ch.ch_states import STATE_CHOICES
+from datetime import date
 
-from django.utils.translation import ugettext_lazy as _
+from factory import fuzzy
+from factory.django import DjangoModelFactory
 
-STATE_CHOICES_WITH_DEFAULT = tuple(
-    list((('', '---------',),)) +
-    list(STATE_CHOICES)
-)
+from apps.common import DV_STATES
 
-FORMATION_M1 = 'M1'
-FORMATION_M2 = 'M2'
+from ..models import Season
 
-FORMATION_CHOICES = (
-    ('', '----------'),
-    (FORMATION_M1, _('Moniteur 1')),
-    (FORMATION_M2, _('Moniteur 2')),
-)
-FORMATION_KEYS = [k[0] for k in FORMATION_CHOICES if k[0] != '']
+
+class SeasonFactory(DjangoModelFactory):
+    class Meta:
+        model = Season
+
+    begin = fuzzy.FuzzyDate(date(2015, 1, 1), date(2015, 6, 1))
+    end = fuzzy.FuzzyDate(date(2015, 6, 2), date(2015, 12, 31))
+    # Juste un canton
+    cantons = fuzzy.FuzzyChoice(DV_STATES)

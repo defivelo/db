@@ -22,13 +22,16 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from rolepermissions.mixins import HasPermissionsMixin
 
 from defivelo.views import MenuView
 
 from .forms import ArticleForm
 
 
-class ArticleMixin(SuccessMessageMixin, MenuView):
+class ArticleMixin(HasPermissionsMixin,
+                   SuccessMessageMixin, MenuView):
+    required_permission = 'home_article_crud'
     model = Article
     context_object_name = 'article'
     form_class = ArticleForm
@@ -38,11 +41,13 @@ class ArticleMixin(SuccessMessageMixin, MenuView):
 class ArticleCreateView(ArticleMixin,
                         CreateView):
     success_message = _("Article créé")
-    
+
+
 class ArticleUpdateView(ArticleMixin,
                         UpdateView):
     success_message = _("Article mis à jour")
 
+
 class ArticleDeleteView(ArticleMixin,
-                             DeleteView):
+                        DeleteView):
     pass

@@ -15,6 +15,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from __future__ import unicode_literals
+
 AVAILABILITY_FIELDKEY_HELPER_PREFIX = 'avail-h{hpk}-'
 STAFF_FIELDKEY_HELPER_PREFIX = 'staff-h{hpk}-'
 
@@ -27,3 +29,4 @@ SHORTCODE_MON1 = '1'
 SHORTCODE_MON2 = '2'
 SHORTCODE_ACTOR = 'A'
 SHORTCODE_SELECTED = 'x'
+SHORTCODE_OFFICE = '♔'

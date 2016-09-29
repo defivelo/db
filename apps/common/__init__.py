@@ -15,3 +15,17 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+from localflavor.ch.ch_states import STATE_CHOICES
+
+# Cantons où DÉFI VÉLO est actif
+DV_STATES = ['VD', 'VS', 'FR', 'NE', 'GE', 'JU',
+             'BS', 'SG', 'ZH', 'BE', 'LU',
+             ]
+
+DV_STATE_CHOICES = [c for c in STATE_CHOICES if c[0] in DV_STATES]
+
+DV_STATE_CHOICES_WITH_DEFAULT = tuple(
+    list((('', '---------',),)) +
+    list(DV_STATE_CHOICES)
+)

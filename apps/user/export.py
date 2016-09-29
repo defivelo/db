@@ -17,7 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
@@ -106,8 +105,11 @@ class UserResource(resources.ModelResource):
         column_name=_("Formation"),
         attribute='profile',
         widget=ObjectMethodWidget(method='formation_full'))
+    profile__affiliation_canton = fields.Field(
+        column_name=_("Canton d'affiliation"),
+        attribute='profile__affiliation_canton')
     profile__activity_cantons = fields.Field(
-        column_name=_("Cantons d'affiliation"),
+        column_name=_("Défi Vélo Mobile"),
         attribute='profile__activity_cantons',
         widget=MultipleSelectWidget())
     profile__iban = fields.Field(

@@ -82,16 +82,16 @@ urlpatterns = [
     url(r'^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/availability/$',
         never_cache(SessionStaffChoiceView.as_view()),
         name="session-staff-choices"),
-    url(r'^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/update/$', SessionUpdateView.as_view(),
-        name="session-update"),
-    url(r'^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/delete/$', SessionDeleteView.as_view(),
-        name="session-delete"),
+    url(r'^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/update/$',
+        SessionUpdateView.as_view(), name="session-update"),
+    url(r'^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/delete/$',
+        SessionDeleteView.as_view(), name="session-delete"),
 
     # Qualis
-    url(r'^(?P<seasonpk>[0-9]+)/s(?P<sessionpk>[0-9]+)/quali$', QualiCreateView.as_view(),
-        name="quali-create"),
+    url(r'^(?P<seasonpk>[0-9]+)/s(?P<sessionpk>[0-9]+)/quali$',
+        QualiCreateView.as_view(), name="quali-create"),
     url(r'^(?P<seasonpk>[0-9]+)/s(?P<sessionpk>[0-9]+)/q(?P<pk>[0-9]+)/$',
         QualiUpdateView.as_view(), name="quali-update"),
-    url(r'^(?P<seasonpk>[0-9]+)/s(?P<sessionpk>[0-9]+)/q(?P<pk>[0-9]+)/delete$',
+    url(r'^(?P<seasonpk>[0-9]+)/s(?P<sessionpk>[0-9]+)/q(?P<pk>[0-9]+)/delete$',  # NOQA
         QualiDeleteView.as_view(), name="quali-delete"),
 ]

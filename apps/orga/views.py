@@ -23,14 +23,13 @@ from functools import reduce
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
 from django.db.models import Q
-from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from django.views.generic.list import ListView
 from django_filters import CharFilter, FilterSet
 from django_filters.views import FilterView
 from filters.views import FilterMixin
+from rolepermissions.mixins import HasPermissionsMixin
 
 from defivelo.views import MenuView
 
@@ -60,7 +59,8 @@ class OrganizationFilterSet(FilterSet):
         fields = ['q']
 
 
-class OrganizationMixin(MenuView):
+class OrganizationMixin(HasPermissionsMixin, MenuView):
+    required_permission = 'orga_crud'
     model = Organization
     context_object_name = 'organization'
     form_class = OrganizationForm

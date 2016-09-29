@@ -1,9 +1,9 @@
 {% load i18n %}
 {% load account %}
+{% load permission_tags %}
 {% now 'Y' as now_year %}
 
 <ul class="nav navbar-nav">
-    <li{% if menu_category = 'home' %} class="active"{% endif %}><a href="{% url 'home' %}">{% trans "Accueil" %}</a></li>
     {% if request.user.is_authenticated %}
         {% if season %}
             <li><a href="{% url 'season-list' year=now_year %}" title="{% trans "Toutes les saisons" %}"><span class="glyphicon glyphicon-th-list"></span>&nbsp;</a></li>
@@ -20,21 +20,27 @@
                 </ul>
             </li>
         {% else %}
-            <li{% if 'season' in menu_category %} class="active"{% endif %}>
-                <a href="{% url 'season-list' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Saisons" %}<span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                    {% for season in current_seasons %}
-                        <li><a href="{{ season.get_absolute_url }}">{{ season.desc }}</a></li>
-                    {% endfor %}
-                    {% if current_seasons %}
-                    <li role="separator" class="divider"></li>
-                    {% endif %}
-                    <li><a href="{% url 'season-list' year=now_year %}">{% trans "Toutes les saisons" %}</a></li>
-                    <li><a href="{% url 'season-create' %}">{% trans "Créer une saison" %}</a></li>
-                    </ul>
-            </li>
-            <li{% if 'user' in menu_category %} class="active"{% endif %}><a href="{% url 'user-list' %}">{% trans "Personnes" %}</a></li>
-            <li{% if 'organization' in menu_category  %} class="active"{% endif %}><a href="{% url 'organization-list' %}">{% trans "Établissements" %}</a></li>
+            {% if user|can:'challenge_season_crud' %}
+                <li{% if 'season' in menu_category %} class="active"{% endif %}>
+                    <a href="{% url 'season-list' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Saisons" %}<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                        {% for season in current_seasons %}
+                            <li><a href="{{ season.get_absolute_url }}">{{ season.desc }}</a></li>
+                        {% endfor %}
+                        {% if current_seasons %}
+                        <li role="separator" class="divider"></li>
+                        {% endif %}
+                        <li><a href="{% url 'season-list' year=now_year %}">{% trans "Toutes les saisons" %}</a></li>
+                        <li><a href="{% url 'season-create' %}">{% trans "Créer une saison" %}</a></li>
+                        </ul>
+                </li>
+            {% endif %}
+            {% if user|can:'user_view_list' %}
+                <li{% if 'user' in menu_category %} class="active"{% endif %}><a href="{% url 'user-list' %}">{% trans "Personnes" %}</a></li>
+            {% endif %}
+            {% if user|can:'orga_crud' %}
+                <li{% if 'organization' in menu_category  %} class="active"{% endif %}><a href="{% url 'organization-list' %}">{% trans "Établissements" %}</a></li>
+            {% endif %}
         {% endif %}
     {% endif %}
 </ul>
@@ -46,7 +52,7 @@
     <li class="{% if profile_category %}active {% endif %}dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% user_display request.user %}<span class="caret"></span></a>
         <ul class="dropdown-menu">
-        <li><a href="{% url 'profile-update' %}">{% trans "Profil" %}</a></li>
+        <li><a href="{% url 'profile-detail' %}">{% trans "Profil" %}</a></li>
         <li><a href="{% url 'account_change_password' %}">{% trans "Change password" %}</a></li>
         <li><a href="{% url 'account_logout' %}">{% trans "Log out" %}</a></li>
         </ul>

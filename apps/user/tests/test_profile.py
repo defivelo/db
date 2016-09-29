@@ -17,20 +17,102 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from django.core.urlresolvers import reverse
+from django.contrib.auth import get_user_model
+from django.core import mail
+from django.core.urlresolvers import NoReverseMatch, reverse
 from django.test import TestCase
 
-from defivelo.tests.utils import AuthClient
+from apps.user.tests.factories import UserFactory
+from defivelo.tests.utils import AuthClient, PowerUserAuthClient
+
+myurlsforall = ['profile-update', 'user-detail', 'user-update',
+                'profile-detail', ]
+myurlsforoffice = ['user-list', 'user-list-export', ]
+
+othersurls = ['user-detail', 'user-update', 'user-create',
+              'user-sendcredentials', ]
 
 
-class OrgaBasicTest(TestCase):
+def tryurl(symbolicurl, user):
+    try:
+        try:
+            url = reverse(
+                symbolicurl, kwargs={'pk': user.pk}
+                )
+        except NoReverseMatch:
+            url = reverse(
+                symbolicurl, kwargs={'format': 'csv'}
+                )
+    except NoReverseMatch:
+        url = reverse(symbolicurl)
+    return url
+
+
+class AuthUserTest(TestCase):
     def setUp(self):
         # Every test needs a client.
         self.client = AuthClient()
+        self.users = [UserFactory() for i in range(3)]
 
-    def test_access_to_profile(self):
-        # Issue a GET request.
-        response = self.client.get(reverse('profile-update'))
+    def test_my_allowances(self):
+        for symbolicurl in myurlsforall:
+            url = tryurl(symbolicurl, self.client.user)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, url)
 
-        self.assertTemplateUsed(response, 'auth/user_form.html')
-        self.assertEqual(response.status_code, 200)
+    def test_my_restrictions(self):
+        for symbolicurl in myurlsforoffice:
+            url = tryurl(symbolicurl, self.client.user)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 403, url)
+
+    def test_otherusers_access(self):
+        for symbolicurl in othersurls:
+            for otheruser in self.users:
+                url = tryurl(symbolicurl, otheruser)
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 403, url)
+
+
+class PowerUserTest(TestCase):
+    def setUp(self):
+        # Every test needs a client.
+        self.client = PowerUserAuthClient()
+        self.users = [UserFactory() for i in range(3)]
+
+    def test_my_allowances(self):
+        for symbolicurl in myurlsforall + myurlsforoffice:
+            url = tryurl(symbolicurl, self.client.user)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, url)
+
+    def test_otherusers_access(self):
+        for symbolicurl in othersurls:
+            for otheruser in self.users:
+                url = tryurl(symbolicurl, otheruser)
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 200, url)
+
+    def test_send_creds(self):
+        nmails = 0
+        for otheruser in self.users:
+            url = tryurl('user-sendcredentials', otheruser)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, url)
+            # Now post to it, to get the mail sent
+            response = self.client.post(url, {})
+            self.assertEqual(response.status_code, 302, url)
+
+            nmails += 1
+            self.assertEqual(len(mail.outbox), nmails)
+
+            # Verify what they are from the DB
+            dbuser = get_user_model().objects.get(pk=otheruser.pk)
+            self.assertTrue(dbuser.is_active)
+            self.assertTrue(dbuser.has_usable_password())
+            self.assertTrue(dbuser.profile.can_login)
+
+            # Second try should fail, now that each of the users has a
+            # a valid email and got a password sent
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 403, url)
