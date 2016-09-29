@@ -23,6 +23,7 @@ TEMPLATES[0]['OPTIONS']['debug'] = DEBUG  # NOQA
 SECRET_KEY = 'notsosecret'
 NEVERCACHE_KEY = 'notsosecret'
 
+INSTALLED_APPS = (('test_without_migrations', ) + INSTALLED_APPS)
 INSTALLED_APPS += (  # NOQA
     'django_jenkins',
 )
