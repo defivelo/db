@@ -37,7 +37,9 @@
             </div>
             <div role="tabpanel" class="tab-pane" id="contacts">
                 {% bootstrap_field form.natel layout='horizontal' size='small' %}
-                {% bootstrap_field form.email layout='horizontal' size='small' %}
+                {% if form.email %}
+                    {% bootstrap_field form.email layout='horizontal' size='small' %}
+                {% endif %}
             </div>
             <div role="tabpanel" class="tab-pane" id="administrativia">
                 {% bootstrap_field form.birthdate layout='horizontal' size='small' %}

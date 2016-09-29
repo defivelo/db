@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2015 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2015, 2016 Didier Raboud <me+defivelo@odyx.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -129,6 +129,12 @@ class UserSelfAccessMixin(object):
         else:
             raise PermissionDenied
 
+    def get_form_kwargs(self):
+        kwargs = super(UserSelfAccessMixin, self).get_form_kwargs()
+        if has_permission(self.request.user, self.required_permission):
+            kwargs['allow_email'] = True
+        return kwargs
+
 
 class UserDetail(UserSelfAccessMixin, ProfileMixin, DetailView):
     required_permission = 'user_detail_other'
@@ -164,6 +170,11 @@ class UserCreate(HasPermissionsMixin, ProfileMixin, SuccessMessageMixin,
 
     def get_object(self):
         return None
+
+    def get_form_kwargs(self):
+        kwargs = super(UserCreate, self).get_form_kwargs()
+        kwargs['allow_email'] = True
+        return kwargs
 
     def get_success_url(self):
         return reverse_lazy('user-list')

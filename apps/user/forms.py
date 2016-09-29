@@ -37,6 +37,12 @@ from .models import BAGSTATUS_CHOICES, FORMATION_CHOICES, USERSTATUS_CHOICES
 
 
 class UserProfileForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        allow_email = kwargs.pop('allow_email', False)
+        super(UserProfileForm, self).__init__(*args, **kwargs)
+        if not allow_email and 'email' in self.fields:
+            del(self.fields['email'])
+
     address_street = forms.CharField(label=_('Rue'), max_length=255,
                                      required=False)
     address_no = forms.CharField(label=_('N°'), max_length=8,
@@ -92,4 +98,4 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = get_user_model()
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['first_name', 'last_name', 'email', ]
