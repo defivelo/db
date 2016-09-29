@@ -20,19 +20,26 @@ from __future__ import unicode_literals
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
+from apps.user.tests.factories import UserFactory
 from defivelo.tests.utils import AuthClient, PowerUserAuthClient
 
 from .factories import SeasonFactory
 
 restrictedgenericurls = ['season-list', 'season-create']
 restrictedspecificurls = ['season-detail', 'season-update',
-                          'season-helperlist', 'season-actorlist', ]
+                          'season-helperlist', 'season-actorlist',
+                          'season-availabilities',
+                          'season-staff-update',
+                          'season-delete',
+                          ]
+restrictedhelperspecificurls = ['season-availabilities-update', ]
 
 
 class SeasonTestCaseMixin(TestCase):
     def setUp(self):
         self.client = AuthClient()
         self.season = SeasonFactory()
+        self.users = [UserFactory() for i in range(3)]
 
 
 class AuthUserTest(SeasonTestCaseMixin):
@@ -49,6 +56,17 @@ class AuthUserTest(SeasonTestCaseMixin):
             # Final URL is forbidden
             response = self.client.get(url, follow=True)
             self.assertEqual(response.status_code, 403, url)
+        for symbolicurl in restrictedhelperspecificurls:
+            for helper in self.users:
+                url = reverse(
+                    symbolicurl,
+                    kwargs={
+                        'pk': self.season.pk,
+                        'helperpk': helper.pk
+                        })
+                # Final URL is forbidden
+                response = self.client.get(url, follow=True)
+                self.assertEqual(response.status_code, 403, url)
 
 
 class PowerUserTest(SeasonTestCaseMixin):
@@ -66,6 +84,17 @@ class PowerUserTest(SeasonTestCaseMixin):
     def test_access_to_season_detail(self):
         for symbolicurl in restrictedspecificurls:
             url = reverse(symbolicurl, kwargs={'pk': self.season.pk})
-            # Final URL is forbidden
+            # Final URL is OK
             response = self.client.get(url, follow=True)
             self.assertEqual(response.status_code, 200, url)
+        for symbolicurl in restrictedhelperspecificurls:
+            for helper in self.users:
+                url = reverse(
+                    symbolicurl,
+                    kwargs={
+                        'pk': self.season.pk,
+                        'helperpk': helper.pk
+                        })
+                # Final URL is OK
+                response = self.client.get(url, follow=True)
+                self.assertEqual(response.status_code, 200, url)
