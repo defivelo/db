@@ -219,7 +219,7 @@ class UserProfileFilterSet(FilterSet):
     )
     profile__actor_for = ModelMultipleChoiceFilter(
         label=_('Intervenant'),
-        queryset=QualificationActivity.objects.all()
+        queryset=QualificationActivity.objects.filter(category='C')
     )
     q = CharFilter(
         label=_('Recherche'),
