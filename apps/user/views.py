@@ -89,6 +89,7 @@ class ProfileMixin(MenuView):
         user = self.get_object()
         if not user:
             user = self.object
+
         update_profile_fields = PERSONAL_FIELDS
         # if the edit user has access, extend the update_profile_fields
         if has_permission(self.request.user, 'user_crud_dv_public_fields'):

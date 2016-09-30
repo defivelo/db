@@ -59,6 +59,27 @@ class ProfileTestCase(TestCase):
         self.client = AuthClient()
         self.users = [UserFactory() for i in range(3)]
 
+    def getprofileinitial(self, user):
+        userfields = ['first_name', 'last_name', 'email']
+
+        initial = {
+            k: v for (k, v)
+            in user.__dict__.items()
+            if k in userfields
+            }
+        initial.update(
+            {
+                k: v for (k, v)
+                in user.profile.__dict__.items()
+                if k in STD_PROFILE_FIELDS
+                })
+
+        # Some corrections
+        initial['status'] = 0
+        initial['birthdate'] = ''
+
+        return initial
+
 
 class AuthUserTest(ProfileTestCase):
     def test_my_allowances(self):
@@ -88,23 +109,7 @@ class AuthUserTest(ProfileTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200, url)
 
-        userfields = ['first_name', 'last_name', 'email']
-
-        initial = {
-            k: v for (k, v)
-            in self.client.user.__dict__.items()
-            if k in userfields
-            }
-        initial.update(
-            {
-                k: v for (k, v)
-                in self.client.user.profile.__dict__.items()
-                if k in STD_PROFILE_FIELDS
-                })
-
-        # Some corrections
-        initial['status'] = 0
-        initial['birthdate'] = ''
+        initial = self.getprofileinitial(self.client.user)
         # Test some update, that must go through
         initial['first_name'] = 'newfirstname'
         initial['activity_cantons'] = ['JU', 'VD', ]
@@ -174,6 +179,39 @@ class PowerUserTest(ProfileTestCase):
             url = tryurl('user-resendcredentials', otheruser)
             response = self.client.get(url)
             self.assertEqual(response.status_code, 403, url)
+
+    def test_other_profile_accesses(self):
+        for user in self.users:
+            # Pre-update profile and user
+            user.profile.formation = FORMATION_M1
+            user.profile.save()
+            url = reverse('user-update', kwargs={'pk': user.pk})
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, url)
+
+            initial = self.getprofileinitial(user)
+            # Test some update, that must go through
+            initial['first_name'] = 'newfirstname'
+            initial['activity_cantons'] = ['JU', 'VD', 'GE', ]
+
+            # And some that mustn't
+            initial['formation'] = FORMATION_M2
+            initial['affiliation_canton'] = 'VD'
+
+            response = self.client.post(url, initial)
+            self.assertEqual(response.status_code, 302, url)
+
+            # Get our user from DB
+            her = get_user_model().objects.get(pk=user.pk)
+
+            # Updated
+            self.assertEqual(her.first_name, 'newfirstname')
+            # Pas de VD parce que le canton d'affiliation est 'VD'
+            self.assertEqual(her.profile.activity_cantons, ['JU', 'GE', ])
+
+            # Updated as well
+            self.assertEqual(her.profile.formation, FORMATION_M2)
+            self.assertEqual(her.profile.affiliation_canton, 'VD')
 
 
 class SuperUserTest(ProfileTestCase):
