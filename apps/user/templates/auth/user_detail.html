@@ -19,6 +19,11 @@
                     <span class="badge pull-right">
                         <span class="glyphicon glyphicon-user" aria-hidden="true" title="{% trans "A accès" %}"></span>
                     </span>
+                    {% if request.user|can:"user_can_resend_credentials" %}
+                        <a class="badge pull-right" href="{% url 'user-resendcredentials' pk=userprofile.pk %}" title="{% trans "Réinitialiser les données de connexion" %}">
+                            <span class="glyphicon glyphicon-envelope" aria-hidden="true" title="{% trans "Réinitialiser les données de connexion" %}"></span>
+                        </a>
+                    {% endif %}
                 {% else %}
                     {% if request.user|can:"user_can_send_credentials" and request.user.pk != userprofile.pk %}
                         <a class="badge pull-right" href="{% url 'user-sendcredentials' pk=userprofile.pk %}" title="{% trans "Envoyer les données de connexion" %}">
