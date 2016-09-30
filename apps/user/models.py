@@ -77,12 +77,13 @@ PERSONAL_FIELDS = ['natel', 'birthdate',
                    'address_street', 'address_no', 'address_zip',
                    'address_city', 'address_canton',
                    'iban', 'social_security',
+                   'status', 'activity_cantons',
                    ]
 
-DV_PUBLIC_FIELDS = ['formation', 'actor_for', 'status',
+DV_PUBLIC_FIELDS = ['formation', 'actor_for',
                     'pedagogical_experience',
                     'firstmed_course', 'firstmed_course_comm',
-                    'bagstatus', 'affiliation_canton', 'activity_cantons',
+                    'bagstatus', 'affiliation_canton',
                     ]
 
 DV_PRIVATE_FIELDS = ['office_member',
