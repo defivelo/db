@@ -22,6 +22,7 @@ from django.core import mail
 from django.core.urlresolvers import NoReverseMatch, reverse
 from django.test import TestCase
 
+from apps.user.models import FORMATION_M1, FORMATION_M2, STD_PROFILE_FIELDS
 from apps.user.tests.factories import UserFactory
 from defivelo.tests.utils import (
     AuthClient, PowerUserAuthClient, SuperUserAuthClient,
@@ -78,6 +79,53 @@ class AuthUserTest(ProfileTestCase):
                 url = tryurl(symbolicurl, otheruser)
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, 403, url)
+
+    def test_my_profile_access(self):
+        # Pre-update profile and user
+        self.client.user.profile.formation = FORMATION_M1
+        self.client.user.profile.save()
+        url = reverse('profile-update')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200, url)
+
+        userfields = ['first_name', 'last_name', 'email']
+
+        initial = {
+            k: v for (k, v)
+            in self.client.user.__dict__.items()
+            if k in userfields
+            }
+        initial.update(
+            {
+                k: v for (k, v)
+                in self.client.user.profile.__dict__.items()
+                if k in STD_PROFILE_FIELDS
+                })
+
+        # Some corrections
+        initial['status'] = 0
+        initial['birthdate'] = ''
+        # Test some update, that must go through
+        initial['first_name'] = 'newfirstname'
+        initial['activity_cantons'] = ['JU', 'VD', ]
+
+        # And some that mustn't
+        initial['formation'] = FORMATION_M2
+        initial['affiliation_canton'] = 'VD'
+
+        response = self.client.post(url, initial)
+        self.assertEqual(response.status_code, 302, url)
+
+        # Get our user from DB
+        me = get_user_model().objects.get(pk=self.client.user.pk)
+
+        # Updated
+        self.assertEqual(me.first_name, 'newfirstname')
+        self.assertEqual(me.profile.activity_cantons, ['JU', 'VD', ])
+
+        # Not updated
+        self.assertEqual(me.profile.formation, FORMATION_M1)
+        self.assertEqual(me.profile.affiliation_canton, '')
 
 
 class PowerUserTest(ProfileTestCase):

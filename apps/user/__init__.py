@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+import uuid
 from localflavor.ch.ch_states import STATE_CHOICES
 
 from django.utils.translation import ugettext_lazy as _
@@ -35,3 +36,7 @@ FORMATION_CHOICES = (
     (FORMATION_M2, _('Moniteur 2')),
 )
 FORMATION_KEYS = [k[0] for k in FORMATION_CHOICES if k[0] != '']
+
+
+def get_new_username():
+    return uuid.uuid4().hex[0:30]

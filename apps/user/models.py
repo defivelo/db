@@ -17,8 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-import uuid
-
 from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -42,6 +40,7 @@ from apps.common.models import Address
 
 from . import (  # NOQA
     FORMATION_CHOICES, FORMATION_KEYS, FORMATION_M1, FORMATION_M2,
+    get_new_username,
 )
 
 USERSTATUS_UNDEF = 0
@@ -325,6 +324,6 @@ class UserProfile(Address, models.Model):
 @receiver(pre_save, sender=settings.AUTH_USER_MODEL)
 def User_pre_save(sender, **kwargs):
     if not kwargs['instance'].username:
-        kwargs['instance'].username = uuid.uuid4().hex[0:30]
+        kwargs['instance'].username = get_new_username()
         # Mark new users as inactive, to not let them get a login
         kwargs['instance'].is_active = False

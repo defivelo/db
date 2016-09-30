@@ -19,14 +19,17 @@ from __future__ import unicode_literals
 
 import factory
 from django.contrib.auth import get_user_model
+from factory import Faker
 from factory.django import DjangoModelFactory
 
-from apps.user.models import UserProfile
+from apps.user.models import FORMATION_M1, UserProfile, get_new_username
 
 
 class UserProfileFactory(DjangoModelFactory):
     class Meta:
         model = UserProfile
+
+    formation = FORMATION_M1
 
 
 class UserFactory(DjangoModelFactory):
@@ -34,7 +37,9 @@ class UserFactory(DjangoModelFactory):
         model = get_user_model()
 
     profile = factory.RelatedFactory(UserProfileFactory, 'user')
-    username = factory.Sequence(lambda n: "user%d" % n)
+    username = factory.LazyFunction(get_new_username)
+    first_name = Faker('first_name')
+    last_name = Faker('last_name')
     email = factory.Sequence(lambda n: "user%d@example.com" % n)
     # Normal users can't login, and don't have passwords
     password = factory.PostGenerationMethodCall('set_unusable_password')

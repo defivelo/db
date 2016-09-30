@@ -21,22 +21,29 @@ from allauth.account.models import EmailAddress
 from django.contrib.auth import get_user_model
 from django.test import Client
 from django.utils.translation import activate
+from faker import Faker
 from rolepermissions.shortcuts import assign_role
 
+from apps.user import get_new_username
 from apps.user.models import UserProfile
+
+fake = Faker()
 
 
 class AuthClient(Client):
-    USERNAME = 'foobar-authenticated'
-    PASSWORD = 'sicrit'
-    EMAIL = 'test@example.com'
-
     def __init__(self):
         super(AuthClient, self).__init__()
+        self.USERNAME = get_new_username()
+        self.PASSWORD = fake.password()
+        self.EMAIL = fake.email()
+
         # Create that user
         self.user = get_user_model().objects.create_user(
-            username=self.USERNAME, password=self.PASSWORD,
-            email=self.EMAIL
+            username=self.USERNAME,
+            password=self.PASSWORD,
+            email=self.EMAIL,
+            first_name=fake.first_name(),
+            last_name=fake.last_name()
         )
         UserProfile.objects.get_or_create(user=self.user)
         # Create his trusted Email
@@ -49,10 +56,6 @@ class AuthClient(Client):
 
 
 class PowerUserAuthClient(AuthClient):
-    USERNAME = 'foobar-poweruser'
-    PASSWORD = 'sicrit'
-    EMAIL = 'superuser@example.com'
-
     def __init__(self):
         super(PowerUserAuthClient, self).__init__()
         # Assign it power_user
@@ -60,10 +63,6 @@ class PowerUserAuthClient(AuthClient):
 
 
 class SuperUserAuthClient(AuthClient):
-    USERNAME = 'foobar-superuser'
-    PASSWORD = 'sicrit'
-    EMAIL = 'superuser@example.com'
-
     def __init__(self):
         super(SuperUserAuthClient, self).__init__()
         self.user.is_superuser = True
