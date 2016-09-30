@@ -103,8 +103,12 @@ class ProfileMixin(MenuView):
             if field in form.cleaned_data:
                 # For field updates that have date markers, note them properly
                 if field in ['status', 'bagstatus']:
-                    oldstatus = getattr(userprofile, field)
-                    if int(oldstatus) != int(form.cleaned_data[field]):
+                    oldstatus = int(getattr(userprofile, field))
+                    try:
+                        newstatus = int(form.cleaned_data[field])
+                    except ValueError:
+                        newstatus = 0
+                    if oldstatus != newstatus:
                         setattr(userprofile, '%s_updatetime' % field,
                                 timezone.now()
                                 )
@@ -143,6 +147,7 @@ class UserDetail(UserSelfAccessMixin, ProfileMixin, DetailView):
             super(UserDetail, self).get_queryset()
             .prefetch_related('profile')
         )
+
 
 class UserUpdate(UserSelfAccessMixin, ProfileMixin, SuccessMessageMixin,
                  UpdateView):
