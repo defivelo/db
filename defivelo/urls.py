@@ -45,4 +45,4 @@ urlpatterns += i18n_patterns(
     url(r'^autocomplete/', include('autocomplete_light.urls')),
 )
 
-admin.site.site_header = _('DB Défi Vélo')
+admin.site.site_header = _('Intranet DÉFI VÉLO')
