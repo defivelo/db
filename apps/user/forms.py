@@ -65,8 +65,6 @@ class UserProfileForm(forms.ModelForm):
     social_security = CHSocialSecurityNumberField(label=_('N° AVS'),
                                                   max_length=16,
                                                   required=False)
-    office_member = forms.BooleanField(label=_('Bureau Défi Vélo'),
-                                       required=False)
     formation = forms.ChoiceField(label=_('Formation'),
                                   choices=FORMATION_CHOICES,
                                   required=False)

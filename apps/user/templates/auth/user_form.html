@@ -50,19 +50,6 @@
             
             <div role="tabpanel" class="tab-pane" id="defi">
                 {% bootstrap_field form.status layout='horizontal' size='small' %}
-                {% if not no_dv_private_fields %}
-                <div class="form-group form-group-sm">
-                    {% bootstrap_label form.office_member.label label_class='col-md-3 control-label' %}
-                    <div class="col-md-1">
-                        <div class="checkbox">
-                            <label for="id_office_member">
-                                <input {% if form.office_member.value %}checked="checked" {% endif %}
-                                       id="id_office_member" name="office_member" type="checkbox" />
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
                 {% bootstrap_field form.formation layout='horizontal' size='small' set_disabled=no_dv_public_fields %}
                 {% bootstrap_field form.actor_for layout='horizontal' size='small' set_disabled=no_dv_public_fields %}
                 {% bootstrap_field form.pedagogical_experience layout='horizontal' size='small' set_disabled=no_dv_public_fields %}
@@ -122,22 +109,6 @@ $(function () {
                                          window.open("{{ toibanlink|escapejs }}");
                                       });
 })
-
-{% if request.user|can:'user_crud_dv_private_fields' %}
-
-function officeMembersSuperPowers() {
-  if ($( "#id_office_member" ).is(":checked")) {
-    $( "#id_formation" ).prop("disabled", true);
-    $( "#id_formation" ).val('');
-  }
-  else {
-    $( "#id_formation" ).prop("disabled", false);
-  }
-}
-
-$( "#id_office_member" ).change( officeMembersSuperPowers );
-officeMembersSuperPowers();
-{% endif %}
 
 function dvCantonsNotAffiliatedToMobile() {
     // Ne permet pas la coche dans le canton d'activité pour Défi Vélo Mobile

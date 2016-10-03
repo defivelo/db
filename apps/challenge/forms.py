@@ -31,7 +31,7 @@ from apps.user.models import FORMATION_KEYS, FORMATION_M1, FORMATION_M2
 
 from . import (
     AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, SHORTCODE_ACTOR,
-    SHORTCODE_MON1, SHORTCODE_MON2, SHORTCODE_OFFICE, STAFF_FIELDKEY,
+    SHORTCODE_MON1, SHORTCODE_MON2, STAFF_FIELDKEY,
 )
 from .models import Qualification, Season, Session
 from .models.availability import HelperSessionAvailability
@@ -80,10 +80,7 @@ class SessionForm(autocomplete_light.ModelForm):
 
 class LeaderChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
-        postfix = ''
-        if obj.profile.office_member:
-            postfix = ' ({})'.format(SHORTCODE_OFFICE)
-        return obj.get_full_name() + postfix
+        return obj.get_full_name()
 
 
 class HelpersChoiceField(forms.ModelMultipleChoiceField):
@@ -91,8 +88,6 @@ class HelpersChoiceField(forms.ModelMultipleChoiceField):
         postfix = ''
         if obj.profile.formation not in ['', FORMATION_M1]:
             postfix = ' (%s)' % obj.profile.formation
-        if obj.profile.office_member:
-            postfix = ' ({})'.format(SHORTCODE_OFFICE)
         return obj.get_full_name() + postfix
 
 
@@ -116,8 +111,7 @@ class QualificationForm(forms.ModelForm):
                 Q(
                     availabilities__chosen=True,
                     availabilities__session=session
-                ) |
-                Q(profile__office_member=True),
+                )
             )
             .exclude(
                 Q(qualifs_mon2__in=other_qualifs) |
@@ -125,21 +119,19 @@ class QualificationForm(forms.ModelForm):
                 Q(qualifs_actor__in=other_qualifs)
             )
             .distinct()
-            .order_by('profile__office_member', 'first_name')
+            .order_by('first_name')
         )
         self.fields['leader'] = LeaderChoiceField(
             label=_('Moniteur 2'),
             queryset=available_staff.filter(
-                Q(profile__formation=FORMATION_M2) |
-                Q(profile__office_member=True)
+                Q(profile__formation=FORMATION_M2)
             ),
             required=False,
         )
         self.fields['helpers'] = HelpersChoiceField(
             label=_('Moniteurs 1'),
             queryset=available_staff.filter(
-                Q(profile__formation__in=FORMATION_KEYS) |
-                Q(profile__office_member=True)
+                Q(profile__formation__in=FORMATION_KEYS)
             ),
             required=False,
         )

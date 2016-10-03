@@ -85,8 +85,7 @@ DV_PUBLIC_FIELDS = ['formation', 'actor_for',
                     'bagstatus', 'affiliation_canton',
                     ]
 
-DV_PRIVATE_FIELDS = ['office_member',
-                     'comments']
+DV_PRIVATE_FIELDS = ['comments']
 
 STD_PROFILE_FIELDS = PERSONAL_FIELDS + DV_PUBLIC_FIELDS + DV_PRIVATE_FIELDS
 
@@ -108,8 +107,6 @@ class UserProfile(Address, models.Model):
     activity_cantons = MultiSelectField(_("Défi Vélo mobile"),
                                         choices=DV_STATE_CHOICES,
                                         blank=True)
-    office_member = models.BooleanField(_('Bureau Défi Vélo'),
-                                        default=False)
     formation = models.CharField(_("Formation"), max_length=2,
                                  choices=FORMATION_CHOICES,
                                  blank=True)
@@ -218,10 +215,7 @@ class UserProfile(Address, models.Model):
     def formation_icon(self):
         icon = ''
         title = self.formation_full
-        if self.office_member:
-            icon = 'tower'
-            title = _('Bureau Défi Vélo')
-        elif self.formation == FORMATION_M1:
+        if self.formation == FORMATION_M1:
             icon = 'tag'
         elif self.formation == FORMATION_M2:
             icon = 'tags'
