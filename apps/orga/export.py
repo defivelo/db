@@ -22,8 +22,9 @@ from import_export import fields, resources
 
 from .models import Organization
 
-ORGA_FIELDS = ['id', 'name', 'address_street', 'address_no', 'address_additional',
-               'address_zip', 'address_city', 'address_canton', 'created_on']
+ORGA_FIELDS = ['id', 'name', 'address_street', 'address_no',
+               'address_additional', 'address_zip', 'address_city',
+               'address_canton', 'created_on']
 
 
 class OrganizationResource(resources.ModelResource):
