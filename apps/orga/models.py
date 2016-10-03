@@ -18,10 +18,12 @@
 from __future__ import unicode_literals
 
 from autocomplete_light import AutocompleteModelBase, register as al_register
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
+from rolepermissions.verifications import has_permission
 
 from apps.common.models import Address
 
@@ -48,4 +50,12 @@ class Organization(Address, models.Model):
 class OrganizationAutocomplete(AutocompleteModelBase):
     search_fields = ['name', 'address_city', 'address_street']
     model = Organization
+    required_permission = 'orga_crud'
+
+    def choices_for_request(self):
+        if has_permission(self.request.user, self.required_permission):
+            return super(OrganizationAutocomplete, self).choices_for_request()
+        else:
+            raise PermissionDenied
+
 al_register(OrganizationAutocomplete)

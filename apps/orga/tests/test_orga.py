@@ -64,6 +64,15 @@ class OrgaBasicTest(TestCase):
             self.assertTemplateUsed(response, 'orga/organization_form.html')
         self.assertEqual(response.status_code, self.expected_code)
 
+    def test_autocompletes(self):
+        for al in ['OrganizationAutocomplete']:
+            url = reverse(
+                'autocomplete_light_autocomplete',
+                kwargs={'autocomplete': al}
+            )
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, self.expected_code, url)
+
 
 class OrgaPowerUserTest(OrgaBasicTest):
     def setUp(self):
