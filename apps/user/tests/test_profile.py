@@ -37,6 +37,9 @@ othersurls = ['user-detail', 'user-update', 'user-create',
 
 superadminurls = ['user-resendcredentials', ]
 
+profile_autocompletes = ['Actors', 'AllPersons', 'Leaders', 'Helpers',
+                         'PersonsRelevantForSessions']
+
 
 def tryurl(symbolicurl, user):
     try:
@@ -132,6 +135,16 @@ class AuthUserTest(ProfileTestCase):
         self.assertEqual(me.profile.formation, FORMATION_M1)
         self.assertEqual(me.profile.affiliation_canton, '')
 
+    def test_autocompletes(self):
+        # All autocompletes are forbidden
+        for al in profile_autocompletes:
+            url = reverse(
+                'autocomplete_light_autocomplete',
+                kwargs={'autocomplete': al}
+            )
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 403, url)
+
 
 class PowerUserTest(ProfileTestCase):
     def setUp(self):
@@ -212,6 +225,16 @@ class PowerUserTest(ProfileTestCase):
             # Updated as well
             self.assertEqual(her.profile.formation, FORMATION_M2)
             self.assertEqual(her.profile.affiliation_canton, 'VD')
+
+    def test_autocompletes(self):
+        # All autocompletes are permitted
+        for al in profile_autocompletes:
+            url = reverse(
+                'autocomplete_light_autocomplete',
+                kwargs={'autocomplete': al}
+            )
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, url)
 
 
 class SuperUserTest(ProfileTestCase):
