@@ -18,8 +18,10 @@
 from autocomplete_light import AutocompleteModelBase, register as al_register
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.utils.html import escape
+from rolepermissions.verifications import has_permission
 
 from apps.challenge import MAX_MONO1_PER_QUALI
 
@@ -29,6 +31,7 @@ from .models import FORMATION_KEYS, FORMATION_M2
 class PersonAutocomplete(AutocompleteModelBase):
     search_fields = ['first_name', 'last_name']
     model = settings.AUTH_USER_MODEL
+    required_permission = 'user_view_list'
 
     def choice_label(self, choice):
         return choice.get_full_name()
@@ -40,6 +43,12 @@ class PersonAutocomplete(AutocompleteModelBase):
         return self.choice_html_format % (
             escape(self.choice_value(choice)),
             self.choice_label(choice))
+
+    def choices_for_request(self):
+        if has_permission(self.request.user, self.required_permission):
+            return super(PersonAutocomplete, self).choices_for_request()
+        else:
+            raise PermissionDenied
 
 al_register(PersonAutocomplete, name='AllPersons',
             choices=get_user_model().objects.all(),
