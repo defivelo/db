@@ -31,8 +31,10 @@ from django_filters.views import FilterView
 from filters.views import FilterMixin
 from rolepermissions.mixins import HasPermissionsMixin
 
+from apps.common.views import ExportMixin
 from defivelo.views import MenuView
 
+from .export import OrganizationResource
 from .forms import OrganizationForm
 from .models import Organization
 
@@ -100,3 +102,8 @@ class OrganizationCreateView(OrganizationMixin,
 
 class OrganizationDeleteView(OrganizationMixin, DeleteView):
     success_url = reverse_lazy('organization-list')
+
+
+class OrganizationListExport(ExportMixin, OrganizationsListView):
+    export_class = OrganizationResource()
+    export_filename = _('Établissements')

@@ -35,10 +35,14 @@ class OrgaBasicTest(TestCase):
         self.orga = OrganizationFactory()
 
     def test_access_to_orga_list(self):
-        # Issue a GET request.
         response = self.client.get(reverse('organization-list'))
         if self.expect_templates:
             self.assertTemplateUsed(response, 'orga/organization_filter.html')
+        self.assertEqual(response.status_code, self.expected_code)
+
+        response = self.client.get(reverse(
+            'organization-list-export',
+            kwargs={'format': 'csv'}))
         self.assertEqual(response.status_code, self.expected_code)
 
     def test_access_to_orga_detail(self):
