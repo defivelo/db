@@ -22,7 +22,7 @@ from django.test import TestCase
 
 from defivelo.tests.utils import AuthClient, PowerUserAuthClient
 
-from ..models import Organization
+from .factories import OrganizationFactory
 
 
 class OrgaBasicTest(TestCase):
@@ -32,12 +32,7 @@ class OrgaBasicTest(TestCase):
         self.expected_code = 403
         self.expect_templates = False
 
-        self.orga = Organization.objects.create(name='Test-Orga',
-                                                address_street='Street',
-                                                address_no='42',
-                                                address_zip='1234',
-                                                address_city='City',
-                                                address_canton='SG')
+        self.orga = OrganizationFactory()
 
     def test_access_to_orga_list(self):
         # Issue a GET request.
