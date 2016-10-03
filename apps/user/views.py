@@ -27,7 +27,6 @@ from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db.models import Q
 from django.forms import Form as DjangoEmptyForm
-from django.http import HttpResponse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DetailView
@@ -37,12 +36,12 @@ from django_filters import (
 )
 from django_filters.views import FilterView
 from filters.views import FilterMixin
-from import_export.formats import base_formats
 from rolepermissions.mixins import HasPermissionsMixin
 from rolepermissions.verifications import has_permission
 
 from apps.challenge.models import QualificationActivity
 from apps.common import DV_STATE_CHOICES_WITH_DEFAULT
+from apps.common.views import ExportMixin
 from defivelo.views import MenuView
 
 from .export import UserResource
@@ -264,30 +263,9 @@ class UserList(HasPermissionsMixin, ProfileMixin, FilterMixin, FilterView):
         )
 
 
-class UserListExport(UserList):
-    def render_to_response(self, context, **response_kwargs):
-        resolvermatch = self.request.resolver_match
-        formattxt = resolvermatch.kwargs.get('format', 'csv')
-        # Instantiate the format object from base_formats in import_export
-        try:
-            format = getattr(base_formats, formattxt.upper())()
-        except AttributeError:
-            format = base_formats.CSV()
-
-        dataset = UserResource().export(self.object_list)
-
-        filename = (
-            _('DV-Utilisateurs-{YMD_date}.{extension}').format(
-                YMD_date=timezone.now().strftime('%Y%m%d'),
-                extension=format.get_extension()
-            )
-        )
-
-        response = HttpResponse(getattr(dataset, formattxt),
-                                format.get_content_type() + ';charset=utf-8')
-        response['Content-Disposition'] = 'attachment; filename="{f}"'.format(
-            f=filename)
-        return response
+class UserListExport(ExportMixin, UserList):
+    export_class = UserResource()
+    export_filename = _('Utilisateurs')
 
 
 class UserDetailedList(UserList):
