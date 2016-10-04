@@ -20,6 +20,12 @@ from __future__ import unicode_literals
 from rolepermissions.roles import AbstractUserRole
 
 
+class StateManager(AbstractUserRole):
+    available_permissions = {
+        'orga_crud': True,
+    }
+
+
 class PowerUser(AbstractUserRole):
     available_permissions = {
         'user_view_list': True,

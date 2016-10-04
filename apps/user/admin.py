@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from django.contrib import admin
 
-from .models import UserProfile, UserManagedState
+from .models import UserManagedState, UserProfile
 
 admin.site.register(UserProfile)
 admin.site.register(UserManagedState)

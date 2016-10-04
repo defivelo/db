@@ -30,8 +30,10 @@ from django_filters import CharFilter, FilterSet
 from django_filters.views import FilterView
 from filters.views import FilterMixin
 from rolepermissions.mixins import HasPermissionsMixin
+from rolepermissions.shortcuts import get_user_role
 
 from apps.common.views import ExportMixin
+from defivelo.roles import StateManager
 from defivelo.views import MenuView
 
 from .export import OrganizationResource
@@ -67,6 +69,17 @@ class OrganizationMixin(HasPermissionsMixin, MenuView):
     context_object_name = 'organization'
     form_class = OrganizationForm
 
+    def get_queryset(self):
+        qs = Organization.objects
+        if get_user_role(self.request.user) == StateManager:
+            usercantons = [
+                m.canton for m in self.request.user.managedstates.all()
+                ]
+            qs = qs.filter(address_canton__in=usercantons)
+        else:
+            qs = qs.all()
+        return qs
+
     def get_context_data(self, **kwargs):
         context = super(OrganizationMixin, self).get_context_data(**kwargs)
         # Add our menu_category context
@@ -78,9 +91,6 @@ class OrganizationsListView(OrganizationMixin,
                             FilterMixin, FilterView):
     filterset_class = OrganizationFilterSet
     context_object_name = 'organizations'
-
-    def get_queryset(self):
-        return Organization.objects.all()
 
 
 class OrganizationDetailView(OrganizationMixin,
