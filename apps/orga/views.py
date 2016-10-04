@@ -17,16 +17,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-
-from rolepermissions.verifications import has_permission
-from django.core.exceptions import PermissionDenied
-
 import operator
-
-from autocomplete_light import AutocompleteModelBase, register as al_register
 from functools import reduce
 
+from autocomplete_light import AutocompleteModelBase, register as al_register
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse_lazy
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
@@ -37,6 +33,7 @@ from django_filters.views import FilterView
 from filters.views import FilterMixin
 from rolepermissions.mixins import HasPermissionsMixin
 from rolepermissions.shortcuts import get_user_role
+from rolepermissions.verifications import has_permission
 
 from apps.common.views import ExportMixin
 from defivelo.roles import StateManager

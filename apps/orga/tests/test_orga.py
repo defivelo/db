@@ -17,10 +17,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+import re
+
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from defivelo.tests.utils import AuthClient, PowerUserAuthClient
+from apps.common import DV_STATES
+from defivelo.tests.utils import (
+    AuthClient, PowerUserAuthClient, StateManagerAuthClient,
+)
 
 from .factories import OrganizationFactory
 
@@ -79,3 +84,60 @@ class OrgaPowerUserTest(OrgaBasicTest):
         self.client = PowerUserAuthClient()
         self.expected_code = 200
         self.expect_templates = True
+
+
+class OrgaStateManagerUserTest(TestCase):
+    expected_code = 200
+
+    def setUp(self):
+        self.client = StateManagerAuthClient()
+        mycanton = str((self.client.user.managedstates.first()).canton)
+        self.myorga = OrganizationFactory(address_canton=mycanton)
+
+        OTHERSTATES = [c for c in DV_STATES if c != mycanton]
+        self.foreignorga = OrganizationFactory(
+            address_canton=OTHERSTATES[0])
+
+    def test_access_to_orga_list(self):
+        response = self.client.get(reverse('organization-list'))
+        self.assertTemplateUsed(response, 'orga/organization_filter.html')
+        self.assertEqual(response.status_code, self.expected_code)
+
+        response = self.client.get(reverse(
+            'organization-list-export',
+            kwargs={'format': 'csv'}))
+        self.assertEqual(response.status_code, self.expected_code)
+
+    def test_access_to_orga_detail(self):
+        response = self.client.get(reverse('organization-detail',
+                                           kwargs={'pk': self.myorga.pk}))
+        self.assertTemplateUsed(response, 'orga/organization_detail.html')
+        self.assertEqual(response.status_code, self.expected_code)
+
+        # The other orga cannot be accessed
+        response = self.client.get(reverse('organization-detail',
+                                           kwargs={'pk': self.foreignorga.pk}))
+        self.assertEqual(response.status_code, 404)
+
+    def test_access_to_orga_edit(self):
+        response = self.client.get(reverse('organization-update',
+                                           kwargs={'pk': self.myorga.pk}))
+        self.assertTemplateUsed(response, 'orga/organization_form.html')
+        self.assertEqual(response.status_code, self.expected_code)
+
+        # The other orga cannot be accessed
+        response = self.client.get(reverse('organization-update',
+                                           kwargs={'pk': self.foreignorga.pk}))
+        self.assertEqual(response.status_code, 404)
+
+    def test_autocompletes(self):
+        for al in ['OrganizationAutocomplete']:
+            url = reverse(
+                'autocomplete_light_autocomplete',
+                kwargs={'autocomplete': al}
+            )
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, self.expected_code, url)
+            # Check that we only find our orga
+            entries = re.findall('data-value="(\d+)"', str(response.content))
+            self.assertEqual(entries, [str(self.myorga.pk)])

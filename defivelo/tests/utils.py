@@ -24,8 +24,9 @@ from django.utils.translation import activate
 from faker import Faker
 from rolepermissions.shortcuts import assign_role
 
+from apps.common import DV_STATES
 from apps.user import get_new_username
-from apps.user.models import UserProfile
+from apps.user.models import UserManagedState, UserProfile
 
 fake = Faker()
 
@@ -62,6 +63,14 @@ class AuthClient(Client):
 
 class StateManagerAuthClient(AuthClient):
     role = 'state_manager'
+
+    def __init__(self):
+        super(StateManagerAuthClient, self).__init__()
+        # Make hir manager for one state
+        UserManagedState.objects.get_or_create(
+            user=self.user,
+            canton=DV_STATES[0]
+        )
 
 
 class PowerUserAuthClient(AuthClient):
