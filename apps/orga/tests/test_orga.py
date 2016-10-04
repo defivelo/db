@@ -25,6 +25,7 @@ from django.test import TestCase
 from apps.common import DV_STATES
 from defivelo.tests.utils import (
     AuthClient, PowerUserAuthClient, StateManagerAuthClient,
+    SuperUserAuthClient,
 )
 
 from .factories import OrganizationFactory
@@ -84,6 +85,35 @@ class OrgaPowerUserTest(OrgaBasicTest):
         self.client = PowerUserAuthClient()
         self.expected_code = 200
         self.expect_templates = True
+
+
+class SuperUserTest(OrgaBasicTest):
+    def setUp(self):
+        super(SuperUserTest, self).setUp()
+        self.client = SuperUserAuthClient()
+        self.expected_code = 200
+        self.expect_templates = True
+        self.orgas = [
+            OrganizationFactory(address_canton=c)
+            for c in DV_STATES]
+
+    def test_autocompletes(self):
+        for al in ['OrganizationAutocomplete']:
+            url = reverse(
+                'autocomplete_light_autocomplete',
+                kwargs={'autocomplete': al}
+            )
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, self.expected_code, url)
+            # Check that we only find our orga
+            entries = [int(d) for d in
+                       re.findall('data-value="(\d+)"', str(response.content))
+                       ]
+            entries.sort()
+            self.assertEqual(
+                entries,
+                [self.orga.pk] + [o.pk for o in self.orgas]
+            )
 
 
 class OrgaStateManagerUserTest(TestCase):
