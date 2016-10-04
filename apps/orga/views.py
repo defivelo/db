@@ -28,13 +28,14 @@ from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from django_filters import CharFilter, FilterSet
+from django_filters import CharFilter, FilterSet, MultipleChoiceFilter
 from django_filters.views import FilterView
 from filters.views import FilterMixin
 from rolepermissions.mixins import HasPermissionsMixin
 from rolepermissions.shortcuts import get_user_role
 from rolepermissions.verifications import has_permission
 
+from apps.common import DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.views import ExportMixin
 from defivelo.roles import StateManager
 from defivelo.views import MenuView
@@ -45,6 +46,19 @@ from .models import Organization
 
 
 class OrganizationFilterSet(FilterSet):
+    def __init__(self, cantons=None, **kwargs):
+        super(OrganizationFilterSet, self).__init__(**kwargs)
+        if len(cantons) > 1:
+            choices = self.filters['address_canton'].extra['choices']
+            choices = (
+                (k, v) for (k, v)
+                in choices
+                if k in cantons or not k
+            )
+            self.filters['address_canton'].extra['choices'] = choices
+        elif len(cantons) == 1:
+            del(self.filters['address_canton'])
+
     def filter_wide(queryset, value):
         if value:
             allfields_filter = [
@@ -56,6 +70,11 @@ class OrganizationFilterSet(FilterSet):
             return queryset.filter(reduce(operator.or_, allfields_filter))
         return queryset
 
+    address_canton = MultipleChoiceFilter(
+        label=_("Cantons"),
+        choices=DV_STATE_CHOICES_WITH_DEFAULT,
+    )
+
     q = CharFilter(
         label=_('Recherche'),
         action=filter_wide
@@ -63,7 +82,7 @@ class OrganizationFilterSet(FilterSet):
 
     class Meta:
         model = Organization
-        fields = ['q']
+        fields = ['q', 'address_canton', ]
 
 
 class OrganizationMixin(HasPermissionsMixin, MenuView):
@@ -72,12 +91,16 @@ class OrganizationMixin(HasPermissionsMixin, MenuView):
     context_object_name = 'organization'
     form_class = OrganizationForm
 
-    def get_queryset(self):
-        qs = Organization.objects
+    def get_cantons(self):
         if get_user_role(self.request.user) == StateManager:
-            usercantons = [
+            return [
                 m.canton for m in self.request.user.managedstates.all()
-                ]
+            ]
+
+    def get_queryset(self):
+        qs = self.model.objects
+        usercantons = self.get_cantons()
+        if usercantons:
             qs = qs.filter(address_canton__in=usercantons)
         else:
             qs = qs.all()
@@ -94,6 +117,16 @@ class OrganizationsListView(OrganizationMixin,
                             FilterMixin, FilterView):
     filterset_class = OrganizationFilterSet
     context_object_name = 'organizations'
+
+    def get_filterset_kwargs(self, filterset_class):
+        kwargs = (
+            super(OrganizationsListView, self)
+            .get_filterset_kwargs(filterset_class)
+        )
+        usercantons = self.get_cantons()
+        if usercantons:
+            kwargs['cantons'] = usercantons
+        return kwargs
 
 
 class OrganizationDetailView(OrganizationMixin,

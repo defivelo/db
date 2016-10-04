@@ -5,6 +5,31 @@
 {% block head_title %}{% trans "Établissements" %}{% endblock %}
 
 {% block content %}
+    {% if filter.form and filter.form.address_canton %}
+        <div class="modal fade bs-orga-filters-modal" tabindex="-1" role="dialog" aria-labelledby="filters">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="{% trans "Fermer" %}"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">{% trans "Filtrer la liste des établissements" %}</h4>
+                    </div>
+                    <div class="modal-body">
+                    <form method="GET" action="." class="form-inline">
+                        {% bootstrap_form filter.form size='small' exclude='q' show_help=False %}
+
+                        <div class="modal-footer">
+                            {% buttons %}
+                                <a href="{% url 'organization-list' %}" class="btn btn-default">{% trans 'Reset' %}</a>
+                                <button type="submit" class="btn btn-primary">{% trans 'Filter' %}</button>
+                            {% endbuttons %}
+                        </div>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
     {% if request.user|can:"orga_crud" %}
         <div class="btn-group" role="group" aria-label="exports">
             {% with 'csv ods xls' as formats %}
@@ -23,6 +48,13 @@
     {% endif %}
 
     {% if filter.form %}
+        {% if filter.form.address_canton %}
+            <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target=".bs-orga-filters-modal">
+                <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
+                {% trans "Filtres" %}
+            </button>
+        {% endif %}
+
         <form method="GET" action="." class="form-inline pull-right col-xs-2">
             <div class="input-group">
                 {% bootstrap_field filter.form.q show_label=False show_help=False bound_css_class='' addon_after='<span class="glyphicon glyphicon-search"></span>' %}
