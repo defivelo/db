@@ -314,6 +314,10 @@ class UserProfile(Address, models.Model):
     def __str__(self):
         return self.user.get_full_name()
 
+    class Meta:
+        verbose_name = _('Profil')
+        verbose_name_plural = _('Profils')
+
 
 @receiver(pre_save, sender=settings.AUTH_USER_MODEL)
 def User_pre_save(sender, **kwargs):
@@ -321,3 +325,28 @@ def User_pre_save(sender, **kwargs):
         kwargs['instance'].username = get_new_username()
         # Mark new users as inactive, to not let them get a login
         kwargs['instance'].is_active = False
+
+
+@python_2_unicode_compatible
+class UserManagedState(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             related_name='managedstates',
+                             limit_choices_to={'is_active': True},)
+    canton = models.CharField(_('Canton'), max_length=2,
+                              choices=DV_STATE_CHOICES)
+
+    @property
+    def canton_full(self):
+        return [c[1] for c in DV_STATE_CHOICES
+                if c[0] == self.address_canton][0]
+
+    def __str__(self):
+        return _('{name} est chargé·e de projet pour le canton '
+                 '{canton}').format(
+                     name=self.user.get_full_name(),
+                     canton=self.canton)
+
+    class Meta:
+        verbose_name = _('Canton géré')
+        verbose_name_plural = _('Cantons gérés')
+        unique_together = (('user', 'canton'), )
