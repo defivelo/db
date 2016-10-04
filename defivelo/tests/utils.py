@@ -31,6 +31,8 @@ fake = Faker()
 
 
 class AuthClient(Client):
+    role = None
+
     def __init__(self):
         super(AuthClient, self).__init__()
         self.USERNAME = get_new_username()
@@ -54,12 +56,16 @@ class AuthClient(Client):
         self.language = 'fr'
         activate(self.language)
 
+        if self.role:
+            assign_role(self.user, self.role)
+
+
+class StateManagerAuthClient(AuthClient):
+    role = 'state_manager'
+
 
 class PowerUserAuthClient(AuthClient):
-    def __init__(self):
-        super(PowerUserAuthClient, self).__init__()
-        # Assign it power_user
-        assign_role(self.user, 'power_user')
+    role = 'power_user'
 
 
 class SuperUserAuthClient(AuthClient):
