@@ -17,7 +17,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+
+from rolepermissions.verifications import has_permission
+from django.core.exceptions import PermissionDenied
+
 import operator
+
+from autocomplete_light import AutocompleteModelBase, register as al_register
 from functools import reduce
 
 from django.contrib.messages.views import SuccessMessageMixin
@@ -117,3 +123,17 @@ class OrganizationDeleteView(OrganizationMixin, DeleteView):
 class OrganizationListExport(ExportMixin, OrganizationsListView):
     export_class = OrganizationResource()
     export_filename = _('Établissements')
+
+
+class OrganizationAutocomplete(OrganizationMixin, AutocompleteModelBase):
+    search_fields = ['name', 'address_city', 'address_street']
+    required_permission = 'orga_crud'
+
+    def choices_for_request(self):
+        self.choices = self.get_queryset()
+        if has_permission(self.request.user, self.required_permission):
+            return super(OrganizationAutocomplete, self).choices_for_request()
+        else:
+            raise PermissionDenied
+
+al_register(OrganizationAutocomplete)
