@@ -37,8 +37,7 @@ from .models import BAGSTATUS_CHOICES, FORMATION_CHOICES, USERSTATUS_CHOICES
 
 
 class UserProfileForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        allow_email = kwargs.pop('allow_email', False)
+    def __init__(self, *args, allow_email=False, **kwargs):
         super(UserProfileForm, self).__init__(*args, **kwargs)
         if not allow_email and 'email' in self.fields:
             del(self.fields['email'])

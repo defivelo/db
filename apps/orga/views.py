@@ -48,16 +48,17 @@ from .models import Organization
 class OrganizationFilterSet(FilterSet):
     def __init__(self, cantons=None, **kwargs):
         super(OrganizationFilterSet, self).__init__(**kwargs)
-        if len(cantons) > 1:
-            choices = self.filters['address_canton'].extra['choices']
-            choices = (
-                (k, v) for (k, v)
-                in choices
-                if k in cantons or not k
-            )
-            self.filters['address_canton'].extra['choices'] = choices
-        elif len(cantons) == 1:
-            del(self.filters['address_canton'])
+        if cantons:
+            if len(cantons) > 1:
+                choices = self.filters['address_canton'].extra['choices']
+                choices = (
+                    (k, v) for (k, v)
+                    in choices
+                    if k in cantons or not k
+                )
+                self.filters['address_canton'].extra['choices'] = choices
+            elif len(cantons) == 1:
+                del(self.filters['address_canton'])
 
     def filter_wide(queryset, value):
         if value:
@@ -105,6 +106,11 @@ class OrganizationMixin(HasPermissionsMixin, MenuView):
         else:
             qs = qs.all()
         return qs
+
+    def get_form_kwargs(self):
+        kwargs = super(OrganizationMixin, self).get_form_kwargs()
+        kwargs['cantons'] = self.get_cantons()
+        return kwargs
 
     def get_context_data(self, **kwargs):
         context = super(OrganizationMixin, self).get_context_data(**kwargs)
