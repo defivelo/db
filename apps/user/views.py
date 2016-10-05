@@ -139,10 +139,39 @@ class UserSelfAccessMixin(object):
     required_permission = 'user_edit_other'
 
     def dispatch(self, request, *args, **kwargs):
+        edit = kwargs.pop('edit', False)
+        try:
+            usercantons = user_cantons(request.user)
+        except PermissionDenied:
+            usercantons = False
+
+        user = self.get_object()
         if (
-            request.user.pk == self.get_object().pk or
-            has_permission(request.user, self.required_permission)
-           ):
+            # Soit c'est moi
+            request.user.pk == user.pk or
+            # Soit j'ai le droit sur tous les cantons
+            has_permission(request.user, 'cantons_all') or
+            # Soit il est dans mes cantons et j'ai droit
+            (
+                usercantons and
+                (
+                    # Il est dans mes cantons d'affiliation
+                    user.profile.affiliation_canton in usercantons or
+                    (
+                        # Je ne fais que le consulter et il est dans mes
+                        # cantons d'activité
+                        not edit and
+                        user.profile.activity_cantons and
+                        len(
+                            set(user.profile.activity_cantons)
+                            .intersection(usercantons)
+                            ) != 0
+                    )
+
+                ) and
+                has_permission(request.user, self.required_permission)
+            )
+        ):
             return (
                 super(UserSelfAccessMixin, self)
                 .dispatch(request, *args, **kwargs)
@@ -175,6 +204,12 @@ class UserUpdate(UserSelfAccessMixin, ProfileMixin, SuccessMessageMixin,
             for field in self.profile_fields:
                 struct[field] = getattr(user.profile, field)
             return struct
+
+    def dispatch(self, request, *args, **kwargs):
+        return (
+            super(UserUpdate, self)
+            .dispatch(request, *args, edit=True, **kwargs)
+        )
 
 
 class UserCreate(HasPermissionsMixin, ProfileMixin, SuccessMessageMixin,

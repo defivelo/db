@@ -3,6 +3,7 @@
 {% load account %}
 {% load bootstrap3 %}
 {% load permission_tags %}
+{% load dv_filters %}
 {% block head_title %}{% trans "Users" %}{% endblock %}
 
 {% block content %}
@@ -93,7 +94,7 @@
                 {{ user.profile.actor_icon|default:"" }}
             </td>
             <td>
-                {% if request.user|can:"user_edit_other" or request.user.pk == user.pk %}
+                {% if request.user == user or request.user|can:"user_edit_other" and request.user|inusercantons:user.profile.affiliation_canton %}
                 <a class="btn btn-primary btn-xs" href="{% url 'user-update' pk=user.pk %}">
                     <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="{% trans "Éditer" %}"></span>
                 </a>

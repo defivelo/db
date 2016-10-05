@@ -21,6 +21,7 @@ from re import search, sub
 
 from django import template
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
@@ -29,6 +30,7 @@ from apps.challenge import (
     SHORTCODE_ACTOR, SHORTCODE_MON1, SHORTCODE_MON2, SHORTCODE_SELECTED,
     STAFF_FIELDKEY, STAFF_FIELDKEY_HELPER_PREFIX,
 )
+from defivelo.roles import user_cantons
 
 register = template.Library()
 
@@ -215,3 +217,14 @@ def weeknumber(date):
         return ''
     # This "solves" the weird week numbers in templates
     return date.strftime('%W')
+
+
+@register.filter
+def inusercantons(user, canton):
+    try:
+        usercantons = user_cantons(user)
+        if usercantons:
+            return canton in usercantons
+        return True
+    except PermissionDenied:
+        return
