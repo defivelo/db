@@ -22,6 +22,8 @@ from rolepermissions.roles import AbstractUserRole
 
 class StateManager(AbstractUserRole):
     available_permissions = {
+        'user_view_list': True,
+
         'orga_crud': True,
     }
 

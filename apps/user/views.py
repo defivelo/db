@@ -37,11 +37,13 @@ from django_filters import (
 from django_filters.views import FilterView
 from filters.views import FilterMixin
 from rolepermissions.mixins import HasPermissionsMixin
+from rolepermissions.shortcuts import get_user_role
 from rolepermissions.verifications import has_permission
 
 from apps.challenge.models import QualificationActivity
 from apps.common import DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.views import ExportMixin
+from defivelo.roles import StateManager
 from defivelo.views import MenuView
 
 from .export import UserResource
@@ -73,6 +75,33 @@ class ProfileMixin(MenuView):
         return self.model.objects.get(
             pk=int(resolvermatch.kwargs.get('pk', self.request.user.pk))
             )
+
+    def get_cantons(self):
+        if get_user_role(self.request.user) == StateManager:
+            return [
+                m.canton for m in self.request.user.managedstates.all()
+            ]
+
+    def get_queryset(self):
+        qs = (
+            super(ProfileMixin, self).get_queryset()
+            .prefetch_related('profile')
+            .order_by('first_name', 'last_name')
+        )
+        
+        usercantons = self.get_cantons()
+        if usercantons:
+            allcantons_filter = [
+                Q(profile__activity_cantons__contains=canton)
+                for canton in usercantons
+            ] + [
+                Q(profile__affiliation_canton__in=usercantons)
+            ]
+            qs = qs.filter(reduce(operator.or_, allcantons_filter))
+            #qs = qs.filter(profile__affiliation_canton__in=usercantons)
+        else:
+            qs = qs.all()
+        return qs
 
     def get_success_url(self):
         updatepk = self.get_object().pk
@@ -141,12 +170,6 @@ class UserSelfAccessMixin(object):
 
 class UserDetail(UserSelfAccessMixin, ProfileMixin, DetailView):
     required_permission = 'user_detail_other'
-
-    def get_queryset(self):
-        return (
-            super(UserDetail, self).get_queryset()
-            .prefetch_related('profile')
-        )
 
 
 class UserUpdate(UserSelfAccessMixin, ProfileMixin, SuccessMessageMixin,
@@ -254,13 +277,6 @@ class UserList(HasPermissionsMixin, ProfileMixin, FilterMixin, FilterView):
             pass
         context['filter_querystring'] = querydict.urlencode()
         return context
-
-    def get_queryset(self):
-        return (
-            super(UserList, self).get_queryset()
-            .prefetch_related('profile')
-            .order_by('first_name', 'last_name')
-        )
 
 
 class UserListExport(ExportMixin, UserList):
