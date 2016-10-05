@@ -27,7 +27,8 @@ from .models import Organization
 
 
 class OrganizationForm(forms.ModelForm):
-    def __init__(self, *args, cantons=None, **kwargs):
+    def __init__(self, *args, **kwargs):
+        cantons = kwargs.pop('cantons', None)
         super(OrganizationForm, self).__init__(**kwargs)
         if cantons:
             # Only permit edition within the allowed cantons
