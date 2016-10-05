@@ -28,6 +28,7 @@ from defivelo.tests.utils import (
     SuperUserAuthClient,
 )
 
+from ..models import Organization
 from .factories import OrganizationFactory
 
 
@@ -36,9 +37,11 @@ class OrgaBasicTest(TestCase):
         # Every test needs a client.
         self.client = AuthClient()
         self.expected_code = 403
+        self.expected_save_code = 403
         self.expect_templates = False
 
         self.orga = OrganizationFactory()
+        self.orga.save()
 
     def test_access_to_orga_list(self):
         response = self.client.get(reverse('organization-list'))
@@ -61,9 +64,8 @@ class OrgaBasicTest(TestCase):
         self.assertEqual(response.status_code, self.expected_code)
 
     def test_access_to_orga_edit(self):
-        # Issue a GET request.
-        response = self.client.get(reverse('organization-update',
-                                           kwargs={'pk': self.orga.pk}))
+        url = reverse('organization-update', kwargs={'pk': self.orga.pk})
+        response = self.client.get(url)
 
         if self.expect_templates:
             self.assertTemplateUsed(response, 'orga/organization_form.html')
@@ -84,7 +86,30 @@ class OrgaPowerUserTest(OrgaBasicTest):
         super(OrgaPowerUserTest, self).setUp()
         self.client = PowerUserAuthClient()
         self.expected_code = 200
+        self.expected_save_code = 302
         self.expect_templates = True
+
+    def test_access_to_orga_edit(self):
+        url = reverse('organization-update', kwargs={'pk': self.orga.pk})
+        super(OrgaPowerUserTest, self).test_access_to_orga_edit()
+
+        self.orga.address_canton = 'VD'
+        self.orga.save()
+
+        initial = self.orga.__dict__.copy()
+        del(initial['id'])
+        del(initial['created_on'])
+        del(initial['address_ptr_id'])
+        del(initial['_state'])
+
+        # Test some update, that must go through
+        initial['address_canton'] = 'JU'
+
+        response = self.client.post(url, initial)
+        self.assertEqual(response.status_code, self.expected_save_code, url)
+
+        neworga = Organization.objects.get(pk=self.orga.id)
+        self.assertEqual(neworga.address_canton, 'JU')
 
 
 class SuperUserTest(OrgaBasicTest):
@@ -92,6 +117,7 @@ class SuperUserTest(OrgaBasicTest):
         super(SuperUserTest, self).setUp()
         self.client = SuperUserAuthClient()
         self.expected_code = 200
+        self.expected_save_code = 403
         self.expect_templates = True
         self.orgas = [
             OrganizationFactory(address_canton=c)
@@ -123,10 +149,12 @@ class OrgaStateManagerUserTest(TestCase):
         self.client = StateManagerAuthClient()
         mycanton = str((self.client.user.managedstates.first()).canton)
         self.myorga = OrganizationFactory(address_canton=mycanton)
+        self.myorga.save()
 
         OTHERSTATES = [c for c in DV_STATES if c != mycanton]
         self.foreignorga = OrganizationFactory(
             address_canton=OTHERSTATES[0])
+        self.foreignorga.save()
 
     def test_access_to_orga_list(self):
         response = self.client.get(reverse('organization-list'))
@@ -150,10 +178,36 @@ class OrgaStateManagerUserTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_access_to_orga_edit(self):
-        response = self.client.get(reverse('organization-update',
-                                           kwargs={'pk': self.myorga.pk}))
+        url = reverse('organization-update', kwargs={'pk': self.myorga.pk})
+        response = self.client.get(url)
         self.assertTemplateUsed(response, 'orga/organization_form.html')
         self.assertEqual(response.status_code, self.expected_code)
+
+        # Our orga cannot be edited away from my cantons
+        initial = self.myorga.__dict__.copy()
+        del(initial['id'])
+        del(initial['created_on'])
+        del(initial['address_ptr_id'])
+        del(initial['_state'])
+
+        initial['address_no'] = 24
+
+        response = self.client.post(url, initial)
+        # Code 302 because update succeeded
+        self.assertEqual(response.status_code, 302, url)
+        # Check update succeeded
+        neworga = Organization.objects.get(pk=self.myorga.pk)
+        self.assertEqual(neworga.address_no, '24')
+
+        # Test some update, that must go through
+        initial['address_canton'] = self.foreignorga.address_canton
+
+        response = self.client.post(url, initial)
+        # Code 200 because update failed
+        self.assertEqual(response.status_code, 200, url)
+        # Check update failed
+        neworga = Organization.objects.get(pk=self.myorga.pk)
+        self.assertEqual(neworga.address_canton, self.myorga.address_canton)
 
         # The other orga cannot be accessed
         response = self.client.get(reverse('organization-update',
