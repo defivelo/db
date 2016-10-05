@@ -98,9 +98,6 @@ class ProfileMixin(MenuView):
                 Q(profile__affiliation_canton__in=usercantons)
             ]
             qs = qs.filter(reduce(operator.or_, allcantons_filter))
-            #qs = qs.filter(profile__affiliation_canton__in=usercantons)
-        else:
-            qs = qs.all()
         return qs
 
     def get_success_url(self):

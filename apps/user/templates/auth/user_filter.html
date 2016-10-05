@@ -125,6 +125,11 @@
                 </a>
             </li>
         {% endif %}
+            <li class="btn-xs">
+                <span>
+                    {{ page_obj.start_index }} - {{ page_obj.end_index }}/{{ page_obj.paginator.count }}
+                </span>
+            </li>
         {% if page_obj.has_next %}
             <li class="next btn-xs">
                 <a href="{% url 'user-list' %}?page={{ page_obj.next_page_number }}&{{ filter_querystring }}">
