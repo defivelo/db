@@ -32,12 +32,11 @@ from django_filters import CharFilter, FilterSet, MultipleChoiceFilter
 from django_filters.views import FilterView
 from filters.views import FilterMixin
 from rolepermissions.mixins import HasPermissionsMixin
-from rolepermissions.shortcuts import get_user_role
 from rolepermissions.verifications import has_permission
 
 from apps.common import DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.views import ExportMixin, PaginatorMixin
-from defivelo.roles import StateManager
+from defivelo.roles import user_cantons
 from defivelo.views import MenuView
 
 from .export import OrganizationResource
@@ -92,24 +91,16 @@ class OrganizationMixin(HasPermissionsMixin, MenuView):
     context_object_name = 'organization'
     form_class = OrganizationForm
 
-    def get_cantons(self):
-        if get_user_role(self.request.user) == StateManager:
-            return [
-                m.canton for m in self.request.user.managedstates.all()
-            ]
-
     def get_queryset(self):
         qs = self.model.objects
-        usercantons = self.get_cantons()
+        usercantons = user_cantons(self.request.user)
         if usercantons:
             qs = qs.filter(address_canton__in=usercantons)
-        else:
-            qs = qs.all()
         return qs
 
     def get_form_kwargs(self):
         kwargs = super(OrganizationMixin, self).get_form_kwargs()
-        kwargs['cantons'] = self.get_cantons()
+        kwargs['cantons'] = user_cantons(self.request.user)
         return kwargs
 
     def get_context_data(self, **kwargs):
@@ -129,7 +120,7 @@ class OrganizationsListView(OrganizationMixin, PaginatorMixin,
             super(OrganizationsListView, self)
             .get_filterset_kwargs(filterset_class)
         )
-        usercantons = self.get_cantons()
+        usercantons = user_cantons(self.request.user)
         if usercantons:
             kwargs['cantons'] = usercantons
         return kwargs

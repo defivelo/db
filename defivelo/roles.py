@@ -17,11 +17,26 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+from django.core.exceptions import PermissionDenied
 from rolepermissions.roles import AbstractUserRole
+from rolepermissions.verifications import has_permission
+
+
+def user_cantons(user):
+    if has_permission(user, 'cantons_all'):
+        return
+    if has_permission(user, 'cantons_mine'):
+        return [
+            m.canton for m in user.managedstates.all()
+        ]
+    raise PermissionDenied
 
 
 class StateManager(AbstractUserRole):
     available_permissions = {
+        'cantons_all': False,
+        'cantons_mine': True,
+
         'user_view_list': True,
 
         'orga_crud': True,
@@ -30,6 +45,9 @@ class StateManager(AbstractUserRole):
 
 class PowerUser(AbstractUserRole):
     available_permissions = {
+        'cantons_all': True,
+        'cantons_mine': True,
+
         'user_view_list': True,
         'user_detail_other': True,
         'user_edit_other': True,
