@@ -47,6 +47,7 @@ class StateManager(AbstractUserRole):
         'user_view_list': True,
         'user_detail_other': True,
         'user_edit_other': True,
+        'user_crud_dv_public_fields': True,
 
         'orga_crud': True,
     }
