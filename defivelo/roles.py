@@ -23,13 +23,20 @@ from rolepermissions.verifications import has_permission
 
 
 def user_cantons(user):
+    if user.pk in user_cantons.cache:
+        return user_cantons.cache[user.pk]
+
     if has_permission(user, 'cantons_all'):
+        user_cantons.cache[user.pk] = None
         return
     if has_permission(user, 'cantons_mine'):
-        return [
+        user_cantons.cache[user.pk] = [
             m.canton for m in user.managedstates.all()
         ]
+        return user_cantons.cache[user.pk]
     raise PermissionDenied
+
+user_cantons.cache = {}
 
 
 class StateManager(AbstractUserRole):
