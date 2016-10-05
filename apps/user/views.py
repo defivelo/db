@@ -42,7 +42,7 @@ from rolepermissions.verifications import has_permission
 
 from apps.challenge.models import QualificationActivity
 from apps.common import DV_STATE_CHOICES_WITH_DEFAULT
-from apps.common.views import ExportMixin
+from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.roles import StateManager
 from defivelo.views import MenuView
 
@@ -88,7 +88,7 @@ class ProfileMixin(MenuView):
             .prefetch_related('profile')
             .order_by('first_name', 'last_name')
         )
-        
+
         usercantons = self.get_cantons()
         if usercantons:
             allcantons_filter = [
@@ -257,23 +257,11 @@ class UserProfileFilterSet(FilterSet):
                   ]
 
 
-class UserList(HasPermissionsMixin, ProfileMixin, FilterMixin, FilterView):
+class UserList(HasPermissionsMixin, ProfileMixin, PaginatorMixin,
+               FilterMixin, FilterView):
     required_permission = 'user_view_list'
     filterset_class = UserProfileFilterSet
     context_object_name = 'users'
-    paginate_by = 10
-    paginate_orphans = 3
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(UserList, self).get_context_data(*args, **kwargs)
-        # Re-create the filtered querystring from GET, drop page off it
-        querydict = self.request.GET.copy()
-        try:
-            del querydict['page']
-        except:
-            pass
-        context['filter_querystring'] = querydict.urlencode()
-        return context
 
 
 class UserListExport(ExportMixin, UserList):

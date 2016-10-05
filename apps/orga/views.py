@@ -36,7 +36,7 @@ from rolepermissions.shortcuts import get_user_role
 from rolepermissions.verifications import has_permission
 
 from apps.common import DV_STATE_CHOICES_WITH_DEFAULT
-from apps.common.views import ExportMixin
+from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.roles import StateManager
 from defivelo.views import MenuView
 
@@ -119,7 +119,7 @@ class OrganizationMixin(HasPermissionsMixin, MenuView):
         return context
 
 
-class OrganizationsListView(OrganizationMixin,
+class OrganizationsListView(OrganizationMixin, PaginatorMixin,
                             FilterMixin, FilterView):
     filterset_class = OrganizationFilterSet
     context_object_name = 'organizations'
