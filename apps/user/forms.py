@@ -39,12 +39,24 @@ from .models import BAGSTATUS_CHOICES, FORMATION_CHOICES, USERSTATUS_CHOICES
 class UserProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         allow_email = kwargs.pop('allow_email', False)
+        cantons = kwargs.pop('cantons', None)
         super(UserProfileForm, self).__init__(*args, **kwargs)
+
         if not allow_email and 'email' in self.fields:
             del(self.fields['email'])
         for field in 'first_name', 'last_name', 'email':
             if field in self.fields:
                 self.fields[field].required = True
+
+        if cantons:
+            # Only permit edition within the allowed cantons
+            choices = self.fields['affiliation_canton'].choices
+            choices = (
+                (k, v) for (k, v)
+                in choices
+                if k in cantons
+            )
+            self.fields['affiliation_canton'].choices = choices
 
     address_street = forms.CharField(label=_('Rue'), max_length=255,
                                      required=False)
