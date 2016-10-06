@@ -18,7 +18,6 @@
 from __future__ import unicode_literals
 
 from autocomplete_light import AutocompleteModelBase, register as al_register
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
@@ -28,12 +27,15 @@ from rolepermissions.verifications import has_permission
 from apps.challenge import MAX_MONO1_PER_QUALI
 
 from ..models import FORMATION_KEYS, FORMATION_M2
+from .mixins import ProfileMixin
 
 
-class PersonAutocomplete(AutocompleteModelBase):
+class PersonAutocomplete(ProfileMixin, AutocompleteModelBase):
     search_fields = ['first_name', 'last_name']
-    model = settings.AUTH_USER_MODEL
+    model = get_user_model()
     required_permission = 'user_view_list'
+    choices = None
+    widget_attrs = {'data-widget-maximum-values': 1, }
 
     def choice_label(self, choice):
         return choice.get_full_name()
@@ -46,57 +48,62 @@ class PersonAutocomplete(AutocompleteModelBase):
             escape(self.choice_value(choice)),
             self.choice_label(choice))
 
+    def get_choices(self):
+        return self.get_queryset()
+
     def choices_for_request(self):
+        self.choices = self.get_choices()
         if has_permission(self.request.user, self.required_permission):
             return super(PersonAutocomplete, self).choices_for_request()
         else:
             raise PermissionDenied
 
-al_register(PersonAutocomplete, name='AllPersons',
-            choices=get_user_model().objects.all(),
-            widget_attrs={
-                'data-widget-maximum-values': 1,
-            })
+
+class AllPersons(PersonAutocomplete):
+    pass
 
 
-al_register(PersonAutocomplete, name='PersonsRelevantForSessions',
-            choices=get_user_model().objects.filter(
+class PersonsRelevantForSessions(PersonAutocomplete):
+    def get_choices(self):
+        qs = super(PersonsRelevantForSessions, self).get_choices()
+        return qs.filter(
                 Q(profile__formation__in=FORMATION_KEYS) |
                 Q(profile__actor_for__isnull=False)
-            ),
-            widget_attrs={
-                'data-widget-maximum-values': 1,
-            })
+            )
 
 
-class HelpersAutocomplete(PersonAutocomplete):
+class Helpers(PersonAutocomplete):
+    widget_attrs = {'data-widget-maximum-values': MAX_MONO1_PER_QUALI, }
+
+    def get_choices(self):
+        qs = super(Helpers, self).get_choices()
+        return qs.filter(
+                Q(profile__formation__in=FORMATION_KEYS)
+            )
+
     def choice_label(self, choice):
         return "{name} {icon}".format(
             name=choice.get_full_name(),
             icon=choice.profile.formation_icon())
 
-al_register(HelpersAutocomplete, name='Helpers',
-            choices=get_user_model().objects.filter(
-                Q(profile__formation__in=FORMATION_KEYS)
-                ),
-            widget_attrs={
-                'data-widget-maximum-values': MAX_MONO1_PER_QUALI,
-            })
 
-al_register(HelpersAutocomplete, name='Leaders',
-            choices=get_user_model().objects.filter(
+class Leaders(PersonAutocomplete):
+    def get_choices(self):
+        qs = super(Leaders, self).get_choices()
+        return qs.filter(
                 Q(profile__formation=FORMATION_M2)
-                )
-            )
+        )
 
 
-class ActorsAutocomplete(PersonAutocomplete):
-    def choice_label(self, choice):
-        return "{name} ({actor_for})".format(
-            name=choice.get_full_name(),
-            actor_for=choice.profile.actor_for.name)
+class Actors(PersonAutocomplete):
+    def get_choices(self):
+        qs = super(Leaders, self).get_choices()
+        return qs.exclude(
+            profile__actor_for__isnull=True
+        )
 
-
-al_register(ActorsAutocomplete, name='Actors',
-            choices=get_user_model().objects
-                                    .exclude(profile__actor_for__isnull=True))
+al_register(AllPersons)
+al_register(PersonsRelevantForSessions)
+al_register(Helpers)
+al_register(Leaders)
+al_register(Actors)

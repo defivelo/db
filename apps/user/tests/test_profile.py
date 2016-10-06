@@ -17,15 +17,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+import re
+
 from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.urlresolvers import NoReverseMatch, reverse
 from django.test import TestCase
 
+from apps.common import DV_STATES
 from apps.user.models import FORMATION_M1, FORMATION_M2, STD_PROFILE_FIELDS
 from apps.user.tests.factories import UserFactory
 from defivelo.tests.utils import (
-    AuthClient, PowerUserAuthClient, SuperUserAuthClient,
+    AuthClient, PowerUserAuthClient, StateManagerAuthClient,
+    SuperUserAuthClient,
 )
 
 myurlsforall = ['user-detail', 'user-update', 'profile-detail', ]
@@ -79,6 +83,9 @@ class ProfileTestCase(TestCase):
         # Some corrections
         initial['status'] = 0
         initial['birthdate'] = ''
+
+        if initial['activity_cantons'] is None:
+            initial['activity_cantons'] = []
 
         return initial
 
@@ -235,6 +242,89 @@ class PowerUserTest(ProfileTestCase):
             )
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200, url)
+
+
+class StateManagerUserTest(ProfileTestCase):
+    def setUp(self):
+        super(StateManagerUserTest, self).setUp()
+        self.client = StateManagerAuthClient()
+        mycanton = str((self.client.user.managedstates.first()).canton)
+
+        OTHERSTATES = [c for c in DV_STATES if c != mycanton]
+        for user in self.users:
+            user.profile.affiliation_canton = OTHERSTATES[0]
+            user.profile.save()
+
+        self.users[0].profile.affiliation_canton = mycanton
+        self.users[0].profile.save()
+
+        self.myuser = self.users[0]
+        self.foreignuser = self.users[1]
+
+    def test_my_allowances(self):
+        for symbolicurl in myurlsforall + myurlsforoffice:
+            url = tryurl(symbolicurl, self.client.user)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, url)
+
+    def test_otherusers_access(self):
+        response = self.client.get(reverse('user-detail',
+                                   kwargs={'pk': self.myuser.pk}))
+        self.assertTemplateUsed(response, 'auth/user_detail.html')
+        self.assertEqual(response.status_code, 200, response)
+
+        # The other user cannot be accessed
+        response = self.client.get(reverse('user-detail',
+                                   kwargs={'pk': self.foreignuser.pk}))
+        self.assertEqual(response.status_code, 403)
+
+    def test_otherusers_edit(self):
+        url = reverse('user-update', kwargs={'pk': self.myuser.pk})
+        response = self.client.get(url)
+        self.assertTemplateUsed(response, 'auth/user_form.html')
+        self.assertEqual(response.status_code, 200, response)
+
+        # Our orga cannot be edited away from my cantons
+        initial = self.getprofileinitial(self.myuser)
+        initial['address_no'] = 24
+
+        response = self.client.post(url, initial)
+        # Code 302 because update succeeded
+        self.assertEqual(response.status_code, 302, url)
+        # Check update succeeded
+        newuser = get_user_model().objects.get(pk=self.myuser.pk)
+        self.assertEqual(newuser.profile.address_no, '24')
+
+        # Test some update, that must go through
+        initial['affiliation_canton'] = \
+            self.foreignuser.profile.affiliation_canton
+
+        response = self.client.post(url, initial)
+        # Code 200 because update failed
+        self.assertEqual(response.status_code, 200, url)
+        # Check update failed
+        newuser = get_user_model().objects.get(pk=self.myuser.pk)
+        self.assertEqual(
+            newuser.profile.affiliation_canton,
+            self.myuser.profile.affiliation_canton
+        )
+
+        # The other user cannot be accessed
+        response = self.client.get(reverse('user-update',
+                                   kwargs={'pk': self.foreignuser.pk}))
+        self.assertEqual(response.status_code, 403)
+
+    def test_autocompletes(self):
+        for al in ['AllPersons']:
+            url = reverse(
+                'autocomplete_light_autocomplete',
+                kwargs={'autocomplete': al}
+            )
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, url)
+            # Check that we only find our orga
+            entries = re.findall('data-value="(\d+)"', str(response.content))
+            self.assertEqual(entries, [str(self.myuser.pk)])
 
 
 class SuperUserTest(ProfileTestCase):
