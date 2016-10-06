@@ -134,6 +134,14 @@ class ProfileMixin(MenuView):
         userprofile.save()
         return ret
 
+    def get_form_kwargs(self):
+        kwargs = super(ProfileMixin, self).get_form_kwargs()
+        try:
+            kwargs['cantons'] = user_cantons(self.request.user)
+        except PermissionDenied:
+            pass
+        return kwargs
+
 
 class UserSelfAccessMixin(object):
     required_permission = 'user_edit_other'
