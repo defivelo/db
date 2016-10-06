@@ -50,8 +50,6 @@ ALLOWED_HOSTS = tuple(get_env_variable('ALLOWED_HOSTS', '').splitlines())
 UPSTREAM_APPS = (
     'bootstrap3',
     'bootstrap3_datetime',
-    'registration_bootstrap3',
-    'django_admin_bootstrapped',
     'django.contrib.sites',
 
     'allauth',
@@ -105,9 +103,6 @@ ROOT_URLCONF = 'defivelo.urls'
 
 WSGI_APPLICATION = 'defivelo.wsgi.application'
 
-# Bootstrap the admin
-DAB_FIELD_RENDERER = \
-    'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'
 
 TEMPLATES = [
     {
