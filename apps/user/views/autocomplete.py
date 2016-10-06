@@ -97,7 +97,7 @@ class Leaders(PersonAutocomplete):
 
 class Actors(PersonAutocomplete):
     def get_choices(self):
-        qs = super(Leaders, self).get_choices()
+        qs = super(Actors, self).get_choices()
         return qs.exclude(
             profile__actor_for__isnull=True
         )
