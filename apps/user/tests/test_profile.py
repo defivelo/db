@@ -28,8 +28,7 @@ from defivelo.tests.utils import (
     AuthClient, PowerUserAuthClient, SuperUserAuthClient,
 )
 
-myurlsforall = ['profile-update', 'user-detail', 'user-update',
-                'profile-detail', ]
+myurlsforall = ['user-detail', 'user-update', 'profile-detail', ]
 myurlsforoffice = ['user-list', 'user-list-export', ]
 
 othersurls = ['user-detail', 'user-update', 'user-create',
@@ -108,7 +107,8 @@ class AuthUserTest(ProfileTestCase):
         # Pre-update profile and user
         self.client.user.profile.formation = FORMATION_M1
         self.client.user.profile.save()
-        url = reverse('profile-update')
+        url = reverse('user-update',
+                      kwargs={'pk': self.client.user.pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200, url)
 

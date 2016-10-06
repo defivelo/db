@@ -41,5 +41,4 @@ urlpatterns = [
         name="user-resendcredentials"),
     url(r'^me/$', never_cache(UserDetail.as_view()), name="profile-detail"),
     url(r'^(?P<pk>[0-9]+)/update/$', UserUpdate.as_view(), name="user-update"),
-    url(r'^me/edit/$', UserUpdate.as_view(), name="profile-update"),
 ]

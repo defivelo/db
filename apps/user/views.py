@@ -55,6 +55,7 @@ from .models import (
 
 
 class ProfileMixin(MenuView):
+    cantons = True
     model = get_user_model()
     context_object_name = 'userprofile'
     form_class = UserProfileForm
@@ -103,9 +104,10 @@ class ProfileMixin(MenuView):
         """
         Write the non-model fields
         """
-        user = self.get_object()
-        if not user:
+        try:
             user = self.object
+        except AttributeError:
+            user = self.get_object()
 
         update_profile_fields = PERSONAL_FIELDS
         # if the edit user has access, extend the update_profile_fields
@@ -136,10 +138,11 @@ class ProfileMixin(MenuView):
 
     def get_form_kwargs(self):
         kwargs = super(ProfileMixin, self).get_form_kwargs()
-        try:
-            kwargs['cantons'] = user_cantons(self.request.user)
-        except PermissionDenied:
-            pass
+        if self.cantons:
+            try:
+                kwargs['cantons'] = user_cantons(self.request.user)
+            except PermissionDenied:
+                pass
         return kwargs
 
 
@@ -370,6 +373,7 @@ class UserCredentials(ProfileMixin, FormView):
 
 class SendUserCredentials(HasPermissionsMixin, UserCredentials):
     required_permission = 'user_can_send_credentials'
+    cantons = False
 
     def dispatch(self, request, *args, **kwargs):
         # Forbid view if can already login
@@ -386,6 +390,7 @@ class ResendUserCredentials(HasPermissionsMixin, UserCredentials):
     required_permission = 'user_can_resend_credentials'
     success_message = _("Données de connexion ré-expédiées.")
     initial_send = False
+    cantons = False
 
     def dispatch(self, request, *args, **kwargs):
         # Forbid view if initial login hasn't been sent
