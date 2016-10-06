@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2015 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2015, 2016 Didier Raboud <me+defivelo@odyx.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -15,6 +15,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from __future__ import unicode_literals
+
 from autocomplete_light import AutocompleteModelBase, register as al_register
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -25,7 +27,7 @@ from rolepermissions.verifications import has_permission
 
 from apps.challenge import MAX_MONO1_PER_QUALI
 
-from .models import FORMATION_KEYS, FORMATION_M2
+from ..models import FORMATION_KEYS, FORMATION_M2
 
 
 class PersonAutocomplete(AutocompleteModelBase):
@@ -56,6 +58,7 @@ al_register(PersonAutocomplete, name='AllPersons',
                 'data-widget-maximum-values': 1,
             })
 
+
 al_register(PersonAutocomplete, name='PersonsRelevantForSessions',
             choices=get_user_model().objects.filter(
                 Q(profile__formation__in=FORMATION_KEYS) |
@@ -79,6 +82,7 @@ al_register(HelpersAutocomplete, name='Helpers',
             widget_attrs={
                 'data-widget-maximum-values': MAX_MONO1_PER_QUALI,
             })
+
 al_register(HelpersAutocomplete, name='Leaders',
             choices=get_user_model().objects.filter(
                 Q(profile__formation=FORMATION_M2)
