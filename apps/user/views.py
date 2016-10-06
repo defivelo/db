@@ -194,8 +194,10 @@ class UserSelfAccessMixin(object):
         kwargs = super(UserSelfAccessMixin, self).get_form_kwargs()
         if has_permission(self.request.user, self.required_permission):
             kwargs['allow_email'] = True
-
-        kwargs['cantons'] = user_cantons(self.request.user)
+        try:
+            kwargs['cantons'] = user_cantons(self.request.user)
+        except PermissionDenied:
+            pass
         return kwargs
 
 
