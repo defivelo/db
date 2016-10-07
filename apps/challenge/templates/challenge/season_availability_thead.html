@@ -3,13 +3,15 @@
     <tr>
         <td rowspan="5" colspan="{{ preamble_columns|default:1 }}">&nbsp;</td>
         {% for session in sessions %}
-            <th class="text-center">{{ session.day|date:"j F" }}</th>
+            <th class="text-center">
+                <a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">
+                    {{ session.day|date:"j F" }}
+                </a>
+            </th>
         {% endfor %}</tr>
     <tr>{% for session in sessions %}
             <th class="text-center" style="vertical-align: top;">
-                <a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">
-                    {{ session.organization.name }}
-                </a>
+                {{ session.organization.name }}
             </th>
         {% endfor %}</tr>
     <tr>{% for session in sessions %}
@@ -18,12 +20,18 @@
             </td>
         {% endfor %}</tr>
     <tr>{% for session in sessions %}
-            <th class="text-center">{{ session.begin|date:"H\hi" }} - {{ session.end|date:"H\hi" }}</th>
+            <th class="text-center">
+                <a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}" title="{% trans "Vers la session" %}">
+                    {{ session.begin|date:"H\hi" }} - {{ session.end|date:"H\hi" }}
+                </a>
+            </th>
         {% endfor %}</tr>
 
     <tr>{% for session in sessions %}
             <td>
-            <p class="small">{% blocktrans count n=session.qualifications.count %}1 qualification{% plural %}{{ n }} qualifications{% endblocktrans %}</p>
+            <a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}" title="{% trans "Vers la session" %}" class="small">
+                {% blocktrans count n=session.qualifications.count %}1 qualification{% plural %}{{ n }} qualifications{% endblocktrans %}
+            </a>
             {% if chosen_stats %}
                 <dl class="small dl-horizontal">
                     <dt>{% trans "Moniteurs 2" %}</dt>
