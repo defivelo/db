@@ -72,6 +72,17 @@ class PersonsRelevantForSessions(PersonAutocomplete):
             )
 
 
+class PersonsRelevantForSeason(PersonAutocomplete):
+    def get_choices(self):
+        return (
+            super(PersonsRelevantForSeason, self).get_choices()
+            .filter(
+                Q(managedstates__isnull=False)
+            )
+            .distinct()
+        )
+
+
 class Helpers(PersonAutocomplete):
     widget_attrs = {'data-widget-maximum-values': MAX_MONO1_PER_QUALI, }
 
@@ -103,6 +114,7 @@ class Actors(PersonAutocomplete):
         )
 
 al_register(AllPersons)
+al_register(PersonsRelevantForSeason)
 al_register(PersonsRelevantForSessions)
 al_register(Helpers)
 al_register(Leaders)

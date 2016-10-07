@@ -38,13 +38,26 @@ from .models.availability import HelperSessionAvailability
 
 
 class SeasonForm(autocomplete_light.ModelForm):
+    def __init__(self, *args, **kwargs):
+        cantons = kwargs.pop('cantons', None)
+        super(SeasonForm, self).__init__(**kwargs)
+        if cantons:
+            # Only permit edition within the allowed cantons
+            choices = self.fields['cantons'].choices
+            choices = (
+                (k, v) for (k, v)
+                in choices
+                if k in cantons
+            )
+            self.fields['cantons'].choices = choices
+
     begin = SwissDateField(label=_('Début'))
     end = SwissDateField(label=_('Fin'))
 
     class Meta:
         model = Season
         fields = ['begin', 'end', 'cantons', 'leader']
-        autocomplete_names = {'leader': 'AllPersons'}
+        autocomplete_names = {'leader': 'PersonsRelevantForSeason'}
 
 
 class SessionForm(autocomplete_light.ModelForm):

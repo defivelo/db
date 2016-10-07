@@ -80,6 +80,11 @@ class SeasonMixin(HasPermissionsMixin, MenuView):
             qs = qs.filter(reduce(operator.or_, cantons))
         return qs
 
+    def get_form_kwargs(self):
+        kwargs = super(SeasonMixin, self).get_form_kwargs()
+        kwargs['cantons'] = user_cantons(self.request.user)
+        return kwargs
+
 
 class SeasonListView(SeasonMixin, YearArchiveView):
     date_field = 'begin'
