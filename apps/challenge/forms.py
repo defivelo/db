@@ -61,6 +61,17 @@ class SeasonForm(autocomplete_light.ModelForm):
 
 
 class SessionForm(autocomplete_light.ModelForm):
+    def __init__(self, *args, **kwargs):
+        cantons = kwargs.pop('cantons', None)
+        super(SessionForm, self).__init__(**kwargs)
+        if cantons:
+            # Only permit organizations within the allowed cantons
+            qs = (
+                self.fields['organization'].queryset
+                .filter(address_canton__in=cantons)
+            )
+            self.fields['organization'].queryset = qs
+
     day = SwissDateField(label=_('Date'))
     begin = SwissTimeField(label=_('Début'), required=False)
     address_canton = forms.ChoiceField(label=_('Canton'),

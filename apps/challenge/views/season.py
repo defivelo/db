@@ -46,9 +46,10 @@ from ..forms import (
     SeasonStaffChoiceForm,
 )
 from ..models import HelperSessionAvailability, Season
+from .mixins import CantonFormMixin
 
 
-class SeasonMixin(HasPermissionsMixin, MenuView):
+class SeasonMixin(CantonFormMixin, HasPermissionsMixin, MenuView):
     required_permission = 'challenge_season_crud'
     model = Season
     context_object_name = 'season'

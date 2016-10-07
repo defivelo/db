@@ -29,9 +29,10 @@ from defivelo.views import MenuView
 
 from ..forms import SessionForm
 from ..models import Season, Session
+from .mixins import CantonFormMixin
 
 
-class SessionMixin(HasPermissionsMixin, MenuView):
+class SessionMixin(CantonFormMixin, HasPermissionsMixin, MenuView):
     required_permission = 'challenge_session_crud'
     model = Session
     context_object_name = 'session'
