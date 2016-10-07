@@ -17,11 +17,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+import operator
 from collections import OrderedDict
+from functools import reduce
 
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template.defaultfilters import date, time
 from django.utils.translation import ugettext as u, ugettext_lazy as _
@@ -34,6 +37,7 @@ from tablib import Dataset
 
 from apps.user.models import FORMATION_M2
 from apps.user.views import ActorsList, HelpersList
+from defivelo.roles import user_cantons
 from defivelo.views import MenuView
 
 from . import AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, STAFF_FIELDKEY
@@ -64,6 +68,17 @@ class SeasonMixin(HasPermissionsMixin, MenuView):
         context['menu_category'] = 'season'
         context['season'] = self.get_season()
         return context
+
+    def get_queryset(self):
+        qs = super(SeasonMixin, self).get_queryset()
+        usercantons = user_cantons(self.request.user)
+        if usercantons:
+            cantons = [
+                    Q(cantons__contains=state)
+                    for state in user_cantons(self.request.user)
+                ]
+            qs = qs.filter(reduce(operator.or_, cantons))
+        return qs
 
 
 class SeasonListView(SeasonMixin, YearArchiveView):
