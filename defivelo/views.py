@@ -15,22 +15,40 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from __future__ import unicode_literals
+
+import operator
 from datetime import date
+from functools import reduce
 
 from article.models import Article
+from django.core.exceptions import PermissionDenied
+from django.db.models import Q
 from django.utils import timezone
 from django.views.generic.base import TemplateView
 from rolepermissions.verifications import has_permission
 
 from apps.challenge.models import Season
+from defivelo.roles import user_cantons
 
 
 class MenuView(object):
     def get_context_data(self, **kwargs):
         context = super(MenuView, self).get_context_data(**kwargs)
-        # Add our menu_category context
-        context['current_seasons'] = \
-            Season.objects.filter(end__gte=date.today())
+
+        qs = Season.objects.filter(end__gte=date.today())
+        try:
+            usercantons = user_cantons(self.request.user)
+            if usercantons:
+                cantons = [
+                        Q(cantons__contains=state)
+                        for state in user_cantons(self.request.user)
+                    ]
+                qs = qs.filter(reduce(operator.or_, cantons))
+        except PermissionDenied:
+            pass
+
+        context['current_seasons'] = qs
         context['now'] = timezone.now()
         return context
 
