@@ -56,19 +56,11 @@ class SeasonMixin(CantonSeasonFormMixin, HasPermissionsMixin, MenuView):
     context_object_name = 'season'
     form_class = SeasonForm
 
-    def get_season(self):
-        if not hasattr(self, 'season'):
-            try:
-                self.season = Season.objects.get(pk=int(self.kwargs['pk']))
-            except KeyError:
-                self.season = None
-        return self.season
-
     def get_context_data(self, **kwargs):
         context = super(SeasonMixin, self).get_context_data(**kwargs)
         # Add our menu_category context
         context['menu_category'] = 'season'
-        context['season'] = self.get_season()
+        context['season'] = self.season
         return context
 
     def get_queryset(self):
@@ -189,12 +181,10 @@ class SeasonExportView(SeasonAvailabilityMixin, DetailView):
         except AttributeError:
             format = base_formats.CSV()
 
-        season = self.get_season()
-
         filename = (
             _('DV-Saison-{cantons}-{YM_startdate}.{extension}').format(
-                cantons='-'.join(season.cantons),
-                YM_startdate=season.begin.strftime('%Y%m'),
+                cantons='-'.join(self.season.cantons),
+                YM_startdate=self.season.begin.strftime('%Y%m'),
                 extension=format.get_extension()
             )
         )
@@ -209,7 +199,7 @@ class SeasonExportView(SeasonAvailabilityMixin, DetailView):
             u('Qualifs'),
             u('Prénom & Nom'),
         ])
-        for session in season.sessions_with_qualifs:
+        for session in self.season.sessions_with_qualifs:
             dataset.append_col([
                 date(session.day),
                 session.organization.address_canton,
@@ -421,10 +411,9 @@ class SeasonHelperListView(HelpersList, SeasonMixin):
         return context
 
     def get_queryset(self):
-        season = self.get_season()
         return (
             super(SeasonHelperListView, self).get_queryset()
-            .filter(availabilities__session__in=season.sessions_with_qualifs,
+            .filter(availabilities__session__in=self.season.sessions_with_qualifs,
                     availabilities__chosen=True)
             .distinct()
         )
@@ -441,10 +430,9 @@ class SeasonActorListView(ActorsList, SeasonMixin):
         return context
 
     def get_queryset(self):
-        season = self.get_season()
         return (
             super(SeasonActorListView, self).get_queryset()
-            .filter(availabilities__session__in=season.sessions_with_qualifs,
+            .filter(availabilities__session__in=self.season.sessions_with_qualifs,
                     availabilities__chosen=True)
             .distinct()
         )

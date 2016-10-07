@@ -17,17 +17,45 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+from django.core.exceptions import PermissionDenied
+
 from defivelo.roles import user_cantons
+
+from ..models import Season
 
 
 class CantonSeasonFormMixin(object):
+    @property
+    def season(self):
+        if not hasattr(self, '_season'):
+            try:
+                seasonpk = int(
+                    self.kwargs['seasonpk'] if 'seasonpk' in self.kwargs
+                    else self.kwargs['pk']
+                )
+                self._season = Season.objects.get(pk=seasonpk)
+
+                # Check that the intersection isn't empty
+                usercantons = user_cantons(self.request.user)
+                if usercantons and not list(
+                        set(usercantons)
+                        .intersection(set(self._season.cantons))
+                    ):
+                        raise PermissionDenied
+            except KeyError:
+                # We're looking at a list
+                self._season = None
+            except Season.DoesNotExist:
+                # I can't see it, or it doesn't exist
+                raise PermissionDenied
+        return self._season
+
     def get_form_kwargs(self):
         kwargs = super(CantonSeasonFormMixin, self).get_form_kwargs()
-        season = self.get_season()
-        kwargs['season'] = season
+        kwargs['season'] = self.season
         cantons = user_cantons(self.request.user)
-        if season and cantons:
+        if self.season and cantons:
             # Check that one canton is in the intersection
-            cantons = list(set(cantons).intersection(set(season.cantons)))
+            cantons = list(set(cantons).intersection(set(self.season.cantons)))
         kwargs['cantons'] = cantons
         return kwargs

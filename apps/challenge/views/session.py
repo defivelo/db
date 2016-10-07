@@ -38,15 +38,10 @@ class SessionMixin(CantonSeasonFormMixin, HasPermissionsMixin, MenuView):
     context_object_name = 'session'
     form_class = SessionForm
 
-    def get_season(self):
-        if not hasattr(self, 'season'):
-            self.season = Season.objects.get(pk=int(self.kwargs['seasonpk']))
-        return self.season
-
     def get_queryset(self):
         try:
             return self.model.objects.filter(
-                organization__address_canton__in=self.get_season().cantons
+                organization__address_canton__in=self.season.cantons
                 )
         except:
             return self.model.objects
@@ -54,7 +49,7 @@ class SessionMixin(CantonSeasonFormMixin, HasPermissionsMixin, MenuView):
     def get_success_url(self):
         return reverse_lazy('session-detail',
                             kwargs={
-                                'seasonpk': self.get_season().pk,
+                                'seasonpk': self.season.pk,
                                 'pk': self.object.pk
                                 })
 
@@ -62,7 +57,7 @@ class SessionMixin(CantonSeasonFormMixin, HasPermissionsMixin, MenuView):
         context = super(SessionMixin, self).get_context_data(**kwargs)
         # Add our menu_category context
         context['menu_category'] = 'season'
-        context['season'] = self.get_season()
+        context['season'] = self.season
         return context
 
 
