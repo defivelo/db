@@ -23,6 +23,7 @@ from functools import reduce
 
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse_lazy
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
@@ -72,22 +73,22 @@ class SeasonMixin(CantonSeasonFormMixin, HasPermissionsMixin, MenuView):
 
     def get_queryset(self):
         qs = super(SeasonMixin, self).get_queryset()
-        if self.model == get_user_model():
-            return qs
-
         usercantons = user_cantons(self.request.user)
-        if usercantons:
+        if self.model == Season and usercantons:
             cantons = [
                     Q(cantons__contains=state)
                     for state in user_cantons(self.request.user)
                 ]
             qs = qs.filter(reduce(operator.or_, cantons))
+        if self.model == get_user_model() and usercantons:
+            # Check that the intersection isn't empty
+            cantons = list(
+                set(usercantons)
+                .intersection(set(self.season.cantons))
+            )
+            if not cantons:
+                raise PermissionDenied
         return qs
-
-    def get_form_kwargs(self):
-        kwargs = super(SeasonMixin, self).get_form_kwargs()
-        kwargs['cantons'] = user_cantons(self.request.user)
-        return kwargs
 
 
 class SeasonListView(SeasonMixin, YearArchiveView):
