@@ -245,12 +245,12 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                     kwargs={
                         'seasonpk': self.season.pk,
                     }),
-                reverse(
-                    'session-detail',
-                    kwargs={
-                        'seasonpk': self.season.pk,
-                        'pk': session.pk,
-                    }),
+                #reverse(
+                    #'session-detail',
+                    #kwargs={
+                        #'seasonpk': self.season.pk,
+                        #'pk': session.pk,
+                    #}),
                 reverse(
                     'session-update',
                     kwargs={
