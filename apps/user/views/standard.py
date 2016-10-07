@@ -37,6 +37,7 @@ from rolepermissions.mixins import HasPermissionsMixin
 from apps.challenge.models import QualificationActivity
 from apps.common import DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.views import ExportMixin, PaginatorMixin
+from defivelo.roles import user_cantons
 
 from ..export import UserResource
 from ..models import (
@@ -90,6 +91,21 @@ class UserCreate(HasPermissionsMixin, ProfileMixin, SuccessMessageMixin,
 
 
 class UserProfileFilterSet(FilterSet):
+    def __init__(self, *args, **kwargs):
+        cantons = kwargs.pop('cantons', None)
+        super(UserProfileFilterSet, self).__init__(**kwargs)
+        if cantons:
+            if len(cantons) > 1:
+                choices = self.filters['profile__activity_cantons'].extra['choices']
+                choices = (
+                    (k, v) for (k, v)
+                    in choices
+                    if k in cantons or not k
+                )
+                self.filters['profile__activity_cantons'].extra['choices'] = choices
+            elif len(cantons) == 1:
+                del(self.filters['profile__activity_cantons'])
+
     def filter_cantons(queryset, value):
         if value:
             allcantons_filter = [
@@ -149,6 +165,16 @@ class UserList(HasPermissionsMixin, ProfileMixin, PaginatorMixin,
     required_permission = 'user_view_list'
     filterset_class = UserProfileFilterSet
     context_object_name = 'users'
+
+    def get_filterset_kwargs(self, filterset_class):
+        kwargs = (
+            super(UserList, self)
+            .get_filterset_kwargs(filterset_class)
+        )
+        usercantons = user_cantons(self.request.user)
+        if usercantons:
+            kwargs['cantons'] = usercantons
+        return kwargs
 
 
 class UserListExport(ExportMixin, UserList):

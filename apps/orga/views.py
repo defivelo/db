@@ -45,7 +45,8 @@ from .models import Organization
 
 
 class OrganizationFilterSet(FilterSet):
-    def __init__(self, cantons=None, **kwargs):
+    def __init__(self, *args, **kwargs):
+        cantons = kwargs.pop('cantons', None)
         super(OrganizationFilterSet, self).__init__(**kwargs)
         if cantons:
             if len(cantons) > 1:
