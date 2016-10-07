@@ -28,7 +28,7 @@ from rolepermissions.mixins import HasPermissionsMixin
 from defivelo.views import MenuView
 
 from ..forms import SessionForm
-from ..models import Season, Session
+from ..models import Session
 from .mixins import CantonSeasonFormMixin
 
 

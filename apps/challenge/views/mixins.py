@@ -40,8 +40,8 @@ class CantonSeasonFormMixin(object):
                 if usercantons and not list(
                         set(usercantons)
                         .intersection(set(self._season.cantons))
-                    ):
-                        raise PermissionDenied
+                ):
+                    raise PermissionDenied
             except KeyError:
                 # We're looking at a list
                 self._season = None

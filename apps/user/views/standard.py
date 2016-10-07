@@ -96,13 +96,15 @@ class UserProfileFilterSet(FilterSet):
         super(UserProfileFilterSet, self).__init__(**kwargs)
         if cantons:
             if len(cantons) > 1:
-                choices = self.filters['profile__activity_cantons'].extra['choices']
+                choices = \
+                    self.filters['profile__activity_cantons'].extra['choices']
                 choices = (
                     (k, v) for (k, v)
                     in choices
                     if k in cantons or not k
                 )
-                self.filters['profile__activity_cantons'].extra['choices'] = choices
+                self.filters['profile__activity_cantons'].extra['choices'] = \
+                    choices
             elif len(cantons) == 1:
                 del(self.filters['profile__activity_cantons'])
 

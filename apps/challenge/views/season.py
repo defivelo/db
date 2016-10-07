@@ -413,8 +413,10 @@ class SeasonHelperListView(HelpersList, SeasonMixin):
     def get_queryset(self):
         return (
             super(SeasonHelperListView, self).get_queryset()
-            .filter(availabilities__session__in=self.season.sessions_with_qualifs,
-                    availabilities__chosen=True)
+            .filter(
+                availabilities__session__in=self.season.sessions_with_qualifs,
+                availabilities__chosen=True
+            )
             .distinct()
         )
 
@@ -432,7 +434,9 @@ class SeasonActorListView(ActorsList, SeasonMixin):
     def get_queryset(self):
         return (
             super(SeasonActorListView, self).get_queryset()
-            .filter(availabilities__session__in=self.season.sessions_with_qualifs,
-                    availabilities__chosen=True)
+            .filter(
+                availabilities__session__in=self.season.sessions_with_qualifs,
+                availabilities__chosen=True
+            )
             .distinct()
         )
