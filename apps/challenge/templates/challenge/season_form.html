@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
-{% block head_title %}{% if session %}{% trans "Édition de la session" %}{% else %}{% trans "Nouvelle session" %}{% endif %}{% endblock %}
+{% block head_title %}{% if season %}{% trans "Édition de la saison" %}{% else %}{% trans "Nouvelle saison" %}{% endif %}{% endblock %}
 
 {% block bootstrap3_extra_head %}
 {{ form.media.css }}
@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-    <h1>{% if session %}{% trans "Édition de la session" %}{% else %}{% trans "Nouvelle session" %}{% endif %}</h1>
+    <h1>{% if season %}{% trans "Édition de la saison" %}{% else %}{% trans "Nouvelle saison" %}{% endif %}</h1>
 
 
     <form method="POST" action="" class="form-horizontal">
@@ -19,7 +19,7 @@
         {% bootstrap_form form layout='horizontal' size='small' %}
         {% buttons %}
             <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
-            {% if session %}
+            {% if season %}
                 <a class="btn btn-default" href="{% url 'season-detail' pk=season.pk %}">{% trans "Annuler" %}</a>
             {% else %}
                 <a class="btn btn-default" href="{% url 'season-list' %}">{% trans "Annuler" %}</a>

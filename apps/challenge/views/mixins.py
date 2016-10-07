@@ -20,8 +20,12 @@ from __future__ import unicode_literals
 from defivelo.roles import user_cantons
 
 
-class CantonFormMixin(object):
+class CantonSeasonFormMixin(object):
     def get_form_kwargs(self):
-        kwargs = super(CantonFormMixin, self).get_form_kwargs()
-        kwargs['cantons'] = user_cantons(self.request.user)
+        kwargs = super(CantonSeasonFormMixin, self).get_form_kwargs()
+        season = self.get_season()
+        kwargs['season'] = season
+        kwargs['cantons'] = set(season.cantons).intersection(
+            user_cantons(self.request.user)
+        )
         return kwargs

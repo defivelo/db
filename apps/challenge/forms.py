@@ -19,9 +19,11 @@ from __future__ import unicode_literals
 
 import autocomplete_light
 from django import forms
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.template.defaultfilters import date
 from django.utils.translation import ugettext_lazy as _
 from localflavor.ch.forms import CHPhoneNumberField, CHStateSelect
 
@@ -40,6 +42,7 @@ from .models.availability import HelperSessionAvailability
 class SeasonForm(autocomplete_light.ModelForm):
     def __init__(self, *args, **kwargs):
         cantons = kwargs.pop('cantons', None)
+        season = kwargs.pop('season', None)
         super(SeasonForm, self).__init__(**kwargs)
         if cantons:
             # Only permit edition within the allowed cantons
@@ -63,6 +66,7 @@ class SeasonForm(autocomplete_light.ModelForm):
 class SessionForm(autocomplete_light.ModelForm):
     def __init__(self, *args, **kwargs):
         cantons = kwargs.pop('cantons', None)
+        self.season = kwargs.pop('season', None)
         super(SessionForm, self).__init__(**kwargs)
         if cantons:
             # Only permit organizations within the allowed cantons
@@ -87,6 +91,17 @@ class SessionForm(autocomplete_light.ModelForm):
                                      )}))
     helpers_time = SwissTimeField(label=_('Heure rendez-vous moniteurs'),
                                   required=False)
+
+    def clean_day(self):
+        day = self.cleaned_data['day']
+        if self.season.begin <= day <= self.season.end:
+            return day
+        raise forms.ValidationError(
+            _('La session doit être dans la saison'
+              ' (entre {begin} et {end})').format(
+                  begin=date(self.season.begin, settings.DATE_FORMAT),
+                  end=date(self.season.end, settings.DATE_FORMAT),
+                  ))
 
     class Meta:
         model = Session
