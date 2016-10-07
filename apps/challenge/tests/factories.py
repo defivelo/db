@@ -19,19 +19,29 @@ from __future__ import unicode_literals
 
 from datetime import date
 
+import factory
 from factory import fuzzy
 from factory.django import DjangoModelFactory
 
 from apps.common import DV_STATES
+from apps.orga.tests.factories import OrganizationFactory
 
-from ..models import Season
+from ..models import Season, Session
 
 
 class SeasonFactory(DjangoModelFactory):
     class Meta:
         model = Season
 
-    begin = fuzzy.FuzzyDate(date(2015, 1, 1), date(2015, 6, 1))
-    end = fuzzy.FuzzyDate(date(2015, 6, 2), date(2015, 12, 31))
+    begin = fuzzy.FuzzyDate(date(2015, 1, 1), date(2015, 5, 1))
+    end = fuzzy.FuzzyDate(date(2015, 7, 1), date(2015, 12, 31))
     # Juste un canton
     cantons = fuzzy.FuzzyChoice(DV_STATES)
+
+
+class SessionFactory(DjangoModelFactory):
+    class Meta:
+        model = Session
+
+    organization = factory.SubFactory(OrganizationFactory)
+    day = fuzzy.FuzzyDate(date(2015, 5, 2), date(2015, 6, 30))

@@ -39,12 +39,12 @@ class SessionMixin(CantonSeasonFormMixin, HasPermissionsMixin, MenuView):
     form_class = SessionForm
 
     def get_queryset(self):
-        try:
-            return self.model.objects.filter(
+        return (
+            super(SessionMixin, self).get_queryset()
+            .filter(
                 organization__address_canton__in=self.season.cantons
-                )
-        except:
-            return self.model.objects
+            )
+        )
 
     def get_success_url(self):
         return reverse_lazy('session-detail',
