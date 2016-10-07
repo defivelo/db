@@ -54,6 +54,7 @@ class StateManager(AbstractUserRole):
         'orga_crud': True,
 
         'challenge_season_crud': True,
+        'challenge_session_crud': True,
     }
 
 
