@@ -22,6 +22,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.utils.html import escape
+from django.utils.translation import ugettext_lazy as _
 from rolepermissions.verifications import has_permission
 
 from apps.challenge import MAX_MONO1_PER_QUALI
@@ -112,6 +113,8 @@ class Actors(PersonAutocomplete):
         return qs.exclude(
             profile__actor_for__isnull=True
         )
+
+ac_placeholder = _('type some text to search in this autocomplete')
 
 al_register(AllPersons)
 al_register(PersonsRelevantForSeason)
