@@ -42,7 +42,7 @@ from .models.availability import HelperSessionAvailability
 class SeasonForm(autocomplete_light.ModelForm):
     def __init__(self, *args, **kwargs):
         cantons = kwargs.pop('cantons', None)
-        season = kwargs.pop('season', None)
+        kwargs.pop('season', None)
         super(SeasonForm, self).__init__(**kwargs)
         if cantons:
             # Only permit edition within the allowed cantons
@@ -143,8 +143,8 @@ class QualificationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         session = kwargs.pop('session')
-        season = kwargs.pop('season', None)
-        cantons = kwargs.pop('cantons', None)
+        kwargs.pop('season', None)
+        kwargs.pop('cantons', None)
         super(QualificationForm, self).__init__(*args, **kwargs)
         other_qualifs = session.qualifications.exclude(pk=self.instance.pk)
         available_staff = (
