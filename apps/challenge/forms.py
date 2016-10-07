@@ -143,6 +143,8 @@ class QualificationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         session = kwargs.pop('session')
+        season = kwargs.pop('season', None)
+        cantons = kwargs.pop('cantons', None)
         super(QualificationForm, self).__init__(*args, **kwargs)
         other_qualifs = session.qualifications.exclude(pk=self.instance.pk)
         available_staff = (
@@ -360,6 +362,8 @@ class SeasonAvailabilityForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.season = kwargs.pop('instance')
         self.potential_helpers = kwargs.pop('potential_helpers')
+        kwargs.pop('season', None)
+        kwargs.pop('cantons', None)
         super(SeasonAvailabilityForm, self).__init__(*args, **kwargs)
 
         if self.potential_helpers:
@@ -394,6 +398,8 @@ class SeasonStaffChoiceForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.season = kwargs.pop('instance')
         self.available_helpers = kwargs.pop('available_helpers')
+        kwargs.pop('season', None)
+        kwargs.pop('cantons', None)
         super(SeasonStaffChoiceForm, self).__init__(*args, **kwargs)
 
         if self.available_helpers:

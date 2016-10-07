@@ -25,7 +25,8 @@ class CantonSeasonFormMixin(object):
         kwargs = super(CantonSeasonFormMixin, self).get_form_kwargs()
         season = self.get_season()
         kwargs['season'] = season
-        kwargs['cantons'] = set(season.cantons).intersection(
-            user_cantons(self.request.user)
-        )
+        cantons = user_cantons(self.request.user)
+        if season and cantons:
+            cantons = list(set(cantons).intersection(set(season.cantons)))
+        kwargs['cantons'] = cantons
         return kwargs
