@@ -146,8 +146,11 @@
                         </dl>
                     </div>
                 {% if request.user|can:'user_crud_dv_private_fields' and userprofile.profile.comments %}
-                    <div role="tabpane" class="tab-pane" id="notes">
-                       {{ userprofile.profile.comments }}
+                    <div role="tabpane" class="tab-pane panel panel-danger" id="notes">
+                        <div class="panel-heading">{% trans "Remarques privées" %}</div>
+                        <div class="panel-body">
+                        {{ userprofile.profile.comments }}
+                        </div>
                     </div>
                 {% endif %}
             </div>
