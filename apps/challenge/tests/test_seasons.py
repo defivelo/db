@@ -135,9 +135,11 @@ class StateManagerUserTest(SeasonTestCaseMixin):
         self.sessions = []
         for canton in mycantons:
             s = SessionFactory()
-            s.organization.canton = canton
+            s.organization.address_canton = canton
+            s.organization.save()
             s.save()
             self.sessions.append(s)
+
         OTHERSTATES = [c for c in DV_STATES if c not in mycantons]
         self.foreignseason = SeasonFactory(cantons=OTHERSTATES)
         self.foreignseason.save()
@@ -145,7 +147,8 @@ class StateManagerUserTest(SeasonTestCaseMixin):
         self.foreignsessions = []
         for canton in OTHERSTATES:
             s = SessionFactory()
-            s.organization.canton = canton
+            s.organization.address_canton = canton
+            s.organization.save()
             s.save()
             self.foreignsessions.append(s)
 
@@ -245,12 +248,12 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                     kwargs={
                         'seasonpk': self.season.pk,
                     }),
-                #reverse(
-                    #'session-detail',
-                    #kwargs={
-                        #'seasonpk': self.season.pk,
-                        #'pk': session.pk,
-                    #}),
+                reverse(
+                    'session-detail',
+                    kwargs={
+                        'seasonpk': self.season.pk,
+                        'pk': session.pk,
+                    }),
                 reverse(
                     'session-update',
                     kwargs={
