@@ -40,18 +40,42 @@ restrictedhelperspecificurls = ['season-availabilities-update', ]
 
 class SeasonTestCaseMixin(TestCase):
     def setUp(self):
-        self.client = AuthClient()
-        self.season = SeasonFactory()
         self.users = [UserFactory() for i in range(3)]
+
+        self.season = SeasonFactory()
+        mycantons = [c.canton for c in self.client.user.managedstates.all()]
+        if mycantons:
+            self.season.cantons = mycantons
+        else:
+            self.season.cantons = [DV_STATES[0], ]
+        self.season.save()
+
         self.sessions = []
-        for i in range(3):
+        for canton in mycantons:
             s = SessionFactory()
-            s.organization.canton = self.season.cantons[0]
+            s.organization.address_canton = canton
+            s.organization.save()
             s.save()
             self.sessions.append(s)
 
+        OTHERSTATES = [c for c in DV_STATES if c not in mycantons]
+        self.foreignseason = SeasonFactory(cantons=OTHERSTATES)
+        self.foreignseason.save()
+
+        self.foreignsessions = []
+        for canton in OTHERSTATES:
+            s = SessionFactory()
+            s.organization.address_canton = canton
+            s.organization.save()
+            s.save()
+            self.foreignsessions.append(s)
+
 
 class AuthUserTest(SeasonTestCaseMixin):
+    def setUp(self):
+        self.client = AuthClient()
+        super(AuthUserTest, self).setUp()
+
     def test_no_access_to_season_list(self):
         for symbolicurl in restrictedgenericurls:
             url = reverse(symbolicurl)
@@ -125,32 +149,9 @@ class AuthUserTest(SeasonTestCaseMixin):
 
 class StateManagerUserTest(SeasonTestCaseMixin):
     def setUp(self):
+        self.client = StateManagerAuthClient()
         super(StateManagerUserTest, self).setUp()
 
-        self.client = StateManagerAuthClient()
-        mycantons = [c.canton for c in self.client.user.managedstates.all()]
-        self.season.cantons = mycantons
-        self.season.save()
-
-        self.sessions = []
-        for canton in mycantons:
-            s = SessionFactory()
-            s.organization.address_canton = canton
-            s.organization.save()
-            s.save()
-            self.sessions.append(s)
-
-        OTHERSTATES = [c for c in DV_STATES if c not in mycantons]
-        self.foreignseason = SeasonFactory(cantons=OTHERSTATES)
-        self.foreignseason.save()
-
-        self.foreignsessions = []
-        for canton in OTHERSTATES:
-            s = SessionFactory()
-            s.organization.address_canton = canton
-            s.organization.save()
-            s.save()
-            self.foreignsessions.append(s)
 
     def test_access_to_season_list(self):
         for symbolicurl in restrictedgenericurls:
@@ -281,8 +282,8 @@ class StateManagerUserTest(SeasonTestCaseMixin):
 
 class PowerUserTest(SeasonTestCaseMixin):
     def setUp(self):
-        super(PowerUserTest, self).setUp()
         self.client = PowerUserAuthClient()
+        super(PowerUserTest, self).setUp()
 
     def test_access_to_season_list(self):
         for symbolicurl in restrictedgenericurls:
@@ -306,5 +307,95 @@ class PowerUserTest(SeasonTestCaseMixin):
                         'helperpk': helper.pk
                         })
                 # Final URL is OK
+                response = self.client.get(url, follow=True)
+                self.assertEqual(response.status_code, 200, url)
+
+    def test_access_to_foreignsession(self):
+        for session in self.foreignsessions:
+            urls = [
+                reverse(
+                    'session-list',
+                    kwargs={
+                        'seasonpk': self.foreignseason.pk,
+                        'year': session.day.year,
+                        'week': session.day.strftime('%W'),
+                    }),
+                reverse(
+                    'session-create',
+                    kwargs={
+                        'seasonpk': self.foreignseason.pk,
+                    }),
+                reverse(
+                    'session-detail',
+                    kwargs={
+                        'seasonpk': self.foreignseason.pk,
+                        'pk': session.pk,
+                    }),
+                reverse(
+                    'session-update',
+                    kwargs={
+                        'seasonpk': self.foreignseason.pk,
+                        'pk': session.pk,
+                    }),
+                reverse(
+                    'session-staff-choices',
+                    kwargs={
+                        'seasonpk': self.foreignseason.pk,
+                        'pk': session.pk,
+                    }),
+                reverse(
+                    'session-delete',
+                    kwargs={
+                        'seasonpk': self.foreignseason.pk,
+                        'pk': session.pk,
+                    }),
+            ]
+            for url in urls:
+                # Final URL is forbidden
+                response = self.client.get(url, follow=True)
+                self.assertEqual(response.status_code, 200, url)
+
+    def test_access_to_mysession(self):
+        for session in self.sessions:
+            urls = [
+                reverse(
+                    'session-list',
+                    kwargs={
+                        'seasonpk': self.season.pk,
+                        'year': session.day.year,
+                        'week': session.day.strftime('%W'),
+                    }),
+                reverse(
+                    'session-create',
+                    kwargs={
+                        'seasonpk': self.season.pk,
+                    }),
+                reverse(
+                    'session-detail',
+                    kwargs={
+                        'seasonpk': self.season.pk,
+                        'pk': session.pk,
+                    }),
+                reverse(
+                    'session-update',
+                    kwargs={
+                        'seasonpk': self.season.pk,
+                        'pk': session.pk,
+                    }),
+                reverse(
+                    'session-staff-choices',
+                    kwargs={
+                        'seasonpk': self.season.pk,
+                        'pk': session.pk,
+                    }),
+                reverse(
+                    'session-delete',
+                    kwargs={
+                        'seasonpk': self.season.pk,
+                        'pk': session.pk,
+                    }),
+            ]
+            for url in urls:
+                # Final URL is forbidden
                 response = self.client.get(url, follow=True)
                 self.assertEqual(response.status_code, 200, url)
