@@ -152,7 +152,6 @@ class StateManagerUserTest(SeasonTestCaseMixin):
         self.client = StateManagerAuthClient()
         super(StateManagerUserTest, self).setUp()
 
-
     def test_access_to_season_list(self):
         for symbolicurl in restrictedgenericurls:
             url = reverse(symbolicurl)
