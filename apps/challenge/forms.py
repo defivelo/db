@@ -77,13 +77,18 @@ class SessionForm(autocomplete_light.ModelForm):
         cantons = kwargs.pop('cantons', None)
         self.season = kwargs.pop('season', None)
         super(SessionForm, self).__init__(**kwargs)
-        if cantons:
+        if self.season.cantons:
             # Only permit organizations within the allowed cantons
             qs = (
                 self.fields['organization'].queryset
-                .filter(address_canton__in=cantons)
+                .filter(address_canton__in=self.season.cantons)
             )
             self.fields['organization'].queryset = qs
+        if self.season:
+            if self.season.begin:
+                self.fields['day'].widget.options['minDate'] = self.season.begin.strftime('%Y-%m-%d')
+            if self.season.end:
+                self.fields['day'].widget.options['maxDate'] = self.season.end.strftime('%Y-%m-%d')
 
     day = SwissDateField(label=_('Date'))
     begin = SwissTimeField(label=_('Début'), required=False)
