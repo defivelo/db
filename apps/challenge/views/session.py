@@ -18,6 +18,7 @@
 from __future__ import unicode_literals
 
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import FieldError
 from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.dates import WeekArchiveView
@@ -39,12 +40,14 @@ class SessionMixin(CantonSeasonFormMixin, HasPermissionsMixin, MenuView):
     form_class = SessionForm
 
     def get_queryset(self):
-        return (
-            super(SessionMixin, self).get_queryset()
-            .filter(
-                organization__address_canton__in=self.season.cantons
-            )
-        )
+        qs = super(SessionMixin, self).get_queryset()
+        try:
+            return qs.filter(
+                    organization__address_canton__in=self.season.cantons
+                )
+        except FieldError:
+            # For the cases qs is Qualification, not Session
+            return qs
 
     def get_success_url(self):
         return reverse_lazy('session-detail',
