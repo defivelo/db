@@ -53,7 +53,8 @@ class Session(Address, models.Model):
     organization = models.ForeignKey(Organization,
                                      verbose_name=_('Établissement'),
                                      related_name='sessions',
-                                     blank=True, null=True)
+                                     limit_choices_to={'address_canton__isnull': False}
+                                     )
     place = models.CharField(_("Lieu de la qualification"),
                              max_length=512, blank=True)
     FALLBACK_CHOICES = (
@@ -74,7 +75,6 @@ class Session(Address, models.Model):
     class Meta:
         verbose_name = _('Session')
         verbose_name_plural = _('Sessions')
-        unique_together = (('organization', 'begin', 'day'),)
         ordering = ['day', 'begin', 'organization__name']
 
     @property

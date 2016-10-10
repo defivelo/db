@@ -24,8 +24,8 @@ from factory import fuzzy
 from factory.django import DjangoModelFactory
 
 from apps.common import DV_STATES
-from apps.user.tests.factories import UserFactory
 from apps.orga.tests.factories import OrganizationFactory
+from apps.user.tests.factories import UserFactory
 
 from ..models import Season, Session
 
