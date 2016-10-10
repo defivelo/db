@@ -228,3 +228,11 @@ def inusercantons(user, canton):
         return True
     except PermissionDenied:
         return
+
+
+@register.filter
+def lettercounter(count):
+    icount = int(count)
+    if 0 <= icount <= 26:
+        return chr(64 + icount)
+    return icount

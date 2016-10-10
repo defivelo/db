@@ -255,7 +255,7 @@ class QualificationForm(forms.ModelForm):
                   'class_teacher_fullname', 'class_teacher_natel',
                   'n_participants', 'n_bikes', 'n_helmets',
                   'leader', 'helpers',
-                  'activity_A', 'activity_B', 'activity_C', 'actor', 'route',
+                  'activity_A', 'activity_B', 'activity_C', 'actor',
                   'comments']
 
 

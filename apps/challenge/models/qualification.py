@@ -112,14 +112,6 @@ class Qualification(models.Model):
                                   'profile__actor_for__isnull': False
                               },
                               blank=True, null=True)
-    ROUTE_CHOICES = (
-        ('A', 'A'),
-        ('B', 'B'),
-        ('C', 'C'),
-        ('D', 'D'),
-    )
-    route = models.CharField(_("Parcours"), max_length=1,
-                             choices=ROUTE_CHOICES, blank=True)
     comments = models.TextField(_('Remarques'), blank=True)
 
     @property

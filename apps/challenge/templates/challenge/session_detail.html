@@ -100,7 +100,7 @@
                 {% endfor %}
         </tr>
         <tr><th>{% trans "Parcours" %}</th>
-                {% for quali in session.qualifications.all %}<td><em>{{ quali.route|default:"" }}</em></td>{% endfor %}</tr>
+                {% for quali in session.qualifications.all %}<td><em>{{ forloop.counter|lettercounter }}</em></td>{% endfor %}</tr>
         <tr><th>{% trans "Besoins" %}</th>
                 {% for quali in session.qualifications.all %}
                     <td>{% if quali.n_bikes %}
