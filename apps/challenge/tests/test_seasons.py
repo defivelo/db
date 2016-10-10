@@ -21,6 +21,8 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 from apps.common import DV_STATES
+from apps.common.forms import SWISS_DATE_INPUT_FORMAT
+from apps.orga.tests.factories import OrganizationFactory
 from apps.user.tests.factories import UserFactory
 from defivelo.tests.utils import (
     AuthClient, PowerUserAuthClient, StateManagerAuthClient,
@@ -212,6 +214,36 @@ class StateManagerUserTest(SeasonTestCaseMixin):
         # That must not work
         response = self.client.post(url, initial)
         self.assertEqual(response.status_code, 200, url)
+
+    def test_session_creation(self):
+        url = reverse('session-create', kwargs={'seasonpk': self.season.pk})
+        # Final URL is OK
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200, url)
+
+        initial = {
+            'day': (self.season.begin).strftime(SWISS_DATE_INPUT_FORMAT),
+            'begin': '09:00',
+            }
+
+        # 200 because we're back on the page, because organization' empty
+        response = self.client.post(url, initial)
+        self.assertEqual(response.status_code, 200, url)
+
+        orga = OrganizationFactory(
+            address_canton=self.foreignseason.cantons[0]
+        )
+        initial['organization'] = orga.pk
+        # 200 because we're back on the page, because organization is not
+        # in our canton
+        response = self.client.post(url, initial)
+        self.assertEqual(response.status_code, 200, url)
+
+        orga = OrganizationFactory(address_canton=self.season.cantons[0])
+        initial['organization'] = orga.pk
+        # That works now
+        response = self.client.post(url, initial)
+        self.assertEqual(response.status_code, 302, url)
 
     def test_no_access_to_foreign_season(self):
         for symbolicurl in restrictedspecificurls:

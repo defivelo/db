@@ -40,6 +40,7 @@ class SeasonFactory(DjangoModelFactory):
     cantons = fuzzy.FuzzyChoice(DV_STATES)
     leader = factory.SubFactory(UserFactory)
 
+
 class SessionFactory(DjangoModelFactory):
     class Meta:
         model = Session

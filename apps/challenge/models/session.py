@@ -53,7 +53,9 @@ class Session(Address, models.Model):
     organization = models.ForeignKey(Organization,
                                      verbose_name=_('Établissement'),
                                      related_name='sessions',
-                                     limit_choices_to={'address_canton__isnull': False}
+                                     limit_choices_to={
+                                         'address_canton__isnull': False
+                                     }
                                      )
     place = models.CharField(_("Lieu de la qualification"),
                              max_length=512, blank=True)
