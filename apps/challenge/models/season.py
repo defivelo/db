@@ -38,6 +38,9 @@ class Season(models.Model):
     cantons = MultiSelectField(_('Cantons'), choices=DV_STATE_CHOICES)
     leader = models.ForeignKey(settings.AUTH_USER_MODEL,
                                verbose_name=_('Chargé de projet'),
+                               limit_choices_to={
+                                   'managedstates__isnull': False
+                               },
                                blank=True, null=True)
 
     class Meta:
