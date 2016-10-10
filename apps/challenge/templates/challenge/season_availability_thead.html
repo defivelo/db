@@ -4,7 +4,7 @@
         <td rowspan="5" colspan="{{ preamble_columns|default:1 }}">&nbsp;</td>
         {% for session in sessions %}
             <th class="text-center">
-                <a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">
+                <a id="sess{{session.pk}}" href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">
                     {{ session.day|date:"j F" }}
                 </a>
             </th>
