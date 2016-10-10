@@ -54,6 +54,15 @@ class SeasonForm(autocomplete_light.ModelForm):
             )
             self.fields['cantons'].choices = choices
 
+    def clean_end(self):
+        begin = self.cleaned_data.get("begin")
+        end = self.cleaned_data.get("end")
+        if end <= begin:
+            raise forms.ValidationError(
+                _("La fin doit être après le début.")
+            )
+        return end
+
     begin = SwissDateField(label=_('Début'))
     end = SwissDateField(label=_('Fin'))
 

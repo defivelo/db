@@ -43,27 +43,31 @@ class SeasonTestCaseMixin(TestCase):
         self.users = [UserFactory() for i in range(3)]
 
         self.season = SeasonFactory()
-        mycantons = [c.canton for c in self.client.user.managedstates.all()]
-        if mycantons:
-            self.season.cantons = mycantons
+        self.mycantons = [
+            c.canton for c in self.client.user.managedstates.all()
+        ]
+        if self.mycantons:
+            self.season.cantons = self.mycantons
         else:
             self.season.cantons = [DV_STATES[0], ]
         self.season.save()
 
         self.sessions = []
-        for canton in mycantons:
+        for canton in self.mycantons:
             s = SessionFactory()
             s.organization.address_canton = canton
             s.organization.save()
             s.save()
             self.sessions.append(s)
 
-        OTHERSTATES = [c for c in DV_STATES if c not in mycantons]
-        self.foreignseason = SeasonFactory(cantons=OTHERSTATES)
+        self.foreigncantons = [
+            c for c in DV_STATES if c not in self.mycantons
+        ]
+        self.foreignseason = SeasonFactory(cantons=self.foreigncantons)
         self.foreignseason.save()
 
         self.foreignsessions = []
-        for canton in OTHERSTATES:
+        for canton in self.foreigncantons:
             s = SessionFactory()
             s.organization.address_canton = canton
             s.organization.save()
@@ -177,7 +181,38 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                 response = self.client.get(url, follow=True)
                 self.assertEqual(response.status_code, 200, url)
 
-    def test_access_to_foreign_season(self):
+    def test_season_creation(self):
+        url = reverse('season-create')
+        # Final URL is OK
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200, url)
+
+        initial = {
+            'begin': '09.03.2015',
+            'end': '10.03.2015',
+            'cantons': []
+            }
+
+        # 200 because we're back on the page, because cantons' empty
+        response = self.client.post(url, initial)
+        self.assertEqual(response.status_code, 200, url)
+
+        initial['cantons'] = self.foreigncantons
+        # 200 because we're back on the page, because cantons' not our cantons
+        response = self.client.post(url, initial)
+        self.assertEqual(response.status_code, 200, url)
+
+        initial['cantons'] = self.mycantons
+        # That works now
+        response = self.client.post(url, initial)
+        self.assertEqual(response.status_code, 302, url)
+
+        initial['end'] = '08.03.2015'  # Inverse dates
+        # That must not work
+        response = self.client.post(url, initial)
+        self.assertEqual(response.status_code, 200, url)
+
+    def test_no_access_to_foreign_season(self):
         for symbolicurl in restrictedspecificurls:
             url = reverse(symbolicurl, kwargs={'pk': self.foreignseason.pk})
             # Final URL is NOK
