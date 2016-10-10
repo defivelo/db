@@ -64,7 +64,7 @@
     {% if session.qualifications.count > 0 %}
         <tr><td></td>
             {% for quali in session.qualifications.all %}
-                <th>{% if not quali.errors %}<span class="hidden-print btn-success btn-xs disabled"><span class="glyphicon glyphicon-ok" title="{% trans "OK" %}"></span></span>{% endif%}
+                <th>{% if not quali.errors %}{% include "ok.html" %}{% endif%}
                 {{ forloop.counter }} - <a href="{% url 'quali-update' seasonpk=season.pk sessionpk=session.pk pk=quali.pk %}">{{ quali.name }}</a>
                 {% if quali.errors %}
                     <br />
