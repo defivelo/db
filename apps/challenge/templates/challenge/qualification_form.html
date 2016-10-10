@@ -6,10 +6,6 @@
 {% block bootstrap3_extra_head %}
 {{ form.media.css }}
 {% endblock %}
-{% block bootstrap3_extra_script %}
-{{ form.media.js }}
-{% endblock %}
-
 {% block content %}
     <h1>{{ session }}</h1>
     <h2>{% if qualification %}{% trans "Édition de la qualification" %}{% else %}{% trans "Nouvelle qualification" %}{% endif %}</h2>
@@ -29,4 +25,16 @@
             <a class="btn btn-default" href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">{% trans "Annuler" %}</a>
         {% endbuttons %}
     </form>
+{% endblock %}
+
+{% block bootstrap3_extra_script %}
+{{ form.media.js }}
+<script type="text/javascript">
+{% comment %}Permet la sélection des moniteurs 1 sans control-click{% endcomment %}
+$('select#id_helpers option').mousedown(function(e) {
+    e.preventDefault();
+    $(this).prop('selected', $(this).prop('selected') ? false : true);
+    return false;
+});
+</script>
 {% endblock %}
