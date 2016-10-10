@@ -190,7 +190,8 @@ class StateManagerUserTest(SeasonTestCaseMixin):
         initial = {
             'begin': '09.03.2015',
             'end': '10.03.2015',
-            'cantons': []
+            'cantons': [],
+            'leader': self.client.user.pk,
             }
 
         # 200 because we're back on the page, because cantons' empty

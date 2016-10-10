@@ -24,6 +24,7 @@ from factory import fuzzy
 from factory.django import DjangoModelFactory
 
 from apps.common import DV_STATES
+from apps.user.tests.factories import UserFactory
 from apps.orga.tests.factories import OrganizationFactory
 
 from ..models import Season, Session
@@ -37,7 +38,7 @@ class SeasonFactory(DjangoModelFactory):
     end = fuzzy.FuzzyDate(date(2015, 7, 1), date(2015, 12, 31))
     # Juste un canton
     cantons = fuzzy.FuzzyChoice(DV_STATES)
-
+    leader = factory.SubFactory(UserFactory)
 
 class SessionFactory(DjangoModelFactory):
     class Meta:
