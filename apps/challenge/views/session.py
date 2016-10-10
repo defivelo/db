@@ -61,7 +61,11 @@ class SessionMixin(CantonSeasonFormMixin, HasPermissionsMixin, MenuView):
         # Add our menu_category context
         context['menu_category'] = 'season'
         context['season'] = self.season
-        mysession = self.get_object()
+        try:
+            mysession = self.get_object()
+        except AttributeError:
+            return context
+
         session_pages = {
             'session_current': None,
             'session_next': None,
