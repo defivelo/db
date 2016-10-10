@@ -41,7 +41,7 @@ class Season(models.Model):
                                limit_choices_to={
                                    'managedstates__isnull': False
                                },
-                               blank=True, null=True)
+                               )
 
     class Meta:
         verbose_name = _('Saison')
