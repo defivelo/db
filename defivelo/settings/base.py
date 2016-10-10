@@ -156,7 +156,9 @@ USE_L10N = True
 USE_TZ = True
 
 DATE_FORMAT = 'j F Y'
+DATE_FORMAT_SHORT = 'j.m'
 TIME_FORMAT = 'G\hi'
+TIME_FORMAT_SHORT = 'G:i'
 
 LANGUAGES = (
     ('fr', gettext('French')),

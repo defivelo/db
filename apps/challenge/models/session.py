@@ -197,6 +197,14 @@ class Session(Address, models.Model):
             return mark_safe('<em>{}</em>'.format(helpers_time))
         return ''
 
+    @cached_property
+    def short(self):
+        return _('{place} {date}@{time}').format(
+            date=date(self.day, settings.DATE_FORMAT_SHORT),
+            time=(date(self.begin, settings.TIME_FORMAT_SHORT) if self.begin else ''),
+            place=self.organization.name
+            )
+
     def __str__(self):
         return (
             date(self.day, settings.DATE_FORMAT) +

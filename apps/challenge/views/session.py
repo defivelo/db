@@ -61,6 +61,26 @@ class SessionMixin(CantonSeasonFormMixin, HasPermissionsMixin, MenuView):
         # Add our menu_category context
         context['menu_category'] = 'season'
         context['season'] = self.season
+        mysession = self.get_object()
+        session_pages = {
+            'session_current': None,
+            'session_next': None,
+        }
+
+        # Iterate through all of them, index is 'next'
+        for session in self.season.sessions.all():
+            session_pages['session_current'] = session_pages['session_next']
+            session_pages['session_next'] = session
+            # On arrive
+            if session_pages['session_next'].pk == mysession.pk:
+                context['session_previous'] = session_pages['session_current']
+            # On y est
+            if (
+                session_pages['session_current'] and
+                session_pages['session_current'].pk == mysession.pk
+            ):
+                context['session_next'] = session_pages['session_next']
+                break
         return context
 
 
