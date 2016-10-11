@@ -174,7 +174,7 @@ class Session(Address, models.Model):
 
     def n_quali_things(self, field):
         return sum(
-            [q for q in self.qualifications.values_list(field, flat=True)]
+            [q for q in self.qualifications.values_list(field, flat=True) if q]
         )
 
     @cached_property

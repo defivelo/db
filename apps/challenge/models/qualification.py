@@ -30,14 +30,20 @@ from apps.user import FORMATION_KEYS, FORMATION_M2
 from .. import MAX_MONO1_PER_QUALI
 from .session import Session
 
+CATEGORY_CHOICE_A = _('Vélo dans la rue')
+CATEGORY_CHOICE_B = _('Mécanique')
+CATEGORY_CHOICE_C = _('Rencontre')
+
+CATEGORY_CHOICES = (
+    ('A', CATEGORY_CHOICE_A),
+    ('B', CATEGORY_CHOICE_B),
+    ('C', CATEGORY_CHOICE_C),
+)
+
 
 @python_2_unicode_compatible
 class QualificationActivity(TranslatableModel):
-    CATEGORY_CHOICES = (
-        ('A', _('Vélo dans la rue')),
-        ('B', _('Mécanique')),
-        ('C', _('Rencontre')),
-    )
+
     translations = TranslatedFields(
         name=models.CharField(_('Nom'), max_length=255)
     )
@@ -75,19 +81,19 @@ class Qualification(models.Model):
         blank=True, null=True)
     activity_A = models.ForeignKey(QualificationActivity,
                                    limit_choices_to={'category': 'A'},
-                                   verbose_name=_('Vélo dans la rue'),
+                                   verbose_name=CATEGORY_CHOICE_A,
                                    related_name='qualifs_A',
                                    blank=True, null=True
                                    )
     activity_B = models.ForeignKey(QualificationActivity,
                                    limit_choices_to={'category': 'B'},
-                                   verbose_name=_('Mécanique'),
+                                   verbose_name=CATEGORY_CHOICE_B,
                                    related_name='qualifs_B',
                                    blank=True, null=True
                                    )
     activity_C = models.ForeignKey(QualificationActivity,
                                    limit_choices_to={'category': 'C'},
-                                   verbose_name=_('Rencontre'),
+                                   verbose_name=CATEGORY_CHOICE_C,
                                    related_name='qualifs_C',
                                    blank=True, null=True
                                    )
