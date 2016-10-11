@@ -182,6 +182,17 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                 # Final URL is OK
                 response = self.client.get(url, follow=True)
                 self.assertEqual(response.status_code, 200, url)
+        for exportformat in ['csv', 'ods', 'xls']:
+                url = reverse(
+                    'season-export',
+                    kwargs={
+                        'pk': self.season.pk,
+                        'format': exportformat
+                        })
+                # Final URL is OK
+                response = self.client.get(url, follow=True)
+                self.assertEqual(response.status_code, 200, url)
+
 
     def test_season_creation(self):
         url = reverse('season-create')
