@@ -226,7 +226,7 @@ class SeasonExportView(ExportMixin, SeasonAvailabilityMixin, DetailView):
                 session_place,
                 '%s - %s' % (time(session.begin), time(session.end)),
                 session.n_qualifications,
-                session.fallback,
+                str(session.fallback),
                 session.apples,
                 session.n_bikes,
                 session.n_helmets,
@@ -263,9 +263,9 @@ class SeasonExportView(ExportMixin, SeasonAvailabilityMixin, DetailView):
                     col.append(quali.n_participants)
                     col.append(quali.n_bikes)
                     col.append(quali.n_helmets)
-                    col.append(quali.activity_A)
-                    col.append(quali.activity_B)
-                    col.append(quali.activity_C)
+                    col.append(str(quali.activity_A))
+                    col.append(str(quali.activity_B))
+                    col.append(str(quali.activity_C))
                     col.append(
                         EXPORT_NAMETEL.format(
                             name=quali.actor.get_full_name(),
