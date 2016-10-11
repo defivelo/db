@@ -110,7 +110,7 @@
                 {% for quali in session.qualifications.all %}<td>{{ quali.leader|profile_tag }}</td>{% endfor %}</tr>
         <tr><th>{% trans "Moniteurs 1" %}</th>
                 {% for quali in session.qualifications.all %}<td>{% for helper in quali.helpers.all %}{{ helper|profile_tag }}<br />{% endfor %}</td>{% endfor %}</tr>
-        <tr><th>{% trans "Vélo dans la rue" %}</th>
+        <tr><th>{% trans "Vélo urbain" %}</th>
                 {% for quali in session.qualifications.all %}<td><em>{{ quali.activity_A|default:"" }}</em></td>{% endfor %}</tr>
         <tr><th>{% trans "Mécanique" %}</th>
                 {% for quali in session.qualifications.all %}<td><em>{{ quali.activity_B|default:"" }}</em></td>{% endfor %}</tr>
