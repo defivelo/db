@@ -200,14 +200,13 @@ class QualificationForm(forms.ModelForm):
             required=False
         )
 
-    def clean(self):
+    def clean_helpers(self):
         # Check that we don't have too many moniteurs 1
         helpers = self.cleaned_data.get('helpers')
         if helpers and helpers.count() > MAX_MONO1_PER_QUALI:
             raise ValidationError(
                 _('Pas plus de %s moniteurs 1 !') % MAX_MONO1_PER_QUALI
             )
-
         # Check that all moniteurs are unique
         all_leaders_pk = []
         leader = self.cleaned_data.get('leader')
@@ -225,7 +224,9 @@ class QualificationForm(forms.ModelForm):
             raise ValidationError(_('Il y a des moniteurs à double !'),
                                   code='double-helpers'
                                   )
+        return helpers
 
+    def clean_actor(self):
         # Check that the picked actor corresponds to the activity_C
         actor = self.cleaned_data.get('actor')
         activity_C = self.cleaned_data.get('activity_C')
@@ -235,7 +236,9 @@ class QualificationForm(forms.ModelForm):
                     _("L'intervenant n'est pas qualifié pour la rencontre "
                         "prévue !"),
                     code='unqualified-actor')
+        return actor
 
+    def clean(self):
         # Check that there are <= helmets or bikes than participants
         n_participants = self.cleaned_data.get('n_participants')
         if not n_participants:
