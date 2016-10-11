@@ -3,6 +3,15 @@
 {% load permission_tags %}
 
 {% block content %}
+    {% if user|can:"home_article_crud" %}
+    <div class="hidden-print clearfix">
+        <a class="btn btn-primary pull-right" href="{% url 'article-create' %}">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            {% trans "Nouvel article" %}
+        </a>
+    </div>
+    {% endif %}
+
     {% for article in articles %}
         <div class="articles panel {% if article.published %}panel-info{% else %}panel-default{% endif %}">
             <div class="panel-heading">
@@ -30,14 +39,5 @@
     {% endfor %}
     {% if not articles %}
         <div class="alert alert-info">{% trans "Aucun article publié pour l'instant." %}</div>
-    {% endif %}
-
-    {% if user|can:"home_article_crud" %}
-    <div class="hidden-print">
-        <a class="btn btn-primary pull-right" href="{% url 'article-create' %}">
-            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-            {% trans "Nouvel article" %}
-        </a>
-    </div>
     {% endif %}
 {% endblock %}
