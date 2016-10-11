@@ -44,7 +44,7 @@ profile_autocompletes = ['Actors', 'AllPersons', 'Leaders', 'Helpers',
                          'PersonsRelevantForSessions']
 
 
-def tryurl(symbolicurl, user):
+def tryurl(symbolicurl, user, exportformat='csv'):
     try:
         try:
             url = reverse(
@@ -52,7 +52,7 @@ def tryurl(symbolicurl, user):
                 )
         except NoReverseMatch:
             url = reverse(
-                symbolicurl, kwargs={'format': 'csv'}
+                symbolicurl, kwargs={'format': exportformat}
                 )
     except NoReverseMatch:
         url = reverse(symbolicurl)
@@ -99,9 +99,10 @@ class AuthUserTest(ProfileTestCase):
 
     def test_my_restrictions(self):
         for symbolicurl in myurlsforoffice:
-            url = tryurl(symbolicurl, self.client.user)
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, 403, url)
+            for exportformat in ['csv', 'ods', 'xls']:
+                url = tryurl(symbolicurl, self.client.user, exportformat)
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 403, url)
 
     def test_otherusers_access(self):
         for symbolicurl in othersurls:
@@ -160,9 +161,10 @@ class PowerUserTest(ProfileTestCase):
 
     def test_my_allowances(self):
         for symbolicurl in myurlsforall + myurlsforoffice:
-            url = tryurl(symbolicurl, self.client.user)
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, 200, url)
+            for exportformat in ['csv', 'ods', 'xls']:
+                url = tryurl(symbolicurl, self.client.user, exportformat)
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 200, url)
 
     def test_otherusers_access(self):
         for symbolicurl in othersurls:
@@ -263,9 +265,10 @@ class StateManagerUserTest(ProfileTestCase):
 
     def test_my_allowances(self):
         for symbolicurl in myurlsforall + myurlsforoffice:
-            url = tryurl(symbolicurl, self.client.user)
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, 200, url)
+            for exportformat in ['csv', 'ods', 'xls']:
+                url = tryurl(symbolicurl, self.client.user, exportformat)
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 200, url)
 
     def test_otherusers_access(self):
         response = self.client.get(reverse('user-detail',

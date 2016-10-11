@@ -193,7 +193,6 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                 response = self.client.get(url, follow=True)
                 self.assertEqual(response.status_code, 200, url)
 
-
     def test_season_creation(self):
         url = reverse('season-create')
         # Final URL is OK
