@@ -36,7 +36,10 @@ class ExportMixin(object):
         except AttributeError:
             format = base_formats.CSV()
 
-        dataset = (self.export_class).export(self.object_list)
+        try:
+            dataset = (self.export_class).export(self.object_list)
+        except AttributeError:
+            dataset = self.get_dataset()
 
         filename = (
             _('DV-{exportfilename}-{YMD_date}.{extension}').format(

@@ -36,6 +36,7 @@ from import_export.formats import base_formats
 from rolepermissions.mixins import HasPermissionsMixin
 from tablib import Dataset
 
+from apps.common.views import ExportMixin
 from apps.user.models import FORMATION_M2
 from apps.user.views import ActorsList, HelpersList
 from defivelo.roles import user_cantons
@@ -171,23 +172,12 @@ class SeasonAvailabilityMixin(SeasonMixin):
         return context
 
 
-class SeasonExportView(SeasonAvailabilityMixin, DetailView):
-    def render_to_response(self, context, **response_kwargs):
-        resolvermatch = self.request.resolver_match
-        formattxt = resolvermatch.kwargs.get('format', 'csv')
-        # Instantiate the format object from base_formats in import_export
-        try:
-            format = getattr(base_formats, formattxt.upper())()
-        except AttributeError:
-            format = base_formats.CSV()
+class SeasonExportView(ExportMixin, SeasonAvailabilityMixin, DetailView):
+    @property
+    def export_filename(self):
+        return _('Saison') + '-' + '-'.join(self.season.cantons)
 
-        filename = (
-            _('DV-Saison-{cantons}-{YM_startdate}.{extension}').format(
-                cantons='-'.join(self.season.cantons),
-                YM_startdate=self.season.begin.strftime('%Y%m'),
-                extension=format.get_extension()
-            )
-        )
+    def get_dataset(self):
         dataset = Dataset()
         # Prépare le fichier
         dataset.append_col([
@@ -212,11 +202,7 @@ class SeasonExportView(SeasonAvailabilityMixin, DetailView):
             ])
         dataset.insert_separator(6, u('Présences des moniteurs'))
 
-        response = HttpResponse(getattr(dataset, formattxt),
-                                format.get_content_type() + ';charset=utf-8')
-        response['Content-Disposition'] = \
-            'attachment; filename="%s"' % filename
-        return response
+        return dataset
 
 
 class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
