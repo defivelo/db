@@ -17,9 +17,7 @@
                     <span class="badge pull-right">{{ userprofile.profile.actor_for }} {{ userprofile.profile.actor_icon }}</span>
                 {% endif %}
                 {% if userprofile.profile.can_login %}
-                    <span class="badge pull-right">
-                        <span class="glyphicon glyphicon-user" aria-hidden="true" title="{% trans "A accès" %}"></span>
-                    </span>
+                    <span class="badge pull-right">{{ userprofile.profile.access_level_icon }}</span>
                     {% if request.user|can:"user_can_resend_credentials" %}
                         <a class="badge pull-right" href="{% url 'user-resendcredentials' pk=userprofile.pk %}" title="{% trans "Réinitialiser les données de connexion" %}">
                             <span class="glyphicon glyphicon-envelope" aria-hidden="true" title="{% trans "Réinitialiser les données de connexion" %}"></span>
@@ -142,6 +140,14 @@
                             <dt>{% trans "Défi Vélo Mobile" %}</dt>
                             <dd>{{ userprofile.profile.activity_cantons_verb|join:"<br />" }}
                             </dd>
+                        {% endif %}
+                        {% if userprofile.profile.can_login %}
+                            <dt>{% trans "Niveau d'accès" %}</dt>
+                            <dd>{{ userprofile.profile.access_level_icon }} {{ userprofile.profile.access_level }} </dd>
+                        {% endif %}
+                        {% if userprofile.profile.managed_cantons %}
+                            <dt>{% trans "Cantons gérés" %}</dt>
+                            <dd>{{ userprofile.profile.managed_cantons_verb|join:"<br />" }}</dd>
                         {% endif %}
                         </dl>
                     </div>

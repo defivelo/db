@@ -100,9 +100,7 @@
                 </a>
                 {% endif %}
                 {% if user.profile.can_login %}
-                    <span class="btn btn-disabled btn-xs">
-                        <span class="glyphicon glyphicon-user" aria-hidden="true" title="{% trans "A accès" %}"></span>
-                    </span>
+                    <span class="btn btn-disabled btn-xs">{{ user.profile.access_level_icon }}</span>
                 {% else %}
                     {% if request.user|can:"user_can_send_credentials" and request.user.pk != user.pk %}
                     <a class="btn btn-default btn-xs" href="{% url 'user-sendcredentials' pk=user.pk %}">

@@ -45,6 +45,8 @@ class ObjectMethodWidget(widgets.Widget):
 
     def render(self, object):
         attribute = getattr(object, self.method)
+        if isinstance(attribute, list):
+            attribute = ', '.join(attribute)
         if attribute:
             return force_text(attribute)
         return ''
@@ -116,6 +118,14 @@ class UserResource(resources.ModelResource):
         column_name=_("IBAN"),
         attribute='profile',
         widget=ObjectMethodWidget(method='iban_nice'))
+    profile__access_level = fields.Field(
+        column_name=_('Niveau d\'accès'),
+        attribute='profile',
+        widget=ObjectMethodWidget(method='access_level_text'))
+    profile__managed_cantons = fields.Field(
+        column_name=_('Cantons gérés'),
+        attribute='profile',
+        widget=ObjectMethodWidget(method='managed_cantons'))
 
     class Meta:
         model = get_user_model()

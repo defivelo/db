@@ -33,6 +33,7 @@ from django.utils.translation import ugettext_lazy as _
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from localflavor.generic.models import IBANField
 from multiselectfield import MultiSelectField
+from rolepermissions.verifications import has_role
 
 from apps.challenge.models import QualificationActivity
 from apps.common import DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT
@@ -69,7 +70,7 @@ BAGSTATUS_CHOICES = (
 
 STDGLYPHICON = (
     '<span class="glyphicon glyphicon-{icon}" aria-hidden="true"'
-    '      title="{title}"></span> '
+    '      title="{title}"></span>'
 )
 
 PERSONAL_FIELDS = ['natel', 'birthdate',
@@ -267,6 +268,46 @@ class UserProfile(Address, models.Model):
         return [
             c[1] for c in DV_STATE_CHOICES
             if c[0] in self.activity_cantons
+            ]
+
+    def access_level(self, textonly=True):
+        icon = ''
+        title = ''
+        if self.can_login:
+            title = _('A accès')
+            icon = 'user'
+
+            if self.user.is_superuser:
+                title = _('Administra·teur·trice')
+                icon = 'queen'
+            elif has_role(self.user, 'power_user'):
+                title = _('Super-utilisa·teur·trice')
+                icon = 'king'
+            elif has_role(self.user, 'state_manager'):
+                title = _('Chargé·e de projet')
+                icon = 'bishop'
+        if title and textonly:
+            return title
+        if icon:
+            return mark_safe(STDGLYPHICON.format(icon=icon, title=title))
+        return ''
+
+    def access_level_icon(self):
+        return self.access_level(False)
+
+    @property
+    def access_level_text(self):
+        return self.access_level(True)
+
+    @property
+    def managed_cantons(self):
+        return [m.canton for m in self.user.managedstates.all()]
+
+    @property
+    def managed_cantons_verb(self):
+        return [
+            c[1] for c in DV_STATE_CHOICES
+            if c[0] in self.managed_cantons
             ]
 
     @property
