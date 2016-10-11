@@ -1117,10 +1117,7 @@ msgid "Envoyer les données de connexion"
 msgstr ""
 
 #: apps/user/templates/auth/user_detail.html:60
-#, fuzzy
-#| msgid "E-mail Addresses"
 msgid "Adresse"
-msgstr "Adresses e-mail"
 
 #: apps/user/templates/auth/user_detail.html:76
 #, python-format
@@ -1373,7 +1370,6 @@ msgstr ""
 "%(site_domain)s"
 
 #: defivelo/templates/account/email/password_reset_key_subject.txt:3
-#, fuzzy
 msgid "Password Reset E-mail"
 msgstr "Réinitialisation du mot de passe"
 
@@ -1522,7 +1518,6 @@ msgid "Personnes"
 msgstr ""
 
 #: defivelo/templates/header.html:56
-#, fuzzy
 msgid "Change password"
 msgstr "Changer mon mot de passe"
 
