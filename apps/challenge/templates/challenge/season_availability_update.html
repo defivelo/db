@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load bootstrap3 %}
 {% load dv_filters %}
+{% load permission_tags %}
 {% block head_title %}{% trans "Saison" %} {{ season.pk }}{% endblock %}
 
 {% block content %}
@@ -30,7 +31,7 @@
         </table>
         {% buttons %}
             <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
-            {% if season %}
+            {% if request.user|can:'challenge_season_crud' %}
                 <a class="btn btn-default" href="{% url 'season-availabilities' pk=season.pk %}">{% trans "Annuler" %}</a>
             {% endif %}
         {% endbuttons %}

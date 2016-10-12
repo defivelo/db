@@ -1,12 +1,14 @@
 {% load i18n %}
+{% load permission_tags %}
 <thead>
+    {% with can_crud=request.user|can:'challenge_season_crud'|yesno:',True' %}
     <tr>
         <td rowspan="5" colspan="{{ preamble_columns|default:1 }}">&nbsp;</td>
         {% for session in sessions %}
             <th class="text-center">
-                <a id="sess{{session.pk}}" href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">
+                {% if can_crud %}<a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}" title="{% trans "Vers la session" %}">{% endif %}
                     {{ session.day|date:"j F" }}
-                </a>
+                {% if can_crud %}</a>{% endif %}
             </th>
         {% endfor %}</tr>
     <tr>{% for session in sessions %}
@@ -21,17 +23,17 @@
         {% endfor %}</tr>
     <tr>{% for session in sessions %}
             <th class="text-center">
-                <a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}" title="{% trans "Vers la session" %}">
+                {% if can_crud %}<a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}" title="{% trans "Vers la session" %}">{% endif %}
                     {{ session.begin|date:"H\hi" }} - {{ session.end|date:"H\hi" }}
-                </a>
+                {% if can_crud %}</a>{% endif %}
             </th>
         {% endfor %}</tr>
 
     <tr>{% for session in sessions %}
             <td>
-            <a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}" title="{% trans "Vers la session" %}" class="small">
+            {% if can_crud %}<a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}" title="{% trans "Vers la session" %}" class="small">{% endif %}
                 {% blocktrans count n=session.qualifications.count %}1 qualification{% plural %}{{ n }} qualifications{% endblocktrans %}
-            </a>
+            {% if can_crud %}</a>{% endif %}
             {% if chosen_stats %}
                 <dl class="small dl-horizontal">
                     <dt>{% trans "Moniteurs 2" %}</dt>
@@ -61,4 +63,5 @@
             {% endif %}
             </td>
         {% endfor %}</tr>
+    {% endwith %}
 </thead>
