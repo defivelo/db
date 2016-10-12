@@ -132,14 +132,15 @@ class SeasonAvailabilityMixin(SeasonMixin):
     def potential_helpers(self, qs=None):
         if not qs:
             qs = get_user_model().objects
-            seasoncantons = self.season.cantons
-            cantons_filter = [
-                Q(profile__activity_cantons__contains=canton)
-                for canton in seasoncantons
-            ] + [
-                Q(profile__affiliation_canton__in=seasoncantons)
-            ]
-            qs = qs.filter(reduce(operator.or_, cantons_filter))
+            if self.season:
+                seasoncantons = self.season.cantons
+                cantons_filter = [
+                    Q(profile__activity_cantons__contains=canton)
+                    for canton in seasoncantons
+                ] + [
+                    Q(profile__affiliation_canton__in=seasoncantons)
+                ]
+                qs = qs.filter(reduce(operator.or_, cantons_filter))
 
             # Pick the one helper from the command line if it makes sense
             resolvermatch = self.request.resolver_match

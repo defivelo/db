@@ -261,7 +261,8 @@ class StateManagerUserTest(SeasonTestCaseMixin):
             # Final URL is NOK
             response = self.client.get(url, follow=True)
             # For helperlist and actorlist
-            if 'list' in symbolicurl:
+            if symbolicurl in ['season-availabilities', 'season-staff-update',
+                               'season-helperlist', 'season-actorlist']:
                 self.assertEqual(response.status_code, 403, url)
             else:
                 self.assertEqual(response.status_code, 404, url)
