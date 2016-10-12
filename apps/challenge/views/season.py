@@ -129,18 +129,26 @@ class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
 
 
 class SeasonAvailabilityMixin(SeasonMixin):
-    def potential_helpers(self, queryset=None):
-        if not queryset:
-            queryset = get_user_model().objects
+    def potential_helpers(self, qs=None):
+        if not qs:
+            qs = get_user_model().objects
+            seasoncantons = self.season.cantons
+            cantons_filter = [
+                Q(profile__activity_cantons__contains=canton)
+                for canton in seasoncantons
+            ] + [
+                Q(profile__affiliation_canton__in=seasoncantons)
+            ]
+            qs = qs.filter(reduce(operator.or_, cantons_filter))
 
             # Pick the one helper from the command line if it makes sense
             resolvermatch = self.request.resolver_match
             if 'helperpk' in resolvermatch.kwargs:
-                queryset = queryset.filter(
+                qs = qs.filter(
                     pk=int(resolvermatch.kwargs['helperpk'])
                 )
 
-        all_helpers = queryset.order_by('first_name', 'last_name')
+        all_helpers = qs.order_by('first_name', 'last_name')
         return (
             (_('Moniteurs 2'), all_helpers.filter(profile__formation='M2')),
             (_('Moniteurs 1'), all_helpers.filter(profile__formation='M1')),
@@ -334,7 +342,7 @@ class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
             # Fill in the helpers with the ones we currently have
             helpers = {hsa.helper.pk: hsa.helper.pk for hsa in hsas}
             potential_helpers = self.potential_helpers(
-                queryset=get_user_model().objects.filter(pk__in=helpers)
+                qs=get_user_model().objects.filter(pk__in=helpers)
             )
 
             context['potential_helpers'] = potential_helpers
@@ -358,8 +366,7 @@ class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
         )
 
 
-class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin,
-                                   SuccessMessageMixin, SeasonUpdateView):
+class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
     template_name = 'challenge/season_availability_update.html'
     success_message = _("Disponibilités mises à jour")
     form_class = SeasonAvailabilityForm
@@ -433,7 +440,7 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView,
             # Fill in the helpers with the ones we currently have
             helpers = {hsa.helper.pk: hsa.helper.pk for hsa in hsas}
             self.ahelpers = self.potential_helpers(
-                queryset=get_user_model().objects.filter(pk__in=helpers)
+                qs=get_user_model().objects.filter(pk__in=helpers)
             )
             return self.ahelpers
 
