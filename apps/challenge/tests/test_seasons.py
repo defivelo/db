@@ -23,6 +23,7 @@ from django.test import TestCase
 from apps.common import DV_STATES
 from apps.common.forms import SWISS_DATE_INPUT_FORMAT
 from apps.orga.tests.factories import OrganizationFactory
+from apps.user.models import FORMATION_M1
 from apps.user.tests.factories import UserFactory
 from defivelo.tests.utils import (
     AuthClient, PowerUserAuthClient, StateManagerAuthClient,
@@ -106,6 +107,33 @@ class AuthUserTest(SeasonTestCaseMixin):
                 # Final URL is forbidden
                 response = self.client.get(url, follow=True)
                 self.assertEqual(response.status_code, 403, url)
+
+    def test_access_to_myseason_availabilities(self):
+        for symbolicurl in restrictedhelperspecificurls:
+            url = reverse(
+                symbolicurl,
+                kwargs={
+                    'pk': self.season.pk,
+                    'helperpk': self.client.user.pk
+                    })
+            # Fails, we have no formation
+            self.assertEqual(self.client.get(url).status_code, 403, url)
+
+            # Fails, we have not a common canton
+            self.client.user.profile.formation = FORMATION_M1
+            self.client.user.profile.save()
+            self.assertEqual(self.client.get(url).status_code, 403, url)
+
+            # Works, we have it all
+            self.client.user.profile.affiliation_canton = \
+                self.season.cantons[0]
+            self.client.user.profile.save()
+            self.assertEqual(self.client.get(url).status_code, 200, url)
+
+            # Fails, we have a common canton, but no Formation
+            self.client.user.profile.formation = ''
+            self.client.user.profile.save()
+            self.assertEqual(self.client.get(url).status_code, 403, url)
 
     def test_no_access_to_session(self):
         for session in self.sessions:
