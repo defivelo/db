@@ -33,6 +33,7 @@ from django.views.generic.dates import YearArchiveView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from rolepermissions.mixins import HasPermissionsMixin
+from rolepermissions.verifications import has_permission
 from tablib import Dataset
 
 from apps.common.views import ExportMixin
@@ -55,7 +56,7 @@ from .mixins import CantonSeasonFormMixin
 EXPORT_NAMETEL = u('{name} - {tel}')
 
 
-class SeasonMixin(CantonSeasonFormMixin, HasPermissionsMixin, MenuView):
+class SeasonMixin(CantonSeasonFormMixin, MenuView):
     required_permission = 'challenge_season_crud'
     model = Season
     context_object_name = 'season'
@@ -88,7 +89,7 @@ class SeasonMixin(CantonSeasonFormMixin, HasPermissionsMixin, MenuView):
         return qs
 
 
-class SeasonListView(SeasonMixin, YearArchiveView):
+class SeasonListView(SeasonMixin, HasPermissionsMixin, YearArchiveView):
     date_field = 'begin'
     allow_empty = True
     allow_future = True
@@ -96,7 +97,7 @@ class SeasonListView(SeasonMixin, YearArchiveView):
     make_object_list = True
 
 
-class SeasonDetailView(SeasonMixin, DetailView):
+class SeasonDetailView(SeasonMixin, HasPermissionsMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(SeasonDetailView, self).get_context_data(**kwargs)
         # Add our submenu_category context
@@ -106,6 +107,18 @@ class SeasonDetailView(SeasonMixin, DetailView):
 
 class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
     success_message = _("Saison mise à jour")
+
+    def dispatch(self, request, *args, **kwargs):
+        if (
+            # Soit j'ai le droit
+            has_permission(request.user, self.required_permission)
+        ):
+            return (
+                super(SeasonUpdateView, self)
+                .dispatch(request, *args, **kwargs)
+            )
+        else:
+            raise PermissionDenied
 
 
 class SeasonAvailabilityMixin(SeasonMixin):
@@ -128,6 +141,18 @@ class SeasonAvailabilityMixin(SeasonMixin):
                 profile__actor_for__isnull=True
             )),
         )
+
+    def dispatch(self, request, *args, **kwargs):
+        if (
+            # Soit j'ai le droit
+            has_permission(request.user, self.required_permission)
+        ):
+            return (
+                super(SeasonAvailabilityMixin, self)
+                .dispatch(request, *args, **kwargs)
+            )
+        else:
+            raise PermissionDenied
 
     def current_availabilities(self):
         return (
@@ -176,7 +201,8 @@ class SeasonAvailabilityMixin(SeasonMixin):
         return context
 
 
-class SeasonExportView(ExportMixin, SeasonAvailabilityMixin, DetailView):
+class SeasonExportView(ExportMixin, SeasonAvailabilityMixin,
+                       HasPermissionsMixin, DetailView):
     @property
     def export_filename(self):
         return _('Saison') + '-' + '-'.join(self.season.cantons)
@@ -360,7 +386,8 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
                          kwargs={'pk': self.object.pk}))
 
 
-class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
+class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView,
+                                  HasPermissionsMixin):
     template_name = 'challenge/season_staff_update.html'
     success_message = _("Choix du personnel mises à jour")
     form_class = SeasonStaffChoiceForm
@@ -453,16 +480,18 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
                          kwargs={'pk': self.object.pk}))
 
 
-class SeasonCreateView(SeasonMixin, SuccessMessageMixin, CreateView):
+class SeasonCreateView(SeasonMixin, HasPermissionsMixin, SuccessMessageMixin,
+                       CreateView):
     success_message = _("Saison créée")
 
 
-class SeasonDeleteView(SeasonMixin, SuccessMessageMixin, DeleteView):
+class SeasonDeleteView(SeasonMixin, HasPermissionsMixin, SuccessMessageMixin,
+                       DeleteView):
     success_message = _("Saison supprimée")
     success_url = reverse_lazy('season-list')
 
 
-class SeasonHelperListView(HelpersList, SeasonMixin):
+class SeasonHelperListView(HelpersList, HasPermissionsMixin, SeasonMixin):
     model = get_user_model()
     page_title = _('Moniteurs de la saison')
 
@@ -483,7 +512,7 @@ class SeasonHelperListView(HelpersList, SeasonMixin):
         )
 
 
-class SeasonActorListView(ActorsList, SeasonMixin):
+class SeasonActorListView(ActorsList, HasPermissionsMixin, SeasonMixin):
     model = get_user_model()
     page_title = _('Intervenants de la saison')
 
