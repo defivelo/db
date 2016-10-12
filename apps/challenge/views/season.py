@@ -69,13 +69,19 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
         context['season'] = self.season
         return context
 
-    def get_queryset(self):
+    def get_queryset(self, raiseWithoutCantons=True):
         qs = super(SeasonMixin, self).get_queryset()
-        usercantons = user_cantons(self.request.user)
+        try:
+            usercantons = user_cantons(self.request.user)
+        except LookupError:
+            if raiseWithoutCantons:
+                raise PermissionDenied
+            usercantons = []
+
         if self.model == Season and usercantons:
             cantons = [
                     Q(cantons__contains=state)
-                    for state in user_cantons(self.request.user)
+                    for state in usercantons
                 ]
             qs = qs.filter(reduce(operator.or_, cantons))
         if self.model == get_user_model() and usercantons:
@@ -108,8 +114,9 @@ class SeasonDetailView(SeasonMixin, HasPermissionsMixin, DetailView):
 class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
     success_message = _("Saison mise à jour")
 
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, request, bypassperm=False, *args, **kwargs):
         if (
+            bypassperm or
             # Soit j'ai le droit
             has_permission(request.user, self.required_permission)
         ):
@@ -144,12 +151,19 @@ class SeasonAvailabilityMixin(SeasonMixin):
 
     def dispatch(self, request, *args, **kwargs):
         if (
+            # Check that the request user is alone in the potential_helpers
+            (
+                True in [
+                    [request.user.pk] == [u.pk for u in users]
+                    for (cat, users) in self.potential_helpers()
+                ]
+            ) or
             # Soit j'ai le droit
             has_permission(request.user, self.required_permission)
         ):
             return (
                 super(SeasonAvailabilityMixin, self)
-                .dispatch(request, *args, **kwargs)
+                .dispatch(request, bypassperm=True, *args, **kwargs)
             )
         else:
             raise PermissionDenied
@@ -344,10 +358,19 @@ class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
         )
 
 
-class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
+class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin,
+                                   SuccessMessageMixin, SeasonUpdateView):
     template_name = 'challenge/season_availability_update.html'
     success_message = _("Disponibilités mises à jour")
     form_class = SeasonAvailabilityForm
+    allow_season_fetch = True
+
+    def get_queryset(self):
+        # SeasonAvailabilityMixin will raise PermissionDenied when testing
+        return (
+            super(SeasonAvailabilityUpdateView, self)
+            .get_queryset(raiseWithoutCantons=False)
+        )
 
     def get_form_kwargs(self):
         form_kwargs = \
@@ -360,6 +383,17 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
             super(SeasonAvailabilityMixin, self).get_context_data(**kwargs)
         context['potential_helpers'] = self.potential_helpers()
         return context
+
+    def get_success_url(self):
+        if has_permission(self.request.user, 'challenge_season_crud'):
+            return reverse_lazy('season-availabilities',
+                                kwargs={'pk': self.season.pk})
+        else:
+            return reverse_lazy('season-availabilities-update',
+                                kwargs={
+                                    'pk': self.season.pk,
+                                    'helperpk': self.request.user.pk,
+                                })
 
     def form_valid(self, form):
         # Create or update the Availability objects
@@ -381,9 +415,7 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
                             if not created:
                                 hsa.availability = availability
                                 hsa.save()
-        return HttpResponseRedirect(
-            reverse_lazy('season-availabilities',
-                         kwargs={'pk': self.object.pk}))
+        return super(SeasonAvailabilityUpdateView, self).form_valid(form)
 
 
 class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView,

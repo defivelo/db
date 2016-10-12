@@ -25,6 +25,8 @@ from ..models import Season
 
 
 class CantonSeasonFormMixin(object):
+    allow_season_fetch = False
+
     @property
     def season(self):
         if not hasattr(self, '_season'):
@@ -44,13 +46,16 @@ class CantonSeasonFormMixin(object):
                     raise PermissionDenied
             except LookupError:
                 # That user doesn't have allowed seasons
-                self._season = None
+                if self.allow_season_fetch:
+                    self._season = Season.objects.get(pk=seasonpk)
+                else:
+                    self._season = None
             except KeyError:
                 # We're looking at a list
                 self._season = None
             except Season.DoesNotExist:
                 # I can't see it, or it doesn't exist
-                raise PermissionDenied
+                raise ValueError("Can't see season or it doesn't exist")
         return self._season
 
     def get_form_kwargs(self):

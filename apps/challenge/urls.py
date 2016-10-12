@@ -63,7 +63,7 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/availability/staff/$',
         never_cache(SeasonStaffChoiceUpdateView.as_view()),
         name='season-staff-update'),
-    url(r'^(?P<pk>[0-9]+)/availability/(?P<helperpk>[0-9]+)/edit/$',
+    url(r'^(?P<pk>[0-9]+)/availability/(?P<helperpk>[0-9]+)/$',
         SeasonAvailabilityUpdateView.as_view(),
         name='season-availabilities-update'),
     url(r'^(?P<pk>[0-9]+)/delete/$', SeasonDeleteView.as_view(),

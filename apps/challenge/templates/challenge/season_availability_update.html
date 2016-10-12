@@ -30,7 +30,9 @@
         </table>
         {% buttons %}
             <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
-            <a class="btn btn-default" href="{% url 'season-availabilities' pk=season.pk %}">{% trans "Annuler" %}</a>
+            {% if season %}
+                <a class="btn btn-default" href="{% url 'season-availabilities' pk=season.pk %}">{% trans "Annuler" %}</a>
+            {% endif %}
         {% endbuttons %}
      </form>
 
