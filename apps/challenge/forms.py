@@ -430,7 +430,10 @@ class SeasonStaffChoiceForm(forms.Form):
                         staffkey = STAFF_FIELDKEY.format(hpk=helper.pk,
                                                          spk=session.pk)
                         # Stupid boolean to integer-as-string conversion.
-                        fieldinit = 'Y' if self.initial[staffkey] else 'N'
+                        try:
+                            fieldinit = 'Y' if self.initial[staffkey] else 'N'
+                        except KeyError:
+                            fieldinit = 'N'
                         # Trick to pass the 'at which role that user is
                         # selected in that quali' information through
                         fieldinit += session.user_assignment(helper)
