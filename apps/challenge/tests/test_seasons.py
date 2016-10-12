@@ -31,7 +31,8 @@ from defivelo.tests.utils import (
 
 from .factories import SeasonFactory, SessionFactory
 
-restrictedgenericurls = ['season-list', 'season-create']
+freeforallurls = ['season-list']
+restrictedgenericurls = [ 'season-create']
 restrictedspecificurls = ['season-detail', 'season-update',
                           'season-helperlist', 'season-actorlist',
                           'season-availabilities',
@@ -83,7 +84,14 @@ class AuthUserTest(SeasonTestCaseMixin):
         self.client = AuthClient()
         super(AuthUserTest, self).setUp()
 
-    def test_no_access_to_season_list(self):
+    def test_access_to_season_list(self):
+        for symbolicurl in freeforallurls:
+            url = reverse(symbolicurl)
+            # Final URL is OK
+            response = self.client.get(url, follow=True)
+            self.assertEqual(response.status_code, 200, url)
+
+    def test_no_access_to_season_create(self):
         for symbolicurl in restrictedgenericurls:
             url = reverse(symbolicurl)
             # Final URL is forbidden

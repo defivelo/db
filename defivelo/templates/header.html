@@ -5,7 +5,7 @@
 
 <ul class="nav navbar-nav">
     {% if request.user.is_authenticated %}
-        {% if season %}
+        {% if season and user|can:'challenge_season_crud' %}
             <li><a href="{% url 'season-list' year=now_year %}" title="{% trans "Toutes les saisons" %}"><span class="glyphicon glyphicon-th-list"></span>&nbsp;</a></li>
             <li class="active">
                 <a href="{% url 'season-detail' season.pk %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -20,21 +20,28 @@
                 </ul>
             </li>
         {% else %}
-            {% if user|can:'challenge_season_crud' %}
-                <li{% if 'season' in menu_category %} class="active"{% endif %}>
-                    <a href="{% url 'season-list' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Saisons" %}<span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                        {% for season in current_seasons %}
-                            <li><a href="{{ season.get_absolute_url }}">{{ season.desc }}</a></li>
-                        {% endfor %}
-                        {% if current_seasons %}
-                        <li role="separator" class="divider"></li>
-                        {% endif %}
-                        <li><a href="{% url 'season-list' year=now_year %}">{% trans "Toutes les saisons" %}</a></li>
+            <li{% if 'season' in menu_category %} class="active"{% endif %}>
+                <a href="{% url 'season-list' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Saisons" %}<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                    {% for season in current_seasons %}
+                        <li>
+                            {% if user|can:'challenge_season_crud' %}
+                                <a href="{{ season.get_absolute_url }}"">
+                            {% else %}
+                                <a href="{% url 'season-availabilities-update' pk=season.pk helperpk=user.pk %}"
+                                title="{% trans "Mes disponibilités" %}">
+                            {% endif %}
+                            {{ season.desc }}</a></li>
+                    {% endfor %}
+                    {% if current_seasons %}
+                    <li role="separator" class="divider"></li>
+                    {% endif %}
+                    <li><a href="{% url 'season-list' year=now_year %}">{% trans "Toutes les saisons" %}</a></li>
+                    {% if user|can:'challenge_season_crud' %}
                         <li><a href="{% url 'season-create' %}">{% trans "Créer une saison" %}</a></li>
-                        </ul>
-                </li>
-            {% endif %}
+                    {% endif %}
+                    </ul>
+            </li>
             {% if user|can:'user_view_list' %}
                 <li{% if 'user' in menu_category %} class="active"{% endif %}><a href="{% url 'user-list' %}">{% trans "Personnes" %}</a></li>
             {% endif %}

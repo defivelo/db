@@ -2,11 +2,12 @@
 {% load i18n %}
 {% load bootstrap3 %}
 {% load dv_filters %}
+{% load permission_tags %}
 {% block head_title %}{% blocktrans with year=year.year %}Saisons {{ year }}{% endblocktrans %}{% endblock %}
 
 {% block content %}
     <h1>{% blocktrans with year=year.year %}Saisons {{ year }}{% endblocktrans %}</h1>
-    
+
     <nav>
         <ul class="pager">
             <li class="previous btn-xs">
@@ -28,14 +29,21 @@
     
     <div class="list-group">
     {% for season in seasons %}
-        <a class="list-group-item" href="{% url 'season-detail' pk=season.pk %}">
+        {% if user|can:'challenge_season_crud' %}
+            <a class="list-group-item" href="{% url 'season-detail' pk=season.pk %}">
+        {% else %}
+            <a class="list-group-item" href="{% url 'season-availabilities-update' pk=season.pk helperpk=request.user.pk %}"
+               title="{% trans "Mes disponibilités" %}">
+        {% endif %}
             <span class="badge">{{ season.leader.get_full_name }}</span>
             {{ season.desc }}
         </a>
     {% endfor %}
     </div>
 
-    <div>
-        <a class="btn btn-primary pull-right" href="{% url 'season-create' %}">{% trans "Créer une nouvelle saison" %}</a>
-    </div>
+    {% if user|can:'challenge_season_crud' %}
+        <div>
+            <a class="btn btn-primary pull-right" href="{% url 'season-create' %}">{% trans "Créer une nouvelle saison" %}</a>
+        </div>
+    {% endif %}
 {% endblock %}

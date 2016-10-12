@@ -61,6 +61,7 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
     model = Season
     context_object_name = 'season'
     form_class = SeasonForm
+    raise_without_cantons = True
 
     def get_context_data(self, **kwargs):
         context = super(SeasonMixin, self).get_context_data(**kwargs)
@@ -69,14 +70,16 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
         context['season'] = self.season
         return context
 
-    def get_queryset(self, raiseWithoutCantons=True):
+    def get_queryset(self):
         qs = super(SeasonMixin, self).get_queryset()
         try:
             usercantons = user_cantons(self.request.user)
         except LookupError:
-            if raiseWithoutCantons:
+            if self.raise_without_cantons:
                 raise PermissionDenied
-            usercantons = []
+            usercantons = [self.request.user.profile.affiliation_canton]
+            if self.request.user.profile.activity_cantons:
+                usercantons += self.request.user.profile.activity_cantons
 
         if self.model == Season and usercantons:
             cantons = [
@@ -95,12 +98,13 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
         return qs
 
 
-class SeasonListView(SeasonMixin, HasPermissionsMixin, YearArchiveView):
+class SeasonListView(SeasonMixin, YearArchiveView):
     date_field = 'begin'
     allow_empty = True
     allow_future = True
     context_object_name = 'seasons'
     make_object_list = True
+    raise_without_cantons = False
 
 
 class SeasonDetailView(SeasonMixin, HasPermissionsMixin, DetailView):
@@ -372,13 +376,7 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
     success_message = _("Disponibilités mises à jour")
     form_class = SeasonAvailabilityForm
     allow_season_fetch = True
-
-    def get_queryset(self):
-        # SeasonAvailabilityMixin will raise PermissionDenied when testing
-        return (
-            super(SeasonAvailabilityUpdateView, self)
-            .get_queryset(raiseWithoutCantons=False)
-        )
+    raise_without_cantons = False
 
     def get_form_kwargs(self):
         form_kwargs = \

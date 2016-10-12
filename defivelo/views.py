@@ -38,14 +38,17 @@ class MenuView(object):
         qs = Season.objects.filter(end__gte=date.today())
         try:
             usercantons = user_cantons(self.request.user)
-            if usercantons:
-                cantons = [
-                        Q(cantons__contains=state)
-                        for state in user_cantons(self.request.user)
-                    ]
-                qs = qs.filter(reduce(operator.or_, cantons))
         except LookupError:
-            pass
+            usercantons = [self.request.user.profile.affiliation_canton]
+            if self.request.user.profile.activity_cantons:
+                usercantons += self.request.user.profile.activity_cantons
+
+        if usercantons:
+            cantons = [
+                Q(cantons__contains=state)
+                for state in usercantons
+            ]
+            qs = qs.filter(reduce(operator.or_, cantons))
 
         context['current_seasons'] = qs
         context['now'] = timezone.now()
