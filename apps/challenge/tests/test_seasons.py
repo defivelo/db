@@ -32,7 +32,7 @@ from defivelo.tests.utils import (
 from .factories import SeasonFactory, SessionFactory
 
 freeforallurls = ['season-list']
-restrictedgenericurls = [ 'season-create']
+restrictedgenericurls = ['season-create']
 restrictedspecificurls = ['season-detail', 'season-update',
                           'season-helperlist', 'season-actorlist',
                           'season-availabilities',
