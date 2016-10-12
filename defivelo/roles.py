@@ -17,7 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from django.core.exceptions import PermissionDenied
 from rolepermissions.roles import AbstractUserRole
 from rolepermissions.verifications import has_permission
 
@@ -34,7 +33,7 @@ def user_cantons(user):
             m.canton for m in user.managedstates.all()
         ]
         return user_cantons.cache[user.pk]
-    raise PermissionDenied
+    raise LookupError("No user cantons")
 
 user_cantons.cache = {}
 

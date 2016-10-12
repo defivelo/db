@@ -42,6 +42,9 @@ class CantonSeasonFormMixin(object):
                         .intersection(set(self._season.cantons))
                 ):
                     raise PermissionDenied
+            except LookupError:
+                # That user doesn't have allowed seasons
+                self._season = None
             except KeyError:
                 # We're looking at a list
                 self._season = None
@@ -53,7 +56,10 @@ class CantonSeasonFormMixin(object):
     def get_form_kwargs(self):
         kwargs = super(CantonSeasonFormMixin, self).get_form_kwargs()
         kwargs['season'] = self.season
-        cantons = user_cantons(self.request.user)
+        try:
+            cantons = user_cantons(self.request.user)
+        except LookupError:
+            cantons = None
         if self.season and cantons:
             # Check that one canton is in the intersection
             cantons = list(set(cantons).intersection(set(self.season.cantons)))

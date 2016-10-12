@@ -22,7 +22,6 @@ from datetime import date
 from functools import reduce
 
 from article.models import Article
-from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.utils import timezone
 from django.views.generic.base import TemplateView
@@ -45,7 +44,7 @@ class MenuView(object):
                         for state in user_cantons(self.request.user)
                     ]
                 qs = qs.filter(reduce(operator.or_, cantons))
-        except PermissionDenied:
+        except LookupError:
             pass
 
         context['current_seasons'] = qs

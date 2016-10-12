@@ -94,7 +94,10 @@ class OrganizationMixin(HasPermissionsMixin, MenuView):
 
     def get_queryset(self):
         qs = self.model.objects
-        usercantons = user_cantons(self.request.user)
+        try:
+            usercantons = user_cantons(self.request.user)
+        except LookupError:
+            raise PermissionDenied
         if usercantons:
             qs = qs.filter(address_canton__in=usercantons)
         return qs

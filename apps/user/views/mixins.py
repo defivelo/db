@@ -70,7 +70,10 @@ class ProfileMixin(MenuView):
             .prefetch_related('profile')
             .order_by('first_name', 'last_name')
         )
-        usercantons = user_cantons(self.request.user)
+        try:
+            usercantons = user_cantons(self.request.user)
+        except LookupError:
+            raise PermissionDenied
         if usercantons:
             allcantons_filter = [
                 Q(profile__activity_cantons__contains=canton)
@@ -129,7 +132,7 @@ class ProfileMixin(MenuView):
         if self.cantons:
             try:
                 kwargs['cantons'] = user_cantons(self.request.user)
-            except PermissionDenied:
+            except LookupError:
                 pass
         return kwargs
 
@@ -141,7 +144,7 @@ class UserSelfAccessMixin(object):
         edit = kwargs.pop('edit', False)
         try:
             usercantons = user_cantons(request.user)
-        except PermissionDenied:
+        except LookupError:
             usercantons = False
 
         user = self.get_object()
@@ -184,6 +187,6 @@ class UserSelfAccessMixin(object):
             kwargs['allow_email'] = True
         try:
             kwargs['cantons'] = user_cantons(self.request.user)
-        except PermissionDenied:
+        except LookupError:
             pass
         return kwargs
