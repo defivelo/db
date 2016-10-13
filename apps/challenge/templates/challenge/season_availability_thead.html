@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load permission_tags %}
 <thead>
-    {% with can_crud=request.user|can:'challenge_season_crud'|yesno:',True' %}
+    {% with can_crud=user|can:'challenge_season_crud' %}
     <tr>
         <td rowspan="5" colspan="{{ preamble_columns|default:1 }}">&nbsp;</td>
         {% for session in sessions %}

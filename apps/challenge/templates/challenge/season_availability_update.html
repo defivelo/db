@@ -10,11 +10,10 @@
     <h3>{{ season.cantons_verb|join:", " }}</h3>
 
     <h4>{% trans "Disponibilités" %}</h4>
-
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
         <table class="table text-center">
-        {% include "challenge/season_availability_thead.html" with sessions=season.sessions_with_qualifs season=season only %}
+        {% include "challenge/season_availability_thead.html" with sessions=season.sessions_with_qualifs season=season user=request.user only %}
         <tbody>
             {% for helper_category,helpers in potential_helpers %}
                 {% if helpers %}
@@ -33,6 +32,8 @@
             <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
             {% if request.user|can:'challenge_season_crud' %}
                 <a class="btn btn-default" href="{% url 'season-availabilities' pk=season.pk %}">{% trans "Annuler" %}</a>
+            {% else %}{% now 'Y' as now_year %}
+                <a class="btn btn-default" href="{% url 'season-list' year=now_year %}">{% trans "Annuler" %}</a>
             {% endif %}
         {% endbuttons %}
      </form>
