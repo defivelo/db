@@ -19,7 +19,7 @@
                     <li{% if 'season-actorlist' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-actorlist' season.pk %}">{% trans "Liste des intervenants" %}</a></li>
                 </ul>
             </li>
-        {% else %}
+        {% elif user|can:'challenge_season_crud' or current_seasons %}
             <li{% if 'season' in menu_category %} class="active"{% endif %}>
                 <a href="{% url 'season-list' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Saisons" %}<span class="caret"></span></a>
                     <ul class="dropdown-menu">
