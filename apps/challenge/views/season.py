@@ -72,7 +72,9 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
 
     def get_queryset(self):
         if self.model == Season:
-            return self.request.user.profile.get_seasons(self.raise_without_cantons)
+            return self.request.user.profile.get_seasons(
+                self.raise_without_cantons
+            )
 
         qs = super(SeasonMixin, self).get_queryset()
 
