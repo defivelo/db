@@ -20,22 +20,24 @@ from __future__ import unicode_literals
 from rolepermissions.roles import AbstractUserRole
 from rolepermissions.verifications import has_permission
 
+from apps.common import DV_STATES
+
 
 def user_cantons(user):
-    if user.pk in user_cantons.cache:
-        return user_cantons.cache[user.pk]
+    if user.pk in _user_cantons:
+        return _user_cantons[user.pk]
 
     if has_permission(user, 'cantons_all'):
-        user_cantons.cache[user.pk] = None
+        _user_cantons[user.pk] = DV_STATES
         return
     if has_permission(user, 'cantons_mine'):
-        user_cantons.cache[user.pk] = [
+        _user_cantons[user.pk] = [
             m.canton for m in user.managedstates.all()
         ]
-        return user_cantons.cache[user.pk]
+        return _user_cantons[user.pk]
     raise LookupError("No user cantons")
 
-user_cantons.cache = {}
+_user_cantons = {}
 
 
 class StateManager(AbstractUserRole):

@@ -49,6 +49,8 @@ class MenuView(object):
                 for state in usercantons
             ]
             qs = qs.filter(reduce(operator.or_, cantons))
+        else:
+            qs = None
 
         context['current_seasons'] = qs
         context['now'] = timezone.now()
