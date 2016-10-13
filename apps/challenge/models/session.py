@@ -95,7 +95,7 @@ class Session(Address, models.Model):
         for quali in self.qualifications.all():
             qualiq += 1
             if quali.errors:
-                errors.append(_('Quali : {name}').format(name=quali.name))
+                errors.append(_("Qualif' {name}").format(name=quali.name))
         if qualiq == 0:
             errors.append(_('Pas de qualifications'))
         if errors:

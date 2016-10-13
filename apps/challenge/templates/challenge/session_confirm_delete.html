@@ -11,7 +11,7 @@
         {% csrf_token %}
         <p>{% blocktrans with session=session %}Supprimer la session {{ session }} définitivement (y compris toutes ses qualifications) ?{% endblocktrans %}</p>
 
-        <h3>{% trans "Qualifications qui seront supprimées" %}</h3>
+        <h3>{% trans "Qualifs qui seront supprimées" %}</h3>
         <div class="list-group">
         {% for quali in session.qualifications.all %}
             <div class="list-group-item">{{ quali }}</div>

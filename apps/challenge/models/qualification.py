@@ -143,8 +143,8 @@ class Qualification(models.Model):
                 )
 
     class Meta:
-        verbose_name = _('Qualification')
-        verbose_name_plural = _('Qualifications')
+        verbose_name = _("Qualif'")
+        verbose_name_plural = _('Qualifs')
         ordering = ['session', 'created_on', 'name']
 
     def __str__(self):
