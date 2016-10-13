@@ -89,9 +89,9 @@ urlpatterns = [
 
     # Qualis
     url(r'^(?P<seasonpk>[0-9]+)/s(?P<sessionpk>[0-9]+)/quali$',
-        QualiCreateView.as_view(), name="quali-create"),
+        never_cache(QualiCreateView.as_view()), name="quali-create"),
     url(r'^(?P<seasonpk>[0-9]+)/s(?P<sessionpk>[0-9]+)/q(?P<pk>[0-9]+)/$',
-        QualiUpdateView.as_view(), name="quali-update"),
+        never_cache(QualiUpdateView.as_view()), name="quali-update"),
     url(r'^(?P<seasonpk>[0-9]+)/s(?P<sessionpk>[0-9]+)/q(?P<pk>[0-9]+)/delete$',  # NOQA
         QualiDeleteView.as_view(), name="quali-delete"),
 ]
