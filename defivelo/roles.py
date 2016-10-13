@@ -29,7 +29,7 @@ def user_cantons(user):
 
     if has_permission(user, 'cantons_all'):
         _user_cantons[user.pk] = DV_STATES
-        return
+        return _user_cantons[user.pk]
     if has_permission(user, 'cantons_mine'):
         _user_cantons[user.pk] = [
             m.canton for m in user.managedstates.all()
