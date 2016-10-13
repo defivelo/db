@@ -17,11 +17,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+import operator
+from functools import reduce
+
 from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.forms import ValidationError
@@ -35,9 +40,10 @@ from localflavor.generic.models import IBANField
 from multiselectfield import MultiSelectField
 from rolepermissions.verifications import has_role
 
-from apps.challenge.models import QualificationActivity
+from apps.challenge.models import QualificationActivity, Season
 from apps.common import DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.models import Address
+from defivelo.roles import user_cantons
 
 from . import (  # NOQA
     FORMATION_CHOICES, FORMATION_KEYS, FORMATION_M1, FORMATION_M2,
@@ -351,6 +357,28 @@ class UserProfile(Address, models.Model):
             primary=True
             )
         self.user.save()
+
+    def get_seasons(self, raise_without_cantons=False):
+        qs = Season.objects
+        usercantons = []
+        try:
+            usercantons = user_cantons(self.user)
+        except LookupError:
+            if raise_without_cantons:
+                raise PermissionDenied
+            if self.formation or self.actor_for:
+                usercantons = [self.affiliation_canton]
+                if self.activity_cantons:
+                    usercantons += self.activity_cantons
+
+        if usercantons:
+            cantons = [
+                Q(cantons__contains=state)
+                for state in usercantons
+            ]
+            return qs.filter(reduce(operator.or_, cantons))
+
+        return qs.none()
 
     def __str__(self):
         return self.user.get_full_name()

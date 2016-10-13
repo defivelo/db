@@ -17,42 +17,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-import operator
 from datetime import date
-from functools import reduce
 
 from article.models import Article
-from django.db.models import Q
 from django.utils import timezone
 from django.views.generic.base import TemplateView
 from rolepermissions.verifications import has_permission
-
-from apps.challenge.models import Season
-from defivelo.roles import user_cantons
 
 
 class MenuView(object):
     def get_context_data(self, **kwargs):
         context = super(MenuView, self).get_context_data(**kwargs)
-
-        qs = Season.objects.filter(end__gte=date.today())
-        try:
-            usercantons = user_cantons(self.request.user)
-        except LookupError:
-            usercantons = [self.request.user.profile.affiliation_canton]
-            if self.request.user.profile.activity_cantons:
-                usercantons += self.request.user.profile.activity_cantons
-
-        if usercantons:
-            cantons = [
-                Q(cantons__contains=state)
-                for state in usercantons
-            ]
-            qs = qs.filter(reduce(operator.or_, cantons))
-        else:
-            qs = None
-
-        context['current_seasons'] = qs
+        context['current_seasons'] = (
+            self.request.user.profile.get_seasons()
+            .filter(end__gte=date.today())
+        )
         context['now'] = timezone.now()
         return context
 
