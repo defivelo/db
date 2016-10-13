@@ -71,23 +71,18 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
         return context
 
     def get_queryset(self):
-        qs = super(SeasonMixin, self).get_queryset()
-        try:
-            usercantons = user_cantons(self.request.user)
-        except LookupError:
-            if self.raise_without_cantons:
-                raise PermissionDenied
-            usercantons = [self.request.user.profile.affiliation_canton]
-            if self.request.user.profile.activity_cantons:
-                usercantons += self.request.user.profile.activity_cantons
+        if self.model == Season:
+            return self.request.user.profile.get_seasons(self.raise_without_cantons)
 
-        if self.model == Season and usercantons:
-            cantons = [
-                    Q(cantons__contains=state)
-                    for state in usercantons
-                ]
-            qs = qs.filter(reduce(operator.or_, cantons))
-        if self.model == get_user_model() and usercantons:
+        qs = super(SeasonMixin, self).get_queryset()
+
+        if self.model == get_user_model():
+            try:
+                usercantons = user_cantons(self.request.user)
+            except LookupError:
+                if self.raise_without_cantons:
+                    raise PermissionDenied
+                return qs
             # Check that the intersection isn't empty
             cantons = list(
                 set(usercantons)
