@@ -135,6 +135,7 @@ class SessionForm(autocomplete_light.ModelForm):
                   'place',
                   'address_street', 'address_no', 'address_zip',
                   'address_city', 'address_canton',
+                  'superleader',
                   'apples',
                   'helpers_time', 'helpers_place',
                   'comments']

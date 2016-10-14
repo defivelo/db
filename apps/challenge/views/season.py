@@ -243,6 +243,7 @@ class SeasonExportView(ExportMixin, SeasonAvailabilityMixin,
             u('Heures'),
             u('Nombre de qualifs'),
             # Logistique
+            u('Moniteur +'),
             u('Mauvais temps'),
             u('Pommes'),
             u('Total vélos'),
@@ -277,6 +278,10 @@ class SeasonExportView(ExportMixin, SeasonAvailabilityMixin,
                 session_place,
                 '%s - %s' % (time(session.begin), time(session.end)),
                 session.n_qualifications,
+                EXPORT_NAMETEL.format(
+                    name=session.superleader.get_full_name(),
+                    tel=session.superleader.profile.natel
+                    ) if session.superleader else '',
                 str(session.fallback),
                 session.apples,
                 session.n_bikes,
@@ -286,7 +291,7 @@ class SeasonExportView(ExportMixin, SeasonAvailabilityMixin,
             if session.n_qualifications:
                 for quali in session.qualifications.all():
                     if not len(col):
-                        col = [''] * 11
+                        col = [''] * 12
                     col.append(quali.name)
                     col.append(
                         EXPORT_NAMETEL.format(

@@ -59,6 +59,10 @@ class Session(Address, models.Model):
                                      )
     place = models.CharField(_("Lieu de la qualification"),
                              max_length=512, blank=True)
+    superleader = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                    verbose_name=_('Moniteur +'),
+                                    related_name='sess_monplus',
+                                    blank=True, null=True)
     FALLBACK_CHOICES = (
         ('A', _('Programme déluge')),
         ('B', _('Annulation')),

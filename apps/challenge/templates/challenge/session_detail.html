@@ -58,6 +58,9 @@
     {% if session.begin and session.duration %}
         <tr><th>{% trans "Horaire" %}</th><td>{{ session.begin|time }} - {{ session.end|time }}</td></tr>
     {% endif %}
+    {% if session.superleader %}
+        <tr><th>{% trans "Moniteur +" %}</th><td>{{ session.superleader|profile_tag }}</td></tr>
+    {% endif %}
     {% if session.fallback %}
         <tr><th>{% trans "Mauvais temps" %}</th><td>{{ session.fallback }}</td></tr>
     {% endif %}
