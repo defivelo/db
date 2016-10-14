@@ -86,7 +86,7 @@ PERSONAL_FIELDS = ['natel', 'birthdate',
                    'status', 'activity_cantons',
                    ]
 
-DV_PUBLIC_FIELDS = ['formation', 'actor_for',
+DV_PUBLIC_FIELDS = ['formation', 'formation_lastdate', 'actor_for',
                     'pedagogical_experience',
                     'firstmed_course', 'firstmed_course_comm',
                     'bagstatus', 'affiliation_canton',
@@ -117,6 +117,8 @@ class UserProfile(Address, models.Model):
     formation = models.CharField(_("Formation"), max_length=2,
                                  choices=FORMATION_CHOICES,
                                  blank=True)
+    formation_lastdate = models.DateField(_('Date de la dernière formation'),
+                                          blank=True, null=True)
     actor_for = models.ForeignKey(QualificationActivity,
                                   verbose_name=_('Intervenant'),
                                   related_name='actors',

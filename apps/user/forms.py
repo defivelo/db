@@ -80,6 +80,8 @@ class UserProfileForm(forms.ModelForm):
     formation = forms.ChoiceField(label=_('Formation'),
                                   choices=FORMATION_CHOICES,
                                   required=False)
+    formation_lastdate = SwissDateField(
+        label=_('Date de la dernière formation'), required=False)
     actor_for = forms.ModelChoiceField(label=_('Intervenant'),
                                        queryset=(
                                            QualificationActivity.objects

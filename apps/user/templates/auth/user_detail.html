@@ -99,7 +99,10 @@
                 <div role="tabpane" class="tab-pane" id="defi">
                     <dl class="dl-horizontal">
                         {% if userprofile.profile.formation %}
-                            <dt>{% trans "Formation" %}</dt><dd>{{ userprofile.profile.formation_full }}</dd>
+                            <dt>{% trans "Formation" %}</dt><dd>{{ userprofile.profile.formation_full }}
+                            {% if userprofile.profile.formation_lastdate %}
+                            ({% trans "Dernière formation : " %}{{ userprofile.profile.formation_lastdate }})
+                            {% endif %}</dd>
                         {% endif %}
                         {% if userprofile.profile.actor %}
                             <dt>{% trans "Intervenant" %}</dt><dd>{{ userprofile.profile.actor_for.name }}</dd>
