@@ -319,9 +319,12 @@ class SeasonExportView(ExportMixin, SeasonAvailabilityMixin,
                     col.append(quali.n_participants)
                     col.append(quali.n_bikes)
                     col.append(quali.n_helmets)
-                    col.append(str(quali.activity_A))
-                    col.append(str(quali.activity_B))
-                    col.append(str(quali.activity_C))
+                    col.append(
+                        str(quali.activity_A) if quali.activity_A else '')
+                    col.append(
+                        str(quali.activity_B) if quali.activity_B else '')
+                    col.append(
+                        str(quali.activity_C) if quali.activity_C else '')
                     col.append(
                         EXPORT_NAMETEL.format(
                             name=quali.actor.get_full_name(),
