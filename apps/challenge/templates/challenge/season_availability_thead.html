@@ -3,37 +3,33 @@
 <thead>
     {% with can_crud=user|can:'challenge_season_crud' %}
     <tr>
-        <td rowspan="5" colspan="{{ preamble_columns|default:1 }}">&nbsp;</td>
+        <td rowspan="6" colspan="{{ preamble_columns|default:1 }}">&nbsp;</td>
         {% for session in sessions %}
             <th class="text-center">
-                {% if can_crud %}<a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}" title="{% trans "Vers la session" %}">{% endif %}
                     {{ session.day|date:"j F" }}
-                {% if can_crud %}</a>{% endif %}
             </th>
         {% endfor %}</tr>
     <tr>{% for session in sessions %}
             <th class="text-center" style="vertical-align: top;">
                 {{ session.organization.name }}
-            </th>
-        {% endfor %}</tr>
-    <tr>{% for session in sessions %}
-            <td class="text-center">
+                <br />
                 {% if session.address_city %}{{ session.address_city }}{% elif session.organization.address_city %}{{ session.organization.address_city }}{% endif %}
             </td>
         {% endfor %}</tr>
     <tr>{% for session in sessions %}
             <th class="text-center">
-                {% if can_crud %}<a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}" title="{% trans "Vers la session" %}">{% endif %}
                     {{ session.begin|date:"H\hi" }} - {{ session.end|date:"H\hi" }}
-                {% if can_crud %}</a>{% endif %}
             </th>
         {% endfor %}</tr>
-
     <tr>{% for session in sessions %}
-            <td>
-            {% if can_crud %}<a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}" title="{% trans "Vers la session" %}" class="small">{% endif %}
+            <th class="text-center">
+            {% if can_crud %}<a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}" title="{% trans "Vers la session" %}">{% endif %}
                 {% blocktrans count n=session.qualifications.count %}1 qualification{% plural %}{{ n }} qualifications{% endblocktrans %}
             {% if can_crud %}</a>{% endif %}
+            </th>
+        {% endfor %}</tr>
+    <tr>{% for session in sessions %}
+            <td>
             {% if chosen_stats %}
                 <dl class="small dl-horizontal">
                     <dt>{% trans "Moniteurs 2" %}</dt>
