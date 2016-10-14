@@ -56,7 +56,7 @@
             <td>{% if session.n_bikes > 0 %}
                     {% blocktrans count n=session.n_bikes %}1 vélo{% plural %}{{ n }} vélos{% endblocktrans %}
                 {% endif %}
-                {% if session.n_helmets > 0 %}<br />
+                {% if session.n_helmets > 0 %}<br class="hidden-print" /><span class="visible-print-inline"> &amp;</span>
                     {% blocktrans count n=session.n_helmets %}1 casque{% plural %}{{ n }} casques{% endblocktrans %}
                 {% endif %}
             </td>
@@ -129,7 +129,7 @@
                     <td>{% if quali.n_bikes %}
                             {% blocktrans count n=quali.n_bikes %}1 vélo{% plural %}{{ n }} vélos{% endblocktrans %}
                         {% endif %}
-                        {% if quali.n_helmets %}<br />
+                        {% if quali.n_helmets %}<br class="hidden-print" /><span class="visible-print-inline"> &amp;</span>
                             {% blocktrans count n=quali.n_helmets %}1 casque{% plural %}{{ n }} casques{% endblocktrans %}
                         {% endif %}
                     </td>

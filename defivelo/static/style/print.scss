@@ -28,6 +28,20 @@ footer#print-footer {
     margin: 0;
 }
 
+h1 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 30px;
+    text-align: center;
+    &>small {
+        // Ajoute un saut de ligne entre les deux
+        &:before {
+            content: ' ';
+            display: block;
+        }
+    }
+}
+
 /* No underscores */
 a, a:visited {
     text-decoration: none;
@@ -41,8 +55,15 @@ a[href]:after {
 /* Reduce margins */
 table.table {
     margin: 0;
-    td,
-    th {
-        border: 1px solid #ddd;
+    &>tbody,
+    &>tfoot,
+    &>thead {
+        &>tr {
+            &>td,
+            &>th,{
+                border: 1px solid #ddd;
+                padding: 6px;
+            }
+        }
     }
 }
