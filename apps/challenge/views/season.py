@@ -135,6 +135,7 @@ class SeasonAvailabilityMixin(SeasonMixin):
             qs = get_user_model().objects
             if self.season:
                 seasoncantons = self.season.cantons
+                # S'il y au moins un canton en commun
                 cantons_filter = [
                     Q(profile__activity_cantons__contains=canton)
                     for canton in seasoncantons
