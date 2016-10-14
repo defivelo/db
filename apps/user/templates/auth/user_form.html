@@ -10,6 +10,16 @@
     <h2>{% if not userprofile %}{% trans "Nouvel utilisateur" %}
         {% else %}{% user_display userprofile %}
         {% endif %}</h2>
+    {% if not userprofile %}
+    <div class="alert alert-warning row" role="alert">
+        <span class="col-xs-10">{% blocktrans %}Est-il certain que ce nouvel utilisateur n'existe pas déjà dans la base de données ?{% endblocktrans %}</span>
+        <form method="GET" action="{% url 'user-list' %}" class="form-inline pull-right col-xs-2">
+            <div class="input-group">
+                <div class="form-group"><label class="sr-only control-label" for="id_q">Recherche</label><div class="input-group"><input class="form-control" id="id_q" name="q" placeholder="Recherche" title="" type="text"><span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span></div></div>
+                </div>
+        </form>
+    </div>
+    {% endif %}
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
         {% with no_dv_public_fields=request.user|can:'user_crud_dv_public_fields'|yesno:',True' no_dv_private_fields=request.user|can:'user_crud_dv_private_fields'|yesno:',True' %}
