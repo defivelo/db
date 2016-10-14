@@ -16,8 +16,20 @@
 
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
-        {% bootstrap_field form.name layout='horizontal' size='small' %}
-        {% include "address_bootstrap_form.html" %}
+        <div>
+            <div role="tabpanel" class="tab-pane active" id="addr">
+                {% bootstrap_field form.name layout='horizontal' size='small' %}
+                {% include "address_bootstrap_form.html" %}
+            </div>
+            <div role="tabpanel" class="tab-pane active" id="coord">
+                {% bootstrap_field form.coordinator_fullname layout='horizontal' size='small' %}
+                {% bootstrap_field form.coordinator_natel layout='horizontal' size='small' %}
+                {% bootstrap_field form.coordinator_email layout='horizontal' size='small' %}
+            </div>
+            <div role="tabpanel" class="tab-pane active" id="comments">
+                {% bootstrap_field form.comments layout='horizontal' size='small' %}
+            </div>
+        </div>
 
         {% buttons %}
             <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>

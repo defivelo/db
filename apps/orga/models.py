@@ -29,6 +29,28 @@ from apps.common.models import Address
 class Organization(Address, models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     name = models.CharField(_('Nom'), max_length=255)
+    coordinator_fullname = models.CharField(_('Coordinateur'),
+                                            max_length=512, blank=True)
+    coordinator_natel = models.CharField(_('Natel'),
+                                         max_length=13, blank=True)
+    coordinator_email = models.EmailField(_('Courriel'),
+                                          blank=True)
+    comments = models.TextField(_('Remarques'), blank=True)
+
+    @property
+    def mailtolink(self):
+        return (
+            '{name} <{email}>'.format(
+                name=self.coordinator_fullname,
+                email=self.coordinator_email)
+            )
+
+    @property
+    def coordinator_natel_int(self):
+        if self.coordinator_natel:
+            # Delete spaces, drop initial 0, add +41
+            return '+41' + self.coordinator_natel.replace(' ', '')[1:]
+        return ''
 
     class Meta:
         verbose_name = _('Établissement')

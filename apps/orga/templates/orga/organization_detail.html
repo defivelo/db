@@ -8,19 +8,51 @@
         <div class="panel-heading">
             <h2 class="panel-title"><a href="{{ organization.get_absolute_url }}" class="organization-name">{{ organization.name }}</a></h2>
         </div>
-        <div class="adr panel-body">
-            <div class="street-address">
-                {{ organization.address_street }} {{ organization.address_no }}
-                {% if organization.address_additional %}
-                    <br />{{ organization.address_additional }}
+        <div class="panel-body">
+          <div role="tabpane" class="tab-pane" id="address">
+            <dl class="dl-horizontal">
+                <dt></dt>
+                <dd class="adr">
+                    <h4>{{ organization.name }}</h4>
+                    <div class="street-address">
+                        {{ organization.address_street }} {{ organization.address_no }}
+                        {% if organization.address_additional %}
+                            <br />{{ organization.address_additional }}
+                        {% endif %}
+                    </div>
+                    <div>
+                        <span class="postal-code">{{ organization.address_zip }}</span> <span class="locality">{{ organization.address_city }}</span>
+                        {% if organization.address_canton %}
+                            ({{ organization.address_canton }})
+                        {% endif %}
+                    </div>
+                </dd>
+            </dl>
+          </div>
+          <div role="tabpane" class="tab-pane" id="contacts">
+            <dl class="dl-horizontal">
+                {% if organization.coordinator_fullname %}
+                    <dt>{% trans "Coordinateur" %}</dt>
+                        <dd>{{ organization.coordinator_fullname }}</dd>
                 {% endif %}
-            </div>
-            <div>
-                <span class="postal-code">{{ organization.address_zip }}</span> <span class="locality">{{ organization.address_city }}</span>
-                {% if organization.address_canton %}
-                ({{ organization.address_canton }})
+                {% if organization.coordinator_email %}
+                    <dt>{% trans "Courriel" %}</dt>
+                        <dd><a class="email" href="mailto:{{ organization.mailtolink|urlencode }}">{{ organization.coordinator_email }}</a></dd>
                 {% endif %}
+                {% if organization.coordinator_natel %}
+                    <dt>{% trans "Natel" %}</dt>
+                        <dd><a class="tel" href="tel:{{ organization.coordinator_natel_int }}">{{ organization.coordinator_natel }}</a></dd>
+                {% endif %}
+            </dl>
+          </div>
+          {% if organization.comments %}
+          <div role="tabpane" class="tab-pane panel panel-info" id="notes">
+            <div class="panel-heading">{% trans "Remarques" %}</div>
+            <div class="panel-body">
+                {{ organization.comments }}
             </div>
+          </div>
+          {% endif %}
         </div>
     </div>
     {% buttons %}

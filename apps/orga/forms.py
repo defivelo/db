@@ -19,7 +19,9 @@ from __future__ import unicode_literals
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from localflavor.ch.forms import CHStateSelect
+from localflavor.ch.forms import (
+    CHPhoneNumberField, CHStateSelect, CHZipCodeField,
+)
 
 from apps.user import STATE_CHOICES_WITH_DEFAULT
 
@@ -44,8 +46,13 @@ class OrganizationForm(forms.ModelForm):
                                        widget=CHStateSelect,
                                        choices=STATE_CHOICES_WITH_DEFAULT,
                                        required=False)
+    address_zip = CHZipCodeField(label=_('NPA'), max_length=4, required=False)
+    coordinator_natel = CHPhoneNumberField(label=_('Natel'), required=False)
 
     class Meta:
         model = Organization
         fields = ['name', 'address_street', 'address_no', 'address_additional',
-                  'address_zip', 'address_city', 'address_canton']
+                  'address_zip', 'address_city', 'address_canton',
+                  'coordinator_fullname', 'coordinator_natel',
+                  'coordinator_email', 'comments',
+                  ]

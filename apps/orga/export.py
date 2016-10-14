@@ -24,7 +24,10 @@ from .models import Organization
 
 ORGA_FIELDS = ['id', 'name', 'address_street', 'address_no',
                'address_additional', 'address_zip', 'address_city',
-               'address_canton', 'created_on']
+               'address_canton', 'created_on',
+               'coordinator_fullname', 'coordinator_email',
+               'coordinator_natel', 'comments',
+               ]
 
 
 class OrganizationResource(resources.ModelResource):
@@ -41,6 +44,14 @@ class OrganizationResource(resources.ModelResource):
                                 attribute='address_city')
     address_canton = fields.Field(column_name=_('Canton'),
                                   attribute='address_canton')
+    coordinator_fullname = fields.Field(column_name=_('Coordinateur'),
+                                        attribute='coordinator_fullname')
+    coordinator_natel = fields.Field(column_name=_('Natel'),
+                                     attribute='coordinator_natel')
+    coordinator_email = fields.Field(column_name=_('Email'),
+                                     attribute='coordinator_email')
+    comments = fields.Field(column_name=_('Remarques'),
+                            attribute='comments')
 
     class Meta:
         model = Organization
