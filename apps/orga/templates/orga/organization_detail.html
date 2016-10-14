@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
+{% load dv_filters %}
 {% block head_title %}{{ organization }}{% endblock %}
 
 {% block content %}
@@ -41,7 +42,7 @@
                 {% endif %}
                 {% if organization.coordinator_natel %}
                     <dt>{% trans "Natel" %}</dt>
-                        <dd><a class="tel" href="tel:{{ organization.coordinator_natel_int }}">{{ organization.coordinator_natel }}</a></dd>
+                        <dd><a class="tel" href="tel:{{ organization.coordinator_natel|tel_int }}">{{ organization.coordinator_natel }}</a></dd>
                 {% endif %}
             </dl>
           </div>

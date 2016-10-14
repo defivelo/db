@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load account %}
+{% load dv_filters %}
 {% block head_title %}{{ page_title }}{% endblock %}
 {% block content %}
     {% if season %}
@@ -27,7 +28,7 @@
             </td>
             <td>{{ user.first_name }}</td>
             <td>{{ user.last_name }}</td>
-            <td>{% if user.profile.natel %}<a href="tel:{{ user.profile.natel_int }}">{{ user.profile.natel }}</a>{% endif %}</td>
+            <td>{% if user.profile.natel %}<a href="tel:{{ user.profile.natel|tel_int }}">{{ user.profile.natel }}</a>{% endif %}</td>
             <td>{% if user.email %}<a href="mailto:{{ user.profile.mailtolink|urlencode }}">{{ user.email }}</a>{% endif %}</td>
         </tr>
     {% endfor %}

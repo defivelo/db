@@ -54,9 +54,17 @@ def setlang(request, newlang):
 
 
 @register.filter
+def tel_int(tel):
+    if not tel:
+        return ''
+    # Delete spaces, drop initial 0, add +41
+    return '+41' + tel.replace(' ', '')[1:]
+
+
+@register.filter
 def profile_tag(user):
     """
-    Standard user display (currently fullname + small natel
+    Standard user display (currently fullname + small natel)
     """
     if not user:
         return ''
@@ -65,20 +73,12 @@ def profile_tag(user):
     if user.profile.natel:
         usertag += (
             '<br /><small><a href="tel:{natel_int}">{natel}</a></small>'
-            .format(natel_int=user.profile.natel_int,
+            .format(natel_int=tel_int(user.profile.natel),
                     natel=user.profile.natel)
             )
     usertag += '</span>'
 
     return mark_safe(usertag)
-
-
-@register.filter
-def tel_int(tel):
-    if not tel:
-        return ''
-    # Delete spaces, drop initial 0, add +41
-    return '+41' + tel.replace(' ', '')[1:]
 
 
 @register.filter

@@ -45,13 +45,6 @@ class Organization(Address, models.Model):
                 email=self.coordinator_email)
             )
 
-    @property
-    def coordinator_natel_int(self):
-        if self.coordinator_natel:
-            # Delete spaces, drop initial 0, add +41
-            return '+41' + self.coordinator_natel.replace(' ', '')[1:]
-        return ''
-
     class Meta:
         verbose_name = _('Établissement')
         verbose_name_plural = _('Établissements')

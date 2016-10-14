@@ -203,13 +203,6 @@ class UserProfile(Address, models.Model):
                )
 
     @property
-    def natel_int(self):
-        if self.natel:
-            # Delete spaces, drop initial 0, add +41
-            return '+41' + self.natel.replace(' ', '')[1:]
-        return ''
-
-    @property
     def iban_nice(self):
         if self.iban:
             value = self.iban

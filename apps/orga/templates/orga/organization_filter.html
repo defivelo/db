@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load bootstrap3 %}
 {% load permission_tags %}
+{% load dv_filters %}
 {% block head_title %}{% trans "Établissements" %}{% endblock %}
 
 {% block content %}
@@ -82,7 +83,7 @@
             <td>{{ orga.address_canton }}</td>
             <td>{{ orga.coordinator_fullname }}</td>
             <td>{% if orga.coordinator_natel %}
-                <a class="tel" href="tel:{{ orga.coordinator_natel_int }}">{{ orga.coordinator_natel }}</a>
+                <a class="tel" href="tel:{{ orga.coordinator_natel|tel_int }}">{{ orga.coordinator_natel }}</a>
                 {% endif %}</td>
             <td>{% if orga.coordinator_email %}
                 <a class="email" href="mailto:{{ orga.mailtolink|urlencode }}">{{ orga.coordinator_email }}</a>

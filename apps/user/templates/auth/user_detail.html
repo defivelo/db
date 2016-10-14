@@ -80,7 +80,7 @@
                         {% endif %}
                         {% if userprofile.profile.natel %}
                             <dt>{% trans "Natel" %}</dt>
-                                <dd><a class="tel" href="tel:{{ userprofile.profile.natel_int }}">{{ userprofile.profile.natel }}</a></dd>
+                                <dd><a class="tel" href="tel:{{ userprofile.profile.natel|tel_int }}">{{ userprofile.profile.natel }}</a></dd>
                         {% endif %}
                     </dl>
                 </div>

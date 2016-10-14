@@ -36,7 +36,17 @@
     </div>
     <table class="table">
     <tr><th>{% trans "Établissement" %}</th>
-        <td><a href="{% url 'organization-detail' session.organization.pk %}">{{ session.organization }}</a></td>
+        <td><a href="{% url 'organization-detail' session.organization.pk %}">{{ session.organization }}</a>
+            {% if session.organization.coordinator_fullname %}
+                <br />
+                <small>{{ session.organization.coordinator_fullname }}
+                    {% if session.organization.coordinator_natel %}
+                        <br class="hidden-print"/><span class="visible-print-inline"> |</span>
+                        <a href="tel:{{ session.organization.coordinator_natel|tel_int }}">{{ session.organization.coordinator_natel }}</a>
+                    {% endif %}
+                </small>
+            {% endif %}
+        </td>
     </tr>
     <tr><th>{% trans "Emplacement de la session" %}</th>
         <td>{% if session.place %}<em>{{ session.place }}</em><br />{% endif %}
