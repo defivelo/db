@@ -34,20 +34,7 @@
 
     <div class="hidden-print">
         {% if request.user|can:"user_view_list" %}
-        <div class="btn-group" role="group" aria-label="exports">
-            {% with 'csv ods xls' as formats %}
-                {% for format in formats.split %}
-                    <a class="btn btn-info btn-sm" title="{% blocktrans %}Télécharger au format {{ format }}{% endblocktrans %}"
-                       href="{% url 'user-list-export' format %}?{{ filter_querystring }}"
-                        ">
-                        {% ifchanged %}
-                            <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
-                        {% endifchanged %}
-                        {{ format }}
-                    </a>
-                {% endfor %}
-            {% endwith %}
-        </div>
+            {% include 'export_buttons.html' with exporturl='user-list-export' filter_querystring=filter_querystring only %}
         {% endif %}
 
         {% if filter.form %}

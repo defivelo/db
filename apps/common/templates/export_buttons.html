@@ -1,0 +1,15 @@
+{% load i18n %}
+<div class="btn-group" role="group" aria-label="exports">
+    {% with 'ods xls csv' as formats %}
+        {% for format in formats.split %}
+            <a class="btn btn-info btn-sm" title="{% blocktrans %}Télécharger au format {{ format }}{% endblocktrans %}"
+                href="{% url exporturl exportargs format %}?{{ filter_querystring }}"
+                ">
+                {% ifchanged %}
+                    <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
+                {% endifchanged %}
+                {{ format }}
+            </a>
+        {% endfor %}
+    {% endwith %}
+</div>

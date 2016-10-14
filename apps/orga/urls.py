@@ -28,7 +28,7 @@ from .views import (
 urlpatterns = [
     url(r'^$', never_cache(OrganizationsListView.as_view()),
         name="organization-list"),
-    url(r'^(?P<format>[a-z]+)export/$',
+    url(r'^(?P<void>)?(?P<format>[a-z]+)export/$',
         never_cache(OrganizationListExport.as_view()),
         name="organization-list-export"),
     url(r'^new/$', OrganizationCreateView.as_view(),

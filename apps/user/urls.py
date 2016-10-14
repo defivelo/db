@@ -27,7 +27,7 @@ from .views import (
 
 urlpatterns = [
     url(r'^$', never_cache(UserList.as_view()), name="user-list"),
-    url(r'^(?P<format>[a-z]+)export/$',
+    url(r'^(?P<void>)?(?P<format>[a-z]+)export/$',
         never_cache(UserListExport.as_view()),
         name="user-list-export"),
     url(r'^new/$', UserCreate.as_view(), name="user-create"),
