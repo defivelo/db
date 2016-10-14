@@ -29,17 +29,18 @@ from localflavor.ch.forms import CHPhoneNumberField, CHStateSelect
 
 from apps.common.forms import SwissDateField, SwissTimeField
 from apps.user import STATE_CHOICES_WITH_DEFAULT
-from apps.user.models import FORMATION_KEYS, FORMATION_M1, FORMATION_M2
+from apps.user.models import FORMATION_KEYS, FORMATION_M2
 
 from . import (
     AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, SHORTCODE_ACTOR,
     SHORTCODE_MON1, SHORTCODE_MON2, STAFF_FIELDKEY,
 )
+from .fields import ActorChoiceField, HelpersChoiceField, LeaderChoiceField
 from .models import Qualification, Season, Session
 from .models.availability import HelperSessionAvailability
 
 
-class SeasonForm(autocomplete_light.ModelForm):
+class SeasonForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         cantons = kwargs.pop('cantons', None)
         kwargs.pop('season', None)
@@ -65,11 +66,17 @@ class SeasonForm(autocomplete_light.ModelForm):
 
     begin = SwissDateField(label=_('Début'))
     end = SwissDateField(label=_('Fin'))
+    leader = LeaderChoiceField(label=_('Chargé·e de projet'),
+                               queryset=(
+                                   get_user_model().objects
+                                   .filter(managedstates__isnull=False)
+                                   .distinct()
+                                ),
+                               required=True)
 
     class Meta:
         model = Season
         fields = ['begin', 'end', 'cantons', 'leader']
-        autocomplete_names = {'leader': 'PersonsRelevantForSeason'}
 
 
 class SessionForm(autocomplete_light.ModelForm):
@@ -131,26 +138,6 @@ class SessionForm(autocomplete_light.ModelForm):
                   'apples',
                   'helpers_time', 'helpers_place',
                   'comments']
-
-
-class LeaderChoiceField(forms.ModelChoiceField):
-    def label_from_instance(self, obj):
-        return obj.get_full_name()
-
-
-class HelpersChoiceField(forms.ModelMultipleChoiceField):
-    def label_from_instance(self, obj):
-        postfix = ''
-        if obj.profile.formation not in ['', FORMATION_M1]:
-            postfix = ' (%s)' % obj.profile.formation
-        return obj.get_full_name() + postfix
-
-
-class ActorChoiceField(forms.ModelChoiceField):
-    def label_from_instance(self, obj):
-        return "{name} ({actor_for})".format(
-             name=obj.get_full_name(),
-             actor_for=obj.profile.actor_for.name)
 
 
 class QualificationForm(forms.ModelForm):

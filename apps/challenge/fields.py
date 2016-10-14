@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2015, 2016 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2016 Didier Raboud <me+defivelo@odyx.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -17,17 +17,26 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from autocomplete_light.shortcuts import register as al_register
-from django.utils.translation import ugettext_lazy as _
+from django import forms
 
-from .views.autocomplete import (
-    Actors, AllPersons, Helpers, Leaders, PersonsRelevantForSessions,
-)
+from apps.user.models import FORMATION_M1
 
-ac_placeholder = _('type some text to search in this autocomplete')
 
-al_register(AllPersons)
-al_register(PersonsRelevantForSessions)
-al_register(Helpers)
-al_register(Leaders)
-al_register(Actors)
+class LeaderChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.get_full_name()
+
+
+class HelpersChoiceField(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        postfix = ''
+        if obj.profile.formation not in ['', FORMATION_M1]:
+            postfix = ' (%s)' % obj.profile.formation
+        return obj.get_full_name() + postfix
+
+
+class ActorChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return "{name} ({actor_for})".format(
+             name=obj.get_full_name(),
+             actor_for=obj.profile.actor_for.name)
