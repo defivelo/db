@@ -83,6 +83,7 @@ class ProfileTestCase(TestCase):
         # Some corrections
         initial['status'] = 0
         initial['birthdate'] = ''
+        initial['formation_lastdate'] = ''
 
         if initial['activity_cantons'] is None:
             initial['activity_cantons'] = []
