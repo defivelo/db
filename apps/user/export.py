@@ -51,6 +51,7 @@ class ObjectMethodWidget(widgets.Widget):
             return force_text(attribute)
         return ''
 
+
 ALL_PROFILE_FIELDS = tuple(
     ['first_name', 'last_name', 'email'] +
     ['profile__%s' % field for field in STD_PROFILE_FIELDS

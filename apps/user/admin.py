@@ -46,4 +46,5 @@ def username(self):
         fullname=self.get_full_name(),
         email=self.email)
 
+
 get_user_model_safe().get_username = username

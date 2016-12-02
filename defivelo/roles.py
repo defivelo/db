@@ -37,6 +37,7 @@ def user_cantons(user):
         return _user_cantons[user.pk]
     raise LookupError("No user cantons")
 
+
 _user_cantons = {}
 
 

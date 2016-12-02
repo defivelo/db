@@ -47,4 +47,5 @@ class QualificationActivityAdmin(TranslatableAdmin):
             return '<img src="%s" />' % static('admin/img/icon-yes.gif')
     missing_languages.allow_tags = True
 
+
 admin.site.register(QualificationActivity, QualificationActivityAdmin)

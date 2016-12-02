@@ -240,6 +240,7 @@ def defivelo_user_display(u):
     else:
         return u.email
 
+
 ACCOUNT_USER_DISPLAY = defivelo_user_display
 ACCOUNT_ADAPTER = 'defivelo.accounts.NoSignupAccountAdapter'
 

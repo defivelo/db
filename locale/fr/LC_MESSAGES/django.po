@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-14 15:29+0200\n"
+"POT-Creation-Date: 2016-12-02 12:21+0100\n"
 "PO-Revision-Date: 2015-10-08 12:11+0100\n"
 "Last-Translator: Didier Raboud <me+defivelo@odyx.org>\n"
 "Language: fr\n"
@@ -402,7 +402,7 @@ msgstr ""
 #: apps/dv_article/templates/article/article_form.html:23
 #: apps/orga/templates/orga/organization_form.html:37
 #: apps/orga/templates/orga/organization_form.html:39
-#: apps/user/templates/auth/user_form.html:93
+#: apps/user/templates/auth/user_form.html:103
 #: apps/user/templates/auth/user_send_credentials.html:26
 msgid "Annuler"
 msgstr ""
@@ -427,7 +427,7 @@ msgid "Créer une nouvelle saison"
 msgstr ""
 
 #: apps/challenge/templates/challenge/season_availability.html:11
-#: apps/challenge/templates/challenge/season_availability.html:40
+#: apps/challenge/templates/challenge/season_availability.html:46
 #: apps/challenge/templates/challenge/season_availability_update.html:12
 #: apps/challenge/templates/challenge/session_availability.html:5
 #: apps/challenge/templates/challenge/session_detail.html:82
@@ -441,39 +441,37 @@ msgstr ""
 msgid "Éditer les disponibilités"
 msgstr ""
 
-#: apps/challenge/templates/challenge/season_availability.html:46
+#: apps/challenge/templates/challenge/season_availability.html:37
 msgid "Retour à la saison"
 msgstr ""
 
-#: apps/challenge/templates/challenge/season_availability.html:47
+#: apps/challenge/templates/challenge/season_availability.html:50
 msgid "Attribuer les moniteurs"
 msgstr ""
 
-#: apps/challenge/templates/challenge/season_availability_thead.html:9
 #: apps/challenge/templates/challenge/season_availability_thead.html:26
-#: apps/challenge/templates/challenge/season_availability_thead.html:34
 msgid "Vers la session"
 msgstr ""
 
-#: apps/challenge/templates/challenge/season_availability_thead.html:35
+#: apps/challenge/templates/challenge/season_availability_thead.html:27
 #, python-format
 msgid "1 qualification"
 msgid_plural "%(n)s qualifications"
 msgstr[0] ""
 msgstr[1] ""
 
-#: apps/challenge/templates/challenge/season_availability_thead.html:39
+#: apps/challenge/templates/challenge/season_availability_thead.html:35
 #: apps/challenge/templates/challenge/session_availability.html:24
 #: apps/challenge/views/season.py:156
 msgid "Moniteurs 2"
 msgstr ""
 
-#: apps/challenge/templates/challenge/season_availability_thead.html:46
+#: apps/challenge/templates/challenge/season_availability_thead.html:42
 #: apps/challenge/templates/challenge/session_detail.html:82
 msgid "Moniteurs"
 msgstr ""
 
-#: apps/challenge/templates/challenge/season_availability_thead.html:55
+#: apps/challenge/templates/challenge/season_availability_thead.html:51
 #: apps/challenge/views/season.py:158
 msgid "Intervenants"
 msgstr ""
@@ -712,27 +710,31 @@ msgstr ""
 msgid "Saison mise à jour"
 msgstr ""
 
-#: apps/challenge/views/season.py:382
+#: apps/challenge/views/season.py:347
+msgid "Planning_Saison"
+msgstr ""
+
+#: apps/challenge/views/season.py:456
 msgid "Disponibilités mises à jour"
 msgstr ""
 
-#: apps/challenge/views/season.py:436
+#: apps/challenge/views/season.py:510
 msgid "Choix du personnel mises à jour"
 msgstr ""
 
-#: apps/challenge/views/season.py:529
+#: apps/challenge/views/season.py:603
 msgid "Saison créée"
 msgstr ""
 
-#: apps/challenge/views/season.py:534
+#: apps/challenge/views/season.py:608
 msgid "Saison supprimée"
 msgstr ""
 
-#: apps/challenge/views/season.py:540
+#: apps/challenge/views/season.py:614
 msgid "Moniteurs de la saison"
 msgstr ""
 
-#: apps/challenge/views/season.py:561
+#: apps/challenge/views/season.py:635
 msgid "Intervenants de la saison"
 msgstr ""
 
@@ -1203,28 +1205,34 @@ msgstr ""
 msgid "Rôle"
 msgstr ""
 
-#: apps/user/templates/auth/user_form.html:48
+#: apps/user/templates/auth/user_form.html:15
+msgid ""
+"Est-il certain que ce nouvel utilisateur n'existe pas déjà dans la base de "
+"données?"
+msgstr ""
+
+#: apps/user/templates/auth/user_form.html:58
 msgid "CCP?"
 msgstr ""
 
-#: apps/user/templates/auth/user_form.html:89
+#: apps/user/templates/auth/user_form.html:99
 msgid "Update"
 msgstr "Mettre à jour"
 
-#: apps/user/templates/auth/user_form.html:89
+#: apps/user/templates/auth/user_form.html:99
 msgid "Créer"
 msgstr ""
 
-#: apps/user/templates/auth/user_form.html:91
+#: apps/user/templates/auth/user_form.html:101
 #, python-format
 msgid "Changer d'email (%(email)s)"
 msgstr ""
 
-#: apps/user/templates/auth/user_form.html:104
+#: apps/user/templates/auth/user_form.html:114
 msgid "Vers le calculateur d'IBAN"
 msgstr ""
 
-#: apps/user/templates/auth/user_form.html:105
+#: apps/user/templates/auth/user_form.html:115
 msgid "https://www.postfinance.ch/fr/cust/acc/iban.html"
 msgstr ""
 

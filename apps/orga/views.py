@@ -167,4 +167,5 @@ class OrganizationAutocomplete(OrganizationMixin, AutocompleteModelBase):
         else:
             raise PermissionDenied
 
+
 al_register(OrganizationAutocomplete)
