@@ -344,7 +344,7 @@ class SeasonPlanningExportView(ExportMixin, SeasonAvailabilityMixin,
                                HasPermissionsMixin, DetailView):
     @property
     def export_filename(self):
-        return _('Plannning_Saison') + '-' + '-'.join(self.season.cantons)
+        return _('Planning_Saison') + '-' + '-'.join(self.season.cantons)
 
     def get_dataset(self):
         dataset = Dataset()
@@ -359,20 +359,23 @@ class SeasonPlanningExportView(ExportMixin, SeasonAvailabilityMixin,
         # Trouve toutes les personnes qui sont présentes dans cette saison
         qs = get_user_model().objects
         user_filter = [
-            Q(sess_monplus__in=self.season.sessions), # Moniteurs +
-            Q(qualifs_mon2__session__in=self.season.sessions), # Moniteurs 2
-            Q(qualifs_mon1__session__in=self.season.sessions), # Moniteurs 1
-            Q(qualifs_actor__session__in=self.season.sessions), # Intervenants
+            # Moniteurs +
+            Q(sess_monplus__in=self.season.sessions_with_qualifs),
+            # Moniteurs 2
+            Q(qualifs_mon2__session__in=self.season.sessions_with_qualifs),
+            # Moniteurs 1
+            Q(qualifs_mon1__session__in=self.season.sessions_with_qualifs),
+            # Intervenants
+            Q(qualifs_actor__session__in=self.season.sessions_with_qualifs),
         ]
         qs = (
             qs.filter(reduce(operator.or_, user_filter))
             .distinct()
             .order_by('first_name', 'last_name')
         )
-        n_users = qs.count()
         firstcol += [user.get_full_name() for user in qs]
         dataset.append_col(firstcol)
-        for session in self.season.sessions:
+        for session in self.season.sessions_with_qualifs:
             session_place = session.place
             if not session_place:
                 session_place = (
