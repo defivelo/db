@@ -340,6 +340,77 @@ class SeasonExportView(ExportMixin, SeasonAvailabilityMixin,
         return dataset
 
 
+class SeasonPlanningExportView(ExportMixin, SeasonAvailabilityMixin,
+                               HasPermissionsMixin, DetailView):
+    @property
+    def export_filename(self):
+        return _('Plannning_Saison') + '-' + '-'.join(self.season.cantons)
+
+    def get_dataset(self):
+        dataset = Dataset()
+        firstcol = [
+            u('Date'),
+            u('Canton'),
+            u('Établissement'),
+            u('Emplacement'),
+            u('Heures'),
+            u('Nombre de qualifs'),
+        ]
+        # Trouve toutes les personnes qui sont présentes dans cette saison
+        qs = get_user_model().objects
+        user_filter = [
+            Q(sess_monplus__in=self.season.sessions), # Moniteurs +
+            Q(qualifs_mon2__session__in=self.season.sessions), # Moniteurs 2
+            Q(qualifs_mon1__session__in=self.season.sessions), # Moniteurs 1
+            Q(qualifs_actor__session__in=self.season.sessions), # Intervenants
+        ]
+        qs = (
+            qs.filter(reduce(operator.or_, user_filter))
+            .distinct()
+            .order_by('first_name', 'last_name')
+        )
+        n_users = qs.count()
+        firstcol += [user.get_full_name() for user in qs]
+        dataset.append_col(firstcol)
+        for session in self.season.sessions:
+            session_place = session.place
+            if not session_place:
+                session_place = (
+                    session.address_city if session.address_city
+                    else session.organization.address_city
+                )
+            col = [
+                date(session.day),
+                session.organization.address_canton,
+                session.organization.name,
+                session_place,
+                '%s - %s' % (time(session.begin), time(session.end)),
+                session.n_qualifications,
+            ]
+            for user in qs:
+                label = ''
+                if user == session.superleader:
+                    # Translators: Nom court pour 'Moniteur +'
+                    label = u('M+')
+                else:
+                    for quali in session.qualifications.all():
+                        if user == quali.leader:
+                            # Translators: Nom court pour 'Moniteur 2'
+                            label = u('M2')
+                            break
+                        elif user in quali.helpers.all():
+                            # Translators: Nom court pour 'Moniteur 1'
+                            label = u('M1')
+                            break
+                        elif user == quali.actor:
+                            # Translators: Nom court pour 'Intervenant'
+                            label = u('I')
+                            break
+                col += [label]
+            dataset.append_col(col)
+        return dataset
+
+
 class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
     template_name = 'challenge/season_availability.html'
 

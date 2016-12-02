@@ -27,9 +27,9 @@ from .views import (
     QualiCreateView, QualiDeleteView, QualiUpdateView, SeasonActorListView,
     SeasonAvailabilityUpdateView, SeasonAvailabilityView, SeasonCreateView,
     SeasonDeleteView, SeasonDetailView, SeasonExportView, SeasonHelperListView,
-    SeasonListView, SeasonStaffChoiceUpdateView, SeasonUpdateView,
-    SessionCreateView, SessionDeleteView, SessionDetailView, SessionsListView,
-    SessionStaffChoiceView, SessionUpdateView,
+    SeasonListView, SeasonPlanningExportView, SeasonStaffChoiceUpdateView,
+    SeasonUpdateView, SessionCreateView, SessionDeleteView, SessionDetailView,
+    SessionsListView, SessionStaffChoiceView, SessionUpdateView,
 )
 
 urlpatterns = [
@@ -51,6 +51,9 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/(?P<format>[a-z]+)export$',
         never_cache(SeasonExportView.as_view()),
         name='season-export'),
+    url(r'^(?P<pk>[0-9]+)/(?P<format>[a-z]+)exportplanning$',
+        never_cache(SeasonPlanningExportView.as_view()),
+        name='season-planning-export'),
     url(r'^(?P<pk>[0-9]+)/moniteurs/$',
         never_cache(SeasonHelperListView.as_view()),
         name='season-helperlist'),

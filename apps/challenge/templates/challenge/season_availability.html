@@ -32,18 +32,21 @@
         </tbody>
         </table>
 
-    <div class="text-center">
-        <form method="POST" action="" class="form-inline" novalidate>
-            {% csrf_token %}
-            {% bootstrap_form form %}
-            {% buttons %}
-                <button type="submit" class="btn btn-primary pull-right">{% trans "Disponibilités" %}</button>
-            {% endbuttons %}
-        </form>
-    </div>
 
 <div class="hidden-print">
     <a class="btn btn-default" href="{% url 'season-detail' season.pk %}">{% trans "Retour à la saison" %}</a>
+
+    <div class="btn-group" role="group" aria-label="exports">
+        {% include 'export_buttons.html' with exporturl='season-planning-export' exportargs=season.pk filter_querystring=filter_querystring only %}
+    </div>
+    <form method="POST" action="" class="form-inline"  style="display: inline;" novalidate>
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons %}
+            <button type="submit" class="btn btn-primary pull-right">{% trans "Disponibilités" %}</button>
+        {% endbuttons %}
+    </form>
+
     <a class="pull-right btn btn-primary" href="{% url 'season-staff-update' season.pk %}">{% trans "Attribuer les moniteurs" %}</a>
 </div>
 {% endblock %}
