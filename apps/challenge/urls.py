@@ -29,7 +29,8 @@ from .views import (
     SeasonDeleteView, SeasonDetailView, SeasonExportView, SeasonHelperListView,
     SeasonListView, SeasonPlanningExportView, SeasonStaffChoiceUpdateView,
     SeasonUpdateView, SessionCreateView, SessionDeleteView, SessionDetailView,
-    SessionsListView, SessionStaffChoiceView, SessionUpdateView,
+    SessionExportView, SessionsListView, SessionStaffChoiceView,
+    SessionUpdateView,
 )
 
 urlpatterns = [
@@ -82,6 +83,9 @@ urlpatterns = [
     url(r'^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/$',
         never_cache(SessionDetailView.as_view()),
         name="session-detail"),
+    url(r'^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/(?P<format>[a-z]+)export$',
+        never_cache(SessionExportView.as_view()),
+        name='session-export'),
     url(r'^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/availability/$',
         never_cache(SessionStaffChoiceView.as_view()),
         name="session-staff-choices"),

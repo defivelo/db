@@ -23,6 +23,6 @@ from .season import ( # noqa
     SeasonAvailabilityUpdateView, SeasonAvailabilityView # noqa
     )  # noqa
 from .session import ( # noqa
-    SessionCreateView, SessionDeleteView, SessionDetailView, SessionsListView, # noqa
-    SessionStaffChoiceView, SessionUpdateView # noqa
+    SessionCreateView, SessionDeleteView, SessionDetailView, SessionExportView,  # noqa
+    SessionsListView, SessionStaffChoiceView, SessionUpdateView, # noqa
     ) # noqa

@@ -173,6 +173,9 @@
 
     <div class="hidden-print">
         <a class="btn btn-danger pull-right" href="{% url 'session-delete' seasonpk=season.pk pk=session.pk %}">{% trans "Supprimer" %}</a>
+        <div class="btn-group" role="group" aria-label="exports">
+            {% include 'export_buttons.html' with exporturl='session-export' seasonpk=season.pk exportargs=session.pk filter_querystring=filter_querystring only %}
+        </div>
         <a class="btn btn-default" href="{% url 'session-list' seasonpk=season.pk year=session.day|date:"Y" week=session.day|weeknumber %}">{% trans "Retour à la liste des sessions" %}</a>
     </div>
 {% endblock %}

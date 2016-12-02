@@ -20,17 +20,25 @@ from __future__ import unicode_literals
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import FieldError
 from django.core.urlresolvers import reverse_lazy
-from django.utils.translation import ugettext_lazy as _
+from django.template.defaultfilters import date, time
+from django.utils.translation import ugettext as u, ugettext_lazy as _
 from django.views.generic.dates import WeekArchiveView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from rolepermissions.mixins import HasPermissionsMixin
+from tablib import Dataset
 
+from apps.common.views import ExportMixin
 from defivelo.views import MenuView
 
 from ..forms import SessionForm
 from ..models import Session
+from ..models.qualification import (
+    CATEGORY_CHOICE_A, CATEGORY_CHOICE_B, CATEGORY_CHOICE_C,
+)
 from .mixins import CantonSeasonFormMixin
+
+EXPORT_NAMETEL = u('{name} - {tel}')
 
 
 class SessionMixin(CantonSeasonFormMixin, HasPermissionsMixin, MenuView):
@@ -135,3 +143,117 @@ class SessionDeleteView(SessionMixin, SuccessMessageMixin, DeleteView):
 
 class SessionStaffChoiceView(SessionDetailView):
     template_name = 'challenge/session_availability.html'
+
+
+class SessionExportView(ExportMixin, SessionMixin,
+                        HasPermissionsMixin, DetailView):
+    @property
+    def export_filename(self):
+        return _('Session') + '-' + str(self.object)
+
+    def get_dataset(self):
+        dataset = Dataset()
+        # Prépare le fichier
+        dataset.append_col([
+            u('Date'),
+            u('Canton'),
+            u('Établissement'),
+            u('Emplacement'),
+            u('Heures'),
+            u('Nombre de qualifs'),
+            # Logistique
+            u('Moniteur +'),
+            u('Mauvais temps'),
+            u('Pommes'),
+            u('Total vélos'),
+            u('Total casques'),
+            u('Remarques'),
+            # Qualif
+            u('Classe'),
+            u('Enseignant'),
+            u('Moniteur 2'),
+            u('Moniteur 1'),
+            u('Moniteur 1'),
+            u('Nombre d\'élèves'),
+            u('Nombre de vélos'),
+            u('Nombre de casques'),
+            CATEGORY_CHOICE_A,
+            CATEGORY_CHOICE_B,
+            CATEGORY_CHOICE_C,
+            u('Intervenant'),
+            u('Remarques'),
+        ])
+        session = self.object
+        session_place = session.place
+        if not session_place:
+            session_place = (
+                session.address_city if session.address_city
+                else session.organization.address_city
+            )
+        col = [
+            date(session.day),
+            session.organization.address_canton,
+            session.organization.name,
+            session_place,
+            '%s - %s' % (time(session.begin), time(session.end)),
+            session.n_qualifications,
+            EXPORT_NAMETEL.format(
+                name=session.superleader.get_full_name(),
+                tel=session.superleader.profile.natel
+                ) if session.superleader else '',
+            str(session.fallback),
+            session.apples,
+            session.n_bikes,
+            session.n_helmets,
+            session.comments,
+        ]
+        if session.n_qualifications:
+            for quali in session.qualifications.all():
+                if not len(col):
+                    col = [''] * 12
+                col.append(quali.name)
+                col.append(
+                    EXPORT_NAMETEL.format(
+                        name=quali.class_teacher_fullname,
+                        tel=quali.class_teacher_natel
+                    ) if quali.class_teacher_fullname else ''
+                )
+                col.append(
+                    EXPORT_NAMETEL.format(
+                        name=quali.leader.get_full_name(),
+                        tel=quali.leader.profile.natel
+                    ) if quali.leader else ''
+                )
+                for i in range(2):
+                    try:
+                        helper = quali.helpers.all()[i]
+                        col.append(
+                            EXPORT_NAMETEL.format(
+                                name=helper.get_full_name(),
+                                tel=helper.profile.natel
+                            ) if helper else ''
+                        )
+                    except IndexError:
+                        col.append('')
+                col.append(quali.n_participants)
+                col.append(quali.n_bikes)
+                col.append(quali.n_helmets)
+                col.append(
+                    str(quali.activity_A) if quali.activity_A else '')
+                col.append(
+                    str(quali.activity_B) if quali.activity_B else '')
+                col.append(
+                    str(quali.activity_C) if quali.activity_C else '')
+                col.append(
+                    EXPORT_NAMETEL.format(
+                        name=quali.actor.get_full_name(),
+                        tel=quali.actor.profile.natel
+                    ) if quali.actor else ''
+                )
+                col.append(quali.comments)
+                dataset.append_col(col)
+                col = []
+        else:
+            col += [''] * 13
+            dataset.append_col(col)
+        return dataset
