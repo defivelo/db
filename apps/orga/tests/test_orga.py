@@ -190,7 +190,7 @@ class OrgaStateManagerUserTest(TestCase):
         del(initial['address_ptr_id'])
         del(initial['_state'])
 
-        initial['address_no'] = 24
+        initial['address_no'] = self.myorga.address_no + 1
 
         response = self.client.post(url, initial)
         # Code 302 because update succeeded
