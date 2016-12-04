@@ -197,7 +197,7 @@ class OrgaStateManagerUserTest(TestCase):
         self.assertEqual(response.status_code, 302, url)
         # Check update succeeded
         neworga = Organization.objects.get(pk=self.myorga.pk)
-        self.assertEqual(neworga.address_no, self.myorga.address_no + 1)
+        self.assertEqual(neworga.address_no, str(self.myorga.address_no + 1))
 
         # Test some update, that must go through
         initial['address_canton'] = self.foreignorga.address_canton
