@@ -1,26 +1,26 @@
 # Copyright (C) 2015, DB Défi Vélo
 # This file is distributed under the same license as the Défi Vélo DBpackage.
-#
+# 
 # Translators:
 # Didier Raboud <me+defivelo@odyx.org>, 2015
-# Laura Mosimann <laura.mosimann@label-vert.ch>, 2015
+# Laura Mosimann <laura.mosimann@label-vert.ch>, 2015-2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Intranet\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-12-02 12:21+0100\n"
-"PO-Revision-Date: 2015-11-09 14:43+0000\n"
+"PO-Revision-Date: 2016-12-05 14:01+0000\n"
 "Last-Translator: Laura Mosimann <laura.mosimann@label-vert.ch>\n"
 "Language-Team: German (http://www.transifex.com/defivelo/db/language/de/)\n"
-"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: apps/challenge/forms.py:63
 msgid "La fin doit être après le début."
-msgstr ""
+msgstr "Das Ende muss nach dem Anfang sein."
 
 #: apps/challenge/forms.py:67 apps/challenge/forms.py:103
 #: apps/challenge/models/season.py:36 apps/challenge/models/session.py:48
@@ -32,8 +32,6 @@ msgid "Fin"
 msgstr "Ende"
 
 #: apps/challenge/forms.py:69 apps/user/models.py:288
-#, fuzzy
-#| msgid "Chargé de projet"
 msgid "Chargé·e de projet"
 msgstr "ProjektleiterIn"
 
@@ -66,7 +64,7 @@ msgstr "Zeit Treffpunkt Leiter"
 #: apps/challenge/forms.py:123
 #, python-brace-format
 msgid "La session doit être dans la saison (entre {begin} et {end})"
-msgstr ""
+msgstr "Der Halbtag muss in der Saison sein (zwischen {begin} und {end})"
 
 #: apps/challenge/forms.py:132 apps/challenge/models/session.py:54
 #: apps/challenge/templates/challenge/session_detail.html:38
@@ -198,7 +196,7 @@ msgstr "verfügbar wenn nötig"
 #: apps/challenge/models/availability.py:60
 #, python-brace-format
 msgid "{session}: {chosen}{helper} {is_available}"
-msgstr ""
+msgstr "{session}: {chosen}{helper} {is_available}"
 
 #: apps/challenge/models/qualification.py:48 apps/orga/export.py:34
 #: apps/orga/models.py:31 apps/orga/templates/orga/organization_filter.html:60
@@ -251,17 +249,13 @@ msgid "Remarques"
 msgstr "Bemerkungen"
 
 #: apps/challenge/models/qualification.py:146
-#, fuzzy
-#| msgid "Qualification"
 msgid "Qualif'"
-msgstr "Qualifikation"
+msgstr "Quali"
 
 #: apps/challenge/models/qualification.py:147
 #: apps/challenge/templates/challenge/session_detail.html:98
-#, fuzzy
-#| msgid "Qualifications"
 msgid "Qualifs"
-msgstr "Qualifikationen"
+msgstr "Qualis"
 
 #: apps/challenge/models/season.py:38 apps/orga/views.py:75
 #: apps/user/templates/auth/user_filter.html:61
@@ -296,17 +290,13 @@ msgid "Durée"
 msgstr "Dauer"
 
 #: apps/challenge/models/session.py:60
-#, fuzzy
-#| msgid "Édition de la qualification"
 msgid "Lieu de la qualification"
-msgstr "Bearbeitung der Qualifikation"
+msgstr "Ort der Quali"
 
 #: apps/challenge/models/session.py:63
 #: apps/challenge/templates/challenge/session_detail.html:62
-#, fuzzy
-#| msgid "Moniteur 2"
 msgid "Moniteur +"
-msgstr "LeiterIn 2"
+msgstr "Leiter +"
 
 #: apps/challenge/models/session.py:67
 msgid "Programme déluge"
@@ -348,10 +338,9 @@ msgid "Emplacement"
 msgstr "Standort"
 
 #: apps/challenge/models/session.py:102
-#, fuzzy, python-brace-format
-#| msgid "Quali : {name}"
+#, python-brace-format
 msgid "Qualif' {name}"
-msgstr "Quali: {name}"
+msgstr "Quali {name}"
 
 #: apps/challenge/models/session.py:104
 msgid "Pas de qualifications"
@@ -360,7 +349,7 @@ msgstr "Keine Qualifikationsrunden"
 #: apps/challenge/models/session.py:206
 #, python-brace-format
 msgid "{place} {date}{time}"
-msgstr ""
+msgstr "{place} {date}{time}"
 
 #: apps/challenge/templates/challenge/qualification_confirm_delete.html:4
 #: apps/challenge/templates/challenge/qualification_confirm_delete.html:7
@@ -433,10 +422,8 @@ msgstr "Laufendes Jahr"
 
 #: apps/challenge/templates/challenge/season_archive_year.html:36
 #: defivelo/templates/header.html:32
-#, fuzzy
-#| msgid "Disponibilités"
 msgid "Mes disponibilités"
-msgstr "Verfügbarkeiten"
+msgstr "Meine Verfügbarkeiten"
 
 #: apps/challenge/templates/challenge/season_archive_year.html:46
 msgid "Créer une nouvelle saison"
@@ -462,16 +449,12 @@ msgid "Retour à la saison"
 msgstr "Zurück zur Saison"
 
 #: apps/challenge/templates/challenge/season_availability.html:50
-#, fuzzy
-#| msgid "Attribuer les sessions"
 msgid "Attribuer les moniteurs"
-msgstr "Halbtage zuteilen"
+msgstr "Leiter zuteilen"
 
 #: apps/challenge/templates/challenge/season_availability_thead.html:26
-#, fuzzy
-#| msgid "Retour à la session"
 msgid "Vers la session"
-msgstr "Zurück zum Halbtag"
+msgstr "Zum Halbtag"
 
 #: apps/challenge/templates/challenge/season_availability_thead.html:27
 #, python-format
@@ -524,17 +507,13 @@ msgstr "pro Woche"
 
 #: apps/challenge/templates/challenge/season_form.html:4
 #: apps/challenge/templates/challenge/season_form.html:14
-#, fuzzy
-#| msgid "Édition de la session"
 msgid "Édition de la saison"
-msgstr "Halbtag bearbeiten"
+msgstr "Bearbeitung der Saison"
 
 #: apps/challenge/templates/challenge/season_form.html:4
 #: apps/challenge/templates/challenge/season_form.html:14
-#, fuzzy
-#| msgid "Nouvelle session"
 msgid "Nouvelle saison"
-msgstr "Neuer Halbtag"
+msgstr "Neue Saison"
 
 #: apps/challenge/templates/challenge/season_staff_update.html:11
 msgid "Attributions dans les sessions"
@@ -594,10 +573,8 @@ msgid ""
 msgstr "Halbtag %(session)s definitiv löschen (mit allen Qualifikationen)?"
 
 #: apps/challenge/templates/challenge/session_confirm_delete.html:14
-#, fuzzy
-#| msgid "Qualifications qui seront supprimées"
 msgid "Qualifs qui seront supprimées"
-msgstr "Qualifikationen, die gelöscht werden"
+msgstr "Qualis, die gelöscht werden"
 
 #: apps/challenge/templates/challenge/session_confirm_delete.html:23
 #: apps/challenge/templates/challenge/session_detail.html:176
@@ -662,7 +639,7 @@ msgstr "%(n)s Teilnehmer"
 
 #: apps/challenge/templates/challenge/session_detail.html:126
 msgid "Vélo urbain"
-msgstr ""
+msgstr "Geschicklichkeit"
 
 #: apps/challenge/templates/challenge/session_detail.html:128
 msgid "Mécanique"
@@ -674,7 +651,7 @@ msgstr "Begegnung"
 
 #: apps/challenge/templates/challenge/session_detail.html:138
 msgid "Parcours"
-msgstr "Fahrstrecke"
+msgstr "Ausfahrt"
 
 #: apps/challenge/templates/challenge/session_detail.html:160
 #: apps/challenge/templates/challenge/session_detail.html:175
@@ -721,22 +698,16 @@ msgid "Créer une nouvelle session"
 msgstr "Neuen Halbtag erstellen"
 
 #: apps/challenge/views/quali.py:76
-#, fuzzy
-#| msgid "Qualification créée"
 msgid "Qualif' créée"
-msgstr "Qualifikation erstellt"
+msgstr "Quali erstellt"
 
 #: apps/challenge/views/quali.py:83
-#, fuzzy
-#| msgid "Qualification mise à jour"
 msgid "Qualif' mise à jour"
-msgstr "Qualifikation aktualisiert"
+msgstr "Quali aktualisiert"
 
 #: apps/challenge/views/quali.py:87
-#, fuzzy
-#| msgid "Qualification supprimée"
 msgid "Qualif' supprimée"
-msgstr "Qualifikation gelöscht"
+msgstr "Quali gelöscht"
 
 #: apps/challenge/views/season.py:116
 msgid "Saison mise à jour"
@@ -744,7 +715,7 @@ msgstr "Saison aktualisiert"
 
 #: apps/challenge/views/season.py:347
 msgid "Planning_Saison"
-msgstr ""
+msgstr "Einsatzplan_Saison"
 
 #: apps/challenge/views/season.py:456
 msgid "Disponibilités mises à jour"
@@ -815,7 +786,7 @@ msgstr "Im %(format)s Format herunterladen"
 
 #: apps/common/templates/ok.html:1
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: apps/common/templates/paginator.html:8
 #: apps/common/templates/paginator.html:20
@@ -824,73 +795,57 @@ msgid "Page %(number)s"
 msgstr "Seite %(number)s"
 
 #: apps/common/views.py:45
-#, fuzzy, python-brace-format
-#| msgid "utilisateurs.{extension}"
+#, python-brace-format
 msgid "DV-{exportfilename}-{YMD_date}.{extension}"
-msgstr "Benutzer.{extension}"
+msgstr "DV-{exportfilename}-{YMD_date}.{extension}"
 
 #: apps/dv_article/forms.py:26
 msgid "Publié"
-msgstr ""
+msgstr "Veröffentlicht"
 
 #: apps/dv_article/templates/article/article_confirm_delete.html:4
-#, fuzzy, python-format
-#| msgid "Suppression de la saison %(season)s?"
+#, python-format
 msgid "Suppression de l'article %(title)s?"
-msgstr "Saison %(season)s löschen?"
+msgstr "Artikel %(title)s löschen?"
 
 #: apps/dv_article/templates/article/article_confirm_delete.html:7
-#, fuzzy, python-format
-#| msgid "Suppression de la saison %(season)s?"
+#, python-format
 msgid "Suppression de l'article <em>%(title)s</em>?"
-msgstr "Saison %(season)s löschen?"
+msgstr "Artikel <em>%(title)s</em> löschen?"
 
 #: apps/dv_article/templates/article/article_confirm_delete.html:10
-#, fuzzy, python-format
-#| msgid "Supprimer la saison %(season)s définitivement?"
+#, python-format
 msgid "Supprimer l'article <em>%(title)s</em> définitivement?"
-msgstr "Saison %(season)s definitiv löschen?"
+msgstr "Artikel <em>%(title)s</em> definitiv löschen?"
 
 #: apps/dv_article/templates/article/article_confirm_delete.html:13
-#, fuzzy
-#| msgid "Retour à la session"
 msgid "Retour à l'accueil"
-msgstr "Zurück zum Halbtag"
+msgstr "Zurück zur Startseite"
 
 #: apps/dv_article/templates/article/article_form.html:4
 #: apps/dv_article/templates/article/article_form.html:14
-#, fuzzy
-#| msgid "Édition de la session"
 msgid "Édition de l'article"
-msgstr "Halbtag bearbeiten"
+msgstr "Artikel bearbeiten"
 
 #: apps/dv_article/templates/article/article_form.html:4
 #: apps/dv_article/templates/article/article_form.html:14
 #: defivelo/templates/home.html:10
-#, fuzzy
-#| msgid "Nouvel utilisateur"
 msgid "Nouvel article"
-msgstr "Neuer Benutzer"
+msgstr "Neuer Artikel"
 
 #: apps/dv_article/views.py:43
-#, fuzzy
-#| msgid "Utilisateur créé"
 msgid "Article créé"
-msgstr "Benutzer erstellt"
+msgstr "Artikel kreiert"
 
 #: apps/dv_article/views.py:48
-#, fuzzy
-#| msgid "Profil mis à jour"
 msgid "Article mis à jour"
-msgstr "Profil aktualisiert"
+msgstr "Artikel aktualisiert"
 
 #: apps/orga/export.py:47 apps/orga/models.py:32
 #: apps/orga/templates/orga/organization_detail.html:36
 #: apps/orga/templates/orga/organization_filter.html:63
-#, fuzzy
-#| msgid "Moniteur"
 msgid "Coordinateur"
-msgstr "LeiterIn"
+msgstr "Kontaktperson"
 
 #: apps/orga/export.py:49 apps/orga/forms.py:50 apps/orga/models.py:34
 #: apps/orga/templates/orga/organization_detail.html:44
@@ -910,12 +865,12 @@ msgstr "E-Mail"
 
 #: apps/orga/models.py:36 apps/orga/templates/orga/organization_detail.html:40
 msgid "Courriel"
-msgstr ""
+msgstr "E-Mail"
 
 #: apps/orga/models.py:50 apps/orga/templates/orga/organization_filter.html:6
 #: apps/orga/views.py:156 defivelo/templates/header.html:49
 msgid "Établissements"
-msgstr "Schule"
+msgstr "Schulen"
 
 #: apps/orga/templates/orga/organization_confirm_delete.html:4
 #: apps/orga/templates/orga/organization_confirm_delete.html:7
@@ -941,10 +896,8 @@ msgid "Fermer"
 msgstr "Schliessen"
 
 #: apps/orga/templates/orga/organization_filter.html:15
-#, fuzzy
-#| msgid "Retour à la liste des établissements"
 msgid "Filtrer la liste des établissements"
-msgstr "Zurück zur Liste der Schulen"
+msgstr "Liste der Schulen filtern"
 
 #: apps/orga/templates/orga/organization_filter.html:23
 #: apps/user/templates/auth/user_filter.html:24
@@ -977,7 +930,7 @@ msgstr "Neue Schule"
 
 #: apps/orga/views.py:80 apps/user/views/standard.py:152
 msgid "Recherche"
-msgstr ""
+msgstr "Suchen"
 
 #: apps/orga/views.py:141
 msgid "Établissement mis à jour"
@@ -990,11 +943,11 @@ msgstr "Schule erstellt"
 #: apps/user/admin.py:45
 #, python-brace-format
 msgid "{fullname} <{email}>"
-msgstr ""
+msgstr "{fullname} <{email}>"
 
 #: apps/user/autocomplete_light_registry.py:27
 msgid "type some text to search in this autocomplete"
-msgstr ""
+msgstr "Eintippen..."
 
 #: apps/user/export.py:35
 msgid "Yes"
@@ -1050,7 +1003,7 @@ msgstr "Ausbildung"
 
 #: apps/user/export.py:111 apps/user/forms.py:84 apps/user/models.py:120
 msgid "Date de la dernière formation"
-msgstr ""
+msgstr "Datum der letzten Ausbildung"
 
 #: apps/user/export.py:116 apps/user/forms.py:107 apps/user/models.py:110
 #: apps/user/templates/auth/user_detail.html:140
@@ -1059,10 +1012,8 @@ msgstr "Zugehörigkeit Kanton"
 
 #: apps/user/export.py:119 apps/user/forms.py:110
 #: apps/user/templates/auth/user_detail.html:144
-#, fuzzy
-#| msgid "Défi Vélo"
 msgid "Défi Vélo Mobile"
-msgstr "DEFI VELO"
+msgstr "DEFI VELO mobil"
 
 #: apps/user/export.py:123
 msgid "IBAN"
@@ -1070,14 +1021,12 @@ msgstr "IBAN"
 
 #: apps/user/export.py:127 apps/user/templates/auth/user_detail.html:149
 msgid "Niveau d'accès"
-msgstr ""
+msgstr "Zugangsberechtigung"
 
 #: apps/user/export.py:131 apps/user/models.py:415
 #: apps/user/templates/auth/user_detail.html:153
-#, fuzzy
-#| msgid "Cantons"
 msgid "Cantons gérés"
-msgstr "Kantone"
+msgstr "Geführte Kantone"
 
 #: apps/user/forms.py:74
 msgid "Coordonnées bancaires (IBAN)"
@@ -1116,10 +1065,8 @@ msgid "Payé"
 msgstr "Bezahlt"
 
 #: apps/user/models.py:114
-#, fuzzy
-#| msgid "Défi Vélo"
 msgid "Défi Vélo mobile"
-msgstr "DEFI VELO"
+msgstr "DEFI VELO mobil"
 
 #: apps/user/models.py:137
 msgid "Cours samaritains (spécifier)"
@@ -1127,24 +1074,24 @@ msgstr "Erste-Hilfe-Kurse (präzisieren)"
 
 #: apps/user/models.py:278
 msgid "A accès"
-msgstr ""
+msgstr "hat Zugang"
 
 #: apps/user/models.py:282
 msgid "Administra·teur·trice"
-msgstr ""
+msgstr "AdministratorIn"
 
 #: apps/user/models.py:285
 msgid "Super-utilisa·teur·trice"
-msgstr ""
+msgstr "Super-NutzerIn"
 
 #: apps/user/models.py:329
 msgid "A déjà des données de connexion"
-msgstr ""
+msgstr "Hat bereits Zugangsdaten"
 
 #: apps/user/models.py:340
 #, python-brace-format
 msgid "Accès au site '{site_name}'"
-msgstr ""
+msgstr "Zugang zur Webseite '{site_name}'"
 
 #: apps/user/models.py:382 apps/user/templates/auth/user_form.html:7
 #: defivelo/templates/header.html:62
@@ -1152,29 +1099,24 @@ msgid "Profil"
 msgstr "Profil"
 
 #: apps/user/models.py:383
-#, fuzzy
-#| msgid "Profil"
 msgid "Profils"
-msgstr "Profil"
+msgstr "Profile"
 
 #: apps/user/models.py:408
 #, python-brace-format
 msgid "{name} est chargé·e de projet pour le canton {canton}"
-msgstr ""
+msgstr "{name} ist ProjektleiterIn für den Kanton {canton}"
 
 #: apps/user/models.py:414
-#, fuzzy
-#| msgid "Canton"
 msgid "Canton géré"
-msgstr "Kanton"
+msgstr "Geführter Kanton"
 
 #: apps/user/templates/auth/email_user_send_credentials.txt:1
 #, python-format
 msgid ""
 "Bonjour %(full_name)s,\n"
 "\n"
-"%(from_full_name)s (%(from_email)s) t'a créé un login sur le site "
-"'%(site_name)s'.\n"
+"%(from_full_name)s (%(from_email)s) t'a créé un login sur le site '%(site_name)s'.\n"
 "\n"
 "Voilà tes données de connexion:\n"
 "\n"
@@ -1182,7 +1124,7 @@ msgid ""
 "  Mot de passe: %(password)s\n"
 "  URL de connexion: %(login_uri)s\n"
 "\n"
-msgstr ""
+msgstr "Guten Tag %(full_name)s\n\n\n%(from_full_name)s (%(from_email)s) hat dir ein Login kreiert zur Webseite '%(site_name)s'.\n\n\nHier findest du deine Zugangsdaten:\n\n\nBenutzername: %(email)s\n\nPasswort: %(password)s\n\nURL für die Verbindung: %(login_uri)s\n\n\n\n"
 
 #: apps/user/templates/auth/email_user_send_credentials.txt:11
 #: defivelo/templates/account/email/email_confirmation_message.txt:7
@@ -1190,20 +1132,18 @@ msgstr ""
 msgid ""
 "Thank you from %(site_name)s!\n"
 "%(site_domain)s"
-msgstr ""
-"%(site_name)s dankt dir!\n"
-"%(site_domain)s"
+msgstr "%(site_name)s dankt dir!\n%(site_domain)s"
 
 #: apps/user/templates/auth/user_detail.html:22
 #: apps/user/templates/auth/user_detail.html:23
 msgid "Réinitialiser les données de connexion"
-msgstr ""
+msgstr "Zugangsdaten zurücksetzen"
 
 #: apps/user/templates/auth/user_detail.html:28
 #: apps/user/templates/auth/user_detail.html:29
 #: apps/user/templates/auth/user_filter.html:94
 msgid "Envoyer les données de connexion"
-msgstr ""
+msgstr "Zugangsdaten schicken"
 
 #: apps/user/templates/auth/user_detail.html:60
 msgid "Adresse"
@@ -1219,10 +1159,8 @@ msgid "N° IBAN"
 msgstr "IBAN-Nr."
 
 #: apps/user/templates/auth/user_detail.html:105
-#, fuzzy
-#| msgid "Dernière mise à jour: "
 msgid "Dernière formation: "
-msgstr "Letzte Aktualisierung:"
+msgstr "Letzte Ausbildung:"
 
 #: apps/user/templates/auth/user_detail.html:112
 msgid "État"
@@ -1242,10 +1180,8 @@ msgid "Cours samaritain"
 msgstr "Erste-Hilfe-Kurs"
 
 #: apps/user/templates/auth/user_detail.html:160
-#, fuzzy
-#| msgid "Remarques"
 msgid "Remarques privées"
-msgstr "Bemerkungen"
+msgstr "Persönliche Bemerkungen"
 
 #: apps/user/templates/auth/user_detail.html:178
 msgid "Retour à la liste des utilisateurs"
@@ -1273,11 +1209,11 @@ msgstr "Rolle"
 msgid ""
 "Est-il certain que ce nouvel utilisateur n'existe pas déjà dans la base de "
 "données?"
-msgstr ""
+msgstr "Bist du sicher, dass diese/r neue NutzerIn nicht bereits in der Datenbank ist?"
 
 #: apps/user/templates/auth/user_form.html:58
 msgid "CCP?"
-msgstr ""
+msgstr "Postkonto?"
 
 #: apps/user/templates/auth/user_form.html:99
 msgid "Update"
@@ -1294,7 +1230,7 @@ msgstr "E-Mail ändern (%(email)s)"
 
 #: apps/user/templates/auth/user_form.html:114
 msgid "Vers le calculateur d'IBAN"
-msgstr "Zum IBAN Rechner"
+msgstr "Zum IBAN-Rechner"
 
 #: apps/user/templates/auth/user_form.html:115
 msgid "https://www.postfinance.ch/fr/cust/acc/iban.html"
@@ -1304,29 +1240,29 @@ msgstr "https://www.postfinance.ch/de/cust/acc/iban.html"
 #: apps/user/templates/auth/user_send_credentials.html:9
 #, python-format
 msgid "Envoyer les données de connexion à %(name)s?"
-msgstr ""
+msgstr "Zugangsdaten an %(name)s schicken?"
 
 #: apps/user/templates/auth/user_send_credentials.html:11
 #, python-format
 msgid "Réinitialiser les données de connexion pour %(name)s?"
-msgstr ""
+msgstr "Zugangsdaten für %(name)s zurücksetzen?"
 
 #: apps/user/templates/auth/user_send_credentials.html:16
 #, python-format
 msgid "Cette action va <b>réinitialiser</b> le mot de passe de %(name)s!"
-msgstr ""
+msgstr "Diese Handlung wird die Zugangsdaten von %(name)s  <b>zurücksetzen</b>"
 
 #: apps/user/templates/auth/user_send_credentials.html:25
 msgid "Envoyer"
-msgstr ""
+msgstr "Senden"
 
 #: apps/user/views/credentials.py:33
 msgid "Données de connexion expédiées."
-msgstr ""
+msgstr "Zugangsdaten verschickt"
 
 #: apps/user/views/credentials.py:72
 msgid "Données de connexion ré-expédiées."
-msgstr ""
+msgstr "Zugangsdaten erneut verschickt"
 
 #: apps/user/views/standard.py:56
 msgid "Profil mis à jour"
@@ -1337,10 +1273,8 @@ msgid "Utilisateur créé"
 msgstr "Benutzer erstellt"
 
 #: apps/user/views/standard.py:184
-#, fuzzy
-#| msgid "Utilisateur créé"
 msgid "Utilisateurs"
-msgstr "Benutzer erstellt"
+msgstr "NutzerInnen"
 
 #: apps/user/views/standard.py:190
 msgid "Liste des utilisateurs"
@@ -1372,7 +1306,7 @@ msgstr "E-Mail-Adressen"
 
 #: defivelo/templates/account/email.html:10
 msgid "The following e-mail addresses are associated with your account:"
-msgstr "Folgende E-Mail-Adressen sind mit diesem Konto verknüpft:"
+msgstr "Folgende E-Mail-Adressen sind mit deinem Konto verknüpft:"
 
 #: defivelo/templates/account/email.html:21
 msgid "Verified"
@@ -1405,10 +1339,9 @@ msgstr "Warnung:"
 #: defivelo/templates/account/email.html:41
 msgid ""
 "You currently do not have any e-mail address set up. You should really add "
-"an e-mail address so you can receive notifications, reset your password, etc."
-msgstr ""
-"Du hast derzeit keine E-Mail-Adresse angegeben. Gib eine E-Mail-Adresse an, "
-"um Nachrichten zu erhalten, das Passwort zurückzusetzen, usw."
+"an e-mail address so you can receive notifications, reset your password, "
+"etc."
+msgstr "Du hast derzeit keine E-Mail-Adresse angegeben. Gib eine E-Mail-Adresse an, um Nachrichten zu erhalten, das Passwort zurückzusetzen, usw."
 
 #: defivelo/templates/account/email.html:46
 msgid "Add E-mail Address"
@@ -1427,17 +1360,10 @@ msgstr "Möchtest du wirklich die ausgewählte E-Mail-Adresse entfernen?"
 msgid ""
 "Hello from %(site_name)s!\n"
 "\n"
-"You're receiving this e-mail because user %(user_display)s at "
-"%(site_domain)s has given yours as an e-mail address to connect their "
-"account.\n"
+"You're receiving this e-mail because user %(user_display)s at %(site_domain)s has given yours as an e-mail address to connect their account.\n"
 "\n"
 "To confirm this is correct, go to %(activate_url)s\n"
-msgstr ""
-"Nachricht von %(site_name)s!\n"
-"Der Benutzer %(user_display)s der Seite %(site_domain)s hat uns angegeben, "
-"diese Mailadresse zu besitzen.\n"
-"Zum Bestätigen, dass du der Besitzer/die Besitzerin bist, klicke hier "
-"%(activate_url)s\n"
+msgstr "Nachricht von %(site_name)s!\nDer Benutzer %(user_display)s der Seite %(site_domain)s hat uns angegeben, diese Mailadresse zu besitzen.\nZum Bestätigen, dass du der Besitzer/die Besitzerin bist, klicke hier %(activate_url)s\n"
 
 #: defivelo/templates/account/email/email_confirmation_subject.txt:3
 msgid "Please Confirm Your E-mail Address"
@@ -1448,15 +1374,9 @@ msgstr "E-Mail-Adresse bestätigen"
 msgid ""
 "Hello from %(site_name)s!\n"
 "\n"
-"You're receiving this e-mail because you or someone else has requested a "
-"password for your user account at %(site_domain)s.\n"
-"It can be safely ignored if you did not request a password reset. Click the "
-"link below to reset your password."
-msgstr ""
-"Mail von %(site_name)s!\n"
-"Das Passwort für diese Seite %(site_domain)s wurde angefragt.\n"
-"Ignoriere diese Nachricht, falls nicht du das Passwort angefragt hast. "
-"Ansonsten klicke auf folgenden Link, um das Passwort zurückzusetzen."
+"You're receiving this e-mail because you or someone else has requested a password for your user account at %(site_domain)s.\n"
+"It can be safely ignored if you did not request a password reset. Click the link below to reset your password."
+msgstr "Mail von %(site_name)s!\nDas Passwort für diese Seite %(site_domain)s wurde angefragt.\nIgnoriere diese Nachricht, falls nicht du das Passwort angefragt hast. Ansonsten klicke auf folgenden Link, um das Passwort zurückzusetzen."
 
 #: defivelo/templates/account/email/password_reset_key_message.txt:8
 #, python-format
@@ -1468,13 +1388,11 @@ msgstr "Falls du es vergessen hast, dein Benutzername ist %(username)s."
 msgid ""
 "Thank you for using %(site_name)s!\n"
 "%(site_domain)s"
-msgstr ""
-"Bitte %(site_name)s!\n"
-"%(site_domain)s benutzen"
+msgstr "Bitte %(site_name)s!\n%(site_domain)s benutzen"
 
 #: defivelo/templates/account/email/password_reset_key_subject.txt:3
 msgid "Password Reset E-mail"
-msgstr "E-Mail zum Zurücksetzen des Passwortes"
+msgstr "Passwort zurücksetzen"
 
 #: defivelo/templates/account/email_confirm.html:6
 #: defivelo/templates/account/email_confirm.html:10
@@ -1486,9 +1404,7 @@ msgstr "E-Mail-Adresse bestätigen"
 msgid ""
 "Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an e-mail "
 "address for user %(user_display)s."
-msgstr ""
-"Bitte bestätige, dass <a href=\"mailto:%(email)s\">%(email)s</a> eine E-Mail-"
-"Adresse von %(user_display)s ist."
+msgstr "Bitte bestätige, dass <a href=\"mailto:%(email)s\">%(email)s</a> eine E-Mail-Adresse von %(user_display)s ist."
 
 #: defivelo/templates/account/email_confirm.html:20
 msgid "Confirm"
@@ -1497,11 +1413,9 @@ msgstr "Bestätigen"
 #: defivelo/templates/account/email_confirm.html:27
 #, python-format
 msgid ""
-"This e-mail confirmation link expired or is invalid. Please <a href="
-"\"%(email_url)s\">issue a new e-mail confirmation request</a>."
-msgstr ""
-"Dieser Bestätigungslink ist leider abgelaufen. Lass dir bitte eine neue <a "
-"href=\"%(email_url)s\">Bestätigungs-Mail</a> schicken."
+"This e-mail confirmation link expired or is invalid. Please <a "
+"href=\"%(email_url)s\">issue a new e-mail confirmation request</a>."
+msgstr "Dieser Bestätigungslink ist leider abgelaufen. Lass dir bitte eine neue <a href=\"%(email_url)s\">Bestätigungs-Mail</a> schicken."
 
 #: defivelo/templates/account/login.html:6
 #: defivelo/templates/account/login.html:9
@@ -1539,11 +1453,9 @@ msgstr "Passwort zurücksetzen"
 
 #: defivelo/templates/account/password_reset.html:13
 msgid ""
-"Forgotten your password? Enter your e-mail address below, and we'll send you "
-"an e-mail allowing you to reset it."
-msgstr ""
-"Passwort vergessen? Gib deine E-Mail-Adresse unten ein, dann schicken wir "
-"dir einen Link um das Passwort zurückzusetzen."
+"Forgotten your password? Enter your e-mail address below, and we'll send you"
+" an e-mail allowing you to reset it."
+msgstr "Passwort vergessen? Gib deine E-Mail-Adresse unten ein, dann schicken wir dir einen Link um das Passwort zurückzusetzen."
 
 #: defivelo/templates/account/password_reset.html:20
 msgid "Reset My Password"
@@ -1551,8 +1463,7 @@ msgstr "Passwort zurücksetzen"
 
 #: defivelo/templates/account/password_reset.html:24
 msgid "Please contact us if you have any trouble resetting your password."
-msgstr ""
-"Bitte kontaktiere uns, wenn das Zurücksetzen des Passworts nicht klappt."
+msgstr "Bitte kontaktiere uns, wenn das Zurücksetzen des Passworts nicht klappt."
 
 #: defivelo/templates/account/password_reset_from_key.html:7
 msgid "Bad Token"
@@ -1562,12 +1473,9 @@ msgstr "Falsche Identifikation"
 #, python-format
 msgid ""
 "The password reset link was invalid, possibly because it has already been "
-"used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</"
-"a>."
-msgstr ""
-"Der Link zum Zurücksetzen des Passworts war ungültig, womöglich wurde dieser "
-"Link bereits benutzt. Bitte lass' Dein Passwort noch mal <a href="
-"\"%(passwd_reset_url)s\">zurücksetzen</a>."
+"used.  Please request a <a href=\"%(passwd_reset_url)s\">new password "
+"reset</a>."
+msgstr "Der Link zum Zurücksetzen des Passworts war ungültig, womöglich wurde dieser Link bereits benutzt. Bitte lass dein Passwort noch mal <a href=\"%(passwd_reset_url)s\">zurücksetzen</a>."
 
 #: defivelo/templates/account/password_reset_from_key.html:22
 msgid "Your password is now changed."
@@ -1585,7 +1493,7 @@ msgstr "DEFI VELO"
 
 #: defivelo/templates/base.html:36
 msgid "Dérouler la navigation"
-msgstr ""
+msgstr "Herunterscrollen"
 
 #: defivelo/templates/base.html:61
 #, python-format
@@ -1622,7 +1530,7 @@ msgstr "Personen"
 
 #: defivelo/templates/header.html:63
 msgid "Change password"
-msgstr "Passwort ändern"
+msgstr "Mein Passwort ändern"
 
 #: defivelo/templates/header.html:64
 msgid "Log out"
@@ -1633,26 +1541,20 @@ msgid "Log in"
 msgstr "Anmelden"
 
 #: defivelo/templates/home.html:27
-#, fuzzy
-#| msgid "Éditer la saison"
 msgid "Éditer l'article"
-msgstr "Saison bearbeiten"
+msgstr "Artikel bearbeiten"
 
 #: defivelo/templates/home.html:30
-#, fuzzy
-#| msgid "Supprimer vraiment"
 msgid "Supprimer l'article"
-msgstr "tatsächlich löschen"
+msgstr "Artikel löschen"
 
 #: defivelo/templates/home.html:41
 msgid "Aucun article publié pour l'instant."
-msgstr ""
+msgstr "Zurzeit ist kein Artikel veröffentlicht."
 
 #: defivelo/templates/license.html:5
-#, fuzzy
-#| msgid "Chargé de projet"
 msgid "Télécharger le projet"
-msgstr "ProjektleiterIn"
+msgstr "Projekt herunterladen"
 
 #: defivelo/templatetags/dv_filters.py:155
 msgid "Choisi"
@@ -1664,37 +1566,4 @@ msgstr "Nicht ausgewählt"
 
 #: defivelo/urls.py:48
 msgid "Intranet DÉFI VÉLO"
-msgstr ""
-
-#, fuzzy
-#~| msgid "Télécharger au format %(format)s"
-#~ msgid "Télécharger la saison au format %(format)s"
-#~ msgstr "Im %(format)s Format herunterladen"
-
-#~ msgid "Vélo dans la rue"
-#~ msgstr "Geschicklichkeit"
-
-#, fuzzy
-#~| msgid "DB Défi Vélo"
-#~ msgid "Bureau Défi Vélo"
-#~ msgstr "Datenbank DEFI VELO"
-
-#~ msgid "DB Défi Vélo"
-#~ msgstr "Datenbank DEFI VELO"
-
-#~ msgid "Attributs"
-#~ msgstr "Eigenschaften"
-
-#~ msgid "Cantons d'affiliation"
-#~ msgstr "Zugehörigkeit Kantone"
-
-#, fuzzy
-#~| msgid "Enregistrer"
-#~ msgid "Enregistré !"
-#~ msgstr "Speichern"
-
-#~ msgid "Sélectionné pour une qualif"
-#~ msgstr "Für eine Quali ausgewählt"
-
-#~ msgid "Page"
-#~ msgstr "Seite"
+msgstr "DEFI VELO Intranet"
