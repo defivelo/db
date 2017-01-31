@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-02 12:21+0100\n"
+"POT-Creation-Date: 2017-01-31 20:05+0100\n"
 "PO-Revision-Date: 2015-10-08 12:11+0100\n"
 "Last-Translator: Didier Raboud <me+defivelo@odyx.org>\n"
 "Language: fr\n"
@@ -40,7 +40,7 @@ msgstr ""
 
 #: apps/challenge/forms.py:104 apps/common/models.py:33 apps/orga/export.py:45
 #: apps/orga/forms.py:45 apps/orga/templates/orga/organization_filter.html:62
-#: apps/user/export.py:75 apps/user/forms.py:68 apps/user/models.py:399
+#: apps/user/export.py:76 apps/user/forms.py:68 apps/user/models.py:399
 msgid "Canton"
 msgstr ""
 
@@ -88,7 +88,7 @@ msgid "Moniteurs 1"
 msgstr ""
 
 #: apps/challenge/forms.py:184 apps/challenge/forms.py:336
-#: apps/challenge/models/qualification.py:115 apps/user/export.py:95
+#: apps/challenge/models/qualification.py:115 apps/user/export.py:96
 #: apps/user/forms.py:85 apps/user/models.py:123
 #: apps/user/templates/auth/user_detail.html:109
 #: apps/user/views/standard.py:148 defivelo/templatetags/dv_filters.py:152
@@ -155,6 +155,7 @@ msgstr ""
 #: apps/challenge/models/availability.py:36
 #: apps/challenge/models/session.py:82
 #: apps/challenge/templates/challenge/session_detail.html:5
+#: apps/challenge/views/session.py:152
 msgid "Session"
 msgstr ""
 
@@ -197,7 +198,7 @@ msgstr ""
 
 #: apps/challenge/models/qualification.py:48 apps/orga/export.py:34
 #: apps/orga/models.py:31 apps/orga/templates/orga/organization_filter.html:60
-#: apps/user/export.py:63 apps/user/templates/auth/user_detail.html:58
+#: apps/user/export.py:64 apps/user/templates/auth/user_detail.html:58
 #: apps/user/templates/auth/user_detailed_list.html:17
 #: apps/user/templates/auth/user_filter.html:57
 msgid "Nom"
@@ -574,7 +575,7 @@ msgid "Qualifs qui seront supprimées"
 msgstr ""
 
 #: apps/challenge/templates/challenge/session_confirm_delete.html:23
-#: apps/challenge/templates/challenge/session_detail.html:176
+#: apps/challenge/templates/challenge/session_detail.html:179
 msgid "Retour à la liste des sessions"
 msgstr ""
 
@@ -738,24 +739,28 @@ msgstr ""
 msgid "Intervenants de la saison"
 msgstr ""
 
-#: apps/challenge/views/session.py:120
+#: apps/challenge/views/session.py:128
 msgid "Session mise à jour"
 msgstr ""
 
-#: apps/challenge/views/session.py:124
+#: apps/challenge/views/session.py:132
 msgid "Session créée"
 msgstr ""
 
-#: apps/challenge/views/session.py:128
+#: apps/challenge/views/session.py:136
 msgid "Session supprimée"
 msgstr ""
 
-#: apps/common/models.py:26 apps/orga/export.py:35 apps/user/export.py:67
+#: apps/common/__init__.py:30
+msgid "Haut-Valais"
+msgstr ""
+
+#: apps/common/models.py:26 apps/orga/export.py:35 apps/user/export.py:68
 #: apps/user/forms.py:61
 msgid "Rue"
 msgstr ""
 
-#: apps/common/models.py:27 apps/orga/export.py:37 apps/user/export.py:69
+#: apps/common/models.py:27 apps/orga/export.py:37 apps/user/export.py:70
 #: apps/user/forms.py:63
 msgid "N°"
 msgstr ""
@@ -765,12 +770,12 @@ msgid "Complément d'adresse"
 msgstr ""
 
 #: apps/common/models.py:31 apps/orga/export.py:41 apps/orga/forms.py:49
-#: apps/user/export.py:71 apps/user/forms.py:65
+#: apps/user/export.py:72 apps/user/forms.py:65
 msgid "NPA"
 msgstr ""
 
 #: apps/common/models.py:32 apps/orga/export.py:43
-#: apps/orga/templates/orga/organization_filter.html:61 apps/user/export.py:73
+#: apps/orga/templates/orga/organization_filter.html:61 apps/user/export.py:74
 #: apps/user/forms.py:66
 msgid "Ville"
 msgstr ""
@@ -846,7 +851,7 @@ msgstr ""
 
 #: apps/orga/export.py:49 apps/orga/forms.py:50 apps/orga/models.py:34
 #: apps/orga/templates/orga/organization_detail.html:44
-#: apps/orga/templates/orga/organization_filter.html:64 apps/user/export.py:65
+#: apps/orga/templates/orga/organization_filter.html:64 apps/user/export.py:66
 #: apps/user/forms.py:73 apps/user/templates/auth/user_detail.html:83
 #: apps/user/templates/auth/user_detailed_list.html:18
 #: apps/user/templates/auth/user_filter.html:59
@@ -854,7 +859,7 @@ msgid "Natel"
 msgstr ""
 
 #: apps/orga/export.py:51 apps/orga/templates/orga/organization_filter.html:65
-#: apps/user/export.py:64 apps/user/templates/auth/user_detail.html:79
+#: apps/user/export.py:65 apps/user/templates/auth/user_detail.html:79
 #: apps/user/templates/auth/user_detailed_list.html:19
 #: apps/user/templates/auth/user_filter.html:58
 msgid "Email"
@@ -954,73 +959,73 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: apps/user/export.py:62 apps/user/templates/auth/user_detailed_list.html:16
+#: apps/user/export.py:63 apps/user/templates/auth/user_detailed_list.html:16
 #: apps/user/templates/auth/user_filter.html:56
 msgid "Prénom"
 msgstr ""
 
-#: apps/user/export.py:78 apps/user/forms.py:72
+#: apps/user/export.py:79 apps/user/forms.py:72
 #: apps/user/templates/auth/user_detail.html:75
 msgid "Date de naissance"
 msgstr ""
 
-#: apps/user/export.py:82 apps/user/forms.py:77
+#: apps/user/export.py:83 apps/user/forms.py:77
 #: apps/user/templates/auth/user_detail.html:95
 msgid "N° AVS"
 msgstr ""
 
-#: apps/user/export.py:84 apps/user/forms.py:94 apps/user/models.py:132
+#: apps/user/export.py:85 apps/user/forms.py:94 apps/user/models.py:132
 msgid "Expérience pédagogique"
 msgstr ""
 
-#: apps/user/export.py:87
+#: apps/user/export.py:88
 msgid "Commentaires"
 msgstr ""
 
-#: apps/user/export.py:91 apps/user/models.py:134
+#: apps/user/export.py:92 apps/user/models.py:134
 msgid "Cours samaritains"
 msgstr ""
 
-#: apps/user/export.py:99 apps/user/forms.py:91 apps/user/models.py:128
+#: apps/user/export.py:100 apps/user/forms.py:91 apps/user/models.py:128
 #: apps/user/templates/auth/user_filter.html:60
 #: apps/user/views/standard.py:139
 msgid "Statut"
 msgstr ""
 
-#: apps/user/export.py:103 apps/user/forms.py:100 apps/user/models.py:142
+#: apps/user/export.py:104 apps/user/forms.py:100 apps/user/models.py:142
 #: apps/user/templates/auth/user_detail.html:122
 msgid "Sac Défi Vélo"
 msgstr ""
 
-#: apps/user/export.py:107 apps/user/forms.py:80 apps/user/models.py:117
+#: apps/user/export.py:108 apps/user/forms.py:80 apps/user/models.py:117
 #: apps/user/templates/auth/user_detail.html:103
 #: apps/user/views/standard.py:144
 msgid "Formation"
 msgstr ""
 
-#: apps/user/export.py:111 apps/user/forms.py:84 apps/user/models.py:120
+#: apps/user/export.py:112 apps/user/forms.py:84 apps/user/models.py:120
 msgid "Date de la dernière formation"
 msgstr ""
 
-#: apps/user/export.py:116 apps/user/forms.py:107 apps/user/models.py:110
+#: apps/user/export.py:117 apps/user/forms.py:107 apps/user/models.py:110
 #: apps/user/templates/auth/user_detail.html:140
 msgid "Canton d'affiliation"
 msgstr ""
 
-#: apps/user/export.py:119 apps/user/forms.py:110
+#: apps/user/export.py:120 apps/user/forms.py:110
 #: apps/user/templates/auth/user_detail.html:144
 msgid "Défi Vélo Mobile"
 msgstr ""
 
-#: apps/user/export.py:123
+#: apps/user/export.py:124
 msgid "IBAN"
 msgstr ""
 
-#: apps/user/export.py:127 apps/user/templates/auth/user_detail.html:149
+#: apps/user/export.py:128 apps/user/templates/auth/user_detail.html:149
 msgid "Niveau d'accès"
 msgstr ""
 
-#: apps/user/export.py:131 apps/user/models.py:415
+#: apps/user/export.py:132 apps/user/models.py:415
 #: apps/user/templates/auth/user_detail.html:153
 msgid "Cantons gérés"
 msgstr ""

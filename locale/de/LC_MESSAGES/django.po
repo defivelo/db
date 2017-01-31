@@ -1,21 +1,21 @@
 # Copyright (C) 2015, DB Défi Vélo
 # This file is distributed under the same license as the Défi Vélo DBpackage.
-# 
+#
 # Translators:
-# Didier Raboud <me+defivelo@odyx.org>, 2015
-# Laura Mosimann <laura.mosimann@label-vert.ch>, 2015-2016
+# Didier Raboud <me+defivelo@odyx.org>, 2015, 2017.
+# Laura Mosimann <laura.mosimann@label-vert.ch>, 2015-2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: Intranet\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-02 12:21+0100\n"
-"PO-Revision-Date: 2016-12-05 14:01+0000\n"
+"POT-Creation-Date: 2017-01-31 20:05+0100\n"
+"PO-Revision-Date: 2017-01-31 20:07+0100\n"
 "Last-Translator: Laura Mosimann <laura.mosimann@label-vert.ch>\n"
 "Language-Team: German (http://www.transifex.com/defivelo/db/language/de/)\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: apps/challenge/forms.py:63
@@ -43,7 +43,7 @@ msgstr "Datum"
 
 #: apps/challenge/forms.py:104 apps/common/models.py:33 apps/orga/export.py:45
 #: apps/orga/forms.py:45 apps/orga/templates/orga/organization_filter.html:62
-#: apps/user/export.py:75 apps/user/forms.py:68 apps/user/models.py:399
+#: apps/user/export.py:76 apps/user/forms.py:68 apps/user/models.py:399
 msgid "Canton"
 msgstr "Kanton"
 
@@ -91,7 +91,7 @@ msgid "Moniteurs 1"
 msgstr "LeiterIn 1"
 
 #: apps/challenge/forms.py:184 apps/challenge/forms.py:336
-#: apps/challenge/models/qualification.py:115 apps/user/export.py:95
+#: apps/challenge/models/qualification.py:115 apps/user/export.py:96
 #: apps/user/forms.py:85 apps/user/models.py:123
 #: apps/user/templates/auth/user_detail.html:109
 #: apps/user/views/standard.py:148 defivelo/templatetags/dv_filters.py:152
@@ -158,6 +158,7 @@ msgstr "Nein"
 #: apps/challenge/models/availability.py:36
 #: apps/challenge/models/session.py:82
 #: apps/challenge/templates/challenge/session_detail.html:5
+#: apps/challenge/views/session.py:152
 msgid "Session"
 msgstr "Halbtag"
 
@@ -200,7 +201,7 @@ msgstr "{session}: {chosen}{helper} {is_available}"
 
 #: apps/challenge/models/qualification.py:48 apps/orga/export.py:34
 #: apps/orga/models.py:31 apps/orga/templates/orga/organization_filter.html:60
-#: apps/user/export.py:63 apps/user/templates/auth/user_detail.html:58
+#: apps/user/export.py:64 apps/user/templates/auth/user_detail.html:58
 #: apps/user/templates/auth/user_detailed_list.html:17
 #: apps/user/templates/auth/user_filter.html:57
 msgid "Nom"
@@ -577,7 +578,7 @@ msgid "Qualifs qui seront supprimées"
 msgstr "Qualis, die gelöscht werden"
 
 #: apps/challenge/templates/challenge/session_confirm_delete.html:23
-#: apps/challenge/templates/challenge/session_detail.html:176
+#: apps/challenge/templates/challenge/session_detail.html:179
 msgid "Retour à la liste des sessions"
 msgstr "Zurück zur Liste der Halbtage"
 
@@ -741,24 +742,28 @@ msgstr "LeiterInnen der Saison"
 msgid "Intervenants de la saison"
 msgstr "ReferentInnen der Saison"
 
-#: apps/challenge/views/session.py:120
+#: apps/challenge/views/session.py:128
 msgid "Session mise à jour"
 msgstr "Halbtag aktualisiert"
 
-#: apps/challenge/views/session.py:124
+#: apps/challenge/views/session.py:132
 msgid "Session créée"
 msgstr "Halbtag erstellt"
 
-#: apps/challenge/views/session.py:128
+#: apps/challenge/views/session.py:136
 msgid "Session supprimée"
 msgstr "Halbtag gelöscht"
 
-#: apps/common/models.py:26 apps/orga/export.py:35 apps/user/export.py:67
+#: apps/common/__init__.py:30
+msgid "Haut-Valais"
+msgstr "Oberwallis"
+
+#: apps/common/models.py:26 apps/orga/export.py:35 apps/user/export.py:68
 #: apps/user/forms.py:61
 msgid "Rue"
 msgstr "Strasse"
 
-#: apps/common/models.py:27 apps/orga/export.py:37 apps/user/export.py:69
+#: apps/common/models.py:27 apps/orga/export.py:37 apps/user/export.py:70
 #: apps/user/forms.py:63
 msgid "N°"
 msgstr "Nr."
@@ -768,12 +773,12 @@ msgid "Complément d'adresse"
 msgstr "Adresszusatz"
 
 #: apps/common/models.py:31 apps/orga/export.py:41 apps/orga/forms.py:49
-#: apps/user/export.py:71 apps/user/forms.py:65
+#: apps/user/export.py:72 apps/user/forms.py:65
 msgid "NPA"
 msgstr "PLZ"
 
 #: apps/common/models.py:32 apps/orga/export.py:43
-#: apps/orga/templates/orga/organization_filter.html:61 apps/user/export.py:73
+#: apps/orga/templates/orga/organization_filter.html:61 apps/user/export.py:74
 #: apps/user/forms.py:66
 msgid "Ville"
 msgstr "Stadt"
@@ -849,7 +854,7 @@ msgstr "Kontaktperson"
 
 #: apps/orga/export.py:49 apps/orga/forms.py:50 apps/orga/models.py:34
 #: apps/orga/templates/orga/organization_detail.html:44
-#: apps/orga/templates/orga/organization_filter.html:64 apps/user/export.py:65
+#: apps/orga/templates/orga/organization_filter.html:64 apps/user/export.py:66
 #: apps/user/forms.py:73 apps/user/templates/auth/user_detail.html:83
 #: apps/user/templates/auth/user_detailed_list.html:18
 #: apps/user/templates/auth/user_filter.html:59
@@ -857,7 +862,7 @@ msgid "Natel"
 msgstr "Natelnr."
 
 #: apps/orga/export.py:51 apps/orga/templates/orga/organization_filter.html:65
-#: apps/user/export.py:64 apps/user/templates/auth/user_detail.html:79
+#: apps/user/export.py:65 apps/user/templates/auth/user_detail.html:79
 #: apps/user/templates/auth/user_detailed_list.html:19
 #: apps/user/templates/auth/user_filter.html:58
 msgid "Email"
@@ -957,73 +962,73 @@ msgstr "Ja"
 msgid "No"
 msgstr "Nein"
 
-#: apps/user/export.py:62 apps/user/templates/auth/user_detailed_list.html:16
+#: apps/user/export.py:63 apps/user/templates/auth/user_detailed_list.html:16
 #: apps/user/templates/auth/user_filter.html:56
 msgid "Prénom"
 msgstr "Vorname"
 
-#: apps/user/export.py:78 apps/user/forms.py:72
+#: apps/user/export.py:79 apps/user/forms.py:72
 #: apps/user/templates/auth/user_detail.html:75
 msgid "Date de naissance"
 msgstr "Geburtsdatum"
 
-#: apps/user/export.py:82 apps/user/forms.py:77
+#: apps/user/export.py:83 apps/user/forms.py:77
 #: apps/user/templates/auth/user_detail.html:95
 msgid "N° AVS"
 msgstr "AHV-Nr."
 
-#: apps/user/export.py:84 apps/user/forms.py:94 apps/user/models.py:132
+#: apps/user/export.py:85 apps/user/forms.py:94 apps/user/models.py:132
 msgid "Expérience pédagogique"
 msgstr "Pädagogische Erfahrung"
 
-#: apps/user/export.py:87
+#: apps/user/export.py:88
 msgid "Commentaires"
 msgstr "Bemerkungen"
 
-#: apps/user/export.py:91 apps/user/models.py:134
+#: apps/user/export.py:92 apps/user/models.py:134
 msgid "Cours samaritains"
 msgstr "Erste-Hilfe-Kurs"
 
-#: apps/user/export.py:99 apps/user/forms.py:91 apps/user/models.py:128
+#: apps/user/export.py:100 apps/user/forms.py:91 apps/user/models.py:128
 #: apps/user/templates/auth/user_filter.html:60
 #: apps/user/views/standard.py:139
 msgid "Statut"
 msgstr "Status"
 
-#: apps/user/export.py:103 apps/user/forms.py:100 apps/user/models.py:142
+#: apps/user/export.py:104 apps/user/forms.py:100 apps/user/models.py:142
 #: apps/user/templates/auth/user_detail.html:122
 msgid "Sac Défi Vélo"
 msgstr "DEFI VELO-Tasche"
 
-#: apps/user/export.py:107 apps/user/forms.py:80 apps/user/models.py:117
+#: apps/user/export.py:108 apps/user/forms.py:80 apps/user/models.py:117
 #: apps/user/templates/auth/user_detail.html:103
 #: apps/user/views/standard.py:144
 msgid "Formation"
 msgstr "Ausbildung"
 
-#: apps/user/export.py:111 apps/user/forms.py:84 apps/user/models.py:120
+#: apps/user/export.py:112 apps/user/forms.py:84 apps/user/models.py:120
 msgid "Date de la dernière formation"
 msgstr "Datum der letzten Ausbildung"
 
-#: apps/user/export.py:116 apps/user/forms.py:107 apps/user/models.py:110
+#: apps/user/export.py:117 apps/user/forms.py:107 apps/user/models.py:110
 #: apps/user/templates/auth/user_detail.html:140
 msgid "Canton d'affiliation"
 msgstr "Zugehörigkeit Kanton"
 
-#: apps/user/export.py:119 apps/user/forms.py:110
+#: apps/user/export.py:120 apps/user/forms.py:110
 #: apps/user/templates/auth/user_detail.html:144
 msgid "Défi Vélo Mobile"
 msgstr "DEFI VELO mobil"
 
-#: apps/user/export.py:123
+#: apps/user/export.py:124
 msgid "IBAN"
 msgstr "IBAN"
 
-#: apps/user/export.py:127 apps/user/templates/auth/user_detail.html:149
+#: apps/user/export.py:128 apps/user/templates/auth/user_detail.html:149
 msgid "Niveau d'accès"
 msgstr "Zugangsberechtigung"
 
-#: apps/user/export.py:131 apps/user/models.py:415
+#: apps/user/export.py:132 apps/user/models.py:415
 #: apps/user/templates/auth/user_detail.html:153
 msgid "Cantons gérés"
 msgstr "Geführte Kantone"
@@ -1116,7 +1121,8 @@ msgstr "Geführter Kanton"
 msgid ""
 "Bonjour %(full_name)s,\n"
 "\n"
-"%(from_full_name)s (%(from_email)s) t'a créé un login sur le site '%(site_name)s'.\n"
+"%(from_full_name)s (%(from_email)s) t'a créé un login sur le site "
+"'%(site_name)s'.\n"
 "\n"
 "Voilà tes données de connexion:\n"
 "\n"
@@ -1124,7 +1130,25 @@ msgid ""
 "  Mot de passe: %(password)s\n"
 "  URL de connexion: %(login_uri)s\n"
 "\n"
-msgstr "Guten Tag %(full_name)s\n\n\n%(from_full_name)s (%(from_email)s) hat dir ein Login kreiert zur Webseite '%(site_name)s'.\n\n\nHier findest du deine Zugangsdaten:\n\n\nBenutzername: %(email)s\n\nPasswort: %(password)s\n\nURL für die Verbindung: %(login_uri)s\n\n\n\n"
+msgstr ""
+"Guten Tag %(full_name)s\n"
+"\n"
+"\n"
+"%(from_full_name)s (%(from_email)s) hat dir ein Login kreiert zur Webseite "
+"'%(site_name)s'.\n"
+"\n"
+"\n"
+"Hier findest du deine Zugangsdaten:\n"
+"\n"
+"\n"
+"Benutzername: %(email)s\n"
+"\n"
+"Passwort: %(password)s\n"
+"\n"
+"URL für die Verbindung: %(login_uri)s\n"
+"\n"
+"\n"
+"\n"
 
 #: apps/user/templates/auth/email_user_send_credentials.txt:11
 #: defivelo/templates/account/email/email_confirmation_message.txt:7
@@ -1132,7 +1156,9 @@ msgstr "Guten Tag %(full_name)s\n\n\n%(from_full_name)s (%(from_email)s) hat dir
 msgid ""
 "Thank you from %(site_name)s!\n"
 "%(site_domain)s"
-msgstr "%(site_name)s dankt dir!\n%(site_domain)s"
+msgstr ""
+"%(site_name)s dankt dir!\n"
+"%(site_domain)s"
 
 #: apps/user/templates/auth/user_detail.html:22
 #: apps/user/templates/auth/user_detail.html:23
@@ -1209,7 +1235,9 @@ msgstr "Rolle"
 msgid ""
 "Est-il certain que ce nouvel utilisateur n'existe pas déjà dans la base de "
 "données?"
-msgstr "Bist du sicher, dass diese/r neue NutzerIn nicht bereits in der Datenbank ist?"
+msgstr ""
+"Bist du sicher, dass diese/r neue NutzerIn nicht bereits in der Datenbank "
+"ist?"
 
 #: apps/user/templates/auth/user_form.html:58
 msgid "CCP?"
@@ -1339,9 +1367,10 @@ msgstr "Warnung:"
 #: defivelo/templates/account/email.html:41
 msgid ""
 "You currently do not have any e-mail address set up. You should really add "
-"an e-mail address so you can receive notifications, reset your password, "
-"etc."
-msgstr "Du hast derzeit keine E-Mail-Adresse angegeben. Gib eine E-Mail-Adresse an, um Nachrichten zu erhalten, das Passwort zurückzusetzen, usw."
+"an e-mail address so you can receive notifications, reset your password, etc."
+msgstr ""
+"Du hast derzeit keine E-Mail-Adresse angegeben. Gib eine E-Mail-Adresse an, "
+"um Nachrichten zu erhalten, das Passwort zurückzusetzen, usw."
 
 #: defivelo/templates/account/email.html:46
 msgid "Add E-mail Address"
@@ -1360,10 +1389,17 @@ msgstr "Möchtest du wirklich die ausgewählte E-Mail-Adresse entfernen?"
 msgid ""
 "Hello from %(site_name)s!\n"
 "\n"
-"You're receiving this e-mail because user %(user_display)s at %(site_domain)s has given yours as an e-mail address to connect their account.\n"
+"You're receiving this e-mail because user %(user_display)s at "
+"%(site_domain)s has given yours as an e-mail address to connect their "
+"account.\n"
 "\n"
 "To confirm this is correct, go to %(activate_url)s\n"
-msgstr "Nachricht von %(site_name)s!\nDer Benutzer %(user_display)s der Seite %(site_domain)s hat uns angegeben, diese Mailadresse zu besitzen.\nZum Bestätigen, dass du der Besitzer/die Besitzerin bist, klicke hier %(activate_url)s\n"
+msgstr ""
+"Nachricht von %(site_name)s!\n"
+"Der Benutzer %(user_display)s der Seite %(site_domain)s hat uns angegeben, "
+"diese Mailadresse zu besitzen.\n"
+"Zum Bestätigen, dass du der Besitzer/die Besitzerin bist, klicke hier "
+"%(activate_url)s\n"
 
 #: defivelo/templates/account/email/email_confirmation_subject.txt:3
 msgid "Please Confirm Your E-mail Address"
@@ -1374,9 +1410,15 @@ msgstr "E-Mail-Adresse bestätigen"
 msgid ""
 "Hello from %(site_name)s!\n"
 "\n"
-"You're receiving this e-mail because you or someone else has requested a password for your user account at %(site_domain)s.\n"
-"It can be safely ignored if you did not request a password reset. Click the link below to reset your password."
-msgstr "Mail von %(site_name)s!\nDas Passwort für diese Seite %(site_domain)s wurde angefragt.\nIgnoriere diese Nachricht, falls nicht du das Passwort angefragt hast. Ansonsten klicke auf folgenden Link, um das Passwort zurückzusetzen."
+"You're receiving this e-mail because you or someone else has requested a "
+"password for your user account at %(site_domain)s.\n"
+"It can be safely ignored if you did not request a password reset. Click the "
+"link below to reset your password."
+msgstr ""
+"Mail von %(site_name)s!\n"
+"Das Passwort für diese Seite %(site_domain)s wurde angefragt.\n"
+"Ignoriere diese Nachricht, falls nicht du das Passwort angefragt hast. "
+"Ansonsten klicke auf folgenden Link, um das Passwort zurückzusetzen."
 
 #: defivelo/templates/account/email/password_reset_key_message.txt:8
 #, python-format
@@ -1388,7 +1430,9 @@ msgstr "Falls du es vergessen hast, dein Benutzername ist %(username)s."
 msgid ""
 "Thank you for using %(site_name)s!\n"
 "%(site_domain)s"
-msgstr "Bitte %(site_name)s!\n%(site_domain)s benutzen"
+msgstr ""
+"Bitte %(site_name)s!\n"
+"%(site_domain)s benutzen"
 
 #: defivelo/templates/account/email/password_reset_key_subject.txt:3
 msgid "Password Reset E-mail"
@@ -1404,7 +1448,9 @@ msgstr "E-Mail-Adresse bestätigen"
 msgid ""
 "Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an e-mail "
 "address for user %(user_display)s."
-msgstr "Bitte bestätige, dass <a href=\"mailto:%(email)s\">%(email)s</a> eine E-Mail-Adresse von %(user_display)s ist."
+msgstr ""
+"Bitte bestätige, dass <a href=\"mailto:%(email)s\">%(email)s</a> eine E-Mail-"
+"Adresse von %(user_display)s ist."
 
 #: defivelo/templates/account/email_confirm.html:20
 msgid "Confirm"
@@ -1413,9 +1459,11 @@ msgstr "Bestätigen"
 #: defivelo/templates/account/email_confirm.html:27
 #, python-format
 msgid ""
-"This e-mail confirmation link expired or is invalid. Please <a "
-"href=\"%(email_url)s\">issue a new e-mail confirmation request</a>."
-msgstr "Dieser Bestätigungslink ist leider abgelaufen. Lass dir bitte eine neue <a href=\"%(email_url)s\">Bestätigungs-Mail</a> schicken."
+"This e-mail confirmation link expired or is invalid. Please <a href="
+"\"%(email_url)s\">issue a new e-mail confirmation request</a>."
+msgstr ""
+"Dieser Bestätigungslink ist leider abgelaufen. Lass dir bitte eine neue <a "
+"href=\"%(email_url)s\">Bestätigungs-Mail</a> schicken."
 
 #: defivelo/templates/account/login.html:6
 #: defivelo/templates/account/login.html:9
@@ -1453,9 +1501,11 @@ msgstr "Passwort zurücksetzen"
 
 #: defivelo/templates/account/password_reset.html:13
 msgid ""
-"Forgotten your password? Enter your e-mail address below, and we'll send you"
-" an e-mail allowing you to reset it."
-msgstr "Passwort vergessen? Gib deine E-Mail-Adresse unten ein, dann schicken wir dir einen Link um das Passwort zurückzusetzen."
+"Forgotten your password? Enter your e-mail address below, and we'll send you "
+"an e-mail allowing you to reset it."
+msgstr ""
+"Passwort vergessen? Gib deine E-Mail-Adresse unten ein, dann schicken wir "
+"dir einen Link um das Passwort zurückzusetzen."
 
 #: defivelo/templates/account/password_reset.html:20
 msgid "Reset My Password"
@@ -1463,7 +1513,8 @@ msgstr "Passwort zurücksetzen"
 
 #: defivelo/templates/account/password_reset.html:24
 msgid "Please contact us if you have any trouble resetting your password."
-msgstr "Bitte kontaktiere uns, wenn das Zurücksetzen des Passworts nicht klappt."
+msgstr ""
+"Bitte kontaktiere uns, wenn das Zurücksetzen des Passworts nicht klappt."
 
 #: defivelo/templates/account/password_reset_from_key.html:7
 msgid "Bad Token"
@@ -1473,9 +1524,12 @@ msgstr "Falsche Identifikation"
 #, python-format
 msgid ""
 "The password reset link was invalid, possibly because it has already been "
-"used.  Please request a <a href=\"%(passwd_reset_url)s\">new password "
-"reset</a>."
-msgstr "Der Link zum Zurücksetzen des Passworts war ungültig, womöglich wurde dieser Link bereits benutzt. Bitte lass dein Passwort noch mal <a href=\"%(passwd_reset_url)s\">zurücksetzen</a>."
+"used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</"
+"a>."
+msgstr ""
+"Der Link zum Zurücksetzen des Passworts war ungültig, womöglich wurde dieser "
+"Link bereits benutzt. Bitte lass dein Passwort noch mal <a href="
+"\"%(passwd_reset_url)s\">zurücksetzen</a>."
 
 #: defivelo/templates/account/password_reset_from_key.html:22
 msgid "Your password is now changed."
@@ -1502,7 +1556,7 @@ msgstr "Version %(vcs_version)s"
 
 #: defivelo/templates/base.html:62
 msgid "AGPLv3 License"
-msgstr ""
+msgstr "AGPLv3 Lizenz"
 
 #: defivelo/templates/base.html:66
 msgid "Code source"

@@ -17,13 +17,20 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from localflavor.ch.ch_states import STATE_CHOICES
+from django.utils.translation import ugettext_lazy as _
 
 # Cantons où DÉFI VÉLO est actif
 DV_STATES = ['VD', 'VS', 'FR', 'NE', 'GE', 'JU',
              'BS', 'SG', 'ZH', 'BE', 'LU',
+             'VS-OW' # Haut-Valais
              ]
 
-DV_STATE_CHOICES = [c for c in STATE_CHOICES if c[0] in DV_STATES]
+# "faux" cantons pour DÉFI VÉLO
+DV_ADDITIONAL_STATES = [
+    ('VS-OW', _('Haut-Valais'))
+]
+
+DV_STATE_CHOICES = [c for c in STATE_CHOICES if c[0] in DV_STATES] + DV_ADDITIONAL_STATES
 
 DV_STATE_CHOICES_WITH_DEFAULT = tuple(
     list((('', '---------',),)) +
