@@ -109,7 +109,7 @@ class UserProfile(Address, models.Model):
     affiliation_canton = models.CharField(
         _("Canton d'affiliation"),
         choices=DV_STATE_CHOICES_WITH_DEFAULT,
-        max_length=2,
+        max_length=5,
         blank=False)
     activity_cantons = MultiSelectField(_("Défi Vélo mobile"),
                                         choices=DV_STATE_CHOICES,

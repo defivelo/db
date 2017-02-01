@@ -30,7 +30,8 @@ class Address(models.Model):
                                           blank=True)
     address_zip = models.CharField(_('NPA'), max_length=4, blank=True)
     address_city = models.CharField(_('Ville'), max_length=64, blank=True)
-    address_canton = models.CharField(_('Canton'), max_length=2, blank=True)
+    # Expand to 5 because of the special cantons
+    address_canton = models.CharField(_('Canton'), max_length=5, blank=True)
 
     @property
     def address_canton_full(self):
