@@ -359,6 +359,8 @@ class SeasonPlanningExportView(ExportMixin, SeasonAvailabilityMixin,
         # Trouve toutes les personnes qui sont présentes dans cette saison
         qs = get_user_model().objects
         user_filter = [
+            # Ceux qui ont répondu (quoi que ce soit)
+            Q(availabilities__session__in=self.season.sessions_with_qualifs),
             # Moniteurs +
             Q(sess_monplus__in=self.season.sessions_with_qualifs),
             # Moniteurs 2
@@ -390,6 +392,8 @@ class SeasonPlanningExportView(ExportMixin, SeasonAvailabilityMixin,
                 '%s - %s' % (time(session.begin), time(session.end)),
                 session.n_qualifications,
             ]
+            users_selected_in_session = \
+                session.availability_statuses.filter(chosen=True).values_list('helper', flat=True)
             for user in qs:
                 label = ''
                 if user == session.superleader:
@@ -409,6 +413,9 @@ class SeasonPlanningExportView(ExportMixin, SeasonAvailabilityMixin,
                             # Translators: Nom court pour 'Intervenant'
                             label = u('I')
                             break
+                    # Vérifie tout de même si l'utilisateur est déjà sélectionné
+                    if not label and user.id in users_selected_in_session:
+                        label = u('×')
                 col += [label]
             dataset.append_col(col)
         return dataset
