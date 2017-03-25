@@ -112,6 +112,7 @@ class ProfileMixin(MenuView):
         )
         for field in update_profile_fields:
             if field in form.cleaned_data:
+                newvalue = form.cleaned_data[field]
                 # For field updates that have date markers, note them properly
                 if field in ['status', 'bagstatus']:
                     try:
@@ -121,7 +122,11 @@ class ProfileMixin(MenuView):
                                     )
                     except ValueError:
                         pass
-                setattr(userprofile, field, form.cleaned_data[field])
+                    try:
+                        newvalue = int(newvalue)
+                    except ValueError:
+                        newvalue = 0
+                setattr(userprofile, field, newvalue)
         userprofile.save()
         return ret
 
