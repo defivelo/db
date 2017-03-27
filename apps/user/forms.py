@@ -54,7 +54,7 @@ class UserProfileForm(forms.ModelForm):
             choices = (
                 (k, v) for (k, v)
                 in choices
-                if k in cantons
+                if k in cantons or k == ''
             )
             self.fields['affiliation_canton'].choices = choices
 
