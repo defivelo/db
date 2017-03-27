@@ -335,6 +335,8 @@ class UserProfile(Address, models.Model):
 
         context['userprofile'] = self.user
         context['password'] = newpassword
+        self.user.save()
+
         # This can raise exception, but that's good
         send_mail(
             _('Accès au site \'{site_name}\'').format(
@@ -351,7 +353,6 @@ class UserProfile(Address, models.Model):
             user=self.user, email=self.user.email, verified=True,
             primary=True
             )
-        self.user.save()
 
     def get_seasons(self, raise_without_cantons=False):
         qs = Season.objects
