@@ -167,7 +167,7 @@
     </div>
     {% buttons %}
     <div class="hidden-print">
-        {% if request.user.pk == userprofile.pk or request.user|can:"user_edit_other" and request.user|inusercantons:userprofile.profile.affiliation_canton %}
+        {% if request.user.pk == userprofile.pk or request.user|can:"user_edit_all" or request.user|can:"user_edit_other" and request.user|inusercantons:userprofile.profile.affiliation_canton %}
             <a class="btn btn-primary pull-right" href="{% url 'user-update' pk=userprofile.pk %}">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="{% trans "Éditer" %}"></span>
                 {% trans "Éditer" %}
