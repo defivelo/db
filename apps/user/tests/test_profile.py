@@ -25,7 +25,10 @@ from django.core.urlresolvers import NoReverseMatch, reverse
 from django.test import TestCase
 
 from apps.common import DV_STATES
-from apps.user.models import FORMATION_M1, FORMATION_M2, STD_PROFILE_FIELDS
+from apps.user.models import (
+    BAGSTATUS_LOAN, BAGSTATUS_PAID, FORMATION_M1, FORMATION_M2, STD_PROFILE_FIELDS, USERSTATUS_ACTIVE,
+    USERSTATUS_INACTIVE,
+)
 from apps.user.tests.factories import UserFactory
 from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient, SuperUserAuthClient
 
@@ -112,6 +115,9 @@ class AuthUserTest(ProfileTestCase):
     def test_my_profile_access(self):
         # Pre-update profile and user
         self.client.user.profile.formation = FORMATION_M1
+        self.client.user.profile.affiliation_canton = 'GE'
+        self.client.user.profile.bagstatus = BAGSTATUS_LOAN
+        self.client.user.profile.status = USERSTATUS_ACTIVE
         self.client.user.profile.save()
         url = reverse('user-update',
                       kwargs={'pk': self.client.user.pk})
@@ -121,11 +127,13 @@ class AuthUserTest(ProfileTestCase):
         initial = self.getprofileinitial(self.client.user)
         # Test some update, that must go through
         initial['first_name'] = 'newfirstname'
-        initial['activity_cantons'] = ['JU', 'VD', ]
+        initial['activity_cantons'] = ['JU', 'GE', 'VD', ]
+        initial['status'] = USERSTATUS_INACTIVE
 
         # And some that mustn't
         initial['formation'] = FORMATION_M2
         initial['affiliation_canton'] = 'VD'
+        initial['bagstatus'] = BAGSTATUS_PAID
 
         response = self.client.post(url, initial)
         self.assertEqual(response.status_code, 302, url)
@@ -136,10 +144,12 @@ class AuthUserTest(ProfileTestCase):
         # Updated
         self.assertEqual(me.first_name, 'newfirstname')
         self.assertEqual(me.profile.activity_cantons, ['JU', 'VD', ])
+        self.assertEqual(me.profile.status, USERSTATUS_INACTIVE)
 
         # Not updated
         self.assertEqual(me.profile.formation, FORMATION_M1)
-        self.assertEqual(me.profile.affiliation_canton, '')
+        self.assertEqual(me.profile.bagstatus, BAGSTATUS_LOAN)
+        self.assertEqual(me.profile.affiliation_canton, 'GE')
 
     def test_autocompletes(self):
         # All autocompletes are forbidden
