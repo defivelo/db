@@ -25,9 +25,7 @@ from apps.common.forms import SWISS_DATE_INPUT_FORMAT
 from apps.orga.tests.factories import OrganizationFactory
 from apps.user.models import FORMATION_M1
 from apps.user.tests.factories import UserFactory
-from defivelo.tests.utils import (
-    AuthClient, PowerUserAuthClient, StateManagerAuthClient,
-)
+from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient
 
 from .factories import SeasonFactory, SessionFactory
 

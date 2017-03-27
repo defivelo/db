@@ -32,8 +32,7 @@ from apps.user import STATE_CHOICES_WITH_DEFAULT
 from apps.user.models import FORMATION_KEYS, FORMATION_M2
 
 from . import (
-    AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, SHORTCODE_ACTOR,
-    SHORTCODE_MON1, SHORTCODE_MON2, STAFF_FIELDKEY,
+    AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, SHORTCODE_ACTOR, SHORTCODE_MON1, SHORTCODE_MON2, STAFF_FIELDKEY,
 )
 from .fields import ActorChoiceField, HelpersChoiceField, LeaderChoiceField
 from .models import Qualification, Season, Session

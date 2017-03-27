@@ -27,9 +27,7 @@ from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
-from django_filters import (
-    CharFilter, FilterSet, ModelMultipleChoiceFilter, MultipleChoiceFilter,
-)
+from django_filters import CharFilter, FilterSet, ModelMultipleChoiceFilter, MultipleChoiceFilter
 from django_filters.views import FilterView
 from filters.views import FilterMixin
 from rolepermissions.mixins import HasPermissionsMixin
@@ -40,10 +38,7 @@ from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.roles import user_cantons
 
 from ..export import UserResource
-from ..models import (
-    FORMATION_CHOICES, USERSTATUS_ACTIVE, USERSTATUS_CHOICES,
-    USERSTATUS_RESERVE,
-)
+from ..models import FORMATION_CHOICES, USERSTATUS_ACTIVE, USERSTATUS_CHOICES, USERSTATUS_RESERVE
 from .mixins import ProfileMixin, UserSelfAccessMixin
 
 

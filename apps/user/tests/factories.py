@@ -22,9 +22,7 @@ from django.contrib.auth import get_user_model
 from factory import Faker
 from factory.django import DjangoModelFactory
 
-from apps.user.models import (
-    FORMATION_M1, USERSTATUS_ACTIVE, UserProfile, get_new_username,
-)
+from apps.user.models import FORMATION_M1, USERSTATUS_ACTIVE, UserProfile, get_new_username
 
 
 class UserProfileFactory(DjangoModelFactory):

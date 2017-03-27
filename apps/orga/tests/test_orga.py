@@ -23,10 +23,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 from apps.common import DV_STATES
-from defivelo.tests.utils import (
-    AuthClient, PowerUserAuthClient, StateManagerAuthClient,
-    SuperUserAuthClient,
-)
+from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient, SuperUserAuthClient
 
 from ..models import Organization
 from .factories import OrganizationFactory

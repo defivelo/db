@@ -27,10 +27,7 @@ from django.test import TestCase
 from apps.common import DV_STATES
 from apps.user.models import FORMATION_M1, FORMATION_M2, STD_PROFILE_FIELDS
 from apps.user.tests.factories import UserFactory
-from defivelo.tests.utils import (
-    AuthClient, PowerUserAuthClient, StateManagerAuthClient,
-    SuperUserAuthClient,
-)
+from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient, SuperUserAuthClient
 
 myurlsforall = ['user-detail', 'user-update', 'profile-detail', ]
 myurlsforoffice = ['user-list', 'user-list-export', ]

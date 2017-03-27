@@ -20,9 +20,7 @@ from __future__ import unicode_literals
 from autocomplete_light.shortcuts import register as al_register
 from django.utils.translation import ugettext_lazy as _
 
-from .views.autocomplete import (
-    Actors, AllPersons, Helpers, Leaders, PersonsRelevantForSessions,
-)
+from .views.autocomplete import Actors, AllPersons, Helpers, Leaders, PersonsRelevantForSessions
 
 ac_placeholder = _('type some text to search in this autocomplete')
 

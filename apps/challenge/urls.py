@@ -24,13 +24,11 @@ from django.views.decorators.cache import never_cache
 from django.views.generic.base import RedirectView
 
 from .views import (
-    QualiCreateView, QualiDeleteView, QualiUpdateView, SeasonActorListView,
-    SeasonAvailabilityUpdateView, SeasonAvailabilityView, SeasonCreateView,
-    SeasonDeleteView, SeasonDetailView, SeasonExportView, SeasonHelperListView,
-    SeasonListView, SeasonPlanningExportView, SeasonStaffChoiceUpdateView,
-    SeasonUpdateView, SessionCreateView, SessionDeleteView, SessionDetailView,
-    SessionExportView, SessionsListView, SessionStaffChoiceView,
-    SessionUpdateView,
+    QualiCreateView, QualiDeleteView, QualiUpdateView, SeasonActorListView, SeasonAvailabilityUpdateView,
+    SeasonAvailabilityView, SeasonCreateView, SeasonDeleteView, SeasonDetailView, SeasonExportView,
+    SeasonHelperListView, SeasonListView, SeasonPlanningExportView, SeasonStaffChoiceUpdateView, SeasonUpdateView,
+    SessionCreateView, SessionDeleteView, SessionDetailView, SessionExportView, SessionsListView,
+    SessionStaffChoiceView, SessionUpdateView,
 )
 
 urlpatterns = [

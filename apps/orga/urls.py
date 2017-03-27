@@ -21,8 +21,8 @@ from django.conf.urls import url
 from django.views.decorators.cache import never_cache
 
 from .views import (
-    OrganizationCreateView, OrganizationDeleteView, OrganizationDetailView,
-    OrganizationListExport, OrganizationsListView, OrganizationUpdateView,
+    OrganizationCreateView, OrganizationDeleteView, OrganizationDetailView, OrganizationListExport,
+    OrganizationsListView, OrganizationUpdateView,
 )
 
 urlpatterns = [

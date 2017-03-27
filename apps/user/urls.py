@@ -21,8 +21,7 @@ from django.conf.urls import url
 from django.views.decorators.cache import never_cache
 
 from .views import (
-    ResendUserCredentials, SendUserCredentials, UserCreate, UserDetail,
-    UserList, UserListExport, UserUpdate,
+    ResendUserCredentials, SendUserCredentials, UserCreate, UserDetail, UserList, UserListExport, UserUpdate,
 )
 
 urlpatterns = [

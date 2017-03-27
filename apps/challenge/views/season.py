@@ -43,14 +43,9 @@ from defivelo.roles import user_cantons
 from defivelo.views import MenuView
 
 from .. import AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, STAFF_FIELDKEY
-from ..forms import (
-    SeasonAvailabilityForm, SeasonForm, SeasonNewHelperAvailabilityForm,
-    SeasonStaffChoiceForm,
-)
+from ..forms import SeasonAvailabilityForm, SeasonForm, SeasonNewHelperAvailabilityForm, SeasonStaffChoiceForm
 from ..models import HelperSessionAvailability, Season
-from ..models.qualification import (
-    CATEGORY_CHOICE_A, CATEGORY_CHOICE_B, CATEGORY_CHOICE_C,
-)
+from ..models.qualification import CATEGORY_CHOICE_A, CATEGORY_CHOICE_B, CATEGORY_CHOICE_C
 from .mixins import CantonSeasonFormMixin
 
 EXPORT_NAMETEL = u('{name} - {tel}')

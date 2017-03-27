@@ -45,10 +45,7 @@ from apps.common import DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.models import Address
 from defivelo.roles import user_cantons
 
-from . import (  # NOQA
-    FORMATION_CHOICES, FORMATION_KEYS, FORMATION_M1, FORMATION_M2,
-    get_new_username,
-)
+from . import FORMATION_CHOICES, FORMATION_KEYS, FORMATION_M1, FORMATION_M2, get_new_username  # NOQA
 
 USERSTATUS_UNDEF = 0
 USERSTATUS_ACTIVE = 10

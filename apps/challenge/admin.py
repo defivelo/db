@@ -20,10 +20,7 @@ from django.contrib import admin
 from django.templatetags.static import static
 from parler.admin import TranslatableAdmin
 
-from .models import (
-    HelperSessionAvailability, Qualification, QualificationActivity, Season,
-    Session,
-)
+from .models import HelperSessionAvailability, Qualification, QualificationActivity, Season, Session
 
 admin.site.register(Season)
 admin.site.register(Session)

@@ -20,10 +20,7 @@ from __future__ import unicode_literals
 from django import forms
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
-from localflavor.ch.forms import (
-    CHPhoneNumberField, CHSocialSecurityNumberField, CHStateSelect,
-    CHZipCodeField,
-)
+from localflavor.ch.forms import CHPhoneNumberField, CHSocialSecurityNumberField, CHStateSelect, CHZipCodeField
 from localflavor.generic import forms as localforms
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from multiselectfield.forms.fields import MultiSelectFormField

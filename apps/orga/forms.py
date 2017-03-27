@@ -19,9 +19,7 @@ from __future__ import unicode_literals
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from localflavor.ch.forms import (
-    CHPhoneNumberField, CHStateSelect, CHZipCodeField,
-)
+from localflavor.ch.forms import CHPhoneNumberField, CHStateSelect, CHZipCodeField
 
 from apps.user import STATE_CHOICES_WITH_DEFAULT
 

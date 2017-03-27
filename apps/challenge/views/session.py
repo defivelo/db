@@ -33,9 +33,7 @@ from defivelo.views import MenuView
 
 from ..forms import SessionForm
 from ..models import Session
-from ..models.qualification import (
-    CATEGORY_CHOICE_A, CATEGORY_CHOICE_B, CATEGORY_CHOICE_C,
-)
+from ..models.qualification import CATEGORY_CHOICE_A, CATEGORY_CHOICE_B, CATEGORY_CHOICE_C
 from .mixins import CantonSeasonFormMixin
 
 EXPORT_NAMETEL = u('{name} - {tel}')
