@@ -112,21 +112,16 @@ class ProfileMixin(MenuView):
         )
         for field in update_profile_fields:
             if field in form.cleaned_data:
-                newvalue = form.cleaned_data[field]
                 # For field updates that have date markers, note them properly
                 if field in ['status', 'bagstatus']:
-                    try:
-                        if int(getattr(userprofile, field)) != int(form.cleaned_data[field]):
-                            setattr(userprofile, '%s_updatetime' % field,
-                                    timezone.now()
-                                    )
-                    except ValueError:
-                        pass
-                    try:
-                        newvalue = int(newvalue)
-                    except ValueError:
-                        newvalue = 0
-                setattr(userprofile, field, newvalue)
+                    oldstatus = str(getattr(userprofile, field))
+                    newstatus = form.cleaned_data[field]
+                    if oldstatus != newstatus:
+                        setattr(userprofile, '%s_updatetime' % field,
+                                timezone.now()
+                                )
+                        print("Updated status update time for %s" % field)
+                setattr(userprofile, field, form.cleaned_data[field])
         userprofile.save()
         return ret
 

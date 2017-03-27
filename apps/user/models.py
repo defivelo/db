@@ -110,7 +110,7 @@ class UserProfile(Address, models.Model):
         _("Canton d'affiliation"),
         choices=DV_STATE_CHOICES_WITH_DEFAULT,
         max_length=5,
-        blank=False)
+        blank=True)
     activity_cantons = MultiSelectField(_("Défi Vélo mobile"),
                                         choices=DV_STATE_CHOICES,
                                         blank=True)
