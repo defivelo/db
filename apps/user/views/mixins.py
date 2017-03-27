@@ -120,7 +120,6 @@ class ProfileMixin(MenuView):
                         setattr(userprofile, '%s_updatetime' % field,
                                 timezone.now()
                                 )
-                        print("Updated status update time for %s" % field)
                 setattr(userprofile, field, form.cleaned_data[field])
         userprofile.save()
         return ret
