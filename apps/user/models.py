@@ -17,16 +17,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-import operator
-from functools import reduce
-
 from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.db import models
-from django.db.models import Q
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.forms import ValidationError
@@ -362,18 +358,19 @@ class UserProfile(Address, models.Model):
             if raise_without_cantons:
                 raise PermissionDenied
 
-        # Si on ne gère aucun canton, ajoute les cantons d'affiliation et mobiles
+        # Ajoute les cantons d'affiliation et mobiles
         if self.formation or self.actor_for:
-            usercantons += [self.affiliation_canton]
+            if self.affiliation_canton:
+                usercantons += [self.affiliation_canton]
             if self.activity_cantons:
                 usercantons += self.activity_cantons
 
+        # Unique'ify, discard empty values
+        usercantons = set([c for c in usercantons if c])
+
         if usercantons:
-            cantons = [
-                Q(cantons__contains=state)
-                for state in usercantons
-            ]
-            return qs.filter(reduce(operator.or_, cantons))
+            cantons_regexp = "(^|,)%s(,|$)" % "|".join(usercantons)
+            return qs.filter(cantons__regex=cantons_regexp)
 
         return qs.none()
 
