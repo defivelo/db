@@ -394,7 +394,7 @@ class UserManagedState(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              related_name='managedstates',
                              limit_choices_to={'is_active': True},)
-    canton = models.CharField(_('Canton'), max_length=2,
+    canton = models.CharField(_('Canton'), max_length=5,
                               choices=DV_STATE_CHOICES)
 
     @property
