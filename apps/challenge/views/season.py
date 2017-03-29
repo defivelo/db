@@ -36,6 +36,7 @@ from rolepermissions.mixins import HasPermissionsMixin
 from rolepermissions.verifications import has_permission
 from tablib import Dataset
 
+from apps.common import DV_STATES
 from apps.common.views import ExportMixin
 from apps.user.models import FORMATION_M2
 from apps.user.views import ActorsList, HelpersList
@@ -64,6 +65,16 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
         context['menu_category'] = 'season'
         context['season'] = self.season
         return context
+
+    def get_form_kwargs(self):
+        form_kwargs = \
+            super(SeasonMixin, self).get_form_kwargs()
+        if has_permission(self.request.user, 'cantons_all'):
+            form_kwargs['cantons'] = DV_STATES
+        else:
+            # Ne permet que l'édition et la création de saisons pour les cantons gérés
+            form_kwargs['cantons'] = self.request.user.managedstates.all().values_list('canton', flat=True)
+        return form_kwargs
 
     def get_queryset(self):
         if self.model == Season:
