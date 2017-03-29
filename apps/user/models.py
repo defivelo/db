@@ -354,15 +354,19 @@ class UserProfile(Address, models.Model):
     def get_seasons(self, raise_without_cantons=False):
         qs = Season.objects
         usercantons = []
+
         try:
+            # Obtient les cantons gérés
             usercantons = user_cantons(self.user)
         except LookupError:
             if raise_without_cantons:
                 raise PermissionDenied
-            if self.formation or self.actor_for:
-                usercantons = [self.affiliation_canton]
-                if self.activity_cantons:
-                    usercantons += self.activity_cantons
+
+        # Si on ne gère aucun canton, ajoute les cantons d'affiliation et mobiles
+        if self.formation or self.actor_for:
+            usercantons += [self.affiliation_canton]
+            if self.activity_cantons:
+                usercantons += self.activity_cantons
 
         if usercantons:
             cantons = [
