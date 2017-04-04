@@ -37,3 +37,5 @@ DV_STATE_CHOICES_WITH_DEFAULT = tuple(
     list((('', '---------',),)) +
     list(DV_STATE_CHOICES)
 )
+
+CANTONS_REGEXP = "(^|,)%s(,|$)"

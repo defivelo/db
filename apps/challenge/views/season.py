@@ -36,7 +36,7 @@ from rolepermissions.mixins import HasPermissionsMixin
 from rolepermissions.verifications import has_permission
 from tablib import Dataset
 
-from apps.common import DV_STATES
+from apps.common import DV_STATES, CANTONS_REGEXP
 from apps.common.views import ExportMixin
 from apps.user.models import FORMATION_M2
 from apps.user.views import ActorsList, HelpersList
@@ -142,9 +142,9 @@ class SeasonAvailabilityMixin(SeasonMixin):
             if self.season:
                 seasoncantons = self.season.cantons
                 # S'il y au moins un canton en commun
+                cantons_regexp = CANTONS_REGEXP % "|".join(seasoncantons)
                 cantons_filter = [
-                    Q(profile__activity_cantons__contains=canton)
-                    for canton in seasoncantons
+                    Q(profile__activity_cantons__regex=cantons_regexp)
                 ] + [
                     Q(profile__affiliation_canton__in=seasoncantons)
                 ]
