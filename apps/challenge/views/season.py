@@ -36,7 +36,7 @@ from rolepermissions.mixins import HasPermissionsMixin
 from rolepermissions.verifications import has_permission
 from tablib import Dataset
 
-from apps.common import DV_STATES, CANTONS_REGEXP
+from apps.common import CANTONS_REGEXP, DV_STATES
 from apps.common.views import ExportMixin
 from apps.user.models import FORMATION_M2
 from apps.user.views import ActorsList, HelpersList
