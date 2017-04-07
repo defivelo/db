@@ -205,10 +205,17 @@ class PowerUserTest(ProfileTestCase):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 403, url)
 
-            # Unallowed to re-send creds either
-            url = tryurl('user-resendcredentials', otheruser)
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, 403, url)
+            # Allowed to re-send creds though, any number of times
+            for i in range(2):
+                url = tryurl('user-resendcredentials', otheruser)
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 200, url)
+
+                response = self.client.post(url, {})
+                self.assertEqual(response.status_code, 302, url)
+
+                nmails += 1
+                self.assertEqual(len(mail.outbox), nmails)
 
     def test_other_profile_accesses(self):
         for user in self.users:
