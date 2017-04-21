@@ -128,6 +128,7 @@ class ProfileMixin(MenuView):
                 kwargs['cantons'] = user_cantons(self.request.user)
             except LookupError:
                 pass
+        kwargs['affiliation_canton_required'] = not has_permission(self.request.user, 'cantons_all')
         return kwargs
 
 

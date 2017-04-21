@@ -36,6 +36,8 @@ from .models import BAGSTATUS_CHOICES, FORMATION_CHOICES, USERSTATUS_CHOICES
 class UserProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         allow_email = kwargs.pop('allow_email', False)
+        # Whether to permit no-affiliation-canton creation
+        affiliation_canton_required = kwargs.pop('affiliation_canton_required', True)
         cantons = kwargs.pop('cantons', None)
         super(UserProfileForm, self).__init__(*args, **kwargs)
 
@@ -51,8 +53,9 @@ class UserProfileForm(forms.ModelForm):
             choices = (
                 (k, v) for (k, v)
                 in choices
-                if k in cantons or k == ''
+                if k in cantons or (not affiliation_canton_required and k == '')
             )
+            self.fields['affiliation_canton'].required = affiliation_canton_required
             self.fields['affiliation_canton'].choices = choices
 
     address_street = forms.CharField(label=_('Rue'), max_length=255,
