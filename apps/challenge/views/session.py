@@ -21,6 +21,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import FieldError
 from django.core.urlresolvers import reverse_lazy
 from django.template.defaultfilters import date, time
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext as u, ugettext_lazy as _
 from django.views.generic.dates import WeekArchiveView
 from django.views.generic.detail import DetailView
@@ -147,7 +148,7 @@ class SessionExportView(ExportMixin, SessionMixin,
                         HasPermissionsMixin, DetailView):
     @property
     def export_filename(self):
-        return _('Session') + '-' + str(self.object)
+        return _('Session') + '-' + force_text(self.object)
 
     def get_dataset(self):
         dataset = Dataset()
