@@ -8,7 +8,7 @@ libsass==0.13.2
 django-stronghold==0.2.9
 django-allauth==0.32.0
 django-localflavor==1.5.2
--e git+https://github.com/nkunihiko/django-bootstrap3-datetimepicker.git@2fa9ea5f56c16ec10aa3288a989a17a4332bcb97#egg=django_bootstrap3_datetimepicker==2.3+master0
+django-bootstrap3-datetimepicker-2==2.5.0
 django-autocomplete-light==3.2.8
 django-parler==1.8
 django-multiselectfield==0.1.8
@@ -20,3 +20,6 @@ tablib==0.11.5
 simple-article==0.2.1
 django-role-permissions==2.1.0
 django-tinymce==2.6.0
+-e git+https://github.com/defivelo/grablib.git@0251b9803f77cb24b76ac4398099509b082b20bfb#egg=grablib==0.6.0+py34_0
+requests==2.18.3
+typing==3.6.2
