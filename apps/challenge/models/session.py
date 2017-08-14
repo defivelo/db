@@ -47,13 +47,13 @@ class Session(Address, models.Model):
                                     default=timedelta(
                                         hours=DEFAULT_SESSION_DURATION_HOURS
                                         ))
-    organization = models.ForeignKey(Organization,
-                                     verbose_name=_('Établissement'),
-                                     related_name='sessions',
-                                     limit_choices_to={
-                                         'address_canton__isnull': False
-                                     }
-                                     )
+    orga = models.ForeignKey(Organization,
+                             verbose_name=_('Établissement'),
+                             related_name='sessions',
+                             limit_choices_to={
+                                 'address_canton__isnull': False
+                             }
+                            )
     place = models.CharField(_("Lieu de la qualification"),
                              max_length=512, blank=True)
     superleader = models.ForeignKey(settings.AUTH_USER_MODEL,

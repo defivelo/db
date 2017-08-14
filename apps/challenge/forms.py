@@ -84,12 +84,12 @@ class SessionForm(forms.ModelForm):
         self.season = kwargs.pop('season', None)
         super(SessionForm, self).__init__(**kwargs)
         if self.season.cantons:
-            # Only permit organizations within the allowed cantons
+            # Only permit orgas within the allowed cantons
             qs = (
-                self.fields['organization'].queryset
+                self.fields['orga'].queryset
                 .filter(address_canton__in=self.season.cantons)
             )
-            self.fields['organization'].queryset = qs
+            self.fields['orga'].queryset = qs
         try:
             self.fields['day'].widget.options['minDate'] = \
                 self.season.begin.strftime('%Y-%m-%d')
@@ -128,9 +128,9 @@ class SessionForm(forms.ModelForm):
     class Meta:
         model = Session
         labels = {
-            'organization': _('Établissement'),
+            'orga': _('Établissement'),
         }
-        fields = ['organization', 'day', 'begin', 'fallback_plan',
+        fields = ['orga', 'day', 'begin', 'fallback_plan',
                   'place',
                   'address_street', 'address_no', 'address_zip',
                   'address_city', 'address_canton',
