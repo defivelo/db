@@ -128,6 +128,12 @@ class Session(Address, models.Model):
             self.availability_statuses
             .filter(chosen=True)
             .exclude(availability='n')
+            .prefetch_related(
+                'helper',
+                'helper__profile',
+                'helper__profile__formation',
+                'session'
+            )
             .order_by('-availability')
         )
 

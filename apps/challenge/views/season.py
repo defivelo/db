@@ -156,6 +156,7 @@ class SeasonAvailabilityMixin(SeasonMixin):
                 qs = qs.filter(
                     pk=int(resolvermatch.kwargs['helperpk'])
                 )
+        qs = qs.prefetch_related('profile')
 
         all_helpers = qs.order_by('first_name', 'last_name')
         return (
