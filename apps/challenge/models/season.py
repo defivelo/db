@@ -59,6 +59,15 @@ class Season(models.Model):
             organization__address_canton__in=self.cantons,
             day__gte=self.begin,
             day__lt=self.end
+            ).prefetch_related(
+                'qualifications',
+                'qualifications__activity_A',
+                'qualifications__activity_B',
+                'qualifications__activity_C',
+                'qualifications__leader',
+                'qualifications__helpers',
+                'qualifications__actor',
+                'organization'
             )
 
     @property
