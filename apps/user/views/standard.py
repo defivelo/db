@@ -103,7 +103,7 @@ class UserProfileFilterSet(FilterSet):
             elif len(cantons) == 1:
                 del(self.filters['profile__activity_cantons'])
 
-    def filter_cantons(queryset, value):
+    def filter_cantons(queryset, name, value):
         if value:
             allcantons_filter = [
                 Q(profile__activity_cantons__contains=canton)
@@ -114,7 +114,7 @@ class UserProfileFilterSet(FilterSet):
             return queryset.filter(reduce(operator.or_, allcantons_filter))
         return queryset
 
-    def filter_wide(queryset, value):
+    def filter_wide(queryset, name, value):
         if value:
             allfields_filter = [
                 Q(last_name__icontains=value),
@@ -128,7 +128,7 @@ class UserProfileFilterSet(FilterSet):
     profile__activity_cantons = MultipleChoiceFilter(
         label=_("Cantons"),
         choices=DV_STATE_CHOICES_WITH_DEFAULT,
-        action=filter_cantons
+        method=filter_cantons
     )
     profile__status = MultipleChoiceFilter(
         label=_('Statut'),
@@ -145,7 +145,7 @@ class UserProfileFilterSet(FilterSet):
     )
     q = CharFilter(
         label=_('Recherche'),
-        action=filter_wide
+        method=filter_wide
     )
 
     class Meta:

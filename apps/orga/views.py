@@ -60,7 +60,7 @@ class OrganizationFilterSet(FilterSet):
             elif len(cantons) == 1:
                 del(self.filters['address_canton'])
 
-    def filter_wide(queryset, value):
+    def filter_wide(queryset, name, value):
         if value:
             allfields_filter = [
                 Q(name__icontains=value),
@@ -78,7 +78,7 @@ class OrganizationFilterSet(FilterSet):
 
     q = CharFilter(
         label=_('Recherche'),
-        action=filter_wide
+        method=filter_wide
     )
 
     class Meta:
