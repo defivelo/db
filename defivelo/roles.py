@@ -18,7 +18,7 @@
 from __future__ import unicode_literals
 
 from rolepermissions.roles import AbstractUserRole
-from rolepermissions.verifications import has_permission
+from rolepermissions.checkers import has_permission
 
 from apps.common import DV_STATES
 

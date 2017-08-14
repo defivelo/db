@@ -34,7 +34,7 @@ from django.utils.translation import ugettext_lazy as _
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from localflavor.generic.models import IBANField
 from multiselectfield import MultiSelectField
-from rolepermissions.verifications import has_role
+from rolepermissions.checkers import has_role
 
 from apps.challenge.models import QualificationActivity, Season
 from apps.common import CANTONS_REGEXP, DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT

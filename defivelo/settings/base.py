@@ -55,7 +55,7 @@ UPSTREAM_APPS = (
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'autocomplete_light',
+    'dal',
 
     'django.contrib.admin',
     'django.contrib.auth',
