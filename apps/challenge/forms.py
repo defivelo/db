@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-import autocomplete_light
+from dal import autocomplete
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -78,7 +78,7 @@ class SeasonForm(forms.ModelForm):
         fields = ['begin', 'end', 'cantons', 'leader']
 
 
-class SessionForm(autocomplete_light.ModelForm):
+class SessionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         kwargs.pop('cantons', None)
         self.season = kwargs.pop('season', None)
@@ -360,7 +360,7 @@ class SeasonNewHelperAvailabilityForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(SeasonNewHelperAvailabilityForm, self).__init__(*args, **kwargs)
         self.fields['helper'] = \
-            autocomplete_light.ChoiceField('PersonsRelevantForSessions',
+            autocomplete.ChoiceField('PersonsRelevantForSessions',
                                            label=_('Disponibilités pour :'))
 
 

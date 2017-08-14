@@ -30,7 +30,7 @@ from ..models import FORMATION_KEYS, FORMATION_M2
 from .mixins import ProfileMixin
 
 
-class PersonAutocomplete(ProfileMixin, AutocompleteModelBase):
+class PersonAutocomplete(ProfileMixin):
     search_fields = ['first_name', 'last_name']
     model = get_user_model()
     required_permission = 'user_view_list'
