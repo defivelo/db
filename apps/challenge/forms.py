@@ -256,104 +256,104 @@ class QualificationForm(forms.ModelForm):
                   'comments']
 
 
-class BSRadioRenderer(forms.widgets.RadioFieldRenderer):
-    def render(self):
-        id_ = self.attrs.get('id', None)
-        options = ''
-        try:
-            optionvalue = self.value[0]
-        except IndexError:
-            optionvalue = ''
-        try:
-            chosen = (self.value[1] == '*')
-        except IndexError:
-            chosen = False
-        for option in self.choices:
-            level = 'danger'
-            glyphicon = 'remove-circle'
-            if option[0] == 'y':
-                level = 'success'
-                glyphicon = 'ok-sign'
-            elif option[0] == 'i':
-                level = 'warning'
-                glyphicon = 'ok-circle'
-            checked = 'checked' if optionvalue == option[0] else ''
-            active = 'active' if optionvalue == option[0] else ''
-            disabled = 'disabled' if (option[0] == 'n' and chosen) else ''
-            options += (
-                '<label title="{label}"'
-                '       class="btn btn-default {active} {disabled}"'
-                '       data-active-class="{level}">'
-                '  <input type="radio" autocomplete="off"'
-                '         name="{key}" id="{key}-{value}" value="{value}"'
-                '         {checked} {disabled}>'
-                '    <span class="glyphicon glyphicon-{glyphicon}"'
-                '          title="{label}"></span> '
-                '</label>\n').format(
-                    level=level,
-                    glyphicon=glyphicon,
-                    key=id_,
-                    value=option[0],
-                    label=(
-                        option[1] if not disabled
-                        else _('Sélectionné pour une quali, impossible')
-                    ),
-                    checked=checked,
-                    active=active,
-                    disabled=disabled)
-        return (
-            '<div class="btn-group-vertical" data-toggle="buttons">'
-            '{options}</div>').format(options=options)
+#class BSRadioRenderer(forms.widgets.ChoiceFieldRenderer):
+    #def render(self):
+        #id_ = self.attrs.get('id', None)
+        #options = ''
+        #try:
+            #optionvalue = self.value[0]
+        #except IndexError:
+            #optionvalue = ''
+        #try:
+            #chosen = (self.value[1] == '*')
+        #except IndexError:
+            #chosen = False
+        #for option in self.choices:
+            #level = 'danger'
+            #glyphicon = 'remove-circle'
+            #if option[0] == 'y':
+                #level = 'success'
+                #glyphicon = 'ok-sign'
+            #elif option[0] == 'i':
+                #level = 'warning'
+                #glyphicon = 'ok-circle'
+            #checked = 'checked' if optionvalue == option[0] else ''
+            #active = 'active' if optionvalue == option[0] else ''
+            #disabled = 'disabled' if (option[0] == 'n' and chosen) else ''
+            #options += (
+                #'<label title="{label}"'
+                #'       class="btn btn-default {active} {disabled}"'
+                #'       data-active-class="{level}">'
+                #'  <input type="radio" autocomplete="off"'
+                #'         name="{key}" id="{key}-{value}" value="{value}"'
+                #'         {checked} {disabled}>'
+                #'    <span class="glyphicon glyphicon-{glyphicon}"'
+                #'          title="{label}"></span> '
+                #'</label>\n').format(
+                    #level=level,
+                    #glyphicon=glyphicon,
+                    #key=id_,
+                    #value=option[0],
+                    #label=(
+                        #option[1] if not disabled
+                        #else _('Sélectionné pour une quali, impossible')
+                    #),
+                    #checked=checked,
+                    #active=active,
+                    #disabled=disabled)
+        #return (
+            #'<div class="btn-group-vertical" data-toggle="buttons">'
+            #'{options}</div>').format(options=options)
 
 
-class BSCheckBoxRenderer(forms.widgets.CheckboxFieldRenderer):
-    def render(self):
-        id_ = self.attrs.get('id', None)
-        chosen_as = False
-        try:
-            value = (self.value[0] == 'Y')
-            try:
-                chosen_as = self.value[1]
-            except IndexError:
-                pass
-        except IndexError:
-            value = False
+#class BSCheckBoxRenderer(forms.widgets.CheckboxFieldRenderer):
+    #def render(self):
+        #id_ = self.attrs.get('id', None)
+        #chosen_as = False
+        #try:
+            #value = (self.value[0] == 'Y')
+            #try:
+                #chosen_as = self.value[1]
+            #except IndexError:
+                #pass
+        #except IndexError:
+            #value = False
 
-        checked = 'checked' if value else ''
-        active = 'active' if value else ''
+        #checked = 'checked' if value else ''
+        #active = 'active' if value else ''
 
-        glyphicon = 'check'
-        title = _('Choisir pour cette session')
-        if chosen_as == SHORTCODE_MON2:  # Moniteur 2
-            glyphicon = 'tags'
-            title = _('Moniteur 2')
-        if chosen_as == SHORTCODE_MON1:  # Moniteur 1
-            glyphicon = 'tag'
-            title = _('Moniteur 1')
-        if chosen_as == SHORTCODE_ACTOR:  # Intervenant
-            glyphicon = 'sunglasses'
-            title = _('Intervenant')
+        #glyphicon = 'check'
+        #title = _('Choisir pour cette session')
+        #if chosen_as == SHORTCODE_MON2:  # Moniteur 2
+            #glyphicon = 'tags'
+            #title = _('Moniteur 2')
+        #if chosen_as == SHORTCODE_MON1:  # Moniteur 1
+            #glyphicon = 'tag'
+            #title = _('Moniteur 1')
+        #if chosen_as == SHORTCODE_ACTOR:  # Intervenant
+            #glyphicon = 'sunglasses'
+            #title = _('Intervenant')
 
-        checkbox = (
-            '<label title="{label}"'
-            '       class="btn btn-default {active}"'
-            '       data-active-class="primary">'
-            '  <input type="checkbox" autocomplete="off" '
-            '         name="{key}" id="{key}-{value}" value="{value}"'
-            '         {checked}>'
-            '    <span class="glyphicon glyphicon-unchecked"'
-            '          data-active-icon="{glyphicon}"'
-            '          title="{label}"></span> '
-            '</label>\n').format(
-                glyphicon=glyphicon,
-                key=id_,
-                value=1,
-                label=title,
-                checked=checked,
-                active=active)
-        return (
-            '<div data-toggle="buttons">'
-            '{checkbox}</div>').format(checkbox=checkbox)
+        #checkbox = (
+            #'<label title="{label}"'
+            #'       class="btn btn-default {active}"'
+            #'       data-active-class="primary">'
+            #'  <input type="checkbox" autocomplete="off" '
+            #'         name="{key}" id="{key}-{value}" value="{value}"'
+            #'         {checked}>'
+            #'    <span class="glyphicon glyphicon-unchecked"'
+            #'          data-active-icon="{glyphicon}"'
+            #'          title="{label}"></span> '
+            #'</label>\n').format(
+                #glyphicon=glyphicon,
+                #key=id_,
+                #value=1,
+                #label=title,
+                #checked=checked,
+                #active=active)
+        #return (
+            #'<div data-toggle="buttons">'
+            #'{checkbox}</div>').format(checkbox=checkbox)
 
 
 class SeasonNewHelperAvailabilityForm(forms.Form):
@@ -392,7 +392,7 @@ class SeasonAvailabilityForm(forms.Form):
 
                         self.fields[availkey] = forms.ChoiceField(
                             choices=HelperSessionAvailability.AVAILABILITY_CHOICES,  # NOQA
-                            widget=forms.RadioSelect(renderer=BSRadioRenderer),
+                            widget=forms.RadioSelect(),
                             required=False, initial=fieldinit
                         )
 
@@ -426,9 +426,7 @@ class SeasonStaffChoiceForm(forms.Form):
                         fieldinit += session.user_assignment(helper)
 
                         self.fields[staffkey] = forms.BooleanField(
-                            widget=forms.RadioSelect(
-                                renderer=BSCheckBoxRenderer
-                            ),
+                            widget=forms.RadioSelect(),
                             required=False, initial=fieldinit
                         )
 
