@@ -33,7 +33,7 @@ from django.views.generic.dates import YearArchiveView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from rolepermissions.mixins import HasPermissionsMixin
-from rolepermissions.verifications import has_permission
+from rolepermissions.checkers import has_permission
 from tablib import Dataset
 
 from apps.common import CANTONS_REGEXP, DV_STATES

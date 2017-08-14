@@ -17,12 +17,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from autocomplete_light import AutocompleteModelBase
+#from autocomplete_light import AutocompleteModelBase
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.utils.html import escape
-from rolepermissions.verifications import has_permission
+from rolepermissions.checkers import has_permission
 
 from apps.challenge import MAX_MONO1_PER_QUALI
 
