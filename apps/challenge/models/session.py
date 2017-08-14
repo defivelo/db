@@ -78,7 +78,7 @@ class Session(Address, models.Model):
     class Meta:
         verbose_name = _('Session')
         verbose_name_plural = _('Sessions')
-        ordering = ['day', 'begin', 'organization__name']
+        ordering = ['day', 'begin', 'orga__name']
 
     @property
     def errors(self):
@@ -212,7 +212,7 @@ class Session(Address, models.Model):
                 '@' + date(self.begin, settings.TIME_FORMAT_SHORT)
                 if self.begin else ''
             ),
-            place=self.organization.name
+            place=self.orga.name
             )
 
     def __str__(self):
@@ -220,10 +220,10 @@ class Session(Address, models.Model):
             date(self.day, settings.DATE_FORMAT) +
             (' (%s)' % date(self.begin, settings.TIME_FORMAT) if self.begin
              else '') +
-            (' - %s' % self.organization.name if self.organization else '') +
+            (' - %s' % self.orga.name if self.orga else '') +
             (' (%s)' % (self.address_city if self.address_city else
-                        (self.organization.address_city
-                         if (self.organization
-                             and self.organization.address_city)
+                        (self.orga.address_city
+                         if (self.orga
+                             and self.orga.address_city)
                          else '')))
             )
