@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 from django.conf.urls import include, url
 from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from .views import HomeView, LicenseView
@@ -42,5 +43,11 @@ urlpatterns += i18n_patterns(
     url(r'^user/', include('apps.user.urls')),
     #url(r'^autocomplete/', include('autocomplete_light.urls')),
 )
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns
 
 admin.site.site_header = _('Intranet DÉFI VÉLO')

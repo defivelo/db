@@ -75,12 +75,5 @@
 {% if not 'javascript_in_head'|bootstrap_setting %}{% bootstrap_javascript jquery=True %}{% endif %}
 {% block bootstrap3_extra_script %}{% endblock %}
 {% compress js %}
-{% include 'autocomplete_light/_ajax_csrf.html' %}
-<script type="text/javascript" src="{% static 'autocomplete_light/django_admin.js' %}"></script>
-<script type="text/javascript" src="{% static 'autocomplete_light/autocomplete.js' %}"></script>
-<script type="text/javascript" src="{% static 'autocomplete_light/widget.js' %}"></script>
-<script type="text/javascript" src="{% static 'autocomplete_light/addanother.js' %}"></script>
-<script type="text/javascript" src="{% static 'autocomplete_light/text_widget.js' %}"></script>
-<script type="text/javascript" src="{% static 'autocomplete_light/remote.js' %}"></script>
 {% endcompress %}
 </body>
