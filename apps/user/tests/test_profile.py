@@ -154,10 +154,7 @@ class AuthUserTest(ProfileTestCase):
     def test_autocompletes(self):
         # All autocompletes are forbidden
         for al in profile_autocompletes:
-            url = reverse(
-                'autocomplete_light_autocomplete',
-                kwargs={'autocomplete': al}
-            )
+            url = reverse('user-%s-ac' % al)
             response = self.client.get(url)
             self.assertEqual(response.status_code, 403, url)
 
@@ -253,10 +250,7 @@ class PowerUserTest(ProfileTestCase):
     def test_autocompletes(self):
         # All autocompletes are permitted
         for al in profile_autocompletes:
-            url = reverse(
-                'autocomplete_light_autocomplete',
-                kwargs={'autocomplete': al}
-            )
+            url = reverse('user-%s-ac' % al)
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200, url)
 
@@ -334,14 +328,11 @@ class StateManagerUserTest(ProfileTestCase):
 
     def test_autocompletes(self):
         for al in ['AllPersons']:
-            url = reverse(
-                'autocomplete_light_autocomplete',
-                kwargs={'autocomplete': al}
-            )
+            url = reverse('user-%s-ac' % al)
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200, url)
-            # Check that we only find our orga
-            entries = re.findall('data-value="(\d+)"', str(response.content))
+            # Check that we only find ourselves
+            entries = re.findall('"id": "(\d+)"', str(response.content))
             self.assertEqual(entries, [str(self.myuser.pk)])
 
 

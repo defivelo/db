@@ -22,6 +22,7 @@ from django.views.decorators.cache import never_cache
 
 from .views import (
     ResendUserCredentials, SendUserCredentials, UserCreate, UserDetail, UserList, UserListExport, UserUpdate,
+    AllPersons,
 )
 
 urlpatterns = [
@@ -40,4 +41,5 @@ urlpatterns = [
         name="user-resendcredentials"),
     url(r'^me/$', never_cache(UserDetail.as_view()), name="profile-detail"),
     url(r'^(?P<pk>[0-9]+)/update/$', UserUpdate.as_view(), name="user-update"),
+    url(r'^ac/all/$', AllPersons.as_view(), name='user-AllPersons-ac'),
 ]

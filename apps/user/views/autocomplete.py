@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-#from autocomplete_light import AutocompleteModelBase
+from dal_select2.views import Select2QuerySetView
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
@@ -28,10 +28,10 @@ from apps.challenge import MAX_MONO1_PER_QUALI
 
 from ..models import FORMATION_KEYS, FORMATION_M2
 from .mixins import ProfileMixin
+from .standard import UserProfileFilterSet
 
 
-class PersonAutocomplete(ProfileMixin):
-    search_fields = ['first_name', 'last_name']
+class PersonAutocomplete(ProfileMixin, Select2QuerySetView):
     model = get_user_model()
     required_permission = 'user_view_list'
     choices = None
@@ -48,13 +48,15 @@ class PersonAutocomplete(ProfileMixin):
             escape(self.choice_value(choice)),
             self.choice_label(choice))
 
-    def get_choices(self):
-        return self.get_queryset()
-
-    def choices_for_request(self):
-        self.choices = self.get_choices()
+    def get_queryset(self):
         if has_permission(self.request.user, self.required_permission):
-            return super(PersonAutocomplete, self).choices_for_request()
+            # Remove self.q to bypass Select2QuerySetView' wrong handling
+            q = self.q if self.q else None
+            del(self.q)
+            qs = super(PersonAutocomplete, self).get_queryset()
+            if q:
+                qs = UserProfileFilterSet.filter_wide(qs, '', q)
+            return qs
         else:
             raise PermissionDenied
 
