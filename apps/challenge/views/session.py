@@ -50,7 +50,7 @@ class SessionMixin(CantonSeasonFormMixin, HasPermissionsMixin, MenuView):
         qs = super(SessionMixin, self).get_queryset()
         try:
             return qs.filter(
-                    organization__address_canton__in=self.season.cantons
+                    orga__address_canton__in=self.season.cantons
                 )
         except FieldError:
             # For the cases qs is Qualification, not Session
@@ -109,7 +109,7 @@ class SessionDetailView(SessionMixin, DetailView):
         return (
             super(SessionDetailView, self).get_queryset()
             .prefetch_related(
-                'organization',
+                'orga',
                 'qualifications',
                 'qualifications__leader',
                 'qualifications__leader__profile',
@@ -187,12 +187,12 @@ class SessionExportView(ExportMixin, SessionMixin,
         if not session_place:
             session_place = (
                 session.address_city if session.address_city
-                else session.organization.address_city
+                else session.orga.address_city
             )
         col = [
             date(session.day),
-            session.organization.address_canton,
-            session.organization.name,
+            session.orga.address_canton,
+            session.orga.name,
             session_place,
             '%s - %s' % (time(session.begin), time(session.end)),
             session.n_qualifications,

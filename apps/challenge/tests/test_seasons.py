@@ -57,8 +57,8 @@ class SeasonTestCaseMixin(TestCase):
         self.sessions = []
         for canton in self.mycantons:
             s = SessionFactory()
-            s.organization.address_canton = canton
-            s.organization.save()
+            s.orga.address_canton = canton
+            s.orga.save()
             s.save()
             self.sessions.append(s)
 
@@ -71,8 +71,8 @@ class SeasonTestCaseMixin(TestCase):
         self.foreignsessions = []
         for canton in self.foreigncantons:
             s = SessionFactory()
-            s.organization.address_canton = canton
-            s.organization.save()
+            s.orga.address_canton = canton
+            s.orga.save()
             s.save()
             self.foreignsessions.append(s)
 
@@ -270,21 +270,21 @@ class StateManagerUserTest(SeasonTestCaseMixin):
             'begin': '09:00',
             }
 
-        # 200 because we're back on the page, because organization' empty
+        # 200 because we're back on the page, because orga' empty
         response = self.client.post(url, initial)
         self.assertEqual(response.status_code, 200, url)
 
         orga = OrganizationFactory(
             address_canton=self.foreignseason.cantons[0]
         )
-        initial['organization'] = orga.pk
-        # 200 because we're back on the page, because organization is not
+        initial['orga'] = orga.pk
+        # 200 because we're back on the page, because orga is not
         # in our canton
         response = self.client.post(url, initial)
         self.assertEqual(response.status_code, 200, url)
 
         orga = OrganizationFactory(address_canton=self.season.cantons[0])
-        initial['organization'] = orga.pk
+        initial['orga'] = orga.pk
         # That works now
         response = self.client.post(url, initial)
         self.assertEqual(response.status_code, 302, url)
