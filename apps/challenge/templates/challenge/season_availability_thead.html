@@ -11,9 +11,9 @@
         {% endfor %}</tr>
     <tr>{% for session in sessions %}
             <th class="text-center" style="vertical-align: top;">
-                {{ session.organization.name }}
+                {{ session.orga.name }}
                 <br />
-                {% if session.address_city %}{{ session.address_city }}{% elif session.organization.address_city %}{{ session.organization.address_city }}{% endif %}
+                {% if session.address_city %}{{ session.address_city }}{% elif session.orga.address_city %}{{ session.orga.address_city }}{% endif %}
             </td>
         {% endfor %}</tr>
     <tr>{% for session in sessions %}
