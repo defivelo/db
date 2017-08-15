@@ -1,4 +1,4 @@
 [submodule "virtualization/drifter"]
 	path = virtualization/drifter
-	url = https://github.com/defivelo/drifter.git
+	url = https://github.com/liip/drifter.git
 	branch = defivelo
