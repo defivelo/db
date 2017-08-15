@@ -17,8 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from rolepermissions.roles import AbstractUserRole
 from rolepermissions.checkers import has_permission
+from rolepermissions.roles import AbstractUserRole
 
 from apps.common import DV_STATES
 

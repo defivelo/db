@@ -32,8 +32,8 @@ from django.utils.translation import ugettext as u, ugettext_lazy as _
 from django.views.generic.dates import YearArchiveView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from rolepermissions.mixins import HasPermissionsMixin
 from rolepermissions.checkers import has_permission
+from rolepermissions.mixins import HasPermissionsMixin
 from tablib import Dataset
 
 from apps.common import CANTONS_REGEXP, DV_STATES

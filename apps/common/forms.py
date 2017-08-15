@@ -52,5 +52,5 @@ class SwissTimeField(TimeField):
             widget=DateTimePicker({'placeholder': 'HH:mm'},
                                   icon_attrs={'class': 'glyphicon'},
                                   options={"format": "HH:mm",
-                                           "minuteStepping": 15}),
+                                           "stepping": 15}),
             *args, **kwargs)

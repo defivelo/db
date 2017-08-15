@@ -31,8 +31,8 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django_filters import CharFilter, FilterSet, MultipleChoiceFilter
 from django_filters.views import FilterView
 from filters.views import FilterMixin
-from rolepermissions.mixins import HasPermissionsMixin
 from rolepermissions.checkers import has_permission
+from rolepermissions.mixins import HasPermissionsMixin
 
 from apps.common import DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.views import ExportMixin, PaginatorMixin
