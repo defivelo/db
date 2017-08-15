@@ -125,10 +125,11 @@ class SuperUserTest(OrgaBasicTest):
                     re.findall('"id": "(\d+)"', str(response.content))
                     ]
         entries.sort()
-        self.assertEqual(
-            entries,
-            [self.orga.pk] + [o.pk for o in self.orgas]
-        )
+        allentries = [self.orga.pk] + [o.pk for o in self.orgas]
+        if re.search('"pagination": {"more": true}', str(response.content)):
+            self.assertTrue(set(entries).issubset(allentries))
+        else:
+            self.assertEqual(entries, allentries)
 
 
 class OrgaStateManagerUserTest(TestCase):

@@ -157,12 +157,13 @@ class OrganizationListExport(ExportMixin, OrganizationsListView):
 
 
 class OrganizationAutocomplete(OrganizationMixin, Select2QuerySetView):
-    search_fields = ['name', 'address_city', 'address_street']
     required_permission = 'orga_crud'
 
-    def choices_for_request(self):
-        self.choices = self.get_queryset()
+    def get_queryset(self):
         if has_permission(self.request.user, self.required_permission):
-            return super(OrganizationAutocomplete, self).get_queryset()
+            qs = super(OrganizationAutocomplete, self).get_queryset()
+            if self.q:
+                qs = OrganizationFilterSet.filter_wide(qs, '', self.q)
+            return qs
         else:
             raise PermissionDenied
