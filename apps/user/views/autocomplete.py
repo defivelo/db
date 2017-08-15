@@ -37,16 +37,8 @@ class PersonAutocomplete(ProfileMixin, Select2QuerySetView):
     choices = None
     widget_attrs = {'data-widget-maximum-values': 1, }
 
-    def choice_label(self, choice):
+    def get_result_label(self, choice):
         return choice.get_full_name()
-
-    def choice_html(self, choice):
-        """
-        Override autocomplete_light to drop the 'escape' call over choice_label
-        """
-        return self.choice_html_format % (
-            escape(self.choice_value(choice)),
-            self.choice_label(choice))
 
     def get_queryset(self):
         if has_permission(self.request.user, self.required_permission):
@@ -66,8 +58,8 @@ class AllPersons(PersonAutocomplete):
 
 
 class PersonsRelevantForSessions(PersonAutocomplete):
-    def get_choices(self):
-        qs = super(PersonsRelevantForSessions, self).get_choices()
+    def get_queryset(self):
+        qs = super(PersonsRelevantForSessions, self).get_queryset()
         return qs.filter(
                 Q(profile__formation__in=FORMATION_KEYS) |
                 Q(profile__actor_for__isnull=False)
@@ -77,29 +69,29 @@ class PersonsRelevantForSessions(PersonAutocomplete):
 class Helpers(PersonAutocomplete):
     widget_attrs = {'data-widget-maximum-values': MAX_MONO1_PER_QUALI, }
 
-    def get_choices(self):
-        qs = super(Helpers, self).get_choices()
+    def get_queryset(self):
+        qs = super(Helpers, self).get_queryset()
         return qs.filter(
                 Q(profile__formation__in=FORMATION_KEYS)
             )
 
-    def choice_label(self, choice):
+    def get_result_label(self, choice):
         return "{name} {icon}".format(
             name=choice.get_full_name(),
             icon=choice.profile.formation_icon())
 
 
 class Leaders(PersonAutocomplete):
-    def get_choices(self):
-        qs = super(Leaders, self).get_choices()
+    def get_queryset(self):
+        qs = super(Leaders, self).get_queryset()
         return qs.filter(
                 Q(profile__formation=FORMATION_M2)
         )
 
 
 class Actors(PersonAutocomplete):
-    def get_choices(self):
-        qs = super(Actors, self).get_choices()
+    def get_queryset(self):
+        qs = super(Actors, self).get_queryset()
         return qs.exclude(
             profile__actor_for__isnull=True
         )

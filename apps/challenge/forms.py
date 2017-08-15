@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from dal import autocomplete
+from dal_select2.widgets import ModelSelect2
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -360,8 +360,14 @@ class SeasonNewHelperAvailabilityForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(SeasonNewHelperAvailabilityForm, self).__init__(*args, **kwargs)
         self.fields['helper'] = \
-            autocomplete.ChoiceField('PersonsRelevantForSessions',
-                                           label=_('Disponibilités pour :'))
+            forms.ModelChoiceField(
+                label=_('Disponibilités pour :'),
+                queryset=get_user_model().objects.filter(
+                    Q(profile__formation__in=FORMATION_KEYS) |
+                    Q(profile__actor_for__isnull=False)
+                ),
+                widget=ModelSelect2(url='user-PersonsRelevantForSessions-ac')
+            )
 
 
 class SeasonAvailabilityForm(forms.Form):

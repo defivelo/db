@@ -455,10 +455,10 @@ class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
         seasonpk = kwargs.get('pk', None)
         form = SeasonNewHelperAvailabilityForm(request.POST)
         if form.is_valid():
-            helperpk = int(form.cleaned_data['helper'])
+            helper = form.cleaned_data['helper']
             return HttpResponseRedirect(
                 reverse_lazy('season-availabilities-update',
-                             kwargs={'pk': seasonpk, 'helperpk': helperpk})
+                             kwargs={'pk': seasonpk, 'helperpk': helper.pk})
             )
         return HttpResponseRedirect(
             reverse_lazy('season-availabilities', kwargs={'pk': seasonpk})
