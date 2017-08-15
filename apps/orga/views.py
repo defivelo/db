@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 import operator
 from functools import reduce
 
-#from autocomplete_light import AutocompleteModelBase, register as al_register
+from dal_select2.views import Select2QuerySetView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse_lazy
@@ -156,16 +156,13 @@ class OrganizationListExport(ExportMixin, OrganizationsListView):
     export_filename = _('Établissements')
 
 
-class OrganizationAutocomplete(OrganizationMixin):
+class OrganizationAutocomplete(OrganizationMixin, Select2QuerySetView):
     search_fields = ['name', 'address_city', 'address_street']
     required_permission = 'orga_crud'
 
     def choices_for_request(self):
         self.choices = self.get_queryset()
         if has_permission(self.request.user, self.required_permission):
-            return super(OrganizationAutocomplete, self).choices_for_request()
+            return super(OrganizationAutocomplete, self).get_queryset()
         else:
             raise PermissionDenied
-
-
-#al_register(OrganizationAutocomplete)

@@ -21,7 +21,7 @@ from django.conf.urls import url
 from django.views.decorators.cache import never_cache
 
 from .views import (
-    OrganizationCreateView, OrganizationDeleteView, OrganizationDetailView, OrganizationListExport,
+    OrganizationAutocomplete, OrganizationCreateView, OrganizationDeleteView, OrganizationDetailView, OrganizationListExport,
     OrganizationsListView, OrganizationUpdateView,
 )
 
@@ -39,4 +39,8 @@ urlpatterns = [
         name="organization-update"),
     url(r'^(?P<pk>[0-9]+)/delete/$', OrganizationDeleteView.as_view(),
         name="organization-delete"),
+    url(r'^autocomplete/$',
+        OrganizationAutocomplete.as_view(),
+        name='organization-autocomplete',
+    ),
 ]

@@ -69,13 +69,9 @@ class OrgaBasicTest(TestCase):
         self.assertEqual(response.status_code, self.expected_code)
 
     def test_autocompletes(self):
-        for al in ['OrganizationAutocomplete']:
-            url = reverse(
-                'autocomplete_light_autocomplete',
-                kwargs={'autocomplete': al}
-            )
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, self.expected_code, url)
+        url = reverse('organization-autocomplete')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, self.expected_code, url)
 
 
 class OrgaPowerUserTest(OrgaBasicTest):
@@ -121,22 +117,18 @@ class SuperUserTest(OrgaBasicTest):
             for c in DV_STATES]
 
     def test_autocompletes(self):
-        for al in ['OrganizationAutocomplete']:
-            url = reverse(
-                'autocomplete_light_autocomplete',
-                kwargs={'autocomplete': al}
-            )
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, self.expected_code, url)
-            # Check that we only find our orga
-            entries = [int(d) for d in
-                       re.findall('data-value="(\d+)"', str(response.content))
-                       ]
-            entries.sort()
-            self.assertEqual(
-                entries,
-                [self.orga.pk] + [o.pk for o in self.orgas]
-            )
+        url = reverse('organization-autocomplete')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, self.expected_code, url)
+        # Check that we only find our orga
+        entries = [int(d) for d in
+                    re.findall('"id": "(\d+)"', str(response.content))
+                    ]
+        entries.sort()
+        self.assertEqual(
+            entries,
+            [self.orga.pk] + [o.pk for o in self.orgas]
+        )
 
 
 class OrgaStateManagerUserTest(TestCase):
@@ -212,13 +204,9 @@ class OrgaStateManagerUserTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_autocompletes(self):
-        for al in ['OrganizationAutocomplete']:
-            url = reverse(
-                'autocomplete_light_autocomplete',
-                kwargs={'autocomplete': al}
-            )
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, self.expected_code, url)
-            # Check that we only find our orga
-            entries = re.findall('data-value="(\d+)"', str(response.content))
-            self.assertEqual(entries, [str(self.myorga.pk)])
+        url = reverse('organization-autocomplete')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, self.expected_code, url)
+        # Check that we only find our orga
+        entries = re.findall('"id": "(\d+)"', str(response.content))
+        self.assertEqual(entries, [str(self.myorga.pk)])
