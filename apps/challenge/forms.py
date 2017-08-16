@@ -259,7 +259,10 @@ class QualificationForm(forms.ModelForm):
                   'comments']
 
 
-#class BSRadioRenderer(forms.widgets.ChoiceFieldRenderer):
+class BSRadioSelect(forms.RadioSelect):
+    template_name = 'widgets/BSRadioSelect.html'
+    option_template_name = 'widgets/BSRadioSelect_option.html'
+
     #def render(self):
         #id_ = self.attrs.get('id', None)
         #options = ''
@@ -401,7 +404,7 @@ class SeasonAvailabilityForm(forms.Form):
 
                         self.fields[availkey] = forms.ChoiceField(
                             choices=HelperSessionAvailability.AVAILABILITY_CHOICES,  # NOQA
-                            widget=forms.RadioSelect(),
+                            widget=BSRadioSelect,
                             required=False, initial=fieldinit
                         )
 
