@@ -56,7 +56,7 @@ class Season(models.Model):
     @property
     def sessions(self):
         return Session.objects.filter(
-            organization__address_canton__in=self.cantons,
+            orga__address_canton__in=self.cantons,
             day__gte=self.begin,
             day__lt=self.end
             ).prefetch_related(
@@ -67,14 +67,16 @@ class Season(models.Model):
                 'qualifications__leader',
                 'qualifications__helpers',
                 'qualifications__actor',
-                'organization'
+                'orga'
             )
 
     @property
     def sessions_with_qualifs(self):
         if not hasattr(self, 'sessions_with_q'):
             self.sessions_with_q = \
-                self.sessions.annotate(
+                self.sessions.prefetch_related(
+                    'availability_statuses'
+                ).annotate(
                     models.Count('qualifications')
                 ).filter(qualifications__count__gt=0, )
         return self.sessions_with_q

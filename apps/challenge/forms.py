@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-import autocomplete_light
+from dal_select2.widgets import ModelSelect2
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -27,7 +27,7 @@ from django.template.defaultfilters import date
 from django.utils.translation import ugettext_lazy as _
 from localflavor.ch.forms import CHPhoneNumberField, CHStateSelect
 
-from apps.common.forms import SwissDateField, SwissTimeField
+from apps.common.forms import SwissDateField, SwissTimeField, UserAutoComplete
 from apps.user import STATE_CHOICES_WITH_DEFAULT
 from apps.user.models import FORMATION_KEYS, FORMATION_M2
 
@@ -78,18 +78,18 @@ class SeasonForm(forms.ModelForm):
         fields = ['begin', 'end', 'cantons', 'leader']
 
 
-class SessionForm(autocomplete_light.ModelForm):
+class SessionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         kwargs.pop('cantons', None)
         self.season = kwargs.pop('season', None)
         super(SessionForm, self).__init__(**kwargs)
         if self.season.cantons:
-            # Only permit organizations within the allowed cantons
+            # Only permit orgas within the allowed cantons
             qs = (
-                self.fields['organization'].queryset
+                self.fields['orga'].queryset
                 .filter(address_canton__in=self.season.cantons)
             )
-            self.fields['organization'].queryset = qs
+            self.fields['orga'].queryset = qs
         try:
             self.fields['day'].widget.options['minDate'] = \
                 self.season.begin.strftime('%Y-%m-%d')
@@ -113,6 +113,10 @@ class SessionForm(autocomplete_light.ModelForm):
                                      )}))
     helpers_time = SwissTimeField(label=_('Heure rendez-vous moniteurs'),
                                   required=False)
+    superleader = UserAutoComplete(label=_('Moniteur +'),
+                                   queryset=get_user_model().objects,
+                                   url='user-AllPersons-ac',
+                                   required=False)
 
     def clean_day(self):
         day = self.cleaned_data['day']
@@ -128,9 +132,9 @@ class SessionForm(autocomplete_light.ModelForm):
     class Meta:
         model = Session
         labels = {
-            'organization': _('Établissement'),
+            'orga': _('Établissement'),
         }
-        fields = ['organization', 'day', 'begin', 'fallback_plan',
+        fields = ['orga', 'day', 'begin', 'fallback_plan',
                   'place',
                   'address_street', 'address_no', 'address_zip',
                   'address_city', 'address_canton',
@@ -256,112 +260,59 @@ class QualificationForm(forms.ModelForm):
                   'comments']
 
 
-class BSRadioRenderer(forms.widgets.RadioFieldRenderer):
-    def render(self):
-        id_ = self.attrs.get('id', None)
-        options = ''
-        try:
-            optionvalue = self.value[0]
-        except IndexError:
-            optionvalue = ''
-        try:
-            chosen = (self.value[1] == '*')
-        except IndexError:
-            chosen = False
-        for option in self.choices:
-            level = 'danger'
-            glyphicon = 'remove-circle'
-            if option[0] == 'y':
-                level = 'success'
-                glyphicon = 'ok-sign'
-            elif option[0] == 'i':
-                level = 'warning'
-                glyphicon = 'ok-circle'
-            checked = 'checked' if optionvalue == option[0] else ''
-            active = 'active' if optionvalue == option[0] else ''
-            disabled = 'disabled' if (option[0] == 'n' and chosen) else ''
-            options += (
-                '<label title="{label}"'
-                '       class="btn btn-default {active} {disabled}"'
-                '       data-active-class="{level}">'
-                '  <input type="radio" autocomplete="off"'
-                '         name="{key}" id="{key}-{value}" value="{value}"'
-                '         {checked} {disabled}>'
-                '    <span class="glyphicon glyphicon-{glyphicon}"'
-                '          title="{label}"></span> '
-                '</label>\n').format(
-                    level=level,
-                    glyphicon=glyphicon,
-                    key=id_,
-                    value=option[0],
-                    label=(
-                        option[1] if not disabled
-                        else _('Sélectionné pour une quali, impossible')
-                    ),
-                    checked=checked,
-                    active=active,
-                    disabled=disabled)
-        return (
-            '<div class="btn-group-vertical" data-toggle="buttons">'
-            '{options}</div>').format(options=options)
+class BSRadioSelect(forms.RadioSelect):
+    template_name = 'widgets/BSRadioSelect.html'
+    option_template_name = 'widgets/BSRadioSelect_option.html'
+
+    def __init__(self, *args, **kwargs):
+        self.forbid_absence = kwargs.pop('forbid_absence', False)
+        return super(BSRadioSelect, self).__init__(*args, **kwargs)
+
+    def get_context(self, name, value, attrs):
+        context = super(BSRadioSelect, self).get_context(name, value, attrs)
+        context['widget']['forbid_absence'] = self.forbid_absence
+        return context
 
 
-class BSCheckBoxRenderer(forms.widgets.CheckboxFieldRenderer):
-    def render(self):
-        id_ = self.attrs.get('id', None)
-        chosen_as = False
-        try:
-            value = (self.value[0] == 'Y')
-            try:
-                chosen_as = self.value[1]
-            except IndexError:
-                pass
-        except IndexError:
-            value = False
+class BSCheckboxInput(forms.widgets.CheckboxInput):
+    template_name = 'widgets/BSCheckboxInput.html'
 
-        checked = 'checked' if value else ''
-        active = 'active' if value else ''
+    def __init__(self, *args, **kwargs):
+        # Trick to pass the 'at which role that user is
+        # selected in that quali' information through
+        self.user_assignment = kwargs.pop('user_assignment', False)
+        return super(BSCheckboxInput, self).__init__(*args, **kwargs)
 
+    def get_context(self, name, value, attrs):
+        context = super(BSCheckboxInput, self).get_context(name, value, attrs)
         glyphicon = 'check'
         title = _('Choisir pour cette session')
-        if chosen_as == SHORTCODE_MON2:  # Moniteur 2
+        if self.user_assignment == SHORTCODE_MON2:  # Moniteur 2
             glyphicon = 'tags'
             title = _('Moniteur 2')
-        if chosen_as == SHORTCODE_MON1:  # Moniteur 1
+        if self.user_assignment == SHORTCODE_MON1:  # Moniteur 1
             glyphicon = 'tag'
             title = _('Moniteur 1')
-        if chosen_as == SHORTCODE_ACTOR:  # Intervenant
+        if self.user_assignment == SHORTCODE_ACTOR:  # Intervenant
             glyphicon = 'sunglasses'
             title = _('Intervenant')
-
-        checkbox = (
-            '<label title="{label}"'
-            '       class="btn btn-default {active}"'
-            '       data-active-class="primary">'
-            '  <input type="checkbox" autocomplete="off" '
-            '         name="{key}" id="{key}-{value}" value="{value}"'
-            '         {checked}>'
-            '    <span class="glyphicon glyphicon-unchecked"'
-            '          data-active-icon="{glyphicon}"'
-            '          title="{label}"></span> '
-            '</label>\n').format(
-                glyphicon=glyphicon,
-                key=id_,
-                value=1,
-                label=title,
-                checked=checked,
-                active=active)
-        return (
-            '<div data-toggle="buttons">'
-            '{checkbox}</div>').format(checkbox=checkbox)
+        context['widget']['glyphicon'] = glyphicon
+        context['widget']['title'] = title
+        return context
 
 
 class SeasonNewHelperAvailabilityForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(SeasonNewHelperAvailabilityForm, self).__init__(*args, **kwargs)
         self.fields['helper'] = \
-            autocomplete_light.ChoiceField('PersonsRelevantForSessions',
-                                           label=_('Disponibilités pour :'))
+            forms.ModelChoiceField(
+                label=_('Disponibilités pour :'),
+                queryset=get_user_model().objects.filter(
+                    Q(profile__formation__in=FORMATION_KEYS) |
+                    Q(profile__actor_for__isnull=False)
+                ),
+                widget=ModelSelect2(url='user-PersonsRelevantForSessions-ac')
+            )
 
 
 class SeasonAvailabilityForm(forms.Form):
@@ -385,14 +336,9 @@ class SeasonAvailabilityForm(forms.Form):
                         except:
                             fieldinit = ''
                         # Trick to pass the 'chosen' information through
-                        try:
-                            fieldinit += '*' if self.initial[staffkey] else ''
-                        except:
-                            pass
-
                         self.fields[availkey] = forms.ChoiceField(
                             choices=HelperSessionAvailability.AVAILABILITY_CHOICES,  # NOQA
-                            widget=forms.RadioSelect(renderer=BSRadioRenderer),
+                            widget=BSRadioSelect(forbid_absence=self.initial[staffkey]),
                             required=False, initial=fieldinit
                         )
 
@@ -418,17 +364,12 @@ class SeasonStaffChoiceForm(forms.Form):
                                                          spk=session.pk)
                         # Stupid boolean to integer-as-string conversion.
                         try:
-                            fieldinit = 'Y' if self.initial[staffkey] else 'N'
+                            fieldinit = bool(self.initial[staffkey])
                         except KeyError:
-                            fieldinit = 'N'
-                        # Trick to pass the 'at which role that user is
-                        # selected in that quali' information through
-                        fieldinit += session.user_assignment(helper)
+                            fieldinit = False
 
                         self.fields[staffkey] = forms.BooleanField(
-                            widget=forms.RadioSelect(
-                                renderer=BSCheckBoxRenderer
-                            ),
+                            widget=BSCheckboxInput(user_assignment=session.user_assignment(helper)),
                             required=False, initial=fieldinit
                         )
 

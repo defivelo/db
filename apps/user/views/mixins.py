@@ -25,7 +25,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse_lazy
 from django.db.models import Q
 from django.utils import timezone
-from rolepermissions.verifications import has_permission
+from rolepermissions.checkers import has_permission
 
 from defivelo.roles import user_cantons
 from defivelo.views import MenuView

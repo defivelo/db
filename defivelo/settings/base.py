@@ -55,7 +55,8 @@ UPSTREAM_APPS = (
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'autocomplete_light',
+    'dal',
+    'dal_select2',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -195,6 +196,8 @@ STATIC_ROOT = get_env_variable('STATIC_ROOT',
 
 STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT, "defivelo/static"),
+    os.path.join(PROJECT_ROOT, "ext/bootstrap-datetimepicker/build/"),
+    os.path.join(PROJECT_ROOT, "ext/moment/min/"),
 )
 
 STATICFILES_FINDERS = (

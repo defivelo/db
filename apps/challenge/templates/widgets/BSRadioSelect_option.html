@@ -1,0 +1,11 @@
+<label{% if widget.attrs.id %} for="{{ widget.attrs.id }}"{% endif %}
+        title="{% if forbid_absence and widget.value == 'n' %}{% trans 'Sélectionné pour une quali, impossible' %}{% else %}{{ widget.label }}{% endif %}"
+        class="btn btn-default{% if widget.selected %} active {% endif %}{% if forbid_absence and widget.value == 'n' %} disabled{% endif %}"
+        data-active-class="{% if widget.value == 'y' %}success{% elif widget.value == 'i' %}warning{% else %}danger{% endif %}">
+    <input type="{{ widget.type }}"
+           name="{{ widget.name }}"
+           {% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %}
+           {% include "django/forms/widgets/attrs.html" %} />
+    <span class="glyphicon glyphicon-{% if widget.value == 'y' %}ok-sign{% elif widget.value == 'i' %}ok-circle{% else %}remove-circle{% endif %}"
+          title="{% if forbid_absence and widget.value == 'n' %}{% trans 'Sélectionné pour une quali, impossible' %}{% else %}{{ widget.label }}{% endif %}"></span> 
+</label>

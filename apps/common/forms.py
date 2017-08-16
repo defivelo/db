@@ -18,7 +18,8 @@
 from __future__ import unicode_literals
 
 from bootstrap3_datetime.widgets import DateTimePicker
-from django.forms import TimeField
+from dal_select2.widgets import ModelSelect2
+from django.forms import ModelChoiceField, TimeField
 from localflavor.generic.forms import DEFAULT_DATE_INPUT_FORMATS, DateField
 
 SWISS_DATE_INPUT_FORMAT = '%d.%m.%Y'
@@ -39,8 +40,7 @@ class SwissDateField(DateField):
             widget=DateTimePicker(
                 {'placeholder': SWISS_DATE_DISPLAY_FORMAT},
                 options={
-                    "format": SWISS_DATE_DISPLAY_FORMAT,
-                    "pickTime": False}),
+                    "format": SWISS_DATE_DISPLAY_FORMAT}),
             *args, **kwargs)
 
 
@@ -51,8 +51,22 @@ class SwissTimeField(TimeField):
     def __init__(self, *args, **kwargs):
         super(TimeField, self).__init__(
             widget=DateTimePicker({'placeholder': 'HH:mm'},
-                                  icon_attrs={'class': 'glyphicon'},
+                                  icon_attrs={'class': 'glyphicon glyphicon-time'},
                                   options={"format": "HH:mm",
-                                           "pickDate": False,
-                                           "minuteStepping": 15}),
+                                           "stepping": 15}),
             *args, **kwargs)
+
+
+class UserAutoComplete(ModelChoiceField):
+    """
+    A User input field which uses the Autocmplete URL and has the good
+    default widget
+    """
+    def __init__(self, *args, **kwargs):
+        url = kwargs.pop('url', False)
+        super(UserAutoComplete, self).__init__(
+            widget=ModelSelect2(url=url),
+            *args, **kwargs)
+
+    def label_from_instance(self, obj):
+        return obj.get_full_name()

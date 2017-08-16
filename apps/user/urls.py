@@ -23,6 +23,7 @@ from django.views.decorators.cache import never_cache
 from .views import (
     ResendUserCredentials, SendUserCredentials, UserCreate, UserDetail, UserList, UserListExport, UserUpdate,
 )
+from .views.autocomplete import Actors, AllPersons, Helpers, Leaders, PersonsRelevantForSessions
 
 urlpatterns = [
     url(r'^$', never_cache(UserList.as_view()), name="user-list"),
@@ -40,4 +41,9 @@ urlpatterns = [
         name="user-resendcredentials"),
     url(r'^me/$', never_cache(UserDetail.as_view()), name="profile-detail"),
     url(r'^(?P<pk>[0-9]+)/update/$', UserUpdate.as_view(), name="user-update"),
+    url(r'^ac/all/$', AllPersons.as_view(), name='user-AllPersons-ac'),
+    url(r'^ac/prfs/$', PersonsRelevantForSessions.as_view(), name='user-PersonsRelevantForSessions-ac'),
+    url(r'^ac/helpers/$', Helpers.as_view(), name='user-Helpers-ac'),
+    url(r'^ac/leaders/$', Leaders.as_view(), name='user-Leaders-ac'),
+    url(r'^ac/actors/$', Actors.as_view(), name='user-Actors-ac'),
 ]

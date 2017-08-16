@@ -4,8 +4,8 @@ from __future__ import unicode_literals
 from django.contrib.auth import get_user_model
 from django.db import migrations, models
 
-from rolepermissions.verifications import has_role
-from rolepermissions.shortcuts import grant_permission, revoke_permission
+from rolepermissions.checkers import has_role
+from rolepermissions.permissions import grant_permission, revoke_permission
 
 
 def add_user_can_resend_creds_to_power_user(apps, schema_editor):

@@ -6,7 +6,7 @@
 
 {% block content %}
     <h1>
-        {{ session.organization.name }}{% if session.address_city %}, {{ session.address_city }}{% elif session.organization.address_city %}, {{ session.organization.address_city }}{% endif %}
+        {{ session.orga.name }}{% if session.address_city %}, {{ session.address_city }}{% elif session.orga.address_city %}, {{ session.orga.address_city }}{% endif %}
         <small>{{ session.day|date }}{% if session.begin %}, {{ session.begin|time }}{% endif %}</small>
     </h1>
 
@@ -36,13 +36,13 @@
     </div>
     <table class="table">
     <tr><th>{% trans "Établissement" %}</th>
-        <td><a href="{% url 'organization-detail' session.organization.pk %}">{{ session.organization }}</a>
-            {% if session.organization.coordinator_fullname %}
+        <td><a href="{% url 'organization-detail' session.orga.pk %}">{{ session.orga }}</a>
+            {% if session.orga.coordinator_fullname %}
                 <br />
-                <small>{{ session.organization.coordinator_fullname }}
-                    {% if session.organization.coordinator_natel %}
+                <small>{{ session.orga.coordinator_fullname }}
+                    {% if session.orga.coordinator_natel %}
                         <br class="hidden-print"/><span class="visible-print-inline"> |</span>
-                        <a href="tel:{{ session.organization.coordinator_natel|tel_int }}">{{ session.organization.coordinator_natel }}</a>
+                        <a href="tel:{{ session.orga.coordinator_natel|tel_int }}">{{ session.orga.coordinator_natel }}</a>
                     {% endif %}
                 </small>
             {% endif %}

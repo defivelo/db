@@ -36,6 +36,8 @@ root_directory: "/vagrant/"
 # Default reporting level of PHP errors
 # php_error_reporting: "E_ALL & ~E_NOTICE"
 
+python_version: 3
+
 # For a Django or Flask project, you might want to set the following
 pip_requirements: "requirements/dev.txt"
 

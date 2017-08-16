@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 
 from article.models import Article
 from django import forms
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -26,6 +27,14 @@ class ArticleForm(forms.ModelForm):
     published = forms.BooleanField(label=_('Publié'),
                                    initial=True,
                                    required=False)
+
+    def save(self, commit=True):
+        instance = super(ArticleForm, self).save(commit=False)
+        # Fix Deprecation Warning off simple-article
+        instance.modified = timezone.now()
+        if commit:
+            instance.save()
+        return instance
 
     class Meta:
         model = Article

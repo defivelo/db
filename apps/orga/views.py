@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 import operator
 from functools import reduce
 
-from autocomplete_light import AutocompleteModelBase, register as al_register
+from dal_select2.views import Select2QuerySetView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse_lazy
@@ -31,8 +31,8 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django_filters import CharFilter, FilterSet, MultipleChoiceFilter
 from django_filters.views import FilterView
 from filters.views import FilterMixin
+from rolepermissions.checkers import has_permission
 from rolepermissions.mixins import HasPermissionsMixin
-from rolepermissions.verifications import has_permission
 
 from apps.common import DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.views import ExportMixin, PaginatorMixin
@@ -60,7 +60,7 @@ class OrganizationFilterSet(FilterSet):
             elif len(cantons) == 1:
                 del(self.filters['address_canton'])
 
-    def filter_wide(queryset, value):
+    def filter_wide(queryset, name, value):
         if value:
             allfields_filter = [
                 Q(name__icontains=value),
@@ -78,7 +78,7 @@ class OrganizationFilterSet(FilterSet):
 
     q = CharFilter(
         label=_('Recherche'),
-        action=filter_wide
+        method=filter_wide
     )
 
     class Meta:
@@ -156,16 +156,14 @@ class OrganizationListExport(ExportMixin, OrganizationsListView):
     export_filename = _('Établissements')
 
 
-class OrganizationAutocomplete(OrganizationMixin, AutocompleteModelBase):
-    search_fields = ['name', 'address_city', 'address_street']
+class OrganizationAutocomplete(OrganizationMixin, Select2QuerySetView):
     required_permission = 'orga_crud'
 
-    def choices_for_request(self):
-        self.choices = self.get_queryset()
+    def get_queryset(self):
         if has_permission(self.request.user, self.required_permission):
-            return super(OrganizationAutocomplete, self).choices_for_request()
+            qs = super(OrganizationAutocomplete, self).get_queryset()
+            if self.q:
+                qs = OrganizationFilterSet.filter_wide(qs, '', self.q)
+            return qs
         else:
             raise PermissionDenied
-
-
-al_register(OrganizationAutocomplete)

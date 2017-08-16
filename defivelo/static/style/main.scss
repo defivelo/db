@@ -31,6 +31,14 @@ form.language-selector {
     }
 }
 
+.select2-selection,
+.select2-container {
+    font-size: 12px;
+}
+.select2-results__option {
+    padding: 4px !important;
+}
+
 .articles {
     .panel-heading {
         padding-right: 0;

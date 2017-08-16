@@ -22,7 +22,7 @@ from django.contrib.auth import get_user_model
 from django.test import Client
 from django.utils.translation import activate
 from faker import Faker
-from rolepermissions.shortcuts import assign_role
+from rolepermissions.roles import assign_role
 
 from apps.common import DV_STATES
 from apps.user import get_new_username

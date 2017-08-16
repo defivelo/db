@@ -45,7 +45,7 @@ $( "#id_place" ).change( updateHelpersPlace );
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
         <h3>{% trans "Emplacement" %}</h3>
-        {% bootstrap_field form.organization layout='horizontal' size='small' %}
+        {% bootstrap_field form.orga layout='horizontal' size='small' %}
         {% bootstrap_field form.day layout='horizontal' size='small' %}
         {% bootstrap_field form.begin layout='horizontal' size='small' %}
         {% bootstrap_field form.place layout='horizontal' size='small' %}

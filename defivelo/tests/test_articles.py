@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 from article.models import Article
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.utils import timezone
 
 from defivelo.tests.utils import AuthClient, PowerUserAuthClient
 
@@ -31,7 +32,8 @@ class AuthUserTest(TestCase):
         self.article = Article.objects.create(
             title='TestArticle',
             body='<h1>Test Body</h1>',
-            published=True)
+            published=True,
+            modified=timezone.now())
 
     def test_my_restrictions(self):
         for symbolicurl in ['article-update',
@@ -52,7 +54,8 @@ class PowerUserTest(TestCase):
         self.article = Article.objects.create(
             title='TestArticle',
             body='<h1>Test Body</h1>',
-            published=True)
+            published=True,
+            modified=timezone.now())
 
     def test_my_accesses(self):
         for symbolicurl in ['article-update',
@@ -63,4 +66,12 @@ class PowerUserTest(TestCase):
             self.assertEqual(response.status_code, 200, symbolicurl)
 
         response = self.client.get(reverse('article-create'))
-        self.assertEqual(response.status_code, 200, 'Article creation')
+        self.assertEqual(response.status_code, 200, 'Article creation request')
+
+        response = self.client.post(reverse('article-create'),
+                                    {
+                                        'title': 'New article',
+                                        'body': 'New body',
+                                        'published': False
+                                    })
+        self.assertEqual(response.status_code, 302, 'Article creation')

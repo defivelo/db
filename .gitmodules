@@ -1,4 +1,12 @@
 [submodule "virtualization/drifter"]
 	path = virtualization/drifter
-	url = https://github.com/defivelo/drifter.git
+	url = https://github.com/liip/drifter.git
 	branch = defivelo
+[submodule "ext/bootstrap-datetimepicker"]
+	path = ext/bootstrap-datetimepicker
+	url = https://github.com/Eonasdan/bootstrap-datetimepicker.git
+	branch = master
+[submodule "ext/moment"]
+	path = ext/moment
+	url = https://github.com/moment/moment.git
+	branch = master

@@ -45,5 +45,5 @@ class SessionFactory(DjangoModelFactory):
     class Meta:
         model = Session
 
-    organization = factory.SubFactory(OrganizationFactory)
+    orga = factory.SubFactory(OrganizationFactory)
     day = fuzzy.FuzzyDate(date(2015, 5, 2), date(2015, 6, 30))

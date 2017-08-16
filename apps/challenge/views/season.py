@@ -32,8 +32,8 @@ from django.utils.translation import ugettext as u, ugettext_lazy as _
 from django.views.generic.dates import YearArchiveView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from rolepermissions.checkers import has_permission
 from rolepermissions.mixins import HasPermissionsMixin
-from rolepermissions.verifications import has_permission
 from tablib import Dataset
 
 from apps.common import CANTONS_REGEXP, DV_STATES
@@ -156,6 +156,7 @@ class SeasonAvailabilityMixin(SeasonMixin):
                 qs = qs.filter(
                     pk=int(resolvermatch.kwargs['helperpk'])
                 )
+        qs = qs.prefetch_related('profile')
 
         all_helpers = qs.order_by('first_name', 'last_name')
         return (
@@ -275,12 +276,12 @@ class SeasonExportView(ExportMixin, SeasonAvailabilityMixin,
             if not session_place:
                 session_place = (
                     session.address_city if session.address_city
-                    else session.organization.address_city
+                    else session.orga.address_city
                 )
             col = [
                 date(session.day),
-                session.organization.address_canton,
-                session.organization.name,
+                session.orga.address_canton,
+                session.orga.name,
                 session_place,
                 '%s - %s' % (time(session.begin), time(session.end)),
                 session.n_qualifications,
@@ -388,12 +389,12 @@ class SeasonPlanningExportView(ExportMixin, SeasonAvailabilityMixin,
             if not session_place:
                 session_place = (
                     session.address_city if session.address_city
-                    else session.organization.address_city
+                    else session.orga.address_city
                 )
             col = [
                 date(session.day),
-                session.organization.address_canton,
-                session.organization.name,
+                session.orga.address_canton,
+                session.orga.name,
                 session_place,
                 '%s - %s' % (time(session.begin), time(session.end)),
                 session.n_qualifications,
@@ -454,10 +455,10 @@ class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
         seasonpk = kwargs.get('pk', None)
         form = SeasonNewHelperAvailabilityForm(request.POST)
         if form.is_valid():
-            helperpk = int(form.cleaned_data['helper'])
+            helper = form.cleaned_data['helper']
             return HttpResponseRedirect(
                 reverse_lazy('season-availabilities-update',
-                             kwargs={'pk': seasonpk, 'helperpk': helperpk})
+                             kwargs={'pk': seasonpk, 'helperpk': helper.pk})
             )
         return HttpResponseRedirect(
             reverse_lazy('season-availabilities', kwargs={'pk': seasonpk})
