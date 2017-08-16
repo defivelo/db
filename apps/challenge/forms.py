@@ -262,57 +262,44 @@ class QualificationForm(forms.ModelForm):
 class BSRadioSelect(forms.RadioSelect):
     template_name = 'widgets/BSRadioSelect.html'
     option_template_name = 'widgets/BSRadioSelect_option.html'
-
-    #def render(self):
-        #id_ = self.attrs.get('id', None)
-        #options = ''
-        #try:
-            #optionvalue = self.value[0]
-        #except IndexError:
-            #optionvalue = ''
-        #try:
-            #chosen = (self.value[1] == '*')
-        #except IndexError:
-            #chosen = False
-        #for option in self.choices:
-            #level = 'danger'
-            #glyphicon = 'remove-circle'
-            #if option[0] == 'y':
-                #level = 'success'
-                #glyphicon = 'ok-sign'
-            #elif option[0] == 'i':
-                #level = 'warning'
-                #glyphicon = 'ok-circle'
-            #checked = 'checked' if optionvalue == option[0] else ''
-            #active = 'active' if optionvalue == option[0] else ''
-            #disabled = 'disabled' if (option[0] == 'n' and chosen) else ''
-            #options += (
-                #'<label title="{label}"'
-                #'       class="btn btn-default {active} {disabled}"'
-                #'       data-active-class="{level}">'
-                #'  <input type="radio" autocomplete="off"'
-                #'         name="{key}" id="{key}-{value}" value="{value}"'
-                #'         {checked} {disabled}>'
-                #'    <span class="glyphicon glyphicon-{glyphicon}"'
-                #'          title="{label}"></span> '
-                #'</label>\n').format(
-                    #level=level,
-                    #glyphicon=glyphicon,
-                    #key=id_,
-                    #value=option[0],
-                    #label=(
-                        #option[1] if not disabled
-                        #else _('Sélectionné pour une quali, impossible')
-                    #),
-                    #checked=checked,
-                    #active=active,
-                    #disabled=disabled)
-        #return (
-            #'<div class="btn-group-vertical" data-toggle="buttons">'
-            #'{options}</div>').format(options=options)
+    
+    def __init__(self, *args, **kwargs):
+        self.forbid_absence = kwargs.pop('forbid_absence', False)
+        return super(BSRadioSelect, self).__init__(*args, **kwargs)
+    
+    def get_context(self, name, value, attrs):
+        context = super(BSRadioSelect, self).get_context(name, value, attrs)
+        context['widget']['forbid_absence'] = self.forbid_absence
+        return context
 
 
-#class BSCheckBoxRenderer(forms.widgets.CheckboxFieldRenderer):
+class BSCheckboxInput(forms.widgets.CheckboxInput):
+    template_name = 'widgets/BSCheckboxInput.html'
+    #option_template_name = 'widgets/BSCheckboxInputt_option.html'
+    
+    def __init__(self, *args, **kwargs):
+        # Trick to pass the 'at which role that user is
+        # selected in that quali' information through
+        self.user_assignment = kwargs.pop('user_assignment', False)
+        return super(BSCheckboxInput, self).__init__(*args, **kwargs)
+    
+    def get_context(self, name, value, attrs):
+        context = super(BSCheckboxInput, self).get_context(name, value, attrs)
+        glyphicon = 'check'
+        title = _('Choisir pour cette session')
+        if self.user_assignment == SHORTCODE_MON2:  # Moniteur 2
+            glyphicon = 'tags'
+            title = _('Moniteur 2')
+        if self.user_assignment == SHORTCODE_MON1:  # Moniteur 1
+            glyphicon = 'tag'
+            title = _('Moniteur 1')
+        if self.user_assignment == SHORTCODE_ACTOR:  # Intervenant
+            glyphicon = 'sunglasses'
+            title = _('Intervenant')
+        context['widget']['glyphicon'] = glyphicon
+        context['widget']['title'] = title
+        return context
+    
     #def render(self):
         #id_ = self.attrs.get('id', None)
         #chosen_as = False
@@ -397,14 +384,10 @@ class SeasonAvailabilityForm(forms.Form):
                         except:
                             fieldinit = ''
                         # Trick to pass the 'chosen' information through
-                        try:
-                            fieldinit += '*' if self.initial[staffkey] else ''
-                        except:
-                            pass
 
                         self.fields[availkey] = forms.ChoiceField(
                             choices=HelperSessionAvailability.AVAILABILITY_CHOICES,  # NOQA
-                            widget=BSRadioSelect,
+                            widget=BSRadioSelect(forbid_absence=self.initial[staffkey]),
                             required=False, initial=fieldinit
                         )
 
@@ -430,15 +413,12 @@ class SeasonStaffChoiceForm(forms.Form):
                                                          spk=session.pk)
                         # Stupid boolean to integer-as-string conversion.
                         try:
-                            fieldinit = 'Y' if self.initial[staffkey] else 'N'
+                            fieldinit = bool(self.initial[staffkey])
                         except KeyError:
-                            fieldinit = 'N'
-                        # Trick to pass the 'at which role that user is
-                        # selected in that quali' information through
-                        fieldinit += session.user_assignment(helper)
+                            fieldinit = False
 
                         self.fields[staffkey] = forms.BooleanField(
-                            widget=forms.RadioSelect(),
+                            widget=BSCheckboxInput(user_assignment=session.user_assignment(helper)),
                             required=False, initial=fieldinit
                         )
 

@@ -1,0 +1,12 @@
+<div data-toggle="buttons">
+    <label title="{{ widget.title }}"
+          class="btn btn-default{% if widget.attrs.checked %} active{% endif %}"
+          data-active-class="primary">
+        <input type="{{ widget.type }}"
+               name="{{ widget.name }}"
+               {% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %}{% include "django/forms/widgets/attrs.html" %} />
+        <span class="glyphicon glyphicon-unchecked"
+              data-active-icon="{{ widget.glyphicon }}"
+              title="{{ widget.title }}"></span>
+    </label>
+</div>

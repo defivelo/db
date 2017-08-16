@@ -131,7 +131,6 @@ class Session(Address, models.Model):
             .prefetch_related(
                 'helper',
                 'helper__profile',
-                'helper__profile__formation',
                 'session'
             )
             .order_by('-availability')
