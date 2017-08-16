@@ -115,7 +115,8 @@ class SessionForm(forms.ModelForm):
                                   required=False)
     superleader = UserAutoComplete(label=_('Moniteur +'),
                                    queryset=get_user_model().objects,
-                                   url='user-AllPersons-ac')
+                                   url='user-AllPersons-ac',
+                                   required=False)
 
     def clean_day(self):
         day = self.cleaned_data['day']
