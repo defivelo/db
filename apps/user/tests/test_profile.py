@@ -85,7 +85,7 @@ class ProfileTestCase(TestCase):
         initial['birthdate'] = ''
         initial['formation_lastdate'] = ''
 
-        if initial['activity_cantons'] is None:
+        if not initial['activity_cantons']:
             initial['activity_cantons'] = []
 
         return initial
