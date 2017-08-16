@@ -26,15 +26,15 @@ from .models import STD_PROFILE_FIELDS
 
 
 class MultipleSelectWidget(widgets.Widget):
-    def render(self, value):
+    def render(self, value, obj=None):
         return ', '.join(value)
 
 
 class FirstMedWidget(widgets.Widget):
-    def render(self, object):
-        final = _('Yes') if object.firstmed_course else _('No')
-        if object.firstmed_course_comm:
-            final += ' - ' + object.firstmed_course_comm
+    def render(self, value, object=None):
+        final = _('Yes') if value.firstmed_course else _('No')
+        if value.firstmed_course_comm:
+            final += ' - ' + value.firstmed_course_comm
         return force_text(final)
 
 
@@ -43,8 +43,8 @@ class ObjectMethodWidget(widgets.Widget):
         self.method = method
         return super(ObjectMethodWidget, self).__init__(*args, **kwargs)
 
-    def render(self, object):
-        attribute = getattr(object, self.method)
+    def render(self, value, object=None):
+        attribute = getattr(value, self.method)
         if isinstance(attribute, list):
             attribute = ', '.join(attribute)
         if attribute:
