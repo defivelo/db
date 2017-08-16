@@ -27,7 +27,7 @@ from django.template.defaultfilters import date
 from django.utils.translation import ugettext_lazy as _
 from localflavor.ch.forms import CHPhoneNumberField, CHStateSelect
 
-from apps.common.forms import SwissDateField, SwissTimeField
+from apps.common.forms import SwissDateField, SwissTimeField, UserAutoComplete
 from apps.user import STATE_CHOICES_WITH_DEFAULT
 from apps.user.models import FORMATION_KEYS, FORMATION_M2
 
@@ -113,6 +113,9 @@ class SessionForm(forms.ModelForm):
                                      )}))
     helpers_time = SwissTimeField(label=_('Heure rendez-vous moniteurs'),
                                   required=False)
+    superleader = UserAutoComplete(label=_('Moniteur +'),
+                                   queryset=get_user_model().objects,
+                                   url='user-AllPersons-ac')
 
     def clean_day(self):
         day = self.cleaned_data['day']

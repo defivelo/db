@@ -18,7 +18,8 @@
 from __future__ import unicode_literals
 
 from bootstrap3_datetime.widgets import DateTimePicker
-from django.forms import TimeField
+from dal_select2.widgets import ModelSelect2
+from django.forms import ModelChoiceField, TimeField
 from localflavor.generic.forms import DEFAULT_DATE_INPUT_FORMATS, DateField
 
 SWISS_DATE_INPUT_FORMAT = '%d.%m.%Y'
@@ -54,3 +55,17 @@ class SwissTimeField(TimeField):
                                   options={"format": "HH:mm",
                                            "stepping": 15}),
             *args, **kwargs)
+
+class UserAutoComplete(ModelChoiceField):
+    """
+    A User input field which uses the Autocmplete URL and has the good
+    default widget
+    """
+    def __init__(self, *args, **kwargs):
+        url = kwargs.pop('url', False)
+        super(UserAutoComplete, self).__init__(
+            widget=ModelSelect2(url=url),
+            *args, **kwargs)
+
+    def label_from_instance(self, obj):
+        return obj.get_full_name()
