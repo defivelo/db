@@ -122,8 +122,7 @@ class SuperUserTest(OrgaBasicTest):
         self.assertEqual(response.status_code, self.expected_code, url)
         # Check that we only find our orga
         entries = [int(d) for d in
-                    re.findall('"id": "(\d+)"', str(response.content))
-                    ]
+                   re.findall('"id": "(\d+)"', str(response.content))]
         entries.sort()
         allentries = [self.orga.pk] + [o.pk for o in self.orgas]
         if re.search('"pagination": {"more": true}', str(response.content)):

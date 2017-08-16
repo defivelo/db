@@ -56,6 +56,7 @@ class SwissTimeField(TimeField):
                                            "stepping": 15}),
             *args, **kwargs)
 
+
 class UserAutoComplete(ModelChoiceField):
     """
     A User input field which uses the Autocmplete URL and has the good

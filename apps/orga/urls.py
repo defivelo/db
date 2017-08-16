@@ -39,8 +39,6 @@ urlpatterns = [
         name="organization-update"),
     url(r'^(?P<pk>[0-9]+)/delete/$', OrganizationDeleteView.as_view(),
         name="organization-delete"),
-    url(r'^autocomplete/$',
-        OrganizationAutocomplete.as_view(),
-        name='organization-autocomplete',
-    ),
+    url(r'^autocomplete/$', OrganizationAutocomplete.as_view(),
+        name='organization-autocomplete'),
 ]

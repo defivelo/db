@@ -21,7 +21,6 @@ from dal_select2.views import Select2QuerySetView
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
-from django.utils.html import escape
 from rolepermissions.checkers import has_permission
 
 from apps.challenge import MAX_MONO1_PER_QUALI

@@ -41,7 +41,6 @@ urlpatterns += i18n_patterns(
     url(r'^season/', include('apps.challenge.urls')),
     url(r'^orga/', include('apps.orga.urls')),
     url(r'^user/', include('apps.user.urls')),
-    #url(r'^autocomplete/', include('autocomplete_light.urls')),
 )
 
 if settings.DEBUG:
