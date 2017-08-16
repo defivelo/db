@@ -50,7 +50,7 @@ class SwissTimeField(TimeField):
     def __init__(self, *args, **kwargs):
         super(TimeField, self).__init__(
             widget=DateTimePicker({'placeholder': 'HH:mm'},
-                                  icon_attrs={'class': 'glyphicon'},
+                                  icon_attrs={'class': 'glyphicon glyphicon-time'},
                                   options={"format": "HH:mm",
                                            "stepping": 15}),
             *args, **kwargs)
