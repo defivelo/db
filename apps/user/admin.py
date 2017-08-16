@@ -15,12 +15,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from importlib import import_module
 
-from django.apps import apps
-from django.conf import settings
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
 
 from .models import UserManagedState, UserProfile
 
