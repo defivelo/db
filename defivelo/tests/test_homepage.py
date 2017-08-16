@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from allauth.account.models import EmailAddress, EmailConfirmation
+from allauth.account.models import EmailAddress
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
@@ -72,9 +72,8 @@ class HomePageRedirectTest(TestCase):
             }
         )
         # This triggered a mail sending to confirm that email
-        self.assertEqual(EmailConfirmation.objects.count(), 1)
-        # For one Email, of course
         self.assertEqual(EmailAddress.objects.count(), 1)
+        self.assertFalse(EmailAddress.objects.first().verified)
 
         # Now confirm that email
         ec = EmailAddress.objects.get(user=self.user)
