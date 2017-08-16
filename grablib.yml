@@ -1,5 +1,0 @@
-download_root: ext/static/bootstrap3_datetime/
-download:
-  'GITHUB/moment/moment/2.13.0/min/moment-with-locales.min.js': 'js/'
-  'GITHUB/Eonasdan/bootstrap-datetimepicker/4.15.35/build/js/bootstrap-datetimepicker.min.js': 'js/'
-  'GITHUB/Eonasdan/bootstrap-datetimepicker/4.15.35/build/css/bootstrap-datetimepicker.css': 'css/'

@@ -19,7 +19,7 @@
     {% compress css %}
         <link rel="stylesheet" type="text/x-scss" href="{% static "style/main.scss" %}">
         <link rel="stylesheet" type="text/x-scss" media="print" href="{% static "style/print.scss" %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'bootstrap3_datetime/css/bootstrap-datetimepicker.css' %}" />
+        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-datetimepicker.css' %}" />
     {% endcompress %}
     {% if 'javascript_in_head'|bootstrap_setting %}{% bootstrap_javascript jquery=True %}{% endif %}
     {% block bootstrap3_extra_head %}{% endblock %}
@@ -75,7 +75,7 @@
 {% if not 'javascript_in_head'|bootstrap_setting %}{% bootstrap_javascript jquery=True %}{% endif %}
 {% block bootstrap3_extra_script %}{% endblock %}
 {% compress js %}
-    <script type="text/javascript" src="{% static 'bootstrap3_datetime/js/moment-with-locales.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'bootstrap3_datetime/js/bootstrap-datetimepicker.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'moment-with-locales.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap-datetimepicker.min.js' %}"></script>
 {% endcompress %}
 </body>

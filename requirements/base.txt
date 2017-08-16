@@ -21,6 +21,3 @@ tablib==0.11.5
 simple-article==0.2.1
 django-role-permissions==2.1.0
 django-tinymce==2.6.0
--e git+https://github.com/defivelo/grablib.git@251b9803f77cb24b76ac4398099509b082b20bfb#egg=grablib==0.6.0+py34_0
-requests==2.18.3
-typing==3.6.2
