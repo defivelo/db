@@ -284,6 +284,7 @@ try:
          r'\.kdev4$',
          r'^__pycache__$',
          r'\.vagrant$', r'^virtualization',
+         r'^ext',
          r'^static_files$', r'^venv$',
          r'^envdir$']
 
