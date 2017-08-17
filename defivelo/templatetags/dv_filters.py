@@ -61,6 +61,16 @@ def tel_int(tel):
 
 
 @register.filter
+def tel_link(tel):
+    if not tel:
+        return ''
+    return mark_safe(
+        '<a href="tel:{tel_int}">{tel}</a>'
+        .format(tel_int=tel_int(tel), tel=tel)
+        )
+
+
+@register.filter
 def profile_tag(user):
     """
     Standard user display (currently fullname + small natel)
@@ -71,9 +81,8 @@ def profile_tag(user):
     usertag += user.get_full_name()
     if user.profile.natel:
         usertag += (
-            '<br /><small><a href="tel:{natel_int}">{natel}</a></small>'
-            .format(natel_int=tel_int(user.profile.natel),
-                    natel=user.profile.natel)
+            '<br /><small>{tel_link}</small>'
+            .format(tel_link=tel_link(user.profile.natel))
             )
     usertag += '</span>'
 

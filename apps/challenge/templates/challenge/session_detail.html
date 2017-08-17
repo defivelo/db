@@ -42,7 +42,7 @@
                 <small>{{ session.orga.coordinator_fullname }}
                     {% if session.orga.coordinator_natel %}
                         <br class="hidden-print"/><span class="visible-print-inline"> |</span>
-                        <a href="tel:{{ session.orga.coordinator_natel|tel_int }}">{{ session.orga.coordinator_natel }}</a>
+                        {{ session.orga.coordinator_natel|tel_link }}
                     {% endif %}
                 </small>
             {% endif %}
@@ -112,7 +112,7 @@
         <tr><th>{% trans "Classe" %}</th>
                 {% for quali in session.qualifications.all %}
                     <td>{{ quali.class_teacher_fullname }}<br />
-                        <small><a href="tel:{{ quali.class_teacher_natel|tel_int }}">{{ quali.class_teacher_natel }}</a></small>
+                        <small>{{ quali.class_teacher_natel|tel_link }}</small>
                         {% if quali.n_participants %}<br />
                             {% blocktrans with n=quali.n_participants %}{{ n }} participants{% endblocktrans %}
                         {% endif %}
