@@ -14,7 +14,7 @@
     <h1>{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }}</h1>
     <h3>{{ season.cantons_verb|join:", " }}</h3>
 
-    <h4>{% trans "Disponibilités" %}</h4>
+    <h4>{% trans "Planning" %}</h4>
         <table class="table text-center">
         {% include "challenge/season_availability_thead.html" with sessions=season.sessions_with_qualifs season=season user=request.user preamble_columns=2 chosen_stats=1 only %}
         <tbody>
