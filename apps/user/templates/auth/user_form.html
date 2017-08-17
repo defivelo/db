@@ -43,6 +43,8 @@
             <div role="tabpanel" class="tab-pane active" id="addr">
                 {% bootstrap_field form.first_name layout='horizontal' size='small' %}
                 {% bootstrap_field form.last_name layout='horizontal' size='small' %}
+                {% bootstrap_field form.language layout='horizontal' size='small' %}
+                {% bootstrap_field form.languages_challenges layout='horizontal' size='small' %}
                 {% include "address_bootstrap_form.html" %}
             </div>
             <div role="tabpanel" class="tab-pane" id="contacts">
@@ -110,7 +112,7 @@
 <script type="text/javascript">
 $(function () {
     {% trans "Vers le calculateur d'IBAN" as toiban %}
-    {% trans "https://www.postfinance.ch/fr/cust/acc/iban.html" as toibanlink %}
+    {% trans 'https://www.postfinance.ch/fr/particuliers/assistance/outils-calculateurs/calculateur-iban.html' as toibanlink %}
     $("#id_iban + span.input-group-addon").attr('data-toggle', 'tooltip')
                                       .attr('data-placement', 'right')
                                       .attr('title', '{{ toiban|escapejs }}')
@@ -128,8 +130,17 @@ function dvCantonsNotAffiliatedToMobile() {
     $( '#id_activity_cantons input[value="' + homecanton + '"]').prop("disabled", true);
 }
 
+function dvLanguagesCannotBeMain() {
+    // Ne permet pas la coche dans le canton d'activité pour Défi Vélo Mobile
+    mainlanguage = $( "#id_language" ).val();
+    $( '#id_languages_challenges input[disabled]').prop("disabled", false).prop('checked', false);
+    $( '#id_languages_challenges input[value="' + mainlanguage + '"]').prop("disabled", true).prop('checked', true);
+}
+
 $( "#id_affiliation_canton" ).change( dvCantonsNotAffiliatedToMobile );
+$( "#id_language" ).change( dvLanguagesCannotBeMain );
 
 dvCantonsNotAffiliatedToMobile();
+dvLanguagesCannotBeMain();
 </script>
 {% endblock %}

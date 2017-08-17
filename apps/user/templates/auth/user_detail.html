@@ -154,6 +154,18 @@
                         {% endif %}
                         </dl>
                     </div>
+                    <div role="tabpane" class="tab-pane" id="languages">
+                        <dl class="dl-horizontal">
+                        {% if userprofile.profile.language %}
+                            <dt>{% trans "Langue" %}</dt>
+                            <dd>{{ userprofile.profile.language_verb }}</dd>
+                        {% endif %}
+                        {% if userprofile.profile.languages_challenges %}
+                            <dt>{% trans 'Prêt à animer en' %}</dt>
+                            <dd>{{ userprofile.profile.languages_challenges }}</dd>
+                        {% endif %}
+                        </dl>
+                    </div>
                 {% if request.user|can:'user_crud_dv_private_fields' and userprofile.profile.comments %}
                     <div role="tabpane" class="tab-pane panel panel-danger" id="notes">
                         <div class="panel-heading">{% trans "Remarques privées" %}</div>

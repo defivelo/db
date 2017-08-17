@@ -37,7 +37,9 @@ from multiselectfield import MultiSelectField
 from rolepermissions.checkers import has_role
 
 from apps.challenge.models import QualificationActivity, Season
-from apps.common import CANTONS_REGEXP, DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT
+from apps.common import (
+    CANTONS_REGEXP, DV_LANGUAGES, DV_LANGUAGES_WITH_DEFAULT, DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT,
+)
 from apps.common.models import Address
 from defivelo.roles import user_cantons
 
@@ -72,7 +74,7 @@ STDGLYPHICON = (
     '      title="{title}"></span>'
 )
 
-PERSONAL_FIELDS = ['natel', 'birthdate',
+PERSONAL_FIELDS = ['language', 'languages_challenges', 'natel', 'birthdate',
                    'address_street', 'address_no', 'address_zip',
                    'address_city', 'address_canton',
                    'iban', 'social_security',
@@ -95,6 +97,12 @@ class UserProfile(Address, models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                                 related_name='profile',
                                 primary_key=True)
+    language = models.CharField(_('Langue'), max_length=7,
+                                choices=DV_LANGUAGES_WITH_DEFAULT,
+                                blank=True)
+    languages_challenges = MultiSelectField(_('Prêt à animer en'),
+                                            choices=DV_LANGUAGES,
+                                            blank=True)
     birthdate = models.DateField(_('Date'), blank=True, null=True)
     iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)
     social_security = models.CharField(max_length=16, blank=True)
@@ -143,6 +151,14 @@ class UserProfile(Address, models.Model):
             # Remove the affiliation canton from the activity_cantons
             try:
                 self.activity_cantons.remove(self.affiliation_canton)
+            except (ValueError, AttributeError):
+                pass
+        if self.languages_challenges:
+            if not self.language:
+                self.language = self.languages_challenges.pop(0)
+            # Remove the main language from the languages_challenges
+            try:
+                self.languages_challenges.remove(self.language)
             except (ValueError, AttributeError):
                 pass
         super(UserProfile, self).save(*args, **kwargs)
@@ -246,6 +262,16 @@ class UserProfile(Address, models.Model):
         if icon:
             return mark_safe(STDGLYPHICON.format(icon=icon, title=title))
         return ''
+
+    @property
+    def language_verb(self):
+        try:
+            return [
+                c[1] for c in DV_LANGUAGES
+                if c[0] == self.language
+                ][0]
+        except IndexError:
+            return ''
 
     @property
     def affiliation_canton_verb(self):

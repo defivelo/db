@@ -39,3 +39,15 @@ DV_STATE_CHOICES_WITH_DEFAULT = tuple(
 )
 
 CANTONS_REGEXP = "(^|,)%s(,|$)"
+
+DV_LANGUAGES = LANGUAGES = (
+    ('fr', _('French')),
+    ('de', _('German')),
+    ('it', _('Italian')),
+    ('en', _('English')),
+)
+
+DV_LANGUAGES_WITH_DEFAULT = tuple(
+    list((('', '---------',),)) +
+    list(DV_LANGUAGES)
+)
