@@ -33,6 +33,6 @@ class OrganizationFactory(DjangoModelFactory):
     name = Faker('name')
     address_street = Faker('street_name')
     address_no = Faker('random_int', min=0, max=999)
-    address_zip = Faker('random_int', min=0, max=9999)
+    address_zip = Faker('random_int', min=1000, max=9999)
     address_city = Faker('city')
     address_canton = FuzzyChoice(DV_STATES)
