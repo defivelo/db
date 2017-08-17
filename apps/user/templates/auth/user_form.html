@@ -112,7 +112,7 @@
 <script type="text/javascript">
 $(function () {
     {% trans "Vers le calculateur d'IBAN" as toiban %}
-    {% trans "https://www.postfinance.ch/fr/cust/acc/iban.html" as toibanlink %}
+    {% trans 'https://www.postfinance.ch/fr/particuliers/assistance/outils-calculateurs/calculateur-iban.html' as toibanlink %}
     $("#id_iban + span.input-group-addon").attr('data-toggle', 'tooltip')
                                       .attr('data-placement', 'right')
                                       .attr('title', '{{ toiban|escapejs }}')
