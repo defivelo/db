@@ -51,6 +51,6 @@ class OrganizationForm(forms.ModelForm):
         model = Organization
         fields = ['name', 'address_street', 'address_no', 'address_additional',
                   'address_zip', 'address_city', 'address_canton',
-                  'coordinator_fullname', 'coordinator_natel',
+                  'coordinator_fullname', 'coordinator_phone', 'coordinator_natel',
                   'coordinator_email', 'comments',
                   ]

@@ -29,8 +29,11 @@ from apps.common.models import Address
 class Organization(Address, models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     name = models.CharField(_('Nom'), max_length=255)
+    website = models.URLField(_('Site web'), blank=True)
     coordinator_fullname = models.CharField(_('Coordinateur'),
                                             max_length=512, blank=True)
+    coordinator_phone = models.CharField(_('Téléphone'),
+                                         max_length=13, blank=True)
     coordinator_natel = models.CharField(_('Natel'),
                                          max_length=13, blank=True)
     coordinator_email = models.EmailField(_('Courriel'),
