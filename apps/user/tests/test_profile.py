@@ -88,6 +88,9 @@ class ProfileTestCase(TestCase):
         if not initial['activity_cantons']:
             initial['activity_cantons'] = []
 
+        if not initial['languages_challenges']:
+            initial['languages_challenges'] = []
+
         return initial
 
 
