@@ -31,9 +31,9 @@ INSTALLED_APPS += (  # NOQA
 DEBUG_TOOLBAR_CONFIG = {"INTERCEPT_REDIRECTS": False}
 
 INTERNAL_IPS = ('127.0.0.1',)
-MIDDLEWARE_CLASSES += (  # NOQA
+MIDDLEWARE += [  # NOQA
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-)
+]
 
 # Adapt Stronghold for Debug
 STRONGHOLD_PUBLIC_URLS += [r'^/__debug__/.*$']  # NOQA

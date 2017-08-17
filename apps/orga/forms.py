@@ -23,8 +23,8 @@ from localflavor.ch.forms import CHPhoneNumberField, CHStateSelect, CHZipCodeFie
 
 from apps.user import STATE_CHOICES_WITH_DEFAULT
 
-from .models import Organization
 from . import ORGA_FIELDS
+from .models import Organization
 
 
 class OrganizationForm(forms.ModelForm):

@@ -20,8 +20,8 @@ from __future__ import unicode_literals
 from django.utils.translation import ugettext_lazy as _
 from import_export import fields, resources
 
-from .models import Organization
 from . import ORGA_FIELDS
+from .models import Organization
 
 EXPORT_FIELDS = ['id', 'created_on'] + ORGA_FIELDS
 

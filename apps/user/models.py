@@ -37,7 +37,7 @@ from multiselectfield import MultiSelectField
 from rolepermissions.checkers import has_role
 
 from apps.challenge.models import QualificationActivity, Season
-from apps.common import CANTONS_REGEXP, DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT
+from apps.common import CANTONS_REGEXP, DV_LANGUAGES, DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.models import Address
 from defivelo.roles import user_cantons
 

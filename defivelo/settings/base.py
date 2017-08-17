@@ -89,7 +89,7 @@ PROJECT_APPS = tuple(['apps.' + aname
 
 INSTALLED_APPS = UPSTREAM_APPS + PROJECT_APPS + ('defivelo', )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -98,7 +98,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'stronghold.middleware.LoginRequiredMiddleware',
-)
+]
 
 ROOT_URLCONF = 'defivelo.urls'
 
