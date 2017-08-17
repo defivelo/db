@@ -59,6 +59,7 @@
             <th>{% trans "Natel" %}</th>
             <th>{% trans "Statut" %}</th>
             <th>{% trans "Cantons" %}</th>
+            <th>{% trans "Langues" %}</th>
             <th>{% trans "Rôle" %}</th>
             <th>{# Boutons #}</th>
         </tr>
@@ -69,12 +70,15 @@
             <td>{% if request.user|can:'user_detail_other' %}<a href="{% url 'user-detail' pk=user.pk %}">{{ user.first_name }}</a>{% else %}{{ user.first_name }}{% endif %}</td>
             <td>{% if request.user|can:'user_detail_other' %}<a href="{% url 'user-detail' pk=user.pk %}">{{ user.last_name }}{% else %}{{ user.last_name }}{% endif %}</a></td>
             <td><a href="mailto:{{ user.profile.mailtolink|urlencode }}">{{ user.email }}</a></td>
-            <td><a href="tel:{{ user.profile.natel|tel_int }}">{{ user.profile.natel }}</a></td>
+            <td>{{ user.profile.natel|tel_link }}</td>
             <td class="{{ user.profile.status_class }}">
                 {{ user.profile.status_icon|safe }}
             </td>
             <td>
                {{ user.profile.affiliation_canton }}{% if user.profile.activity_cantons %}, {{ user.profile.activity_cantons|join:", " }}{% endif %}
+            </td>
+            <td>
+               {{ user.profile.language }}{% if user.profile.languages_challenges %}, {{ user.profile.languages_challenges|join:", " }}{% endif %}
             </td>
             <td>
                 {{ user.profile.formation_icon|safe }}

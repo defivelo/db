@@ -62,6 +62,12 @@ ALL_PROFILE_FIELDS = tuple(
 class UserResource(resources.ModelResource):
     first_name = fields.Field(column_name=_('Prénom'), attribute='first_name')
     last_name = fields.Field(column_name=_('Nom'), attribute='last_name')
+    profile__language = fields.Field(column_name=_("Langue"),
+                                     attribute='profile__language')
+    profile__languages_challenges = fields.Field(
+        column_name=_('Prêt à animer en'),
+        attribute='profile__languages_challenges',
+        widget=MultipleSelectWidget())
     email = fields.Field(column_name=_('Email'), attribute='email')
     profile__natel = fields.Field(column_name=_('Natel'),
                                   attribute='profile__natel')

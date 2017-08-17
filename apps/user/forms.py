@@ -26,7 +26,7 @@ from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from multiselectfield.forms.fields import MultiSelectFormField
 
 from apps.challenge.models import QualificationActivity
-from apps.common import DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT
+from apps.common import DV_LANGUAGES, DV_LANGUAGES_WITH_DEFAULT, DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.forms import SwissDateField
 
 from . import STATE_CHOICES_WITH_DEFAULT
@@ -57,6 +57,12 @@ class UserProfileForm(forms.ModelForm):
             )
             self.fields['affiliation_canton'].required = affiliation_canton_required
             self.fields['affiliation_canton'].choices = choices
+
+    language = forms.ChoiceField(label=_('Langue'), choices=DV_LANGUAGES_WITH_DEFAULT,
+                                 required=False)
+    languages_challenges = MultiSelectFormField(
+        label=_('Prêt à animer en'), choices=DV_LANGUAGES,
+        required=False)
 
     address_street = forms.CharField(label=_('Rue'), max_length=255,
                                      required=False)
