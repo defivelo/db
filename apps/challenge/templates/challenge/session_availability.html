@@ -5,7 +5,7 @@
 {% block head_title %}{% trans "Disponibilités" %} {{ session.pk }}{% endblock %}
 
 {% block content %}
-    <h1>{{ session.organization.name }}{% if session.address_city %}, {{ session.address_city }}{% elif session.organization.address_city %}, {{ session.organization.address_city }}{% endif %}
+    <h1>{{ session.orga.name }}{% if session.address_city %}, {{ session.address_city }}{% elif session.orga.address_city %}, {{ session.orga.address_city }}{% endif %}
     </h1>
     <h2>{{ session.day|date:"j F" }}{% if session.begin %}, {{ session.begin }}{% endif %}</h2>
     
