@@ -21,13 +21,9 @@ from django.utils.translation import ugettext_lazy as _
 from import_export import fields, resources
 
 from .models import Organization
+from . import ORGA_FIELDS
 
-ORGA_FIELDS = ['id', 'name', 'address_street', 'address_no',
-               'address_additional', 'address_zip', 'address_city',
-               'address_canton', 'created_on',
-               'coordinator_fullname', 'coordinator_email',
-               'coordinator_natel', 'comments',
-               ]
+EXPORT_FIELDS = ['id', 'created_on'] + ORGA_FIELDS
 
 
 class OrganizationResource(resources.ModelResource):
@@ -44,8 +40,12 @@ class OrganizationResource(resources.ModelResource):
                                 attribute='address_city')
     address_canton = fields.Field(column_name=_('Canton'),
                                   attribute='address_canton')
+    website = fields.Field(column_name=_('Site web'),
+                           attribute='website')
     coordinator_fullname = fields.Field(column_name=_('Coordinateur'),
                                         attribute='coordinator_fullname')
+    coordinator_phone = fields.Field(column_name=_('Téléphone'),
+                                     attribute='coordinator_phone')
     coordinator_natel = fields.Field(column_name=_('Natel'),
                                      attribute='coordinator_natel')
     coordinator_email = fields.Field(column_name=_('Email'),
@@ -55,5 +55,5 @@ class OrganizationResource(resources.ModelResource):
 
     class Meta:
         model = Organization
-        fields = ORGA_FIELDS
-        export_order = ORGA_FIELDS
+        fields = EXPORT_FIELDS
+        export_order = EXPORT_FIELDS

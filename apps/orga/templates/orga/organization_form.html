@@ -20,9 +20,11 @@
             <div role="tabpanel" class="tab-pane active" id="addr">
                 {% bootstrap_field form.name layout='horizontal' size='small' %}
                 {% include "address_bootstrap_form.html" %}
+                {% bootstrap_field form.website layout='horizontal' size='small' %}
             </div>
             <div role="tabpanel" class="tab-pane active" id="coord">
                 {% bootstrap_field form.coordinator_fullname layout='horizontal' size='small' %}
+                {% bootstrap_field form.coordinator_phone layout='horizontal' size='small' %}
                 {% bootstrap_field form.coordinator_natel layout='horizontal' size='small' %}
                 {% bootstrap_field form.coordinator_email layout='horizontal' size='small' %}
             </div>

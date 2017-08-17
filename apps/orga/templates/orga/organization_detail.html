@@ -28,6 +28,10 @@
                         {% endif %}
                     </div>
                 </dd>
+                {% if organization.website %}
+                    <dt>{% trans "Site web" %}</dt>
+                        <dd><a href="{{ organization.website }}">{{ organization.website }}</a></dd>
+                {% endif %}
             </dl>
           </div>
           <div role="tabpane" class="tab-pane" id="contacts">
@@ -42,7 +46,11 @@
                 {% endif %}
                 {% if organization.coordinator_natel %}
                     <dt>{% trans "Natel" %}</dt>
-                        <dd><a class="tel" href="tel:{{ organization.coordinator_natel|tel_int }}">{{ organization.coordinator_natel }}</a></dd>
+                        <dd>{{ organization.coordinator_natel|tel_link }}</a></dd>
+                {% endif %}
+                {% if organization.coordinator_phone %}
+                    <dt>{% trans "Téléphone" %}</dt>
+                        <dd>{{ organization.coordinator_phone|tel_link }}</dd>
                 {% endif %}
             </dl>
           </div>

@@ -24,6 +24,7 @@ from localflavor.ch.forms import CHPhoneNumberField, CHStateSelect, CHZipCodeFie
 from apps.user import STATE_CHOICES_WITH_DEFAULT
 
 from .models import Organization
+from . import ORGA_FIELDS
 
 
 class OrganizationForm(forms.ModelForm):
@@ -45,12 +46,9 @@ class OrganizationForm(forms.ModelForm):
                                        choices=STATE_CHOICES_WITH_DEFAULT,
                                        required=False)
     address_zip = CHZipCodeField(label=_('NPA'), max_length=4, required=False)
+    coordinator_phone = CHPhoneNumberField(label=_('Téléphone'), required=False)
     coordinator_natel = CHPhoneNumberField(label=_('Natel'), required=False)
 
     class Meta:
         model = Organization
-        fields = ['name', 'address_street', 'address_no', 'address_additional',
-                  'address_zip', 'address_city', 'address_canton',
-                  'coordinator_fullname', 'coordinator_phone', 'coordinator_natel',
-                  'coordinator_email', 'comments',
-                  ]
+        fields = ORGA_FIELDS
