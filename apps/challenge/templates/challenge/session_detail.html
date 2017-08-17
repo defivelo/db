@@ -42,7 +42,7 @@
                 <small>{{ session.orga.coordinator_fullname }}
                     {% if session.orga.coordinator_natel %}
                         <br class="hidden-print"/><span class="visible-print-inline"> |</span>
-                        <a href="tel:{{ session.orga.coordinator_natel|tel_int }}">{{ session.orga.coordinator_natel }}</a>
+                        {{ session.orga.coordinator_natel|tel_link }}
                     {% endif %}
                 </small>
             {% endif %}
@@ -65,7 +65,7 @@
         <tr><th>{% trans "Mauvais temps" %}</th><td>{{ session.fallback }}</td></tr>
     {% endif %}
     {% if session.n_bikes > 0 or session.n_helmets > 0 %}
-        <tr><th>{% trans "Besoins" %}</th>
+        <tr><th>{% trans "Vélos" %}</th>
             <td>{% if session.n_bikes > 0 %}
                     {% blocktrans count n=session.n_bikes %}1 vélo{% plural %}{{ n }} vélos{% endblocktrans %}
                 {% endif %}
@@ -93,7 +93,7 @@
     {% endif %}
     </table>
     <div class="hidden-print">
-        <a class="btn btn-primary pull-right" href="{% url 'season-availabilities' pk=season.pk %}#sess{{session.pk}}">{% trans "Disponibilités" %}</a>
+        <a class="btn btn-primary pull-right" href="{% url 'season-availabilities' pk=season.pk %}#sess{{session.pk}}">{% trans "Planning" %}</a>
     </div>
     <h2 class="hidden-print">{% trans "Qualifs" %}</h2>
     <table class="table">
@@ -112,7 +112,7 @@
         <tr><th>{% trans "Classe" %}</th>
                 {% for quali in session.qualifications.all %}
                     <td>{{ quali.class_teacher_fullname }}<br />
-                        <small><a href="tel:{{ quali.class_teacher_natel|tel_int }}">{{ quali.class_teacher_natel }}</a></small>
+                        <small>{{ quali.class_teacher_natel|tel_link }}</small>
                         {% if quali.n_participants %}<br />
                             {% blocktrans with n=quali.n_participants %}{{ n }} participants{% endblocktrans %}
                         {% endif %}
@@ -137,7 +137,7 @@
         </tr>
         <tr><th>{% trans "Parcours" %}</th>
                 {% for quali in session.qualifications.all %}<td><em>{{ forloop.counter|lettercounter }}</em></td>{% endfor %}</tr>
-        <tr><th>{% trans "Besoins" %}</th>
+        <tr><th>{% trans "Vélos" %}</th>
                 {% for quali in session.qualifications.all %}
                     <td>{% if quali.n_bikes %}
                             {% blocktrans count n=quali.n_bikes %}1 vélo{% plural %}{{ n }} vélos{% endblocktrans %}

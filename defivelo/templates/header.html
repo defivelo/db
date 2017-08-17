@@ -13,7 +13,7 @@
                 </a>
                 <ul class="dropdown-menu">
                     <li{% if 'season-detail' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-detail' season.pk %}">{% trans "Toutes les sessions" %}</a></li>
-                    <li{% if 'season-availability' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-availabilities' season.pk %}">{% trans "Disponibilités" %}</a></li>
+                    <li{% if 'season-availability' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-availabilities' season.pk %}">{% trans "Planning" %}</a></li>
                     <li role="separator" class="divider"></li>
                     <li{% if 'season-helperlist' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-helperlist' season.pk %}">{% trans "Liste des moniteurs" %}</a></li>
                     <li{% if 'season-actorlist' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-actorlist' season.pk %}">{% trans "Liste des intervenants" %}</a></li>
@@ -26,7 +26,7 @@
                     {% for season in current_seasons %}
                         <li>
                             {% if user|can:'challenge_season_crud' %}
-                                <a href="{{ season.get_absolute_url }}"">
+                                <a href="{{ season.get_absolute_url }}">
                             {% else %}
                                 <a href="{% url 'season-availabilities-update' pk=season.pk helperpk=user.pk %}"
                                 title="{% trans "Mes disponibilités" %}">

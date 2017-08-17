@@ -20,14 +20,14 @@ from __future__ import unicode_literals
 from datetime import date
 
 import factory
-from factory import fuzzy
+from factory import Faker, fuzzy
 from factory.django import DjangoModelFactory
 
 from apps.common import DV_STATES
 from apps.orga.tests.factories import OrganizationFactory
 from apps.user.tests.factories import UserFactory
 
-from ..models import Season, Session
+from ..models import Qualification, Season, Session
 
 
 class SeasonFactory(DjangoModelFactory):
@@ -47,3 +47,11 @@ class SessionFactory(DjangoModelFactory):
 
     orga = factory.SubFactory(OrganizationFactory)
     day = fuzzy.FuzzyDate(date(2015, 5, 2), date(2015, 6, 30))
+
+
+class QualificationFactory(DjangoModelFactory):
+    class Meta:
+        model = Qualification
+
+    name = Faker('name')
+    class_teacher_fullname = Faker('name')

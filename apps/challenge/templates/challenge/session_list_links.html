@@ -2,7 +2,7 @@
 <div class="hidden-print">
     <a class="btn btn-default" href="{% url 'season-list' year=now.year %}">{% trans "Retour à la liste des saisons" %}</a>
     <a class="btn btn-default" href="{% url 'season-update' season.pk %}"><span class="glyphicon glyphicon-pencil"></span> {% trans "Éditer la saison" %}</a>
-    <a class="btn btn-primary" href="{% url 'season-availabilities' season.pk %}"><span class="glyphicon glyphicon-th"></span> {% trans "Disponibilités" %}</a>
+    <a class="btn btn-primary" href="{% url 'season-availabilities' season.pk %}"><span class="glyphicon glyphicon-th"></span> {% trans "Planning" %}</a>
     
     <div class="btn-group" role="group" aria-label="exports">
         {% include 'export_buttons.html' with exporturl='season-export' exportargs=season.pk filter_querystring=filter_querystring only %}

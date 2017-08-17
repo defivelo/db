@@ -77,5 +77,11 @@
 {% compress js %}
     <script type="text/javascript" src="{% static 'moment-with-locales.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/bootstrap-datetimepicker.min.js' %}"></script>
+    {% if request.LANGUAGE_CODE in 'fr,de,it'|slice:',' %}
+        {% with 'autocomplete_light/vendor/select2/dist/js/i18n/'|add:request.LANGUAGE_CODE|add:'.js' as select2_i18n %}
+            <script type="text/javascript" src="{% static select2_i18n %}"></script>
+        {% endwith %}
+    {% endif %}
 {% endcompress %}
 </body>
+</html>

@@ -27,7 +27,7 @@ from apps.user.models import FORMATION_M1
 from apps.user.tests.factories import UserFactory
 from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient
 
-from .factories import SeasonFactory, SessionFactory
+from .factories import QualificationFactory, SeasonFactory, SessionFactory
 
 freeforallurls = ['season-list']
 restrictedgenericurls = ['season-create']
@@ -60,6 +60,8 @@ class SeasonTestCaseMixin(TestCase):
             s.orga.address_canton = canton
             s.orga.save()
             s.save()
+            for i in range(0, 4):
+                QualificationFactory(session=s).save()
             self.sessions.append(s)
 
         self.foreigncantons = [
@@ -74,6 +76,8 @@ class SeasonTestCaseMixin(TestCase):
             s.orga.address_canton = canton
             s.orga.save()
             s.save()
+            for i in range(0, 4):
+                QualificationFactory(session=s).save()
             self.foreignsessions.append(s)
 
 
@@ -134,7 +138,9 @@ class AuthUserTest(SeasonTestCaseMixin):
             self.client.user.profile.affiliation_canton = \
                 self.season.cantons[0]
             self.client.user.profile.save()
-            self.assertEqual(self.client.get(url).status_code, 200, url)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, url)
+            self.assertTemplateUsed(response, 'widgets/BSRadioSelect_option.html')
 
             # Fails, we have a common canton, but no Formation
             self.client.user.profile.formation = ''
