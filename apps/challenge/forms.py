@@ -335,10 +335,14 @@ class SeasonAvailabilityForm(forms.Form):
                             fieldinit = self.initial[availkey]
                         except:
                             fieldinit = ''
+                        try:
+                            forbid_absence = self.initial[staffkey]
+                        except KeyError:
+                            forbid_absence = False
                         # Trick to pass the 'chosen' information through
                         self.fields[availkey] = forms.ChoiceField(
                             choices=HelperSessionAvailability.AVAILABILITY_CHOICES,  # NOQA
-                            widget=BSRadioSelect(forbid_absence=self.initial[staffkey]),
+                            widget=BSRadioSelect(forbid_absence=forbid_absence),
                             required=False, initial=fieldinit
                         )
 
