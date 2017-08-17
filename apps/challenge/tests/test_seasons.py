@@ -80,6 +80,7 @@ class SeasonTestCaseMixin(TestCase):
                 QualificationFactory(session=s).save()
             self.foreignsessions.append(s)
 
+
 class AuthUserTest(SeasonTestCaseMixin):
     def setUp(self):
         self.client = AuthClient()
