@@ -64,6 +64,7 @@ def tel_int(tel):
 def tel_link(tel):
     if not tel:
         return ''
+    return tel
     return mark_safe(
         '<a href="tel:{tel_int}">{tel}</a>'
         .format(tel_int=tel_int(tel), tel=tel)
