@@ -65,7 +65,7 @@
         <tr><th>{% trans "Mauvais temps" %}</th><td>{{ session.fallback }}</td></tr>
     {% endif %}
     {% if session.n_bikes > 0 or session.n_helmets > 0 %}
-        <tr><th>{% trans "Besoins" %}</th>
+        <tr><th>{% trans "Vélos" %}</th>
             <td>{% if session.n_bikes > 0 %}
                     {% blocktrans count n=session.n_bikes %}1 vélo{% plural %}{{ n }} vélos{% endblocktrans %}
                 {% endif %}
@@ -137,7 +137,7 @@
         </tr>
         <tr><th>{% trans "Parcours" %}</th>
                 {% for quali in session.qualifications.all %}<td><em>{{ forloop.counter|lettercounter }}</em></td>{% endfor %}</tr>
-        <tr><th>{% trans "Besoins" %}</th>
+        <tr><th>{% trans "Vélos" %}</th>
                 {% for quali in session.qualifications.all %}
                     <td>{% if quali.n_bikes %}
                             {% blocktrans count n=quali.n_bikes %}1 vélo{% plural %}{{ n }} vélos{% endblocktrans %}

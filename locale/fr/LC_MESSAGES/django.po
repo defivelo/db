@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-17 11:37+0200\n"
+"POT-Creation-Date: 2017-08-17 11:46+0200\n"
 "PO-Revision-Date: 2015-10-08 12:11+0100\n"
 "Last-Translator: Didier Raboud <me+defivelo@odyx.org>\n"
 "Language: fr\n"
@@ -596,7 +596,7 @@ msgstr ""
 
 #: apps/challenge/templates/challenge/session_detail.html:68
 #: apps/challenge/templates/challenge/session_detail.html:140
-msgid "Besoins"
+msgid "Vélos"
 msgstr ""
 
 #: apps/challenge/templates/challenge/session_detail.html:70

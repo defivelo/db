@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Intranet\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-17 11:37+0200\n"
+"POT-Creation-Date: 2017-08-17 11:46+0200\n"
 "PO-Revision-Date: 2017-01-31 20:07+0100\n"
 "Last-Translator: Laura Mosimann <laura.mosimann@label-vert.ch>\n"
 "Language-Team: German (http://www.transifex.com/defivelo/db/language/de/)\n"
@@ -608,8 +608,8 @@ msgstr "Austragungsort des Halbtages"
 
 #: apps/challenge/templates/challenge/session_detail.html:68
 #: apps/challenge/templates/challenge/session_detail.html:140
-msgid "Besoins"
-msgstr "Bedarf"
+msgid "Vélos"
+msgstr ""
 
 #: apps/challenge/templates/challenge/session_detail.html:70
 #: apps/challenge/templates/challenge/session_detail.html:143
@@ -1657,6 +1657,9 @@ msgstr "Nicht ausgewählt"
 #: defivelo/urls.py:52
 msgid "Intranet DÉFI VÉLO"
 msgstr "DEFI VELO Intranet"
+
+#~ msgid "Besoins"
+#~ msgstr "Bedarf"
 
 #~ msgid "{fullname} <{email}>"
 #~ msgstr "{fullname} <{email}>"
