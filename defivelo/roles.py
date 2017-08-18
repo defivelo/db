@@ -46,7 +46,6 @@ class StateManager(AbstractUserRole):
         'user_crud_dv_public_fields': True,
         'user_crud_dv_private_fields': True,
         'user_create': True,
-        'user_deletions': True,
 
         'orga_crud': True,
 
