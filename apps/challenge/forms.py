@@ -113,7 +113,7 @@ class SessionForm(forms.ModelForm):
                                      )}))
     helpers_time = SwissTimeField(label=_('Heure rendez-vous moniteurs'),
                                   required=False)
-    superleader = UserAutoComplete(label=_('Moniteur +'),
+    superleader = UserAutoComplete(label=_('Moniteur + / Photographe'),
                                    queryset=get_user_model().objects,
                                    url='user-AllPersons-ac',
                                    required=False)

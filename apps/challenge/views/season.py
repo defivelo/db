@@ -250,7 +250,7 @@ class SeasonExportView(ExportMixin, SeasonAvailabilityMixin,
             u('Heures'),
             u('Nombre de qualifs'),
             # Logistique
-            u('Moniteur +'),
+            u('Moniteur + / Photographe'),
             u('Mauvais temps'),
             u('Pommes'),
             u('Total vélos'),
