@@ -273,55 +273,6 @@ class PowerUserTest(ProfileTestCase):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200, url)
 
-    def test_send_creds(self):
-        nmails = 0
-        for otheruser in self.users:
-            url = tryurl('user-sendcredentials', otheruser)
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, 200, url)
-            # Now post to it, to get the mail sent
-            response = self.client.post(url, {})
-            self.assertEqual(response.status_code, 302, url)
-
-            nmails += 1
-            self.assertEqual(len(mail.outbox), nmails)
-
-            # Verify what they are from the DB
-            dbuser = get_user_model().objects.get(pk=otheruser.pk)
-            self.assertTrue(dbuser.is_active)
-            self.assertTrue(dbuser.has_usable_password())
-            self.assertTrue(dbuser.profile.can_login)
-            self.assertFalse(dbuser.profile.deleted)
-
-            # Second try should fail, now that each of the users has a
-            # a valid email and got a password sent
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, 403, url)
-
-            # Allowed to re-send creds though, any number of times
-            for i in range(2):
-                url = tryurl('user-resendcredentials', otheruser)
-                response = self.client.get(url)
-                self.assertEqual(response.status_code, 200, url)
-
-                response = self.client.post(url, {})
-                self.assertEqual(response.status_code, 302, url)
-
-                nmails += 1
-                self.assertEqual(len(mail.outbox), nmails)
-
-            url = tryurl('user-delete', otheruser)
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, 200, url)
-            # Now post to it, to remove the user
-            response = self.client.post(url, {})
-            self.assertEqual(response.status_code, 302, url)
-            # Get again
-            dbuser = get_user_model().objects.get(pk=otheruser.pk)
-
-            self.assertFalse(dbuser.profile.can_login)
-            self.assertTrue(dbuser.profile.deleted)
-
 
 class StateManagerUserTest(ProfileTestCase):
     def setUp(self):
@@ -408,4 +359,3 @@ class SuperUserTest(ProfileTestCase):
     def setUp(self):
         super(SuperUserTest, self).setUp()
         self.client = SuperUserAuthClient()
-
