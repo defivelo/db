@@ -50,6 +50,7 @@ USERSTATUS_ACTIVE = 10
 USERSTATUS_RESERVE = 20
 USERSTATUS_INACTIVE = 30
 USERSTATUS_ARCHIVE = 40
+USERSTATUS_DELETED = 99
 
 USERSTATUS_CHOICES = (
     (USERSTATUS_UNDEF, '---------'),
@@ -57,7 +58,10 @@ USERSTATUS_CHOICES = (
     (USERSTATUS_RESERVE, _('Réserve')),
     (USERSTATUS_INACTIVE, _('Inactif')),
     (USERSTATUS_ARCHIVE, _('Archive')),
+    (USERSTATUS_DELETED, _('Supprimé')),
 )
+
+USERSTATUS_CHOICES_NORMAL = tuple([us for us in USERSTATUS_CHOICES if us[0] < 90])
 
 BAGSTATUS_NONE = 0
 BAGSTATUS_LOAN = 10
@@ -186,6 +190,8 @@ class UserProfile(Address, models.Model):
             icon = 'hourglass'
         elif self.status == USERSTATUS_ARCHIVE:
             icon = 'folder-close'
+        elif self.status == USERSTATUS_DELETED:
+            icon = 'trash'
         if icon:
             return mark_safe(STDGLYPHICON.format(icon=icon, title=title))
         return ''
@@ -198,6 +204,8 @@ class UserProfile(Address, models.Model):
             css_class = 'warning'  # Orange
         elif self.status == USERSTATUS_INACTIVE:
             css_class = 'danger'  # Red
+        elif self.status == USERSTATUS_DELETED:
+            css_class = 'default disabled'  # Black
         return css_class
 
     @property
@@ -399,6 +407,10 @@ class UserProfile(Address, models.Model):
             return qs.filter(cantons__regex=cantons_regexp)
 
         return qs.none()
+
+    @property
+    def deleted(self):
+        return self.status == USERSTATUS_DELETED
 
     def __str__(self):
         return self.user.get_full_name()

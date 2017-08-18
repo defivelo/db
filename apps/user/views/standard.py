@@ -86,9 +86,17 @@ class UserCreate(HasPermissionsMixin, ProfileMixin, SuccessMessageMixin,
 
 
 class UserProfileFilterSet(FilterSet):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, data=None, *args, **kwargs):
         cantons = kwargs.pop('cantons', None)
-        super(UserProfileFilterSet, self).__init__(**kwargs)
+        if data is None:
+            data = {}
+            for name, f in self.base_filters.items():
+                initial = f.extra.get('initial')
+                # filter param is either missing or empty, use initial as default
+                if not data.get(name) and initial:
+                    data[name] = initial
+
+        super(UserProfileFilterSet, self).__init__(data, *args, **kwargs)
         if cantons:
             if len(cantons) > 1:
                 choices = \
