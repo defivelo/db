@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/defivelo/db.svg?branch=master)](https://travis-ci.org/defivelo/db)
+
 # L'Intranet Défi Vélo
 
 Ce dépôt contient tout ce qui est nécessaire à faire tourner l'Intranet Défi Vélo.
