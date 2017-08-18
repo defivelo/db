@@ -23,6 +23,7 @@ from rolepermissions.roles import AbstractUserRole
 
 from apps.common import DV_STATES
 
+
 @memoize()
 def user_cantons(user):
 
