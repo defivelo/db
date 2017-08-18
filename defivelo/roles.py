@@ -17,28 +17,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+from memoize import memoize
 from rolepermissions.checkers import has_permission
 from rolepermissions.roles import AbstractUserRole
 
 from apps.common import DV_STATES
 
-
+@memoize()
 def user_cantons(user):
-    if user.pk in _user_cantons:
-        return _user_cantons[user.pk]
 
     if has_permission(user, 'cantons_all'):
-        _user_cantons[user.pk] = DV_STATES
-        return _user_cantons[user.pk]
-    if has_permission(user, 'cantons_mine'):
-        _user_cantons[user.pk] = [
-            m.canton for m in user.managedstates.all()
-        ]
-        return _user_cantons[user.pk]
-    raise LookupError("No user cantons")
-
-
-_user_cantons = {}
+        return DV_STATES
+    elif has_permission(user, 'cantons_mine'):
+        return [m.canton for m in user.managedstates.all()]
+    else:
+        raise LookupError("No user cantons")
 
 
 class StateManager(AbstractUserRole):

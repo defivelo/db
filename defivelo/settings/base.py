@@ -77,6 +77,7 @@ UPSTREAM_APPS = (
     'taggit',
     'article',
     'rolepermissions',
+    'memoize',
 )
 
 # Project apps tested by jenkins (everything in apps/)
