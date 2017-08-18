@@ -66,11 +66,13 @@ USERSTATUS_CHOICES_NORMAL = tuple([us for us in USERSTATUS_CHOICES if us[0] < 90
 BAGSTATUS_NONE = 0
 BAGSTATUS_LOAN = 10
 BAGSTATUS_PAID = 20
+BAGSTATUS_GIFT = 20
 
 BAGSTATUS_CHOICES = (
     (BAGSTATUS_NONE, '---'),
     (BAGSTATUS_LOAN, _('En prêt')),
     (BAGSTATUS_PAID, _('Payé')),
+    (BAGSTATUS_GIFT, _('Offert')),
 )
 
 STDGLYPHICON = (
@@ -265,7 +267,10 @@ class UserProfile(Address, models.Model):
             icon = 'unchecked'
         elif self.bagstatus == BAGSTATUS_LOAN:
             icon = 'new-window'
-        elif self.bagstatus == BAGSTATUS_PAID:
+        elif (
+            self.bagstatus == BAGSTATUS_PAID or
+            self.bagstatus == BAGSTATUS_GIFT
+        ):
             icon = 'check'
         if icon:
             return mark_safe(STDGLYPHICON.format(icon=icon, title=title))
