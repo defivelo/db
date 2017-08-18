@@ -24,6 +24,7 @@ from .views import (
     ResendUserCredentials, SendUserCredentials, UserCreate, UserDetail, UserList, UserListExport, UserUpdate,
 )
 from .views.autocomplete import Actors, AllPersons, Helpers, Leaders, PersonsRelevantForSessions
+from .views.deletes import UserDelete
 
 urlpatterns = [
     url(r'^$', never_cache(UserList.as_view()), name="user-list"),
@@ -39,6 +40,9 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/resendcreds/$',
         never_cache(ResendUserCredentials.as_view()),
         name="user-resendcredentials"),
+    url(r'^(?P<pk>[0-9]+)/delete/$',
+        never_cache(UserDelete.as_view()),
+        name="user-delete"),
     url(r'^me/$', never_cache(UserDetail.as_view()), name="profile-detail"),
     url(r'^(?P<pk>[0-9]+)/update/$', UserUpdate.as_view(), name="user-update"),
     url(r'^ac/all/$', AllPersons.as_view(), name='user-AllPersons-ac'),

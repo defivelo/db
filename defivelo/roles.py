@@ -67,6 +67,7 @@ class PowerUser(AbstractUserRole):
         'user_crud_dv_private_fields': True,
         'user_can_send_credentials': True,
         'user_can_resend_credentials': True,
+        'user_deletions': True,
 
         'home_article_crud': True,
 

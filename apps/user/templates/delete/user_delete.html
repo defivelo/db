@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load permission_tags %}
+
+{% block head_title %}{% blocktrans with name=userprofile.get_full_name %}Supprimer {{name}} ?{% endblocktrans %}{% endblock %}
+{% block content %}
+    <h2>{% blocktrans with name=userprofile.get_full_name %}Supprimer {{name}} ?{% endblocktrans %}
+    </h2>
+    {% if not initial_send %}
+        <div class="alert alert-danger">
+        {% blocktrans with name=userprofile.get_full_name %}Cette action va <b>marquer {{name}} comme supprimé</b>. Il ne pourra plus se connecter ni être sélectionné pour une Qualif' !{% endblocktrans %}
+        </div>
+    {% endif %}
+    <form method="POST" action="" class="form-horizontal">
+        {% csrf_token %}
+        {% bootstrap_form form layout='horizontal' size='small' %}
+        {% buttons %}
+            <button type="submit" class="btn btn-danger pull-right">{% trans 'Supprimer' %}</button>
+            <a class="btn btn-default" href="{% url 'user-detail' userprofile.id %}">{% trans "Annuler" %}</a>
+        {% endbuttons %}
+    </form>
+{% endblock %}

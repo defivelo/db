@@ -30,7 +30,7 @@ from apps.common import DV_LANGUAGES, DV_LANGUAGES_WITH_DEFAULT, DV_STATE_CHOICE
 from apps.common.forms import SwissDateField
 
 from . import STATE_CHOICES_WITH_DEFAULT
-from .models import BAGSTATUS_CHOICES, FORMATION_CHOICES, USERSTATUS_CHOICES
+from .models import BAGSTATUS_CHOICES, FORMATION_CHOICES, USERSTATUS_CHOICES_NORMAL
 
 
 class UserProfileForm(forms.ModelForm):
@@ -95,7 +95,7 @@ class UserProfileForm(forms.ModelForm):
                                        ),
                                        required=False)
     status = forms.ChoiceField(label=_('Statut'),
-                               choices=USERSTATUS_CHOICES,
+                               choices=USERSTATUS_CHOICES_NORMAL,
                                required=False)
     pedagogical_experience = forms.CharField(label=_('Expérience pédagogique'),
                                              required=False)

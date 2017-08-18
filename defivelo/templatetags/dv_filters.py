@@ -34,7 +34,7 @@ from defivelo.roles import user_cantons
 register = template.Library()
 
 
-@register.assignment_tag
+@register.simple_tag
 def vcs_version():
     return settings.VCS_VERSION
 

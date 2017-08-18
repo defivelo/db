@@ -85,18 +85,20 @@
                 {{ user.profile.actor_icon|default:"" }}
             </td>
             <td>
-                {% if request.user == user or request.user|can:"user_edit_other" and request.user|inusercantons:user.profile.affiliation_canton %}
-                <a class="btn btn-primary btn-xs" href="{% url 'user-update' pk=user.pk %}">
-                    <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="{% trans "Éditer" %}"></span>
-                </a>
-                {% endif %}
-                {% if user.profile.can_login %}
-                    <span class="btn btn-disabled btn-xs">{{ user.profile.access_level_icon }}</span>
-                {% else %}
-                    {% if request.user|can:"user_can_send_credentials" and request.user.pk != user.pk %}
-                    <a class="btn btn-default btn-xs" href="{% url 'user-sendcredentials' pk=user.pk %}">
-                        <span class="glyphicon glyphicon-envelope" aria-hidden="true" title="{% trans "Envoyer les données de connexion" %}"></span>
+                {% if not user.profile.deleted %}
+                    {% if request.user == user or request.user|can:"user_edit_other" and request.user|inusercantons:user.profile.affiliation_canton %}
+                    <a class="btn btn-primary btn-xs" href="{% url 'user-update' pk=user.pk %}">
+                        <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="{% trans "Éditer" %}"></span>
                     </a>
+                    {% endif %}
+                    {% if user.profile.can_login %}
+                        <span class="btn btn-disabled btn-xs">{{ user.profile.access_level_icon }}</span>
+                    {% else %}
+                        {% if request.user|can:"user_can_send_credentials" and request.user.pk != user.pk %}
+                        <a class="btn btn-default btn-xs" href="{% url 'user-sendcredentials' pk=user.pk %}">
+                            <span class="glyphicon glyphicon-envelope" aria-hidden="true" title="{% trans "Envoyer les données de connexion" %}"></span>
+                        </a>
+                        {% endif %}
                     {% endif %}
                 {% endif %}
             </td>
