@@ -410,7 +410,18 @@ class UserProfile(Address, models.Model):
 
     @property
     def deleted(self):
-        return self.status == USERSTATUS_DELETED
+        return (
+            self.status == USERSTATUS_DELETED and
+            not self.user.is_active and
+            not self.user.has_usable_password()
+        )
+
+    def delete(self):
+        self.user.is_active = False
+        self.user.set_unusable_password()
+        self.user.save()
+        self.status = USERSTATUS_DELETED
+        self.save()
 
     def __str__(self):
         return self.user.get_full_name()
