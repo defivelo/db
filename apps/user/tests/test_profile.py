@@ -121,6 +121,7 @@ class AuthUserTest(ProfileTestCase):
         self.client.user.profile.affiliation_canton = 'GE'
         self.client.user.profile.bagstatus = BAGSTATUS_LOAN
         self.client.user.profile.status = USERSTATUS_ACTIVE
+        self.client.user.profile.language = 'fr'
         self.client.user.profile.save()
         url = reverse('user-update',
                       kwargs={'pk': self.client.user.pk})
@@ -131,6 +132,8 @@ class AuthUserTest(ProfileTestCase):
         # Test some update, that must go through
         initial['first_name'] = 'newfirstname'
         initial['activity_cantons'] = ['JU', 'GE', 'VD', ]
+        initial['language'] = 'de'
+        initial['languages_challenges'] = ['de', 'fr', ]
         initial['status'] = USERSTATUS_INACTIVE
 
         # And some that mustn't
@@ -147,6 +150,8 @@ class AuthUserTest(ProfileTestCase):
         # Updated
         self.assertEqual(me.first_name, 'newfirstname')
         self.assertEqual(me.profile.activity_cantons, ['JU', 'VD', ])
+        self.assertEqual(me.profile.language, 'de')
+        self.assertEqual(me.profile.languages_challenges, ['fr', ])
         self.assertEqual(me.profile.status, USERSTATUS_INACTIVE)
 
         # Not updated
