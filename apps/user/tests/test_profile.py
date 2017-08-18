@@ -38,8 +38,6 @@ myurlsforoffice = ['user-list', 'user-list-export', ]
 othersurls = ['user-detail', 'user-update', 'user-create',
               'user-sendcredentials', ]
 
-superadminurls = ['user-resendcredentials', ]
-
 profile_autocompletes = ['Actors', 'AllPersons', 'Leaders', 'Helpers',
                          'PersonsRelevantForSessions']
 
