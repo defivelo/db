@@ -98,7 +98,7 @@
     <h2 class="hidden-print">{% trans "Qualifs" %}</h2>
     <table class="table">
     {% if session.qualifications.count > 0 %}
-        <tr><td></td>
+        <tr><th>{% trans "Classe" %}</th>
             {% for quali in session.qualifications.all %}
                 <th>{% if not quali.errors %}{% include "ok.html" %}{% endif%}
                 {{ forloop.counter }} - <a href="{% url 'quali-update' seasonpk=season.pk sessionpk=session.pk pk=quali.pk %}">{{ quali.name }}</a>
@@ -109,7 +109,7 @@
                 </th>
             {% endfor %}
         </tr>
-        <tr><th>{% trans "Classe" %}</th>
+        <tr><td></td>
                 {% for quali in session.qualifications.all %}
                     <td>{{ quali.class_teacher_fullname }}<br />
                         <small>{{ quali.class_teacher_natel|tel_link }}</small>
