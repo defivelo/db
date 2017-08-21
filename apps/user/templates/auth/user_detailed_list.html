@@ -28,10 +28,12 @@
             </td>
             <td>{{ user.first_name }}</td>
             <td>{{ user.last_name }}</td>
-            <td>{% if user.profile.natel %}<a href="tel:{{ user.profile.natel|tel_int }}">{{ user.profile.natel }}</a>{% endif %}</td>
+            <td>{% if user.profile.natel %}{{ user.profile.natel|tel_link }}{% endif %}</td>
             <td>{% if user.email %}<a href="mailto:{{ user.profile.mailtolink|urlencode }}">{{ user.email }}</a>{% endif %}</td>
         </tr>
     {% endfor %}
     </tbody>
     </table>
+
+    {% include 'export_buttons.html' with printonly=True %}
 {% endblock %}

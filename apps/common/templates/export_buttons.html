@@ -1,19 +1,21 @@
 {% load i18n %}
-<div class="btn-group" role="group" aria-label="exports">
+<div class="btn-group hidden-print" role="group" aria-label="exports">
     <a class="btn btn-default btn-sm" title="{% blocktrans %}Imprimer{% endblocktrans %}"
         href="javascript:window.print()">
         <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
     </a>
-    {% with 'ods xls csv' as formats %}
-        {% for format in formats.split %}
-            <a class="btn btn-info btn-sm" title="{% blocktrans %}Télécharger au format {{ format }}{% endblocktrans %}"
-                href="{% if seasonpk %}{% url exporturl seasonpk exportargs format %}{% else %}{% url exporturl exportargs format %}{% endif %}?{{ filter_querystring }}"
-                ">
-                {% ifchanged %}
-                    <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
-                {% endifchanged %}
-                {{ format }}
-            </a>
-        {% endfor %}
-    {% endwith %}
+    {% if not printonly %}
+        {% with 'ods xls csv' as formats %}
+            {% for format in formats.split %}
+                <a class="btn btn-info btn-sm" title="{% blocktrans %}Télécharger au format {{ format }}{% endblocktrans %}"
+                    href="{% if seasonpk %}{% url exporturl seasonpk exportargs format %}{% else %}{% url exporturl exportargs format %}{% endif %}?{{ filter_querystring }}"
+                    ">
+                    {% ifchanged %}
+                        <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
+                    {% endifchanged %}
+                    {{ format }}
+                </a>
+            {% endfor %}
+        {% endwith %}
+    {% endif %}
 </div>
