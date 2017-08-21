@@ -85,7 +85,7 @@ class Season(models.Model):
         return reverse('season-detail', args=[self.pk])
 
     def desc(self):
-        return _('{depuis_mois} à {jusqu_mois} ({cantons})').format(
+        return _('{cantons} - {depuis_mois} à {jusqu_mois}').format(
             depuis_mois=date(self.begin, "F").title(),
             jusqu_mois=date(self.end, "F Y"),
             cantons=", ".join(self.cantons),
