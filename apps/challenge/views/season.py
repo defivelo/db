@@ -38,7 +38,7 @@ from tablib import Dataset
 
 from apps.common import CANTONS_REGEXP, DV_STATES
 from apps.common.views import ExportMixin
-from apps.user.models import FORMATION_M2
+from apps.user.models import FORMATION_M2, USERSTATUS_DELETED
 from apps.user.views import ActorsList, HelpersList
 from defivelo.roles import user_cantons
 from defivelo.views import MenuView
@@ -138,7 +138,7 @@ class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
 class SeasonAvailabilityMixin(SeasonMixin):
     def potential_helpers(self, qs=None):
         if not qs:
-            qs = get_user_model().objects
+            qs = get_user_model().objects.exclude(profile__status=USERSTATUS_DELETED)
             if self.season:
                 seasoncantons = self.season.cantons
                 # S'il y au moins un canton en commun

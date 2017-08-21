@@ -72,9 +72,7 @@ class Helpers(PersonAutocomplete):
 
     def get_queryset(self):
         qs = super(Helpers, self).get_queryset()
-        return qs.filter(
-                Q(profile__formation__in=FORMATION_KEYS)
-            )
+        return qs.filter(profile__formation__in=FORMATION_KEYS)
 
     def get_result_label(self, choice):
         return "{name} {icon}".format(
@@ -85,9 +83,7 @@ class Helpers(PersonAutocomplete):
 class Leaders(PersonAutocomplete):
     def get_queryset(self):
         qs = super(Leaders, self).get_queryset()
-        return qs.filter(
-                Q(profile__formation=FORMATION_M2)
-        )
+        return qs.filter(profile__formation=FORMATION_M2)
 
 
 class Actors(PersonAutocomplete):

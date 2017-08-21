@@ -98,6 +98,15 @@ DV_PRIVATE_FIELDS = ['comments']
 STD_PROFILE_FIELDS = PERSONAL_FIELDS + DV_PUBLIC_FIELDS + DV_PRIVATE_FIELDS
 
 
+class ExistingUserProfileManager(models.Manager):
+    def get_queryset(self):
+        return (
+            super(ExistingUserProfileManager, self)
+            .get_queryset()
+            .exclude(status=USERSTATUS_DELETED)
+        )
+
+
 @python_2_unicode_compatible
 class UserProfile(Address, models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
@@ -151,6 +160,8 @@ class UserProfile(Address, models.Model):
         default=BAGSTATUS_NONE)
     bagstatus_updatetime = models.DateTimeField(null=True, blank=True)
     comments = models.TextField(_('Remarques'), blank=True)
+
+    objects_existing = ExistingUserProfileManager()
 
     def save(self, *args, **kwargs):
         if self.activity_cantons:
