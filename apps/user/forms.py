@@ -27,7 +27,7 @@ from multiselectfield.forms.fields import MultiSelectFormField
 
 from apps.challenge.models import QualificationActivity
 from apps.common import DV_LANGUAGES, DV_LANGUAGES_WITH_DEFAULT, DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT
-from apps.common.forms import SwissDateField
+from apps.common.forms import BS3CountriesField, SwissDateField
 
 from . import STATE_CHOICES_WITH_DEFAULT
 from .models import BAGSTATUS_CHOICES, FORMATION_CHOICES, USERSTATUS_CHOICES_NORMAL
@@ -63,6 +63,7 @@ class UserProfileForm(forms.ModelForm):
     languages_challenges = MultiSelectFormField(
         label=_('Prêt à animer en'), choices=DV_LANGUAGES,
         required=False)
+    nationality = BS3CountriesField(label=_('Nationalité'))
 
     address_street = forms.CharField(label=_('Rue'), max_length=255,
                                      required=False)

@@ -55,6 +55,7 @@
             </div>
             <div role="tabpanel" class="tab-pane" id="administrativia">
                 {% bootstrap_field form.birthdate layout='horizontal' size='small' %}
+                {% bootstrap_field form.nationality layout='horizontal' size='small' %}
                 {% trans "CCP ?" as ccp %}
                 {% bootstrap_field form.iban layout='horizontal' size='small' addon_after=ccp %}
                 {% bootstrap_field form.social_security layout='horizontal' size='small' %}

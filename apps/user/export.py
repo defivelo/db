@@ -85,6 +85,8 @@ class UserResource(resources.ModelResource):
         column_name=_('Date de naissance'), attribute='profile__birthdate',
         widget=widgets.DateWidget(format='%d.%m.%Y')
     )
+    profile__nationality = fields.Field(
+        column_name=_('Nationalité'), attribute='profile__nationality')
     profile__social_security = fields.Field(
         column_name=_('N° AVS'), attribute='profile__social_security')
     profile__pedagogical_experience = fields.Field(

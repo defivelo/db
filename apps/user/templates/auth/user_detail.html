@@ -1,8 +1,9 @@
 {% extends "base.html" %}
-{% load i18n %}
-{% load bootstrap3 %}
-{% load dv_filters %}
-{% load permission_tags %}
+{% load i18n bootstrap3 static dv_filters permission_tags %}
+
+{% block bootstrap3_extra_head %}
+    <link rel="stylesheet" href="{% static 'flags/sprite.css' %}" />
+{% endblock %}
 
 {% block head_title %}{{ userprofile.get_full_name }}{% endblock %}
 {% block content %}
@@ -91,6 +92,14 @@
                 </div>
                 <div role="tabpane" class="tab-pane" id="administrativia">
                     <dl class="dl-horizontal">
+                        {% if userprofile.profile.nationality %}
+                            <dt>{% trans "Nationalité" %}</dt>
+                                <dd>
+                                    <i class="{{ userprofile.profile.nationality.flag_css }}"
+                                        aria-label="{% blocktrans with country_code=userprofile.profile.nationality.name %}Drapeau de {{ country_code }}{% endblocktrans %}"></i>
+                                    {{ userprofile.profile.nationality.name }}
+                                </dd>
+                        {% endif %}
                         {% if userprofile.profile.iban %}
                             <dt>{% trans "N° IBAN" %}</dt>
                                 <dd><tt>{{ userprofile.profile.iban_nice }}</tt></dd>

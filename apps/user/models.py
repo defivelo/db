@@ -31,6 +31,7 @@ from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+from django_countries.fields import CountryField
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from localflavor.generic.models import IBANField
 from multiselectfield import MultiSelectField
@@ -83,6 +84,7 @@ STDGLYPHICON = (
 PERSONAL_FIELDS = ['language', 'languages_challenges', 'natel', 'birthdate',
                    'address_street', 'address_no', 'address_zip',
                    'address_city', 'address_canton',
+                   'nationality',
                    'iban', 'social_security',
                    'status', 'activity_cantons',
                    ]
@@ -119,6 +121,12 @@ class UserProfile(Address, models.Model):
                                             choices=DV_LANGUAGES,
                                             blank=True)
     birthdate = models.DateField(_('Date'), blank=True, null=True)
+    nationality = CountryField(_('Nationalité'), default='CH')
+    work_permit = models.CharField(
+        _('Permis de travail (si pas suisse)'),
+        max_length=255,
+        blank=True
+    )
     iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)
     social_security = models.CharField(max_length=16, blank=True)
     natel = models.CharField(max_length=13, blank=True)
