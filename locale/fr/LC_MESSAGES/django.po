@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-22 11:54+0200\n"
+"POT-Creation-Date: 2017-08-22 12:21+0200\n"
 "PO-Revision-Date: 2015-10-08 12:11+0100\n"
 "Last-Translator: Didier Raboud <me+defivelo@odyx.org>\n"
 "Language: fr\n"
@@ -731,31 +731,41 @@ msgstr ""
 msgid "Saison mise à jour"
 msgstr ""
 
-#: apps/challenge/views/season.py:354
+#. Translators: Intervenant
+#: apps/challenge/views/season.py:245
+msgid "Int."
+msgstr ""
+
+#. Translators: Moniteur + / Photographe
+#: apps/challenge/views/season.py:247
+msgid "M+"
+msgstr ""
+
+#: apps/challenge/views/season.py:362
 msgid "Planning_Saison"
 msgstr ""
 
-#: apps/challenge/views/season.py:470
+#: apps/challenge/views/season.py:478
 msgid "Disponibilités mises à jour"
 msgstr ""
 
-#: apps/challenge/views/season.py:524
+#: apps/challenge/views/season.py:532
 msgid "Choix du personnel mises à jour"
 msgstr ""
 
-#: apps/challenge/views/season.py:617
+#: apps/challenge/views/season.py:625
 msgid "Saison créée"
 msgstr ""
 
-#: apps/challenge/views/season.py:622
+#: apps/challenge/views/season.py:630
 msgid "Saison supprimée"
 msgstr ""
 
-#: apps/challenge/views/season.py:628
+#: apps/challenge/views/season.py:636
 msgid "Moniteurs de la saison"
 msgstr ""
 
-#: apps/challenge/views/season.py:649
+#: apps/challenge/views/season.py:657
 msgid "Intervenants de la saison"
 msgstr ""
 

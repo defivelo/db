@@ -239,6 +239,14 @@ class SeasonExportView(ExportMixin, SeasonAvailabilityMixin,
     def export_filename(self):
         return _('Saison') + '-' + '-'.join(self.season.cantons)
 
+    def undetected_translations(self):
+        return [
+            # Translators: Intervenant
+            _('Int.'),
+            # Translators: Moniteur + / Photographe
+            _('M+'),
+        ]
+
     def get_dataset(self):
         dataset = Dataset()
         # Prépare le fichier
@@ -418,7 +426,7 @@ class SeasonPlanningExportView(ExportMixin, SeasonAvailabilityMixin,
                             break
                         elif user == quali.actor:
                             # Translators: Nom court pour 'Intervenant'
-                            label = u('I')
+                            label = u('Int.')
                             break
                     # Vérifie tout de même si l'utilisateur est déjà sélectionné
                     if not label and user.id in users_selected_in_session:
