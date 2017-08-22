@@ -150,11 +150,11 @@ class UserProfile(Address, models.Model):
                                            blank=True, null=True)
     formation_lastdate = models.DateField(_('Date de la dernière formation'),
                                           blank=True, null=True)
-    actor_for = models.ForeignKey(QualificationActivity,
-                                  verbose_name=_('Intervenant'),
-                                  related_name='actors',
-                                  limit_choices_to={'category': 'C'},
-                                  null=True, blank=True)
+    actor_for = models.ManyToManyField(QualificationActivity,
+                                       verbose_name=_('Intervenant'),
+                                       related_name='actors_multi',
+                                       limit_choices_to={'category': 'C'},
+                                       blank=True)
     status = models.PositiveSmallIntegerField(
         _("Statut"),
         choices=USERSTATUS_CHOICES,
