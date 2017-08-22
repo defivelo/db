@@ -292,16 +292,20 @@ class BSCheckboxInput(forms.widgets.CheckboxInput):
         context = super(BSCheckboxInput, self).get_context(name, value, attrs)
         glyphicon = 'check'
         title = _('Choisir pour cette session')
+        active_content = ''
         if self.user_assignment == SHORTCODE_MON2:  # Moniteur 2
-            glyphicon = 'tags'
+            glyphicon = 'invalid'
             title = _('Moniteur 2')
+            active_content = _('M2')
         if self.user_assignment == SHORTCODE_MON1:  # Moniteur 1
-            glyphicon = 'tag'
+            glyphicon = 'invalid'
             title = _('Moniteur 1')
+            active_content = _('M1')
         if self.user_assignment == SHORTCODE_ACTOR:  # Intervenant
             glyphicon = 'sunglasses'
             title = _('Intervenant')
         context['widget']['glyphicon'] = glyphicon
+        context['widget']['active_content'] = active_content
         context['widget']['title'] = title
         return context
 

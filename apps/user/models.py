@@ -260,14 +260,12 @@ class UserProfile(Address, models.Model):
         return ''
 
     def formation_icon(self):
-        icon = ''
-        title = self.formation_full
         if self.formation == FORMATION_M1:
-            icon = 'tag'
+            # Translators: FORMATION_M1 - Moniteur 1
+            return _('M1')
         elif self.formation == FORMATION_M2:
-            icon = 'tags'
-        if icon:
-            return mark_safe(STDGLYPHICON.format(icon=icon, title=title))
+            # Translators: FORMATION_M2 - Moniteur 2
+            return _('M2')
         return ''
 
     @property
