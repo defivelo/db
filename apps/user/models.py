@@ -176,6 +176,7 @@ class UserProfile(Address, models.Model):
     bagstatus_updatetime = models.DateTimeField(null=True, blank=True)
     comments = models.TextField(_('Remarques'), blank=True)
 
+    objects = models.Manager()
     objects_existing = ExistingUserProfileManager()
 
     def save(self, *args, **kwargs):
