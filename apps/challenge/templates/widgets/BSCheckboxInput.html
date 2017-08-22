@@ -8,5 +8,6 @@
         <span class="glyphicon glyphicon-unchecked"
               data-active-icon="{{ widget.glyphicon }}"
               title="{{ widget.title }}"></span>
+        {% if widget.active_content %}<span class='active_content'>{{ widget.active_content }}</span>{% endif %}
     </label>
 </div>

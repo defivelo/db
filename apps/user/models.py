@@ -31,6 +31,7 @@ from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+from django_countries.fields import CountryField
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from localflavor.generic.models import IBANField
 from multiselectfield import MultiSelectField
@@ -83,12 +84,13 @@ STDGLYPHICON = (
 PERSONAL_FIELDS = ['language', 'languages_challenges', 'natel', 'birthdate',
                    'address_street', 'address_no', 'address_zip',
                    'address_city', 'address_canton',
+                   'nationality', 'work_permit', 'tax_jurisdiction',
                    'iban', 'social_security',
                    'status', 'activity_cantons',
                    ]
 
-DV_PUBLIC_FIELDS = ['formation', 'formation_lastdate', 'actor_for',
-                    'pedagogical_experience',
+DV_PUBLIC_FIELDS = ['formation', 'formation_firstdate', 'formation_lastdate',
+                    'actor_for', 'pedagogical_experience',
                     'firstmed_course', 'firstmed_course_comm',
                     'bagstatus', 'affiliation_canton',
                     ]
@@ -96,6 +98,15 @@ DV_PUBLIC_FIELDS = ['formation', 'formation_lastdate', 'actor_for',
 DV_PRIVATE_FIELDS = ['comments']
 
 STD_PROFILE_FIELDS = PERSONAL_FIELDS + DV_PUBLIC_FIELDS + DV_PRIVATE_FIELDS
+
+
+class ExistingUserProfileManager(models.Manager):
+    def get_queryset(self):
+        return (
+            super(ExistingUserProfileManager, self)
+            .get_queryset()
+            .exclude(status=USERSTATUS_DELETED)
+        )
 
 
 @python_2_unicode_compatible
@@ -110,6 +121,17 @@ class UserProfile(Address, models.Model):
                                             choices=DV_LANGUAGES,
                                             blank=True)
     birthdate = models.DateField(_('Date'), blank=True, null=True)
+    nationality = CountryField(_('Nationalité'), default='CH')
+    work_permit = models.CharField(
+        _('Permis de travail (si pas suisse)'),
+        max_length=255,
+        blank=True
+    )
+    tax_jurisdiction = models.CharField(
+        _('Lieu d\'imposition (si pas en Suisse)'),
+        max_length=511,
+        blank=True
+    )
     iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)
     social_security = models.CharField(max_length=16, blank=True)
     natel = models.CharField(max_length=13, blank=True)
@@ -124,6 +146,8 @@ class UserProfile(Address, models.Model):
     formation = models.CharField(_("Formation"), max_length=2,
                                  choices=FORMATION_CHOICES,
                                  blank=True)
+    formation_firstdate = models.DateField(_('Date de la première formation'),
+                                           blank=True, null=True)
     formation_lastdate = models.DateField(_('Date de la dernière formation'),
                                           blank=True, null=True)
     actor_for = models.ForeignKey(QualificationActivity,
@@ -151,6 +175,8 @@ class UserProfile(Address, models.Model):
         default=BAGSTATUS_NONE)
     bagstatus_updatetime = models.DateTimeField(null=True, blank=True)
     comments = models.TextField(_('Remarques'), blank=True)
+
+    objects_existing = ExistingUserProfileManager()
 
     def save(self, *args, **kwargs):
         if self.activity_cantons:
@@ -234,14 +260,12 @@ class UserProfile(Address, models.Model):
         return ''
 
     def formation_icon(self):
-        icon = ''
-        title = self.formation_full
         if self.formation == FORMATION_M1:
-            icon = 'tag'
+            # Translators: FORMATION_M1 - Moniteur 1
+            return _('M1')
         elif self.formation == FORMATION_M2:
-            icon = 'tags'
-        if icon:
-            return mark_safe(STDGLYPHICON.format(icon=icon, title=title))
+            # Translators: FORMATION_M2 - Moniteur 2
+            return _('M2')
         return ''
 
     @property

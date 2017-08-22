@@ -20,6 +20,10 @@ from __future__ import unicode_literals
 from bootstrap3_datetime.widgets import DateTimePicker
 from dal_select2.widgets import ModelSelect2
 from django.forms import ModelChoiceField, TimeField
+from django.template.loader import render_to_string
+from django_countries import countries
+from django_countries.fields import LazyTypedChoiceField
+from django_countries.widgets import CountrySelectWidget
 from localflavor.generic.forms import DEFAULT_DATE_INPUT_FORMATS, DateField
 
 SWISS_DATE_INPUT_FORMAT = '%d.%m.%Y'
@@ -54,6 +58,19 @@ class SwissTimeField(TimeField):
                                   icon_attrs={'class': 'glyphicon glyphicon-time'},
                                   options={"format": "HH:mm",
                                            "stepping": 15}),
+            *args, **kwargs)
+
+
+class BS3CountriesField(LazyTypedChoiceField):
+    """
+    A Bootstrap3 Countries selection Field
+    """
+    def __init__(self, *args, **kwargs):
+        super(BS3CountriesField, self).__init__(
+            widget=CountrySelectWidget(
+                layout=render_to_string('country_select_widget.html')
+            ),
+            choices=countries, initial='CH',
             *args, **kwargs)
 
 

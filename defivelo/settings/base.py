@@ -70,6 +70,7 @@ UPSTREAM_APPS = (
     'localflavor',
     'parler',
     'multiselectfield',
+    'django_countries',
     'django_filters',
     'import_export',
     'django_agpl',
@@ -166,6 +167,8 @@ LANGUAGES = (
     ('fr', gettext('French')),
     ('de', gettext('German')),
 )
+
+COUNTRIES_FIRST = ['CH', ]
 
 PARLER_LANGUAGES = {
     SITE_ID: (

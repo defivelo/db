@@ -31,12 +31,21 @@ form.language-selector {
     }
 }
 
+/* Fix select2 fonts */
 .select2-selection,
 .select2-container {
     font-size: 12px;
 }
 .select2-results__option {
     padding: 4px !important;
+}
+
+/* Fix Swiss flag display from django-countries */
+// https://github.com/SmileyChris/django-countries/issues/204
+.flag-sprite {
+    &.flag-c.flag-_h { // flag-ch
+        width: 11px;
+    }
 }
 
 .articles {
@@ -91,17 +100,23 @@ form.language-selector {
     border-color: #ac2925;
 }
 // Click-buttons, but change the icon too
+.btn .active_content {
+    display: none;
+}
 .btn.active {
     span[data-active-icon="check"]:before {
         content: "\e067"; // -check
     }
-    span[data-active-icon="tag"]:before {
-        content: "\e041"; // -tag
-    }
-    span[data-active-icon="tags"]:before {
-        content: "\e042"; // -tags
-    }
     span[data-active-icon="sunglasses"]:before {
         content: "\e240"; // -sunglasses
+    }
+    span[data-active-icon="invalid"] {
+        display: none;
+        &:before {
+            content: '';
+        }
+    }
+    .active_content {
+        display: inline-block;
     }
 }

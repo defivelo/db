@@ -38,7 +38,7 @@ from tablib import Dataset
 
 from apps.common import CANTONS_REGEXP, DV_STATES
 from apps.common.views import ExportMixin
-from apps.user.models import FORMATION_M2
+from apps.user.models import FORMATION_M2, USERSTATUS_DELETED
 from apps.user.views import ActorsList, HelpersList
 from defivelo.roles import user_cantons
 from defivelo.views import MenuView
@@ -80,7 +80,7 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
         if self.model == Season:
             return self.request.user.profile.get_seasons(
                 self.raise_without_cantons
-            )
+            ).prefetch_related('leader').order_by('cantons')
 
         qs = super(SeasonMixin, self).get_queryset()
 
@@ -138,7 +138,7 @@ class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
 class SeasonAvailabilityMixin(SeasonMixin):
     def potential_helpers(self, qs=None):
         if not qs:
-            qs = get_user_model().objects
+            qs = get_user_model().objects.exclude(profile__status=USERSTATUS_DELETED)
             if self.season:
                 seasoncantons = self.season.cantons
                 # S'il y au moins un canton en commun
@@ -238,6 +238,14 @@ class SeasonExportView(ExportMixin, SeasonAvailabilityMixin,
     @property
     def export_filename(self):
         return _('Saison') + '-' + '-'.join(self.season.cantons)
+
+    def undetected_translations(self):
+        return [
+            # Translators: Intervenant
+            _('Int.'),
+            # Translators: Moniteur + / Photographe
+            _('M+'),
+        ]
 
     def get_dataset(self):
         dataset = Dataset()
@@ -418,7 +426,7 @@ class SeasonPlanningExportView(ExportMixin, SeasonAvailabilityMixin,
                             break
                         elif user == quali.actor:
                             # Translators: Nom court pour 'Intervenant'
-                            label = u('I')
+                            label = u('Int.')
                             break
                     # Vérifie tout de même si l'utilisateur est déjà sélectionné
                     if not label and user.id in users_selected_in_session:
@@ -637,8 +645,8 @@ class SeasonHelperListView(HelpersList, HasPermissionsMixin, SeasonMixin):
         return (
             super(SeasonHelperListView, self).get_queryset()
             .filter(
-                availabilities__session__in=self.season.sessions_with_qualifs,
-                availabilities__chosen=True
+                Q(qualifs_mon2__session__in=self.season.sessions_with_qualifs) |
+                Q(qualifs_mon1__session__in=self.season.sessions_with_qualifs),
             )
             .distinct()
         )
@@ -657,9 +665,6 @@ class SeasonActorListView(ActorsList, HasPermissionsMixin, SeasonMixin):
     def get_queryset(self):
         return (
             super(SeasonActorListView, self).get_queryset()
-            .filter(
-                availabilities__session__in=self.season.sessions_with_qualifs,
-                availabilities__chosen=True
-            )
+            .filter(qualifs_actor__session__in=self.season.sessions_with_qualifs)
             .distinct()
         )

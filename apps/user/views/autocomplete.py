@@ -25,7 +25,7 @@ from rolepermissions.checkers import has_permission
 
 from apps.challenge import MAX_MONO1_PER_QUALI
 
-from ..models import FORMATION_KEYS, FORMATION_M2
+from ..models import FORMATION_KEYS, FORMATION_M2, USERSTATUS_DELETED
 from .mixins import ProfileMixin
 from .standard import UserProfileFilterSet
 
@@ -45,6 +45,8 @@ class PersonAutocomplete(ProfileMixin, Select2QuerySetView):
             q = self.q if self.q else None
             del(self.q)
             qs = super(PersonAutocomplete, self).get_queryset()
+            # Only non-deleted
+            qs = qs.exclude(profile__status=USERSTATUS_DELETED)
             if q:
                 qs = UserProfileFilterSet.filter_wide(qs, '', q)
             return qs
@@ -70,9 +72,7 @@ class Helpers(PersonAutocomplete):
 
     def get_queryset(self):
         qs = super(Helpers, self).get_queryset()
-        return qs.filter(
-                Q(profile__formation__in=FORMATION_KEYS)
-            )
+        return qs.filter(profile__formation__in=FORMATION_KEYS)
 
     def get_result_label(self, choice):
         return "{name} {icon}".format(
@@ -83,9 +83,7 @@ class Helpers(PersonAutocomplete):
 class Leaders(PersonAutocomplete):
     def get_queryset(self):
         qs = super(Leaders, self).get_queryset()
-        return qs.filter(
-                Q(profile__formation=FORMATION_M2)
-        )
+        return qs.filter(profile__formation=FORMATION_M2)
 
 
 class Actors(PersonAutocomplete):

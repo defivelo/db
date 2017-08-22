@@ -1,8 +1,9 @@
 {% extends "base.html" %}
-{% load i18n %}
-{% load bootstrap3 %}
-{% load dv_filters %}
-{% load permission_tags %}
+{% load i18n bootstrap3 static dv_filters permission_tags %}
+
+{% block bootstrap3_extra_head %}
+    <link rel="stylesheet" href="{% static 'flags/sprite.css' %}" />
+{% endblock %}
 
 {% block head_title %}{{ userprofile.get_full_name }}{% endblock %}
 {% block content %}
@@ -91,6 +92,22 @@
                 </div>
                 <div role="tabpane" class="tab-pane" id="administrativia">
                     <dl class="dl-horizontal">
+                        {% if userprofile.profile.nationality %}
+                            <dt>{% trans "Nationalité" %}</dt>
+                                <dd>
+                                    <span class="{{ userprofile.profile.nationality.flag_css }}"
+                                        aria-label="{% blocktrans with country_code=userprofile.profile.nationality.name %}Drapeau de {{ country_code }}{% endblocktrans %}"></span>
+                                    {{ userprofile.profile.nationality.name }}
+                                </dd>
+                        {% endif %}
+                        {% if userprofile.profile.work_permit %}
+                            <dt>{% trans "Permis de travail" %}</dt>
+                                <dd>{{ userprofile.profile.work_permit }}</dd>
+                        {% endif %}
+                        {% if userprofile.profile.tax_jurisdiction %}
+                            <dt>{% trans "Lieu d'imposition" %}</dt>
+                                <dd>{{ userprofile.profile.tax_jurisdiction }}</dd>
+                        {% endif %}
                         {% if userprofile.profile.iban %}
                             <dt>{% trans "N° IBAN" %}</dt>
                                 <dd><tt>{{ userprofile.profile.iban_nice }}</tt></dd>
@@ -105,8 +122,11 @@
                     <dl class="dl-horizontal">
                         {% if userprofile.profile.formation %}
                             <dt>{% trans "Formation" %}</dt><dd>{{ userprofile.profile.formation_full }}
+                            {% if userprofile.profile.formation_firstdate %}
+                            <br/>{% trans "Première formation : " %}{{ userprofile.profile.formation_firstdate }}
+                            {% endif %}
                             {% if userprofile.profile.formation_lastdate %}
-                            ({% trans "Dernière formation : " %}{{ userprofile.profile.formation_lastdate }})
+                            <br/>{% trans "Dernière formation : " %}{{ userprofile.profile.formation_lastdate }}
                             {% endif %}</dd>
                         {% endif %}
                         {% if userprofile.profile.actor %}

@@ -29,7 +29,7 @@ from localflavor.ch.forms import CHPhoneNumberField, CHStateSelect
 
 from apps.common.forms import SwissDateField, SwissTimeField, UserAutoComplete
 from apps.user import STATE_CHOICES_WITH_DEFAULT
-from apps.user.models import FORMATION_KEYS, FORMATION_M2
+from apps.user.models import FORMATION_KEYS, FORMATION_M2, USERSTATUS_DELETED
 
 from . import (
     AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, SHORTCODE_ACTOR, SHORTCODE_MON1, SHORTCODE_MON2, STAFF_FIELDKEY,
@@ -68,6 +68,7 @@ class SeasonForm(forms.ModelForm):
     leader = LeaderChoiceField(label=_('Chargé·e de projet'),
                                queryset=(
                                    get_user_model().objects
+                                   .exclude(profile__status=USERSTATUS_DELETED)
                                    .filter(managedstates__isnull=False)
                                    .distinct()
                                 ),
@@ -114,7 +115,10 @@ class SessionForm(forms.ModelForm):
     helpers_time = SwissTimeField(label=_('Heure rendez-vous moniteurs'),
                                   required=False)
     superleader = UserAutoComplete(label=_('Moniteur + / Photographe'),
-                                   queryset=get_user_model().objects,
+                                   queryset=(
+                                       get_user_model().objects
+                                       .exclude(profile__status=USERSTATUS_DELETED)
+                                   ),
                                    url='user-AllPersons-ac',
                                    required=False)
 
@@ -164,7 +168,8 @@ class QualificationForm(forms.ModelForm):
             .exclude(
                 Q(qualifs_mon2__in=other_qualifs) |
                 Q(qualifs_mon1__in=other_qualifs) |
-                Q(qualifs_actor__in=other_qualifs)
+                Q(qualifs_actor__in=other_qualifs) |
+                Q(profile__status=USERSTATUS_DELETED)
             )
             .distinct()
             .order_by('first_name')
@@ -287,16 +292,20 @@ class BSCheckboxInput(forms.widgets.CheckboxInput):
         context = super(BSCheckboxInput, self).get_context(name, value, attrs)
         glyphicon = 'check'
         title = _('Choisir pour cette session')
+        active_content = ''
         if self.user_assignment == SHORTCODE_MON2:  # Moniteur 2
-            glyphicon = 'tags'
+            glyphicon = 'invalid'
             title = _('Moniteur 2')
+            active_content = _('M2')
         if self.user_assignment == SHORTCODE_MON1:  # Moniteur 1
-            glyphicon = 'tag'
+            glyphicon = 'invalid'
             title = _('Moniteur 1')
+            active_content = _('M1')
         if self.user_assignment == SHORTCODE_ACTOR:  # Intervenant
             glyphicon = 'sunglasses'
             title = _('Intervenant')
         context['widget']['glyphicon'] = glyphicon
+        context['widget']['active_content'] = active_content
         context['widget']['title'] = title
         return context
 
@@ -309,7 +318,8 @@ class SeasonNewHelperAvailabilityForm(forms.Form):
                 label=_('Disponibilités pour :'),
                 queryset=get_user_model().objects.filter(
                     Q(profile__formation__in=FORMATION_KEYS) |
-                    Q(profile__actor_for__isnull=False)
+                    Q(profile__actor_for__isnull=False) |
+                    Q(profile__status=USERSTATUS_DELETED)
                 ),
                 widget=ModelSelect2(url='user-PersonsRelevantForSessions-ac')
             )

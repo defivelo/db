@@ -12,12 +12,8 @@
         {% endif %}</h2>
     {% if not userprofile %}
     <div class="alert alert-warning row" role="alert">
-        <span class="col-xs-10">{% blocktrans %}Est-il certain que ce nouvel utilisateur n'existe pas déjà dans la base de données ?{% endblocktrans %}</span>
-        <form method="GET" action="{% url 'user-list' %}" class="form-inline pull-right col-xs-2">
-            <div class="input-group">
-                <div class="form-group"><label class="sr-only control-label" for="id_q">Recherche</label><div class="input-group"><input class="form-control" id="id_q" name="q" placeholder="Recherche" title="" type="text"><span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span></div></div>
-                </div>
-        </form>
+        <span class="col-xs-9">{% blocktrans %}Est-il certain que ce nouvel utilisateur n'existe pas déjà dans la base de données ?{% endblocktrans %}</span>
+        {% include 'user_search_form.html' %}
     </div>
     {% endif %}
     <form method="POST" action="" class="form-horizontal">
@@ -55,6 +51,9 @@
             </div>
             <div role="tabpanel" class="tab-pane" id="administrativia">
                 {% bootstrap_field form.birthdate layout='horizontal' size='small' %}
+                {% bootstrap_field form.nationality layout='horizontal' size='small' %}
+                {% bootstrap_field form.work_permit layout='horizontal' size='small' %}
+                {% bootstrap_field form.tax_jurisdiction layout='horizontal' size='small' %}
                 {% trans "CCP ?" as ccp %}
                 {% bootstrap_field form.iban layout='horizontal' size='small' addon_after=ccp %}
                 {% bootstrap_field form.social_security layout='horizontal' size='small' %}
@@ -63,6 +62,7 @@
             <div role="tabpanel" class="tab-pane" id="defi">
                 {% bootstrap_field form.status layout='horizontal' size='small' %}
                 {% bootstrap_field form.formation layout='horizontal' size='small' set_disabled=no_dv_public_fields %}
+                {% bootstrap_field form.formation_firstdate layout='horizontal' size='small' set_disabled=no_dv_public_fields %}
                 {% bootstrap_field form.formation_lastdate layout='horizontal' size='small' set_disabled=no_dv_public_fields %}
                 {% bootstrap_field form.actor_for layout='horizontal' size='small' set_disabled=no_dv_public_fields %}
                 {% bootstrap_field form.pedagogical_experience layout='horizontal' size='small' set_disabled=no_dv_public_fields %}
@@ -137,10 +137,16 @@ function dvLanguagesCannotBeMain() {
     $( '#id_languages_challenges input[value="' + mainlanguage + '"]').prop("disabled", true).prop('checked', true);
 }
 
+function noWorkPermitForSwiss() {
+    $( '#id_work_permit' ).prop('disabled', ($('#id_nationality').val() == 'CH'));
+}
+
 $( "#id_affiliation_canton" ).change( dvCantonsNotAffiliatedToMobile );
 $( "#id_language" ).change( dvLanguagesCannotBeMain );
+$( '#id_nationality' ).change( noWorkPermitForSwiss );
 
 dvCantonsNotAffiliatedToMobile();
 dvLanguagesCannotBeMain();
+noWorkPermitForSwiss();
 </script>
 {% endblock %}

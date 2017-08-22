@@ -153,10 +153,10 @@ def useravailsessions_readonly(struct, user, avail_content=None, sesskey=None,
                     if staffkey in struct:
                         if struct[staffkey] == SHORTCODE_MON2:
                             avail_verb = _('Moniteur 2')
-                            avail_label = 'tags'
+                            avail_content = _('M2')
                         elif struct[staffkey] == SHORTCODE_MON1:
                             avail_verb = _('Moniteur 1')
-                            avail_label = 'tag'
+                            avail_content = _('M1')
                         elif struct[staffkey] == SHORTCODE_ACTOR:
                             avail_verb = _('Intervenant')
                             avail_label = 'sunglasses'
