@@ -79,9 +79,14 @@ class UserProfileForm(forms.ModelForm):
     nationality = BS3CountriesField(label=_('Nationalité'))
     work_permit = forms.CharField(label=_('Permis de travail'),
                                   widget=forms.TextInput(
-                                      attrs={'placeholder': ('… si pas Suisse')}
+                                      attrs={'placeholder': ('… si pas suisse')}
                                   ),
                                   max_length=255, required=False)
+    tax_jurisdiction = forms.CharField(label=_('Lieu d\'imposition'),
+                                       widget=forms.TextInput(
+                                           attrs={'placeholder': ('… si pas en Suisse')}
+                                       ),
+                                       max_length=511, required=False)
     iban = localforms.IBANFormField(label=_('Coordonnées bancaires (IBAN)'),
                                     include_countries=IBAN_SEPA_COUNTRIES,
                                     required=False)

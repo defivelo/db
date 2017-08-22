@@ -104,6 +104,10 @@
                             <dt>{% trans "Permis de travail" %}</dt>
                                 <dd>{{ userprofile.profile.work_permit }}</dd>
                         {% endif %}
+                        {% if userprofile.profile.tax_jurisdiction %}
+                            <dt>{% trans "Lieu d'imposition" %}</dt>
+                                <dd>{{ userprofile.profile.tax_jurisdiction }}</dd>
+                        {% endif %}
                         {% if userprofile.profile.iban %}
                             <dt>{% trans "N° IBAN" %}</dt>
                                 <dd><tt>{{ userprofile.profile.iban_nice }}</tt></dd>

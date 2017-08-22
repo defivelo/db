@@ -84,7 +84,7 @@ STDGLYPHICON = (
 PERSONAL_FIELDS = ['language', 'languages_challenges', 'natel', 'birthdate',
                    'address_street', 'address_no', 'address_zip',
                    'address_city', 'address_canton',
-                   'nationality', 'work_permit',
+                   'nationality', 'work_permit', 'tax_jurisdiction',
                    'iban', 'social_security',
                    'status', 'activity_cantons',
                    ]
@@ -125,6 +125,11 @@ class UserProfile(Address, models.Model):
     work_permit = models.CharField(
         _('Permis de travail (si pas suisse)'),
         max_length=255,
+        blank=True
+    )
+    tax_jurisdiction = models.CharField(
+        _('Lieu d\'imposition (si pas en Suisse)'),
+        max_length=511,
         blank=True
     )
     iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)

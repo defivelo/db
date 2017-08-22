@@ -89,6 +89,8 @@ class UserResource(resources.ModelResource):
         column_name=_('Nationalité'), attribute='profile__nationality')
     profile__work_permit = fields.Field(column_name=_('Permis de travail'),
                                         attribute='profile__work_permit')
+    tax_jurisdiction = fields.Field(column_name=_('Lieu d\'imposition'),
+                                    attribute='profile__tax_jurisdiction')
     profile__social_security = fields.Field(
         column_name=_('N° AVS'), attribute='profile__social_security')
     profile__pedagogical_experience = fields.Field(
