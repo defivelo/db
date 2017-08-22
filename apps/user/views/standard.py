@@ -150,7 +150,11 @@ class UserProfileFilterSet(FilterSet):
     )
     profile__actor_for = ModelMultipleChoiceFilter(
         label=_('Intervenant'),
-        queryset=QualificationActivity.objects.filter(category='C')
+        queryset=(
+            QualificationActivity.objects
+            .filter(category='C')
+            .prefetch_related('translations')
+        )
     )
     q = CharFilter(
         label=_('Recherche'),

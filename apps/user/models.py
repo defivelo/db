@@ -342,12 +342,13 @@ class UserProfile(Address, models.Model):
             if self.user.is_superuser:
                 title = _('Administra·teur·trice')
                 icon = 'queen'
-            elif has_role(self.user, 'power_user'):
-                title = _('Super-utilisa·teur·trice')
-                icon = 'king'
-            elif has_role(self.user, 'state_manager'):
-                title = _('Chargé·e de projet')
-                icon = 'bishop'
+            elif self.user.groups.exists():
+                if has_role(self.user, 'power_user'):
+                    title = _('Super-utilisa·teur·trice')
+                    icon = 'king'
+                elif has_role(self.user, 'state_manager'):
+                    title = _('Chargé·e de projet')
+                    icon = 'bishop'
         if title and textonly:
             return title
         if icon:

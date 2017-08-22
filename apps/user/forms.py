@@ -104,6 +104,7 @@ class UserProfileForm(forms.ModelForm):
                                                queryset=(
                                                    QualificationActivity.objects
                                                    .filter(category='C')
+                                                   .prefetch_related('translations')
                                                ),
                                                required=False)
     status = forms.ChoiceField(label=_('Statut'),
