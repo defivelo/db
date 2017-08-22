@@ -273,10 +273,14 @@ class UserProfile(Address, models.Model):
     def actor(self):
         return (self.actor_for is not None)
 
+    @property
+    def actor_inline(self):
+        return ' - '.join([str(a) for a in self.actor_for.all()])
+
     def actor_icon(self):
         if self.actor:
             return mark_safe(STDGLYPHICON.format(icon='sunglasses',
-                                                 title=self.actor_for))
+                                                 title=self.actor_inline))
         return ''
 
     @property

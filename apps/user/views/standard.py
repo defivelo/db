@@ -59,6 +59,7 @@ class UserUpdate(UserSelfAccessMixin, ProfileMixin, SuccessMessageMixin,
             struct = {}
             for field in self.profile_fields:
                 struct[field] = getattr(user.profile, field)
+            struct['actor_for'] = user.profile.actor_for.all()
             return struct
 
     def dispatch(self, request, *args, **kwargs):
