@@ -118,6 +118,11 @@ class UserResource(resources.ModelResource):
         column_name=_("Formation"),
         attribute='profile',
         widget=ObjectMethodWidget(method='formation_full'))
+    profile__formation_firstdate = fields.Field(
+        column_name=_('Date de la première formation'),
+        attribute='profile__formation_firstdate',
+        widget=widgets.DateWidget(format='%d.%m.%Y')
+    )
     profile__formation_lastdate = fields.Field(
         column_name=_('Date de la dernière formation'),
         attribute='profile__formation_lastdate',

@@ -118,8 +118,11 @@
                     <dl class="dl-horizontal">
                         {% if userprofile.profile.formation %}
                             <dt>{% trans "Formation" %}</dt><dd>{{ userprofile.profile.formation_full }}
+                            {% if userprofile.profile.formation_firstdate %}
+                            <br/>{% trans "Première formation : " %}{{ userprofile.profile.formation_firstdate }}
+                            {% endif %}
                             {% if userprofile.profile.formation_lastdate %}
-                            ({% trans "Dernière formation : " %}{{ userprofile.profile.formation_lastdate }})
+                            <br/>{% trans "Dernière formation : " %}{{ userprofile.profile.formation_lastdate }}
                             {% endif %}</dd>
                         {% endif %}
                         {% if userprofile.profile.actor %}
