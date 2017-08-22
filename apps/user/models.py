@@ -152,7 +152,7 @@ class UserProfile(Address, models.Model):
                                           blank=True, null=True)
     actor_for = models.ManyToManyField(QualificationActivity,
                                        verbose_name=_('Intervenant'),
-                                       related_name='actors_multi',
+                                       related_name='actor_for',
                                        limit_choices_to={'category': 'C'},
                                        blank=True)
     status = models.PositiveSmallIntegerField(
@@ -271,7 +271,7 @@ class UserProfile(Address, models.Model):
 
     @property
     def actor(self):
-        return (self.actor_for is not None)
+        return self.actor_for.exists()
 
     @property
     def actor_inline(self):
