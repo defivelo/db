@@ -31,12 +31,21 @@ form.language-selector {
     }
 }
 
+/* Fix select2 fonts */
 .select2-selection,
 .select2-container {
     font-size: 12px;
 }
 .select2-results__option {
     padding: 4px !important;
+}
+
+/* Fix Swiss flag display from django-countries */
+// https://github.com/SmileyChris/django-countries/issues/204
+.flag-sprite {
+    &.flag-c.flag-_h { // flag-ch
+        width: 11px;
+    }
 }
 
 .articles {

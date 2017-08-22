@@ -95,8 +95,8 @@
                         {% if userprofile.profile.nationality %}
                             <dt>{% trans "Nationalité" %}</dt>
                                 <dd>
-                                    <i class="{{ userprofile.profile.nationality.flag_css }}"
-                                        aria-label="{% blocktrans with country_code=userprofile.profile.nationality.name %}Drapeau de {{ country_code }}{% endblocktrans %}"></i>
+                                    <span class="{{ userprofile.profile.nationality.flag_css }}"
+                                        aria-label="{% blocktrans with country_code=userprofile.profile.nationality.name %}Drapeau de {{ country_code }}{% endblocktrans %}"></span>
                                     {{ userprofile.profile.nationality.name }}
                                 </dd>
                         {% endif %}
