@@ -12,12 +12,8 @@
         {% endif %}</h2>
     {% if not userprofile %}
     <div class="alert alert-warning row" role="alert">
-        <span class="col-xs-10">{% blocktrans %}Est-il certain que ce nouvel utilisateur n'existe pas déjà dans la base de données ?{% endblocktrans %}</span>
-        <form method="GET" action="{% url 'user-list' %}" class="form-inline pull-right col-xs-2">
-            <div class="input-group">
-                <div class="form-group"><label class="sr-only control-label" for="id_q">Recherche</label><div class="input-group"><input class="form-control" id="id_q" name="q" placeholder="Recherche" title="" type="text"><span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span></div></div>
-                </div>
-        </form>
+        <span class="col-xs-9">{% blocktrans %}Est-il certain que ce nouvel utilisateur n'existe pas déjà dans la base de données ?{% endblocktrans %}</span>
+        {% include 'user_search_form.html' %}
     </div>
     {% endif %}
     <form method="POST" action="" class="form-horizontal">

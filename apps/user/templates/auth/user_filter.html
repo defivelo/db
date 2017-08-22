@@ -42,11 +42,7 @@
                 <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
                 {% trans "Filtres" %}
             </button>
-            <form method="GET" action="." class="form-inline pull-right col-xs-2">
-                <div class="input-group">
-                    {% bootstrap_field filter.form.q show_label=False show_help=False bound_css_class='' addon_after='<span class="glyphicon glyphicon-search"></span>' %}
-                </div>
-            </form>
+            {% include 'user_search_form.html' %}
         {% endif %}
     </div>
 

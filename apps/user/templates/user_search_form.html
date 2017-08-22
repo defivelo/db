@@ -1,0 +1,18 @@
+{% load i18n bootstrap3 %}
+<form method="GET" action="{% url 'user-list' %}" class="form-inline pull-right col-xs-3">
+    <div class="input-group">
+    {% with addon_after='<button type="submit" class="btn btn-default" aria-hidden="true"><span class="glyphicon glyphicon-search"></span></button>' addon_after_class='input-group-btn' %}
+        {% if filter %}
+            {% bootstrap_field filter.form.q show_label=False show_help=False bound_css_class='' addon_after=addon_after addon_after_class=addon_after_class %}
+        {% else %}
+            <label class="sr-only control-label" for="id_q">{% trans 'Recherche' %}</label>
+            <div class="input-group">
+                <input type="text" name="q" value="" title="" placeholder="{% trans 'Recherche' %}" class="form-control" id="id_q" />
+                <span class="{{ addon_after_class }}">
+                    {{ addon_after }}
+                </span>
+            </div>
+        {% endif %}
+    {% endwith %}
+    </div>
+</form>
