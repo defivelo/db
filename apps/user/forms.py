@@ -63,8 +63,6 @@ class UserProfileForm(forms.ModelForm):
     languages_challenges = MultiSelectFormField(
         label=_('Prêt à animer en'), choices=DV_LANGUAGES,
         required=False)
-    nationality = BS3CountriesField(label=_('Nationalité'))
-
     address_street = forms.CharField(label=_('Rue'), max_length=255,
                                      required=False)
     address_no = forms.CharField(label=_('N°'), max_length=8,
@@ -78,6 +76,12 @@ class UserProfileForm(forms.ModelForm):
                                        required=False)
     birthdate = SwissDateField(label=_('Date de naissance'), required=False)
     natel = CHPhoneNumberField(label=_('Natel'), required=False)
+    nationality = BS3CountriesField(label=_('Nationalité'))
+    work_permit = forms.CharField(label=_('Permis de travail'),
+                                  widget=forms.TextInput(
+                                      attrs={'placeholder': ('… si pas Suisse')}
+                                  ),
+                                  max_length=255, required=False)
     iban = localforms.IBANFormField(label=_('Coordonnées bancaires (IBAN)'),
                                     include_countries=IBAN_SEPA_COUNTRIES,
                                     required=False)

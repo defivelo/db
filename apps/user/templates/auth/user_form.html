@@ -56,6 +56,7 @@
             <div role="tabpanel" class="tab-pane" id="administrativia">
                 {% bootstrap_field form.birthdate layout='horizontal' size='small' %}
                 {% bootstrap_field form.nationality layout='horizontal' size='small' %}
+                {% bootstrap_field form.work_permit layout='horizontal' size='small' %}
                 {% trans "CCP ?" as ccp %}
                 {% bootstrap_field form.iban layout='horizontal' size='small' addon_after=ccp %}
                 {% bootstrap_field form.social_security layout='horizontal' size='small' %}
@@ -138,10 +139,16 @@ function dvLanguagesCannotBeMain() {
     $( '#id_languages_challenges input[value="' + mainlanguage + '"]').prop("disabled", true).prop('checked', true);
 }
 
+function noWorkPermitForSwiss() {
+    $( '#id_work_permit' ).prop('disabled', ($('#id_nationality').val() == 'CH'));
+}
+
 $( "#id_affiliation_canton" ).change( dvCantonsNotAffiliatedToMobile );
 $( "#id_language" ).change( dvLanguagesCannotBeMain );
+$( '#id_nationality' ).change( noWorkPermitForSwiss );
 
 dvCantonsNotAffiliatedToMobile();
 dvLanguagesCannotBeMain();
+noWorkPermitForSwiss();
 </script>
 {% endblock %}

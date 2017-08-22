@@ -100,6 +100,10 @@
                                     {{ userprofile.profile.nationality.name }}
                                 </dd>
                         {% endif %}
+                        {% if userprofile.profile.work_permit %}
+                            <dt>{% trans "Permis de travail" %}</dt>
+                                <dd>{{ userprofile.profile.work_permit }}</dd>
+                        {% endif %}
                         {% if userprofile.profile.iban %}
                             <dt>{% trans "N° IBAN" %}</dt>
                                 <dd><tt>{{ userprofile.profile.iban_nice }}</tt></dd>

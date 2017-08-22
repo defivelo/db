@@ -84,7 +84,7 @@ STDGLYPHICON = (
 PERSONAL_FIELDS = ['language', 'languages_challenges', 'natel', 'birthdate',
                    'address_street', 'address_no', 'address_zip',
                    'address_city', 'address_canton',
-                   'nationality',
+                   'nationality', 'work_permit',
                    'iban', 'social_security',
                    'status', 'activity_cantons',
                    ]
