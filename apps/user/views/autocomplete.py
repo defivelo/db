@@ -48,7 +48,8 @@ class PersonAutocomplete(ProfileMixin, Select2QuerySetView):
             # Only non-deleted
             qs = qs.exclude(profile__status=USERSTATUS_DELETED)
             if q:
-                qs = UserProfileFilterSet.filter_wide(qs, '', q)
+                upfs = UserProfileFilterSet()
+                qs = upfs.filter_wide(qs, '', q)
             return qs
         else:
             raise PermissionDenied

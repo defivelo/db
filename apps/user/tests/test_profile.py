@@ -161,7 +161,7 @@ class AuthUserTest(ProfileTestCase):
     def test_autocompletes(self):
         # All autocompletes are forbidden
         for al in profile_autocompletes:
-            url = reverse('user-%s-ac' % al)
+            url = '%s?q=test' % reverse('user-%s-ac' % al)
             response = self.client.get(url)
             self.assertEqual(response.status_code, 403, url)
 
@@ -270,7 +270,7 @@ class PowerUserTest(ProfileTestCase):
     def test_autocompletes(self):
         # All autocompletes are permitted
         for al in profile_autocompletes:
-            url = reverse('user-%s-ac' % al)
+            url = '%s?q=test' % reverse('user-%s-ac' % al)
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200, url)
 
