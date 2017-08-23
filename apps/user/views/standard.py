@@ -33,7 +33,7 @@ from filters.views import FilterMixin
 from rolepermissions.mixins import HasPermissionsMixin
 
 from apps.challenge.models import QualificationActivity
-from apps.common import DV_STATE_CHOICES_WITH_DEFAULT
+from apps.common import CANTONS_REGEXP, DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.roles import user_cantons
 
@@ -112,13 +112,24 @@ class UserProfileFilterSet(FilterSet):
             elif len(cantons) == 1:
                 del(self.filters['profile__activity_cantons'])
 
-    def filter_cantons(queryset, name, value):
-        if value:
+    def filter_multi_nonempty(queryset, name, values):
+        if values:
+            print(values)
+            allor_filter = [
+                Q(**{name: v}) for v in values if v
+            ]
+            if allor_filter:
+                return queryset.filter(reduce(operator.or_, allor_filter))
+        return queryset
+
+    def filter_cantons(queryset, name, values):
+        if values and any(values):
+            # S'il y au moins un canton en commun
+            cantons_regexp = CANTONS_REGEXP % "|".join([v for v in values if v])
             allcantons_filter = [
-                Q(profile__activity_cantons__contains=canton)
-                for canton in value
+                Q(profile__activity_cantons__regex=cantons_regexp)
             ] + [
-                Q(profile__affiliation_canton=canton) for canton in value
+                Q(profile__affiliation_canton=v) for v in values if v
             ]
             return queryset.filter(reduce(operator.or_, allcantons_filter))
         return queryset
@@ -133,6 +144,12 @@ class UserProfileFilterSet(FilterSet):
             ]
             return queryset.filter(reduce(operator.or_, allfields_filter))
         return queryset
+
+    profile__affiliation_canton = MultipleChoiceFilter(
+        label=_("Canton d'affiliation"),
+        choices=DV_STATE_CHOICES_WITH_DEFAULT,
+        method=filter_multi_nonempty
+    )
 
     profile__activity_cantons = MultipleChoiceFilter(
         label=_("Cantons"),
