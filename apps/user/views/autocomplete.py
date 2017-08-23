@@ -65,7 +65,7 @@ class PersonsRelevantForSessions(PersonAutocomplete):
         return qs.filter(
                 Q(profile__formation__in=FORMATION_KEYS) |
                 Q(profile__actor_for__isnull=False)
-            )
+            ).distinct()
 
 
 class Helpers(PersonAutocomplete):
@@ -92,4 +92,4 @@ class Actors(PersonAutocomplete):
         qs = super(Actors, self).get_queryset()
         return qs.exclude(
             profile__actor_for__isnull=True
-        )
+        ).distinct()
