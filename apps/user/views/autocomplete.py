@@ -21,6 +21,7 @@ from dal_select2.views import Select2QuerySetView
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
+from six import get_unbound_function
 
 from apps.challenge import MAX_MONO1_PER_QUALI
 from defivelo.roles import has_permission
@@ -48,8 +49,8 @@ class PersonAutocomplete(ProfileMixin, Select2QuerySetView):
             # Only non-deleted
             qs = qs.exclude(profile__status=USERSTATUS_DELETED)
             if q:
-                upfs = UserProfileFilterSet()
-                qs = upfs.filter_wide(qs, '', q)
+                filter_wide = get_unbound_function(UserProfileFilterSet.filter_wide)
+                qs = filter_wide(qs, '', q)
             return qs
         else:
             raise PermissionDenied
