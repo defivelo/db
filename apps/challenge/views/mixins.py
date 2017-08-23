@@ -43,6 +43,15 @@ class CantonSeasonFormMixin(object):
                         set(usercantons)
                         .intersection(set(self._season.cantons))
                 ):
+                    # Verify that this state manager can access that canton as mobile
+                    if list(
+                        set(
+                            [self.request.user.profile.affiliation_canton] +
+                            self.request.user.profile.activity_cantons
+                        )
+                        .intersection(set(self._season.cantons))
+                    ):
+                        raise LookupError
                     raise PermissionDenied
             except LookupError:
                 # That user doesn't have allowed seasons
