@@ -41,6 +41,7 @@ class Season(models.Model):
                                limit_choices_to={
                                    'managedstates__isnull': False
                                },
+                               on_delete=models.CASCADE
                                )
 
     class Meta:

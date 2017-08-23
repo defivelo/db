@@ -114,7 +114,8 @@ class ExistingUserProfileManager(models.Manager):
 class UserProfile(Address, models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                                 related_name='profile',
-                                primary_key=True)
+                                primary_key=True,
+                                on_delete=models.CASCADE)
     language = models.CharField(_('Langue'), max_length=7,
                                 choices=DV_LANGUAGES_WITH_DEFAULT,
                                 blank=True)
@@ -483,7 +484,8 @@ def User_pre_save(sender, **kwargs):
 class UserManagedState(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              related_name='managedstates',
-                             limit_choices_to={'is_active': True},)
+                             limit_choices_to={'is_active': True},
+                             on_delete=models.CASCADE)
     canton = models.CharField(_('Canton'), max_length=5,
                               choices=DV_STATE_CHOICES)
 

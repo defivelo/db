@@ -28,7 +28,7 @@ from .views import HomeView, LicenseView
 admin.autodiscover()
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
     url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^license/', LicenseView.as_view(), name='license'),

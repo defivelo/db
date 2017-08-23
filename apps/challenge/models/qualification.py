@@ -65,7 +65,8 @@ class Qualification(models.Model):
     # TODO: Replace with automated or classes objects
     name = models.CharField(_('Nom de la classe'), max_length=255)
     session = models.ForeignKey(Session,
-                                related_name='qualifications')
+                                related_name='qualifications',
+                                on_delete=models.CASCADE)
     class_teacher_fullname = models.CharField(_('Enseignant'), max_length=512,
                                               blank=True)
     class_teacher_natel = models.CharField(_('Natel enseignant'),
@@ -83,19 +84,22 @@ class Qualification(models.Model):
                                    limit_choices_to={'category': 'A'},
                                    verbose_name=CATEGORY_CHOICE_A,
                                    related_name='qualifs_A',
-                                   blank=True, null=True
+                                   blank=True, null=True,
+                                   on_delete=models.SET_NULL
                                    )
     activity_B = models.ForeignKey(QualificationActivity,
                                    limit_choices_to={'category': 'B'},
                                    verbose_name=CATEGORY_CHOICE_B,
                                    related_name='qualifs_B',
-                                   blank=True, null=True
+                                   blank=True, null=True,
+                                   on_delete=models.SET_NULL
                                    )
     activity_C = models.ForeignKey(QualificationActivity,
                                    limit_choices_to={'category': 'C'},
                                    verbose_name=CATEGORY_CHOICE_C,
                                    related_name='qualifs_C',
-                                   blank=True, null=True
+                                   blank=True, null=True,
+                                   on_delete=models.SET_NULL
                                    )
     leader = models.ForeignKey(settings.AUTH_USER_MODEL,
                                verbose_name=_('Moniteur 2'),
@@ -103,7 +107,8 @@ class Qualification(models.Model):
                                limit_choices_to=Q(
                                    profile__formation=FORMATION_M2
                                    ),
-                               blank=True, null=True)
+                               blank=True, null=True,
+                               on_delete=models.SET_NULL)
     helpers = models.ManyToManyField(settings.AUTH_USER_MODEL,
                                      verbose_name=_('Moniteurs 1'),
                                      related_name='qualifs_mon1',
@@ -117,7 +122,8 @@ class Qualification(models.Model):
                               limit_choices_to={
                                   'profile__actor_for__isnull': False
                               },
-                              blank=True, null=True)
+                              blank=True, null=True,
+                              on_delete=models.SET_NULL)
     comments = models.TextField(_('Remarques'), blank=True)
 
     @property

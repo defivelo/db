@@ -34,11 +34,13 @@ class HelperSessionAvailability(models.Model):
     )
     created_on = models.DateTimeField(auto_now_add=True)
     session = models.ForeignKey(Session, verbose_name=_('Session'),
-                                related_name='availability_statuses')
+                                related_name='availability_statuses',
+                                on_delete=models.CASCADE)
     helper = models.ForeignKey(settings.AUTH_USER_MODEL,
                                verbose_name=_('Moniteur'),
                                related_name='availabilities',
-                               limit_choices_to={'profile__isnull': False})
+                               limit_choices_to={'profile__isnull': False},
+                               on_delete=models.CASCADE)
     availability = models.CharField(_("Disponible"), max_length=1,
                                     choices=AVAILABILITY_CHOICES)
     chosen = models.BooleanField(_("Sélectionné pour la session"),
