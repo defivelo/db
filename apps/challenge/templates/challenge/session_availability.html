@@ -43,7 +43,7 @@
         <tr>
             <td><span class="glyphicon glyphicon-{% if avail.availability == 'y' %}ok-sign{% elif avail.availability == 'i' %}ok-circle{% endif %}" aria-hidden="true" title="{% if avail.availability == 'y' %}{% trans "Oui" %}{% elif avail.availability == 'i' %}{% trans "Si nécessaire" %}{% endif %}"></span></td>
             <td>{{ avail.helper.get_full_name }}</td>
-            <td>{{ avail.helper.profile.actor_for }}</td>
+            <td>{{ avail.helper.profile.actor_inline }}</td>
         </tr>
     {% endfor %}
     </table>   
