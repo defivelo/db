@@ -22,7 +22,8 @@ from datetime import date
 from article.models import Article
 from django.utils import timezone
 from django.views.generic.base import TemplateView
-from rolepermissions.checkers import has_permission
+
+from defivelo.roles import has_permission
 
 
 class MenuView(object):

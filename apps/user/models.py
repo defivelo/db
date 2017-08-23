@@ -34,6 +34,7 @@ from django.utils.translation import ugettext_lazy as _
 from django_countries.fields import CountryField
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from localflavor.generic.models import IBANField
+from memoize import memoize
 from multiselectfield import MultiSelectField
 from rolepermissions.checkers import has_role
 
@@ -416,6 +417,7 @@ class UserProfile(Address, models.Model):
             primary=True
             )
 
+    @memoize()
     def get_seasons(self, raise_without_cantons=False):
         qs = Season.objects
         usercantons = []
@@ -460,6 +462,9 @@ class UserProfile(Address, models.Model):
 
     def __str__(self):
         return self.user.get_full_name()
+
+    def __repr__(self):
+        return "%s(%s)" % (self.__class__.__name__, self.id)
 
     class Meta:
         verbose_name = _('Profil')

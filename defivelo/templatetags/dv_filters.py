@@ -24,6 +24,8 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+from memoize import memoize
+from rolepermissions.templatetags.permission_tags import can_template_tag
 
 from apps.challenge import (
     AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX, SHORTCODE_ACTOR, SHORTCODE_MON1, SHORTCODE_MON2,
@@ -32,6 +34,13 @@ from apps.challenge import (
 from defivelo.roles import user_cantons
 
 register = template.Library()
+
+
+# Override 'can' from rolepermissions to add memoization for performance reasons
+@register.filter
+@memoize()
+def can(user, role):
+    return can_template_tag(user, role)
 
 
 @register.simple_tag

@@ -32,7 +32,6 @@ from django.utils.translation import ugettext as u, ugettext_lazy as _
 from django.views.generic.dates import YearArchiveView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from rolepermissions.checkers import has_permission
 from rolepermissions.mixins import HasPermissionsMixin
 from tablib import Dataset
 
@@ -40,7 +39,7 @@ from apps.common import CANTONS_REGEXP, DV_STATES
 from apps.common.views import ExportMixin
 from apps.user.models import FORMATION_M2, USERSTATUS_DELETED
 from apps.user.views import ActorsList, HelpersList
-from defivelo.roles import user_cantons
+from defivelo.roles import has_permission, user_cantons
 from defivelo.views import MenuView
 
 from .. import AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, STAFF_FIELDKEY

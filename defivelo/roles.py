@@ -18,10 +18,16 @@
 from __future__ import unicode_literals
 
 from memoize import memoize
-from rolepermissions.checkers import has_permission
+from rolepermissions.checkers import has_permission as uncached_has_permission
 from rolepermissions.roles import AbstractUserRole
 
 from apps.common import DV_STATES
+
+
+# Override 'has_permission' from rolepermissions to add memoization for performance reasons
+@memoize()
+def has_permission(user, permission_name):
+    return uncached_has_permission(user, permission_name)
 
 
 @memoize()

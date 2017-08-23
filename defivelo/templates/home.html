@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load permission_tags %}
+{% load dv_filters %}
 
 {% block content %}
     {% if user|can:"home_article_crud" %}

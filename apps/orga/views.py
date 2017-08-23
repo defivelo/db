@@ -31,12 +31,11 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django_filters import CharFilter, FilterSet, MultipleChoiceFilter
 from django_filters.views import FilterView
 from filters.views import FilterMixin
-from rolepermissions.checkers import has_permission
 from rolepermissions.mixins import HasPermissionsMixin
 
 from apps.common import DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.views import ExportMixin, PaginatorMixin
-from defivelo.roles import user_cantons
+from defivelo.roles import has_permission, user_cantons
 from defivelo.views import MenuView
 
 from .export import OrganizationResource
