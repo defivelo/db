@@ -36,11 +36,14 @@ from defivelo.roles import user_cantons
 register = template.Library()
 
 
+@memoize()
+def can_memoized(user, role):
+    return can_template_tag(user, role)
+
 # Override 'can' from rolepermissions to add memoization for performance reasons
 @register.filter
-@memoize()
 def can(user, role):
-    return can_template_tag(user, role)
+    return can_memoized(user, role)
 
 
 @register.simple_tag
