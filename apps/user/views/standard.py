@@ -112,7 +112,7 @@ class UserProfileFilterSet(FilterSet):
             elif len(cantons) == 1:
                 del(self.filters['profile__activity_cantons'])
 
-    def filter_cantons(self, queryset, name, value):
+    def filter_cantons(queryset, name, value):
         if value:
             allcantons_filter = [
                 Q(profile__activity_cantons__contains=canton)
@@ -123,7 +123,7 @@ class UserProfileFilterSet(FilterSet):
             return queryset.filter(reduce(operator.or_, allcantons_filter))
         return queryset
 
-    def filter_wide(self, queryset, name, value):
+    def filter_wide(queryset, name, value):
         if value:
             allfields_filter = [
                 Q(last_name__icontains=value),

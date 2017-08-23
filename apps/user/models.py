@@ -34,6 +34,7 @@ from django.utils.translation import ugettext_lazy as _
 from django_countries.fields import CountryField
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from localflavor.generic.models import IBANField
+from memoize import memoize
 from multiselectfield import MultiSelectField
 from rolepermissions.checkers import has_role
 
@@ -113,7 +114,8 @@ class ExistingUserProfileManager(models.Manager):
 class UserProfile(Address, models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                                 related_name='profile',
-                                primary_key=True)
+                                primary_key=True,
+                                on_delete=models.CASCADE)
     language = models.CharField(_('Langue'), max_length=7,
                                 choices=DV_LANGUAGES_WITH_DEFAULT,
                                 blank=True)
@@ -416,6 +418,7 @@ class UserProfile(Address, models.Model):
             primary=True
             )
 
+    @memoize()
     def get_seasons(self, raise_without_cantons=False):
         qs = Season.objects
         usercantons = []
@@ -461,6 +464,9 @@ class UserProfile(Address, models.Model):
     def __str__(self):
         return self.user.get_full_name()
 
+    def __repr__(self):
+        return "%s(%s)" % (self.__class__.__name__, self.id)
+
     class Meta:
         verbose_name = _('Profil')
         verbose_name_plural = _('Profils')
@@ -478,7 +484,8 @@ def User_pre_save(sender, **kwargs):
 class UserManagedState(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              related_name='managedstates',
-                             limit_choices_to={'is_active': True},)
+                             limit_choices_to={'is_active': True},
+                             on_delete=models.CASCADE)
     canton = models.CharField(_('Canton'), max_length=5,
                               choices=DV_STATE_CHOICES)
 

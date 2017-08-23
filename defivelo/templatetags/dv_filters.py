@@ -24,6 +24,8 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+from memoize import memoize
+from rolepermissions.templatetags.permission_tags import can_template_tag
 
 from apps.challenge import (
     AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX, SHORTCODE_ACTOR, SHORTCODE_MON1, SHORTCODE_MON2,
@@ -32,6 +34,17 @@ from apps.challenge import (
 from defivelo.roles import user_cantons
 
 register = template.Library()
+
+
+@memoize()
+def can_memoized(user, role):
+    return can_template_tag(user, role)
+
+
+# Override 'can' from rolepermissions to add memoization for performance reasons
+@register.filter
+def can(user, role):
+    return can_memoized(user, role)
 
 
 @register.simple_tag
@@ -226,6 +239,18 @@ def weeknumber(date):
         return ''
     # This "solves" the weird week numbers in templates
     return date.strftime('%W')
+
+
+@register.filter
+def anyofusercantons(user, cantons):
+    try:
+        usercantons = user_cantons(user)
+        return list(
+            set(usercantons)
+            .intersection(set(cantons))
+        )
+    except PermissionDenied:
+        return
 
 
 @register.filter
