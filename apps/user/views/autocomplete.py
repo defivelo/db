@@ -48,7 +48,8 @@ class PersonAutocomplete(ProfileMixin, Select2QuerySetView):
             # Only non-deleted
             qs = qs.exclude(profile__status=USERSTATUS_DELETED)
             if q:
-                qs = UserProfileFilterSet.filter_wide(qs, '', q)
+                upfs = UserProfileFilterSet()
+                qs = upfs.filter_wide(qs, '', q)
             return qs
         else:
             raise PermissionDenied
@@ -64,7 +65,7 @@ class PersonsRelevantForSessions(PersonAutocomplete):
         return qs.filter(
                 Q(profile__formation__in=FORMATION_KEYS) |
                 Q(profile__actor_for__isnull=False)
-            )
+            ).distinct()
 
 
 class Helpers(PersonAutocomplete):
@@ -91,4 +92,4 @@ class Actors(PersonAutocomplete):
         qs = super(Actors, self).get_queryset()
         return qs.exclude(
             profile__actor_for__isnull=True
-        )
+        ).distinct()

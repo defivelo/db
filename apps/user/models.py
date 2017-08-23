@@ -428,7 +428,7 @@ class UserProfile(Address, models.Model):
                 raise PermissionDenied
 
         # Ajoute les cantons d'affiliation et mobiles
-        if self.formation or self.actor_for:
+        if self.formation or self.actor:
             if self.affiliation_canton:
                 usercantons += [self.affiliation_canton]
             if self.activity_cantons:

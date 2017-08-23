@@ -26,7 +26,6 @@ from apps.common import DV_STATES
 
 @memoize()
 def user_cantons(user):
-
     if has_permission(user, 'cantons_all'):
         return DV_STATES
     elif has_permission(user, 'cantons_mine'):

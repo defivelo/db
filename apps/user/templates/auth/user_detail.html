@@ -14,7 +14,7 @@
                 {% if userprofile.profile.formation %}
                     <span class="badge pull-right">{{ userprofile.profile.formation_full }} {{ userprofile.profile.formation_icon }}</span>
                 {% endif %}
-                {% if userprofile.profile.actor_for %}
+                {% if userprofile.profile.actor %}
                     <span class="badge pull-right">{{ userprofile.profile.actor_inline }} {{ userprofile.profile.actor_icon }}</span>
                 {% endif %}
                 {% if userprofile.profile.can_login %}
@@ -31,7 +31,7 @@
                         </a>
                     {% endif %}
                 {% endif %}
-                {% if request.user|can:"user_deletes" and request.user.pk != userprofile.pk and not userprofile.profile.deleted %}
+                {% if request.user|can:"user_deletions" and request.user.pk != userprofile.pk and not userprofile.profile.deleted %}
                     <a class="badge pull-right" href="{% url 'user-delete' pk=userprofile.pk %}" title="{% trans "Supprimer" %}">
                         <span class="glyphicon glyphicon-trash" aria-hidden="true" title="{% trans "Supprimer" %}"></span>
                     </a>

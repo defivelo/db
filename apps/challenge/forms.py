@@ -323,9 +323,9 @@ class SeasonNewHelperAvailabilityForm(forms.Form):
                 label=_('Disponibilités pour :'),
                 queryset=get_user_model().objects.filter(
                     Q(profile__formation__in=FORMATION_KEYS) |
-                    Q(profile__actor_for__isnull=False) |
-                    Q(profile__status=USERSTATUS_DELETED)
-                ),
+                    Q(profile__actor_for__isnull=False)
+                ).exclude(profile__status=USERSTATUS_DELETED)
+                .distinct(),
                 widget=ModelSelect2(url='user-PersonsRelevantForSessions-ac')
             )
 
