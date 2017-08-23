@@ -15,7 +15,7 @@
                     <span class="badge pull-right">{{ userprofile.profile.formation_full }} {{ userprofile.profile.formation_icon }}</span>
                 {% endif %}
                 {% if userprofile.profile.actor_for %}
-                    <span class="badge pull-right">{{ userprofile.profile.actor_for }} {{ userprofile.profile.actor_icon }}</span>
+                    <span class="badge pull-right">{{ userprofile.profile.actor_inline }} {{ userprofile.profile.actor_icon }}</span>
                 {% endif %}
                 {% if userprofile.profile.can_login %}
                     <span class="badge pull-right">{{ userprofile.profile.access_level_icon }}</span>
@@ -130,7 +130,7 @@
                             {% endif %}</dd>
                         {% endif %}
                         {% if userprofile.profile.actor %}
-                            <dt>{% trans "Intervenant" %}</dt><dd>{{ userprofile.profile.actor_for.name }}</dd>
+                            <dt>{% trans "Intervenant" %}</dt><dd>{{ userprofile.profile.actor_for.all|join:'<br />' }}</dd>
                         {% endif %}
                         {% if userprofile.profile.status > 0 %}
                         <dt>{% trans "État" %}</dt>

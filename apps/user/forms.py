@@ -100,12 +100,13 @@ class UserProfileForm(forms.ModelForm):
         label=_('Date de la première formation'), required=False)
     formation_lastdate = SwissDateField(
         label=_('Date de la dernière formation'), required=False)
-    actor_for = forms.ModelChoiceField(label=_('Intervenant'),
-                                       queryset=(
-                                           QualificationActivity.objects
-                                           .filter(category='C')
-                                       ),
-                                       required=False)
+    actor_for = forms.ModelMultipleChoiceField(label=_('Intervenant'),
+                                               queryset=(
+                                                   QualificationActivity.objects
+                                                   .filter(category='C')
+                                                   .prefetch_related('translations')
+                                               ),
+                                               required=False)
     status = forms.ChoiceField(label=_('Statut'),
                                choices=USERSTATUS_CHOICES_NORMAL,
                                required=False)

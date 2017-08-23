@@ -64,7 +64,12 @@ class ProfileMixin(MenuView):
 
         qs = (
             qs
-            .prefetch_related('profile')
+            .prefetch_related(
+                'groups',
+                'profile',
+                'profile__actor_for',
+                'profile__actor_for__translations',
+            )
             .order_by('first_name', 'last_name')
         )
         try:

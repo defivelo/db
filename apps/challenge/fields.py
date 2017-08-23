@@ -39,4 +39,4 @@ class ActorChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return "{name} ({actor_for})".format(
              name=obj.get_full_name(),
-             actor_for=obj.profile.actor_for.name)
+             actor_for=obj.profile.actor_inline)

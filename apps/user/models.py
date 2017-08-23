@@ -150,11 +150,11 @@ class UserProfile(Address, models.Model):
                                            blank=True, null=True)
     formation_lastdate = models.DateField(_('Date de la dernière formation'),
                                           blank=True, null=True)
-    actor_for = models.ForeignKey(QualificationActivity,
-                                  verbose_name=_('Intervenant'),
-                                  related_name='actors',
-                                  limit_choices_to={'category': 'C'},
-                                  null=True, blank=True)
+    actor_for = models.ManyToManyField(QualificationActivity,
+                                       verbose_name=_('Intervenant'),
+                                       related_name='actor_for',
+                                       limit_choices_to={'category': 'C'},
+                                       blank=True)
     status = models.PositiveSmallIntegerField(
         _("Statut"),
         choices=USERSTATUS_CHOICES,
@@ -176,6 +176,7 @@ class UserProfile(Address, models.Model):
     bagstatus_updatetime = models.DateTimeField(null=True, blank=True)
     comments = models.TextField(_('Remarques'), blank=True)
 
+    objects = models.Manager()
     objects_existing = ExistingUserProfileManager()
 
     def save(self, *args, **kwargs):
@@ -270,12 +271,16 @@ class UserProfile(Address, models.Model):
 
     @property
     def actor(self):
-        return (self.actor_for is not None)
+        return self.actor_for.exists()
+
+    @property
+    def actor_inline(self):
+        return ' - '.join([str(a) for a in self.actor_for.all()])
 
     def actor_icon(self):
         if self.actor:
             return mark_safe(STDGLYPHICON.format(icon='sunglasses',
-                                                 title=self.actor_for))
+                                                 title=self.actor_inline))
         return ''
 
     @property
@@ -337,12 +342,13 @@ class UserProfile(Address, models.Model):
             if self.user.is_superuser:
                 title = _('Administra·teur·trice')
                 icon = 'queen'
-            elif has_role(self.user, 'power_user'):
-                title = _('Super-utilisa·teur·trice')
-                icon = 'king'
-            elif has_role(self.user, 'state_manager'):
-                title = _('Chargé·e de projet')
-                icon = 'bishop'
+            elif self.user.groups.exists():
+                if has_role(self.user, 'power_user'):
+                    title = _('Super-utilisa·teur·trice')
+                    icon = 'king'
+                elif has_role(self.user, 'state_manager'):
+                    title = _('Chargé·e de projet')
+                    icon = 'bishop'
         if title and textonly:
             return title
         if icon:
