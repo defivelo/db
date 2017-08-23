@@ -40,6 +40,7 @@ register = template.Library()
 def can_memoized(user, role):
     return can_template_tag(user, role)
 
+
 # Override 'can' from rolepermissions to add memoization for performance reasons
 @register.filter
 def can(user, role):
@@ -238,6 +239,18 @@ def weeknumber(date):
         return ''
     # This "solves" the weird week numbers in templates
     return date.strftime('%W')
+
+
+@register.filter
+def anyofusercantons(user, cantons):
+    try:
+        usercantons = user_cantons(user)
+        return list(
+            set(usercantons)
+            .intersection(set(cantons))
+        )
+    except PermissionDenied:
+        return
 
 
 @register.filter
