@@ -215,7 +215,7 @@ class UserProfileFilterSet(FilterSet):
                   ]
 
 
-class UserList(HasPermissionsMixin, ProfileMixin, PaginatorMixin,
+class UserList(HasPermissionsMixin, ProfileMixin,
                FilterMixin, FilterView):
     required_permission = 'user_view_list'
     filterset_class = UserProfileFilterSet
