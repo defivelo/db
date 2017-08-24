@@ -22,15 +22,13 @@ from django.utils.translation import ugettext_lazy as _
 
 # Cantons où DÉFI VÉLO est actif
 DV_STATES = ['VD', 'VS', 'FR', 'NE', 'GE', 'JU',
-             'BS', 'SG', 'ZH', 'BE', 'LU',
+             'BS', 'SG', 'ZH', 'BE', 'LU', 'AR',
              'VS-OW',  # Haut-Valais
-             'AP',  # Deux-Appenzells
              ]
 
 # "faux" cantons pour DÉFI VÉLO
 DV_ADDITIONAL_STATES = [
     ('VS-OW', _('Haut-Valais')),
-    ('AP', _('Appenzell')),
 ]
 
 DV_STATE_CHOICES = [c for c in STATE_CHOICES if c[0] in DV_STATES] + \
