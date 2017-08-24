@@ -135,7 +135,7 @@ class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
 
 
 class SeasonAvailabilityMixin(SeasonMixin):
-    def potential_helpers(self, qs=None):
+    def potential_helpers_qs(self, qs=None):
         if not qs:
             qs = get_user_model().objects.exclude(profile__status=USERSTATUS_DELETED)
             if self.season:
@@ -155,8 +155,10 @@ class SeasonAvailabilityMixin(SeasonMixin):
                 qs = qs.filter(
                     pk=int(resolvermatch.kwargs['helperpk'])
                 )
-        qs = qs.prefetch_related('profile')
+        return qs.prefetch_related('profile')
 
+    def potential_helpers(self, qs=None):
+        qs = self.potential_helpers_qs(qs)
         all_helpers = qs.order_by('first_name', 'last_name')
         return (
             (_('Moniteurs 2'), all_helpers.filter(profile__formation='M2')),
@@ -170,10 +172,10 @@ class SeasonAvailabilityMixin(SeasonMixin):
         if (
             # Check that the request user is alone in the potential_helpers
             (
-                True in [
-                    [request.user.pk] == [u.pk for u in users]
-                    for (cat, users) in self.potential_helpers()
-                ]
+                self.potential_helpers_qs().filter(
+                    Q(profile__formation__in=['M1', 'M2']) |
+                    Q(profile__actor_for__isnull=False)
+                ).filter(pk=request.user.pk).exists()
             ) or
             # Soit j'ai le droit
             has_permission(request.user, self.required_permission)
