@@ -8,6 +8,8 @@
 {% endblock %}
 {% block bootstrap3_extra_script %}
 {{ form.media.js }}
+{% include 'snippets/datetimepicker_js.html' %}
+{% include 'snippets/autocomplete_i18n_js.html' %}
 <script type="text/javascript">
 function updateHelpersTime() {
   var begin_time = $( "#id_begin" ).val();
@@ -35,7 +37,6 @@ function updateHelpersPlace() {
 
 $( "#id_begin" ).change( updateHelpersTime );
 $( "#id_place" ).change( updateHelpersPlace );
-
 </script>
 {% endblock %}
 
