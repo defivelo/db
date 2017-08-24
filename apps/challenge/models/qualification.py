@@ -30,7 +30,7 @@ from apps.user import FORMATION_KEYS, FORMATION_M2
 from .. import MAX_MONO1_PER_QUALI
 from .session import Session
 
-CATEGORY_CHOICE_A = u('Vélo urbain')
+CATEGORY_CHOICE_A = u('Agilité')
 CATEGORY_CHOICE_B = u('Mécanique')
 CATEGORY_CHOICE_C = u('Rencontre')
 
