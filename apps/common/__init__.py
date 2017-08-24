@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from operator import itemgetter
 from localflavor.ch.ch_states import STATE_CHOICES
 from django.utils.translation import ugettext_lazy as _
 
@@ -40,7 +41,7 @@ DV_STATE_CHOICES_WITH_DEFAULT = tuple(
     list(DV_STATE_CHOICES)
 )
 
-CANTONS_REGEXP = "(^|,)%s(,|$)"
+MULTISELECTFIELD_REGEXP = "(^|,)%s(,|$)"
 
 DV_LANGUAGES = LANGUAGES = (
     ('fr', _('French')),
@@ -53,3 +54,7 @@ DV_LANGUAGES_WITH_DEFAULT = tuple(
     list((('', '---------',),)) +
     list(DV_LANGUAGES)
 )
+
+
+def dv_sort_by_trad(tup):
+    return tuple(sorted(tup, key=itemgetter(1)))

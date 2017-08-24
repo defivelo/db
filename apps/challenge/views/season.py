@@ -35,7 +35,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from rolepermissions.mixins import HasPermissionsMixin
 from tablib import Dataset
 
-from apps.common import CANTONS_REGEXP, DV_STATES
+from apps.common import DV_STATES, MULTISELECTFIELD_REGEXP
 from apps.common.views import ExportMixin
 from apps.user.models import FORMATION_M2, USERSTATUS_DELETED
 from apps.user.views import ActorsList, HelpersList
@@ -141,7 +141,7 @@ class SeasonAvailabilityMixin(SeasonMixin):
             if self.season:
                 seasoncantons = self.season.cantons
                 # S'il y au moins un canton en commun
-                cantons_regexp = CANTONS_REGEXP % "|".join(seasoncantons)
+                cantons_regexp = MULTISELECTFIELD_REGEXP % "|".join(seasoncantons)
                 cantons_filter = [
                     Q(profile__activity_cantons__regex=cantons_regexp)
                 ] + [

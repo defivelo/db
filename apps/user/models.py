@@ -40,7 +40,7 @@ from rolepermissions.checkers import has_role
 
 from apps.challenge.models import QualificationActivity, Season
 from apps.common import (
-    CANTONS_REGEXP, DV_LANGUAGES, DV_LANGUAGES_WITH_DEFAULT, DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT,
+    DV_LANGUAGES, DV_LANGUAGES_WITH_DEFAULT, DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT, MULTISELECTFIELD_REGEXP,
 )
 from apps.common.models import Address
 from defivelo.roles import user_cantons
@@ -441,7 +441,7 @@ class UserProfile(Address, models.Model):
         usercantons = set([c for c in usercantons if c])
 
         if usercantons:
-            cantons_regexp = CANTONS_REGEXP % "|".join(usercantons)
+            cantons_regexp = MULTISELECTFIELD_REGEXP % "|".join(usercantons)
             return qs.filter(cantons__regex=cantons_regexp)
 
         return qs.none()

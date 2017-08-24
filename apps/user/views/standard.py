@@ -33,7 +33,7 @@ from filters.views import FilterMixin
 from rolepermissions.mixins import HasPermissionsMixin
 
 from apps.challenge.models import QualificationActivity
-from apps.common import CANTONS_REGEXP, DV_STATE_CHOICES_WITH_DEFAULT
+from apps.common import DV_LANGUAGES_WITH_DEFAULT, DV_STATE_CHOICES_WITH_DEFAULT, MULTISELECTFIELD_REGEXP
 from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.roles import user_cantons
 
@@ -114,7 +114,6 @@ class UserProfileFilterSet(FilterSet):
 
     def filter_multi_nonempty(queryset, name, values):
         if values:
-            print(values)
             allor_filter = [
                 Q(**{name: v}) for v in values if v
             ]
@@ -125,13 +124,29 @@ class UserProfileFilterSet(FilterSet):
     def filter_cantons(queryset, name, values):
         if values and any(values):
             # S'il y au moins un canton en commun
-            cantons_regexp = CANTONS_REGEXP % "|".join([v for v in values if v])
+            cantons_regexp = (
+                MULTISELECTFIELD_REGEXP % "|".join([v for v in values if v])
+            )
             allcantons_filter = [
                 Q(profile__activity_cantons__regex=cantons_regexp)
             ] + [
                 Q(profile__affiliation_canton=v) for v in values if v
             ]
             return queryset.filter(reduce(operator.or_, allcantons_filter))
+        return queryset
+
+    def filter_languages(queryset, name, values):
+        if values and any(values):
+            # S'il y au moins une langue en commun
+            lang_regexp = (
+                MULTISELECTFIELD_REGEXP % "|".join([v for v in values if v])
+            )
+            alllangs_filter = [
+                Q(profile__languages_challenges__regex=lang_regexp)
+            ] + [
+                Q(profile__language=v) for v in values if v
+            ]
+            return queryset.filter(reduce(operator.or_, alllangs_filter))
         return queryset
 
     def filter_wide(queryset, name, value):
@@ -144,6 +159,18 @@ class UserProfileFilterSet(FilterSet):
             ]
             return queryset.filter(reduce(operator.or_, allfields_filter))
         return queryset
+
+    profile__language = MultipleChoiceFilter(
+        label=_("Langue"),
+        choices=DV_LANGUAGES_WITH_DEFAULT,
+        method=filter_multi_nonempty
+    )
+
+    profile__languages_challenges = MultipleChoiceFilter(
+        label=_("Langues d'animation"),
+        choices=DV_LANGUAGES_WITH_DEFAULT,
+        method=filter_languages
+    )
 
     profile__affiliation_canton = MultipleChoiceFilter(
         label=_("Canton d'affiliation"),
@@ -163,7 +190,8 @@ class UserProfileFilterSet(FilterSet):
     )
     profile__formation = MultipleChoiceFilter(
         label=_('Formation'),
-        choices=FORMATION_CHOICES
+        choices=FORMATION_CHOICES,
+        method=filter_multi_nonempty
     )
     profile__actor_for = ModelMultipleChoiceFilter(
         label=_('Intervenant'),
