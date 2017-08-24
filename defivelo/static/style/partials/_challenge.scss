@@ -1,0 +1,47 @@
+// Click-buttons, reproduce the Bootstrap colors
+.btn.active[data-active-class="primary"] {
+    color: #fff;
+    background-color: #286090;
+    border-color: #204d74;
+}
+.btn.active[data-active-class="success"] {
+    color: #fff;
+    background-color: #449d44;
+    border-color: #398439;
+}
+.btn.active[data-active-class="info"] {
+    color: #fff;
+    background-color: #31b0d5;
+    border-color: #269abc;
+}
+.btn.active[data-active-class="warning"] {
+    color: #fff;
+    background-color: #ec971f;
+    border-color: #d58512;
+}
+.btn.active[data-active-class="danger"] {
+    color: #fff;
+    background-color: #c9302c;
+    border-color: #ac2925;
+}
+// Click-buttons, but change the icon too
+.btn .active_content {
+    display: none;
+}
+.btn.active {
+    span[data-active-icon="check"]:before {
+        content: "\e067"; // -check
+    }
+    span[data-active-icon="sunglasses"]:before {
+        content: "\e240"; // -sunglasses
+    }
+    span[data-active-icon="invalid"] {
+        display: none;
+        &:before {
+            content: '';
+        }
+    }
+    .active_content {
+        display: inline-block;
+    }
+}

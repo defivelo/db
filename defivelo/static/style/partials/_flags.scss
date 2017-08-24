@@ -1,0 +1,26 @@
+form.language-selector {
+    /* Taken from Bootstrap code */
+    button {
+        text-align: left;
+        padding: 3px 20px;
+        clear: both;
+        font-weight: 400;
+        line-height: 1.42857143;
+        color: #333 !important;
+        white-space: nowrap;
+        &:hover {
+            color: #262626;
+            text-decoration: none;
+            background-color: #f5f5f5;
+        }
+    }
+}
+
+
+/* Fix Swiss flag display from django-countries */
+// https://github.com/SmileyChris/django-countries/issues/204
+.flag-sprite {
+    &.flag-c.flag-_h { // flag-ch
+        width: 11px;
+    }
+}
