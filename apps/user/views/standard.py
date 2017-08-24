@@ -33,7 +33,7 @@ from filters.views import FilterMixin
 from rolepermissions.mixins import HasPermissionsMixin
 
 from apps.challenge.models import QualificationActivity
-from apps.common import CANTONS_REGEXP, DV_STATE_CHOICES_WITH_DEFAULT
+from apps.common import DV_LANGUAGES_WITH_DEFAULT, DV_STATE_CHOICES_WITH_DEFAULT, MULTISELECTFIELD_REGEXP
 from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.roles import user_cantons
 
@@ -125,7 +125,9 @@ class UserProfileFilterSet(FilterSet):
     def filter_cantons(queryset, name, values):
         if values and any(values):
             # S'il y au moins un canton en commun
-            cantons_regexp = CANTONS_REGEXP % "|".join([v for v in values if v])
+            cantons_regexp = (
+                MULTISELECTFIELD_REGEXP % "|".join([v for v in values if v])
+            )
             allcantons_filter = [
                 Q(profile__activity_cantons__regex=cantons_regexp)
             ] + [

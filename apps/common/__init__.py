@@ -40,7 +40,7 @@ DV_STATE_CHOICES_WITH_DEFAULT = tuple(
     list(DV_STATE_CHOICES)
 )
 
-CANTONS_REGEXP = "(^|,)%s(,|$)"
+MULTISELECTFIELD_REGEXP = "(^|,)%s(,|$)"
 
 DV_LANGUAGES = LANGUAGES = (
     ('fr', _('French')),
