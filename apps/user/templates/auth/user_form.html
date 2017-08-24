@@ -138,7 +138,9 @@ function dvLanguagesCannotBeMain() {
 }
 
 function noWorkPermitForSwiss() {
-    $( '#id_work_permit' ).prop('disabled', ($('#id_nationality').val() == 'CH'));
+    is_swiss = ($('#id_nationality').val() == 'CH');
+    $( '#id_work_permit' ).prop('disabled', is_swiss);
+//     $( '#id_tax_jurisdiction' ).prop('disabled', is_swiss);
 }
 
 $( "#id_affiliation_canton" ).change( dvCantonsNotAffiliatedToMobile );
