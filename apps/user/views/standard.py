@@ -34,7 +34,7 @@ from rolepermissions.mixins import HasPermissionsMixin
 
 from apps.challenge.models import QualificationActivity
 from apps.common import DV_LANGUAGES_WITH_DEFAULT, DV_STATE_CHOICES_WITH_DEFAULT, MULTISELECTFIELD_REGEXP
-from apps.common.views import ExportMixin
+from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.roles import user_cantons
 
 from ..export import UserResource
@@ -215,7 +215,7 @@ class UserProfileFilterSet(FilterSet):
                   ]
 
 
-class UserList(HasPermissionsMixin, ProfileMixin,
+class UserList(HasPermissionsMixin, ProfileMixin, PaginatorMixin,
                FilterMixin, FilterView):
     required_permission = 'user_view_list'
     filterset_class = UserProfileFilterSet
@@ -238,6 +238,7 @@ class UserListExport(ExportMixin, UserList):
 
 
 class UserDetailedList(UserList):
+    paginate_by = None
     context_object_name = 'users'
     template_name = 'auth/user_detailed_list.html'
     page_title = _('Liste des utilisateurs')
