@@ -32,7 +32,7 @@
                                 {{ helper.get_full_name }}
                             </a>
                         </td>
-                        <td>{{ helper|chosen_staff_for_season:season }}</td>
+                        <td>{{ availabilities|chosen_staff_for_season:helper }}</td>
                         {{ availabilities|useravailsessions_readonly:helper }}
                     </tr>
                     {% endfor %}
