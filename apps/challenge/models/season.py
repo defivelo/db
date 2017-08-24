@@ -25,7 +25,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from multiselectfield import MultiSelectField
 
-from apps.common import DV_STATE_CHOICES
+from apps.common import DV_STATE_CHOICES, dv_sort_by_trad
 
 from .session import Session
 
@@ -35,7 +35,7 @@ class Season(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     begin = models.DateField(_('Début'))
     end = models.DateField(_('Fin'))
-    cantons = MultiSelectField(_('Cantons'), choices=DV_STATE_CHOICES)
+    cantons = MultiSelectField(_('Cantons'), choices=dv_sort_by_trad(DV_STATE_CHOICES))
     leader = models.ForeignKey(settings.AUTH_USER_MODEL,
                                verbose_name=_('Chargé de projet'),
                                limit_choices_to={
