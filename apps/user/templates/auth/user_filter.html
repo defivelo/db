@@ -70,10 +70,10 @@
                 {{ user.profile.status_icon|safe }}
             </td>
             <td>
-               {{ user.profile.affiliation_canton }}{% if user.profile.activity_cantons %}, {{ user.profile.activity_cantons|join:", " }}{% endif %}
+               {{ user.profile.affiliation_canton }}{% if user.profile.activity_cantons %}, <em>{{ user.profile.activity_cantons|join:"</em>, <em>" }}</em>{% endif %}
             </td>
             <td>
-               {{ user.profile.language }}{% if user.profile.languages_challenges %}, {{ user.profile.languages_challenges|join:", " }}{% endif %}
+               {{ user.profile.language }}{% if user.profile.languages_challenges %}, <em>{{ user.profile.languages_challenges|join:"</em>, <em>" }}</em>{% endif %}
             </td>
             <td>
                 {{ user.profile.formation_icon|safe }}
