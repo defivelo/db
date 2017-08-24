@@ -34,7 +34,7 @@ from rolepermissions.mixins import HasPermissionsMixin
 
 from apps.challenge.models import QualificationActivity
 from apps.common import DV_LANGUAGES_WITH_DEFAULT, DV_STATE_CHOICES_WITH_DEFAULT, MULTISELECTFIELD_REGEXP
-from apps.common.views import ExportMixin, PaginatorMixin
+from apps.common.views import ExportMixin
 from defivelo.roles import user_cantons
 
 from ..export import UserResource
