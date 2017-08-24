@@ -11,6 +11,8 @@
     {% include 'snippets/autocomplete_i18n_js.html' %}
 {% endblock %}
 
+{% block container-class %}container-fluid{% endblock %}
+
 {% block content %}
     <h1>{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }}</h1>
     <h3>{{ season.cantons_verb|join:", " }}</h3>
