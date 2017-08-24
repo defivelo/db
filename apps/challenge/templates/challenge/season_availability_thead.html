@@ -24,7 +24,7 @@
     <tr>{% for session in sessions %}
             <th class="text-center">
             {% if can_crud %}<a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}" title="{% trans "Vers la session" %}">{% endif %}
-                {% blocktrans count n=session.qualifications.count %}1 qualification{% plural %}{{ n }} qualifications{% endblocktrans %}
+                {% blocktrans count n=session.n_qualifs %}1 Qualif{% plural %}{{ n }} Qualifs{% endblocktrans %}
             {% if can_crud %}</a>{% endif %}
             </th>
         {% endfor %}</tr>
@@ -32,7 +32,7 @@
             <td>
             {% if chosen_stats %}
                 <dl class="small dl-horizontal">
-                    {% with c=session.chosen_helpers_M2.count %}
+                    {% with c=session.n_leaders %}
                         <dt>{% trans "M2" %}</dt>
                         <dd>{% if c < session.helper_needs.2 %}
                                 {{ c }}/{{ session.helper_needs.2 }}
@@ -41,7 +41,7 @@
                             {% endif %}
                         </dd>
                     {% endwith %}
-                    {% with c=session.chosen_helpers.count %}
+                    {% with c=session.n_helpers %}
                         <dt>{% trans "M1" %}</dt>
                         <dd>{% if c < session.helper_needs.1 %}
                                 {{ c }}/{{ session.helper_needs.1 }}
@@ -51,7 +51,7 @@
                         </dd>
                     {% endwith %}
 
-                    {% with c=session.chosen_actors.count %}
+                    {% with c=session.n_actors %}
                         <dt>{% trans "Int." %}</dt>
                         <dd>{% if c < session.actor_needs %}
                                 {{ c }}/{{ session.actor_needs }}
