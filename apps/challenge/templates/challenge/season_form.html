@@ -7,7 +7,8 @@
 {{ form.media.css }}
 {% endblock %}
 {% block bootstrap3_extra_script %}
-{{ form.media.js }}
+    {{ form.media.js }}
+    {% include 'snippets/datetimepicker_js.html' %}
 {% endblock %}
 
 {% block content %}

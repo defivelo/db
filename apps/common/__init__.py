@@ -16,21 +16,18 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from operator import itemgetter
 from localflavor.ch.ch_states import STATE_CHOICES
 from django.utils.translation import ugettext_lazy as _
 
 # Cantons où DÉFI VÉLO est actif
 DV_STATES = ['VD', 'VS', 'FR', 'NE', 'GE', 'JU',
-             'BS', 'SG', 'ZH', 'BE', 'LU',
+             'BS', 'SG', 'ZH', 'BE', 'LU', 'AR',
              'VS-OW',  # Haut-Valais
-             'AP',  # Deux-Appenzells
              ]
 
 # "faux" cantons pour DÉFI VÉLO
 DV_ADDITIONAL_STATES = [
     ('VS-OW', _('Haut-Valais')),
-    ('AP', _('Appenzell')),
 ]
 
 DV_STATE_CHOICES = [c for c in STATE_CHOICES if c[0] in DV_STATES] + \
@@ -54,7 +51,3 @@ DV_LANGUAGES_WITH_DEFAULT = tuple(
     list((('', '---------',),)) +
     list(DV_LANGUAGES)
 )
-
-
-def dv_sort_by_trad(tup):
-    return tuple(sorted(tup, key=itemgetter(1)))

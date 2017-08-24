@@ -238,6 +238,7 @@ class UserListExport(ExportMixin, UserList):
 
 
 class UserDetailedList(UserList):
+    paginate_by = None
     context_object_name = 'users'
     template_name = 'auth/user_detailed_list.html'
     page_title = _('Liste des utilisateurs')

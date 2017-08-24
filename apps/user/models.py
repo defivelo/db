@@ -28,7 +28,7 @@ from django.dispatch import receiver
 from django.forms import ValidationError
 from django.template.loader import render_to_string
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible
+from django.utils.encoding import python_2_unicode_compatible, smart_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django_countries.fields import CountryField
@@ -277,7 +277,7 @@ class UserProfile(Address, models.Model):
 
     @property
     def actor_inline(self):
-        return ' - '.join([str(a) for a in self.actor_for.all()])
+        return ' - '.join([smart_text(a) for a in self.actor_for.all()])
 
     def actor_icon(self):
         if self.actor:

@@ -26,9 +26,7 @@ from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from multiselectfield.forms.fields import MultiSelectFormField
 
 from apps.challenge.models import QualificationActivity
-from apps.common import (
-    DV_LANGUAGES, DV_LANGUAGES_WITH_DEFAULT, DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT, dv_sort_by_trad,
-)
+from apps.common import DV_LANGUAGES, DV_LANGUAGES_WITH_DEFAULT, DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.forms import BS3CountriesField, SwissDateField
 
 from . import STATE_CHOICES_WITH_DEFAULT
@@ -126,10 +124,10 @@ class UserProfileForm(forms.ModelForm):
                                )
     affiliation_canton = forms.ChoiceField(
         label=_("Canton d'affiliation"),
-        choices=dv_sort_by_trad(DV_STATE_CHOICES_WITH_DEFAULT),
+        choices=sorted(DV_STATE_CHOICES_WITH_DEFAULT),
         required=False)
     activity_cantons = MultiSelectFormField(label=_("Défi Vélo Mobile"),
-                                            choices=dv_sort_by_trad(DV_STATE_CHOICES),
+                                            choices=sorted(DV_STATE_CHOICES),
                                             required=False)
 
     class Meta:
