@@ -52,7 +52,3 @@ DV_LANGUAGES_WITH_DEFAULT = tuple(
     list((('', '---------',),)) +
     list(DV_LANGUAGES)
 )
-
-
-def dv_sort_by_trad(tup):
-    return tuple(sorted(tup, key=itemgetter(1)))
