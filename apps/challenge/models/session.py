@@ -156,7 +156,7 @@ class Session(Address, models.Model):
     def helper_needs(self):
         # Struct with 0:0, 1:needs in helper_formation 1, same for 2
         n_sessions = self.n_qualifications
-        return [0] + [n_sessions * (MAX_MONO1_PER_QUALI + 1), n_sessions]
+        return [0] + [n_sessions * (MAX_MONO1_PER_QUALI), n_sessions]
 
     def chosen_actors(self):
         return self.chosen_staff.exclude(
