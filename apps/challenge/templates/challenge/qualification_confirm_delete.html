@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
-{% block head_title %}{% blocktrans with qualification=qualification %}Suppression de la qualification {{ qualification }} ?{% endblocktrans %}{% endblock %}
+{% block head_title %}{% blocktrans with qualification=qualification %}Suppression de la Qualif' {{ qualification }} ?{% endblocktrans %}{% endblock %}
 
 {% block content %}
-    <h1>{% blocktrans with qualification=qualification.name %}Suppression de la qualification {{ qualification }} ?{% endblocktrans %}</h1>
+    <h1>{% blocktrans with qualification=qualification.name %}Suppression de la Qualif' {{ qualification }} ?{% endblocktrans %}</h1>
 
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
-        <p>{% blocktrans with qualification=qualification.name session=qualification.session %}Supprimer la qualification {{ qualification }} ({{ session}}) définitivement ?{% endblocktrans %}</p>
+        <p>{% blocktrans with qualification=qualification.name session=qualification.session %}Supprimer la Qualif' {{ qualification }} ({{ session}}) définitivement ?{% endblocktrans %}</p>
 
         {% buttons %}
             <button type="submit" class="btn btn-danger pull-right">{% trans "Supprimer vraiment" %}</button>
-            <a class="btn btn-default" href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">{% trans "Retour à la liste des qualifications" %}</a>
+            <a class="btn btn-default" href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">{% trans "Retour à la liste des Qualifs" %}</a>
         {% endbuttons %}
     </form>
 {% endblock %}

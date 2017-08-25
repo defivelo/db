@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
-{% block head_title %}{% if qualification %}{% trans "Édition de la qualification" %}{% else %}{% trans "Nouvelle qualification" %}{% endif %}{% endblock %}
+{% block head_title %}{% if qualification %}{% trans "Édition de la Qualif'" %}{% else %}{% trans "Nouvelle Qualif'" %}{% endif %}{% endblock %}
 
 {% block bootstrap3_extra_head %}
 {{ form.media.css }}
 {% endblock %}
 {% block content %}
     <h1>{{ session }}</h1>
-    <h2>{% if qualification %}{% trans "Édition de la qualification" %}{% else %}{% trans "Nouvelle qualification" %}{% endif %}</h2>
+    <h2>{% if qualification %}{% trans "Édition de la Qualif'" %}{% else %}{% trans "Nouvelle Qualif'" %}{% endif %}</h2>
 
     {% if qualification.errors %}
     <div>

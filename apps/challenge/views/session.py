@@ -30,9 +30,10 @@ from rolepermissions.mixins import HasPermissionsMixin
 from tablib import Dataset
 
 from apps.common.views import ExportMixin
+from defivelo.templatetags.dv_filters import lettercounter
 from defivelo.views import MenuView
 
-from ..forms import SessionForm
+from ..forms import QualificationFormQuick, SessionForm
 from ..models import Session
 from ..models.qualification import CATEGORY_CHOICE_A, CATEGORY_CHOICE_B, CATEGORY_CHOICE_C
 from .mixins import CantonSeasonFormMixin
@@ -105,6 +106,18 @@ class SessionsListView(SessionMixin, WeekArchiveView):
 
 
 class SessionDetailView(SessionMixin, DetailView):
+    def get_context_data(self, **kwargs):
+        context = super(SessionDetailView, self).get_context_data(**kwargs)
+        try:
+            mysession = self.get_object()
+        except AttributeError:
+            return context
+        context['quali_form_quick'] = QualificationFormQuick({
+            'session': mysession,
+            'name': _('Classe %s') % lettercounter(mysession.n_qualifications + 1)
+        })
+        return context
+
     def get_queryset(self):
         return (
             super(SessionDetailView, self).get_queryset()

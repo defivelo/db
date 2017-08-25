@@ -25,7 +25,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse_lazy
-from django.db.models import Q, Count
+from django.db.models import Count, Q
 from django.http import HttpResponseRedirect
 from django.template.defaultfilters import date, time
 from django.utils.translation import ugettext as u, ugettext_lazy as _
@@ -79,7 +79,7 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
         if self.model == Season:
             return self.request.user.profile.get_seasons(
                 self.raise_without_cantons
-            ).prefetch_related('leader').order_by('cantons')
+            ).prefetch_related('leader').order_by('cantons', 'begin')
 
         qs = super(SeasonMixin, self).get_queryset()
 
