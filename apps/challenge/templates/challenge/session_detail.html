@@ -166,7 +166,11 @@
 
     <tr class="hidden-print">
         <td{% if session.qualifications.count > 0 %} colspan="{{ session.qualifications.count|add:1 }}"{% endif %}>
-            <a class="btn btn-primary pull-right" href="{% url 'quali-create' seasonpk=season.pk sessionpk=session.pk %}">{% trans "Créer une Qualif'" %}</a>
+            <form method="POST" action="{% url 'quali-create' seasonpk=season.pk sessionpk=session.pk %}" class="form-horizontal">
+                {% csrf_token %}
+                {{ quali_form_quick }}
+                {% buttons %}<button type="submit" class="btn btn-primary pull-right">{% trans "Créer une Qualif'" %}</button>{% endbuttons %}
+            </form>
         </td>
     </tr>
     </table>

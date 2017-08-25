@@ -25,7 +25,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse_lazy
-from django.db.models import Q, Count
+from django.db.models import Count, Q
 from django.http import HttpResponseRedirect
 from django.template.defaultfilters import date, time
 from django.utils.translation import ugettext as u, ugettext_lazy as _

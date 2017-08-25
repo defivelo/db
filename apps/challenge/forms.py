@@ -148,6 +148,16 @@ class SessionForm(forms.ModelForm):
                   'comments']
 
 
+class QualificationFormQuick(forms.ModelForm):
+    class Meta:
+        model = Qualification
+        widgets = {
+            'session': forms.HiddenInput,
+            'name': forms.HiddenInput,
+        }
+        fields = ['session', 'name']
+
+
 class QualificationForm(forms.ModelForm):
     class_teacher_natel = CHPhoneNumberField(label=_('Natel enseignant'),
                                              required=False)

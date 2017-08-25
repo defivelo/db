@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Intranet\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-25 13:49+0200\n"
+"POT-Creation-Date: 2017-08-25 14:18+0200\n"
 "PO-Revision-Date: 2017-01-31 20:07+0100\n"
 "Last-Translator: Laura Mosimann <laura.mosimann@label-vert.ch>\n"
 "Language-Team: German (http://www.transifex.com/defivelo/db/language/de/)\n"
@@ -77,25 +77,25 @@ msgstr "Der Halbtag muss in der Saison sein (zwischen {begin} und {end})"
 msgid "Établissement"
 msgstr "Schule"
 
-#: apps/challenge/forms.py:152 apps/challenge/models/qualification.py:72
+#: apps/challenge/forms.py:162 apps/challenge/models/qualification.py:72
 msgid "Natel enseignant"
 msgstr "Natelnr. Lehrperson"
 
-#: apps/challenge/forms.py:178 apps/challenge/forms.py:303
+#: apps/challenge/forms.py:188 apps/challenge/forms.py:314
 #: apps/challenge/models/qualification.py:105
 #: apps/challenge/templates/challenge/session_detail.html:122
 #: apps/user/__init__.py:39 defivelo/templatetags/dv_filters.py:169
 msgid "Moniteur 2"
 msgstr "LeiterIn 2"
 
-#: apps/challenge/forms.py:185 apps/challenge/models/qualification.py:113
+#: apps/challenge/forms.py:195 apps/challenge/models/qualification.py:113
 #: apps/challenge/templates/challenge/session_availability.html:26
 #: apps/challenge/templates/challenge/session_detail.html:124
 #: apps/challenge/views/season.py:165
 msgid "Moniteurs 1"
 msgstr "LeiterIn 1"
 
-#: apps/challenge/forms.py:192 apps/challenge/forms.py:311
+#: apps/challenge/forms.py:202 apps/challenge/forms.py:322
 #: apps/challenge/models/qualification.py:120 apps/user/export.py:108
 #: apps/user/forms.py:103 apps/user/models.py:156
 #: apps/user/templates/auth/user_detail.html:134
@@ -103,57 +103,57 @@ msgstr "LeiterIn 1"
 msgid "Intervenant"
 msgstr "ReferentIn"
 
-#: apps/challenge/forms.py:204
+#: apps/challenge/forms.py:214
 #, python-format
 msgid "Pas plus de %s moniteurs 1 !"
 msgstr "Nicht mehr als %s Leiter 1!"
 
-#: apps/challenge/forms.py:220
+#: apps/challenge/forms.py:230
 msgid "Il y a des moniteurs à double !"
 msgstr "Achtung, doppelt eingetragene Leiter!"
 
-#: apps/challenge/forms.py:232
+#: apps/challenge/forms.py:243
 msgid "L'intervenant n'est pas qualifié pour la rencontre prévue !"
 msgstr "Der Referent ist nicht für den geplanten Posten qualifiziert!"
 
-#: apps/challenge/forms.py:238
+#: apps/challenge/forms.py:249
 #, fuzzy
 #| msgid "L'intervenant n'est pas qualifié pour la rencontre prévue !"
 msgid "L'intervenant ne peut pas aussi être moniteur !"
 msgstr "Der Referent ist nicht für den geplanten Posten qualifiziert!"
 
-#: apps/challenge/forms.py:250
+#: apps/challenge/forms.py:261
 msgid "Il y a trop de vélos prévus !"
 msgstr "Zu viele Velos eingeplant!"
 
-#: apps/challenge/forms.py:255
+#: apps/challenge/forms.py:266
 msgid "Il y a trop de casques prévus !"
 msgstr "Zu viele Helme eingeplant!"
 
-#: apps/challenge/forms.py:299
+#: apps/challenge/forms.py:310
 msgid "Choisir pour cette session"
 msgstr "Für diesen Halbtag auswählen"
 
 #. Translators: FORMATION_M2 - Moniteur 2
-#: apps/challenge/forms.py:304
+#: apps/challenge/forms.py:315
 #: apps/challenge/templates/challenge/season_availability_thead.html:29
 #: apps/user/models.py:271 defivelo/templatetags/dv_filters.py:170
 msgid "M2"
 msgstr "L2"
 
-#: apps/challenge/forms.py:307 apps/user/__init__.py:38
+#: apps/challenge/forms.py:318 apps/user/__init__.py:38
 #: defivelo/templatetags/dv_filters.py:172
 msgid "Moniteur 1"
 msgstr "LeiterIn 1"
 
 #. Translators: FORMATION_M1 - Moniteur 1
-#: apps/challenge/forms.py:308
+#: apps/challenge/forms.py:319
 #: apps/challenge/templates/challenge/season_availability_thead.html:38
 #: apps/user/models.py:268 defivelo/templatetags/dv_filters.py:173
 msgid "M1"
 msgstr "L1"
 
-#: apps/challenge/forms.py:323
+#: apps/challenge/forms.py:334
 msgid "Disponibilités pour :"
 msgstr "Verfügbarkeiten für:"
 
@@ -179,7 +179,7 @@ msgstr "Nein"
 #: apps/challenge/models/availability.py:36
 #: apps/challenge/models/session.py:80
 #: apps/challenge/templates/challenge/session_detail.html:5
-#: apps/challenge/views/session.py:151
+#: apps/challenge/views/session.py:164
 msgid "Session"
 msgstr "Halbtag"
 
@@ -615,7 +615,7 @@ msgid "Qualifs qui seront supprimées"
 msgstr "Qualis, die gelöscht werden"
 
 #: apps/challenge/templates/challenge/session_confirm_delete.html:23
-#: apps/challenge/templates/challenge/session_detail.html:179
+#: apps/challenge/templates/challenge/session_detail.html:183
 msgid "Retour à la liste des sessions"
 msgstr "Zurück zur Liste der Halbtage"
 
@@ -698,7 +698,7 @@ msgid "Parcours"
 msgstr "Ausfahrt"
 
 #: apps/challenge/templates/challenge/session_detail.html:160
-#: apps/challenge/templates/challenge/session_detail.html:175
+#: apps/challenge/templates/challenge/session_detail.html:179
 #: apps/orga/templates/orga/organization_detail.html:70
 #: apps/user/templates/auth/user_detail.html:35
 #: apps/user/templates/auth/user_detail.html:36
@@ -706,7 +706,7 @@ msgstr "Ausfahrt"
 msgid "Supprimer"
 msgstr "Löschen"
 
-#: apps/challenge/templates/challenge/session_detail.html:169
+#: apps/challenge/templates/challenge/session_detail.html:172
 #, fuzzy
 #| msgid "Créer une qualification"
 msgid "Créer une Qualif'"
@@ -806,15 +806,21 @@ msgstr "LeiterInnen der Saison"
 msgid "Intervenants de la saison"
 msgstr "ReferentInnen der Saison"
 
-#: apps/challenge/views/session.py:127
+#: apps/challenge/views/session.py:117
+#, fuzzy, python-format
+#| msgid "Classe"
+msgid "Classe %s"
+msgstr "Klasse"
+
+#: apps/challenge/views/session.py:140
 msgid "Session mise à jour"
 msgstr "Halbtag aktualisiert"
 
-#: apps/challenge/views/session.py:131
+#: apps/challenge/views/session.py:144
 msgid "Session créée"
 msgstr "Halbtag erstellt"
 
-#: apps/challenge/views/session.py:135
+#: apps/challenge/views/session.py:148
 msgid "Session supprimée"
 msgstr "Halbtag gelöscht"
 
