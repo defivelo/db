@@ -1,68 +1,61 @@
 {% load i18n %}
 {% load dv_filters %}
 <thead>
-    {% with can_crud=user|can:'challenge_season_crud' %}
+  {% with can_crud=user|can:'challenge_season_crud' %}
     <tr>
-        <td rowspan="6" colspan="{{ preamble_columns|default:1 }}">&nbsp;</td>
+        <td rowspan="{% if chosen_stats %}6{% else %}5{% endif %}" colspan="{{ preamble_columns|default:1 }}">&nbsp;</td>
         {% for session in sessions %}
-            <th class="text-center">
-                    {{ session.day|date:"j F" }}
-            </th>
+            <th class="text-center" style="vertical-align: top;">{{ session.orga.name }}</td>
         {% endfor %}</tr>
     <tr>{% for session in sessions %}
-            <th class="text-center" style="vertical-align: top;">
-                {{ session.orga.name }}
-                <br />
-                {% if session.address_city %}{{ session.address_city }}{% elif session.orga.address_city %}{{ session.orga.address_city }}{% endif %}
-            </td>
+            <th class="text-center">{% if session.address_city %}{{ session.address_city }}{% elif session.orga.address_city %}{{ session.orga.address_city }}{% endif %}</th>
         {% endfor %}</tr>
     <tr>{% for session in sessions %}
-            <th class="text-center">
-                    {{ session.begin|date:"H\hi" }} - {{ session.end|date:"H\hi" }}
-            </th>
+            <th class="text-center">{{ session.day|date:"D j b" }}</th>
+        {% endfor %}</tr>
+    <tr>{% for session in sessions %}
+            <td class="text-center">{{ session.begin|date:"H\hi" }} {{ session.end|date:"H\hi" }}</td>
         {% endfor %}</tr>
     <tr>{% for session in sessions %}
             <th class="text-center">
-            {% if can_crud %}<a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}" title="{% trans "Vers la session" %}">{% endif %}
-                {% blocktrans count n=session.n_qualifs|add:'0' %}1 Qualif{% plural %}{{ n }} Qualifs{% endblocktrans %}
-            {% if can_crud %}</a>{% endif %}
+            {% if can_crud %}<a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}" title="{% trans "Vers la session" %}">{% endif %}{% blocktrans count n=session.n_qualifs|add:'0' %}1 Qualif{% plural %}{{ n }} Qualifs{% endblocktrans %}{% if can_crud %}</a>{% endif %}
             </th>
         {% endfor %}</tr>
-    <tr>{% for session in sessions %}
-            <td>
-            {% if chosen_stats %}
-                <dl class="small dl-horizontal">
-                    {% with c=session.n_leaders %}
-                        <dt>{% trans "M2" %}</dt>
-                        <dd>{% if c < session.helper_needs.2 %}
-                                {{ c }}/{{ session.helper_needs.2 }}
-                            {% else %}
-                                <span class="glyphicon glyphicon-ok" title="{{ c }}/{{ session.helper_needs.2 }}"></span>
-                            {% endif %}
-                        </dd>
-                    {% endwith %}
-                    {% with c=session.n_helpers %}
-                        <dt>{% trans "M1" %}</dt>
-                        <dd>{% if c < session.helper_needs.1 %}
-                                {{ c }}/{{ session.helper_needs.1 }}
-                            {% else %}
-                                <span class="glyphicon glyphicon-ok" title="{{ c }}/{{ session.helper_needs.1 }}"></span>
-                            {% endif %}
-                        </dd>
-                    {% endwith %}
+    {% if chosen_stats %}
+        <tr>{% for session in sessions %}
+                <td>
+                    <dl class="small dl-horizontal">
+                        {% with c=session.n_leaders %}
+                            <dt>{% trans "M2" %}</dt>
+                            <dd>{% if c < session.helper_needs.2 %}
+                                    {{ c }}/{{ session.helper_needs.2 }}
+                                {% else %}
+                                    <span class="glyphicon glyphicon-ok" title="{{ c }}/{{ session.helper_needs.2 }}"></span>
+                                {% endif %}
+                            </dd>
+                        {% endwith %}
+                        {% with c=session.n_helpers %}
+                            <dt>{% trans "M1" %}</dt>
+                            <dd>{% if c < session.helper_needs.1 %}
+                                    {{ c }}/{{ session.helper_needs.1 }}
+                                {% else %}
+                                    <span class="glyphicon glyphicon-ok" title="{{ c }}/{{ session.helper_needs.1 }}"></span>
+                                {% endif %}
+                            </dd>
+                        {% endwith %}
 
-                    {% with c=session.n_actors %}
-                        <dt>{% trans "Int." %}</dt>
-                        <dd>{% if c < session.actor_needs %}
-                                {{ c }}/{{ session.actor_needs }}
-                            {% else %}
-                                <span class="glyphicon glyphicon-ok" title="{{ c }}/{{ session.actor_needs }}"></span>
-                            {% endif %}
-                        </dd>
-                    {% endwith %}
-                </dl>
-            {% endif %}
-            </td>
-        {% endfor %}</tr>
-    {% endwith %}
+                        {% with c=session.n_actors %}
+                            <dt>{% trans "Int." %}</dt>
+                            <dd>{% if c < session.actor_needs %}
+                                    {{ c }}/{{ session.actor_needs }}
+                                {% else %}
+                                    <span class="glyphicon glyphicon-ok" title="{{ c }}/{{ session.actor_needs }}"></span>
+                                {% endif %}
+                            </dd>
+                        {% endwith %}
+                    </dl>
+                </td>
+            {% endfor %}</tr>
+    {% endif %}
+  {% endwith %}
 </thead>
