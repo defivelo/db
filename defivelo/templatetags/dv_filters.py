@@ -121,7 +121,7 @@ def useravailsessions(form, user):
 
 
 @register.filter
-def useravailsessions_readonly(struct, user, avail_content=None, sesskey=None,
+def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=None,
                                onlyavail=False):
     """
     Output cells with the state of the availability / choice for all sessions,
@@ -142,6 +142,7 @@ def useravailsessions_readonly(struct, user, avail_content=None, sesskey=None,
             avail_verb = ''  # Fulltext
             avail_label = ''  # Bootstrap glyphicon name
             avail_class = 'active'  # Bootstrap array cell class
+            avail_content = avail_forced_content
             if availability == 'i':
                 # If needed
                 avail_verb = _('Si nécessaire')
@@ -220,17 +221,26 @@ def userstaffsessions(form, user):
                 user=user,
                 sesskey=sesskey,
                 onlyavail=True,
-                avail_content=form.fields[key].widget.render(
+                avail_forced_content=form.fields[key].widget.render(
                     key, form.fields[key].initial, attrs={'id': key}))
     return mark_safe(output)
 
 
 @register.filter
-def chosen_staff_for_season(user, season):
-    return user.availabilities.filter(
-        availability__in=['i', 'y'],
-        chosen=True,
-        session__in=season.sessions).count()
+def chosen_staff_for_season(struct, user):
+    if not struct or not user:
+        return ''
+    accu = 0
+    for key in struct:
+        if AVAILABILITY_FIELDKEY_HELPER_PREFIX.format(hpk=user.pk) in key:
+            if struct[key] in ['y', 'i']:
+                thissesskey = int(search(r'-s(\d+)', key).group(1))
+                staffkey = STAFF_FIELDKEY.format(hpk=user.pk,
+                                                 spk=thissesskey)
+                if staffkey in struct:
+                    if struct[staffkey] not in ['', SHORTCODE_SELECTED]:
+                        accu += 1
+    return accu
 
 
 @register.filter

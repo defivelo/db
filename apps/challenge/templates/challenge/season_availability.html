@@ -11,17 +11,19 @@
     {% include 'snippets/autocomplete_i18n_js.html' %}
 {% endblock %}
 
+{% block container-class %}container-fluid{% endblock %}
+
 {% block content %}
     <h1>{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }}</h1>
     <h3>{{ season.cantons_verb|join:", " }}</h3>
 
     <h4>{% trans "Planning" %}</h4>
         <table class="table text-center">
-        {% include "challenge/season_availability_thead.html" with sessions=season.sessions_with_qualifs season=season user=request.user preamble_columns=2 chosen_stats=1 only %}
+        {% include "challenge/season_availability_thead.html" with sessions=sessions season=season user=request.user preamble_columns=2 chosen_stats=1 only %}
         <tbody>
             {% for helper_category,helpers in potential_helpers %}
                 {% if helpers %}
-                    <tr><th colspan="{{ season.sessions_with_qualifs.count|add:"3" }}">{{ helper_category }}</th></tr>
+                    <tr><th colspan="{{ sessions.count|add:"3" }}">{{ helper_category }}</th></tr>
                     {% for helper in helpers %}
                     <tr>
                         <td class="text-left">
@@ -30,7 +32,7 @@
                                 {{ helper.get_full_name }}
                             </a>
                         </td>
-                        <td>{{ helper|chosen_staff_for_season:season }}</td>
+                        <td>{{ availabilities|chosen_staff_for_season:helper }}</td>
                         {{ availabilities|useravailsessions_readonly:helper }}
                     </tr>
                     {% endfor %}

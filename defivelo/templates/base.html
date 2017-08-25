@@ -47,7 +47,7 @@
         </div>
       </div>
     </nav>
-    <div class="container" role="main">
+    <div class="{% block container-class %}container{% endblock %}" role="main">
     {% block container %}
       <span class="hidden-print">{% bootstrap_messages %}</span>
       {% block content %}{% endblock %}

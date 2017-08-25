@@ -25,7 +25,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse_lazy
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.http import HttpResponseRedirect
 from django.template.defaultfilters import date, time
 from django.utils.translation import ugettext as u, ugettext_lazy as _
@@ -135,7 +135,7 @@ class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
 
 
 class SeasonAvailabilityMixin(SeasonMixin):
-    def potential_helpers(self, qs=None):
+    def potential_helpers_qs(self, qs=None):
         if not qs:
             qs = get_user_model().objects.exclude(profile__status=USERSTATUS_DELETED)
             if self.season:
@@ -155,8 +155,10 @@ class SeasonAvailabilityMixin(SeasonMixin):
                 qs = qs.filter(
                     pk=int(resolvermatch.kwargs['helperpk'])
                 )
-        qs = qs.prefetch_related('profile')
+        return qs.prefetch_related('profile')
 
+    def potential_helpers(self, qs=None):
+        qs = self.potential_helpers_qs(qs)
         all_helpers = qs.order_by('first_name', 'last_name')
         return (
             (_('Moniteurs 2'), all_helpers.filter(profile__formation='M2')),
@@ -170,10 +172,10 @@ class SeasonAvailabilityMixin(SeasonMixin):
         if (
             # Check that the request user is alone in the potential_helpers
             (
-                True in [
-                    [request.user.pk] == [u.pk for u in users]
-                    for (cat, users) in self.potential_helpers()
-                ]
+                self.potential_helpers_qs().filter(
+                    Q(profile__formation__in=['M1', 'M2']) |
+                    Q(profile__actor_for__isnull=False)
+                ).filter(pk=request.user.pk).exists()
             ) or
             # Soit j'ai le droit
             has_permission(request.user, self.required_permission)
@@ -200,13 +202,14 @@ class SeasonAvailabilityMixin(SeasonMixin):
             all_helpers = self.potential_helpers()
 
         if all_hsas:
+            all_sessions = self.object.sessions_with_qualifs
             for helper_category, helpers in all_helpers:
                 for helper in helpers:
                     helper_availability = {
                         a.session_id: a for a in all_hsas
                         if a.helper == helper
                     }
-                    for session in self.object.sessions_with_qualifs:
+                    for session in all_sessions:
                         fieldkey = AVAILABILITY_FIELDKEY.format(
                             hpk=helper.pk, spk=session.pk)
                         staffkey = STAFF_FIELDKEY.format(
@@ -229,6 +232,12 @@ class SeasonAvailabilityMixin(SeasonMixin):
             super(SeasonAvailabilityMixin, self).get_context_data(**kwargs)
         # Add our submenu_category context
         context['submenu_category'] = 'season-availability'
+        context['sessions'] = self.object.sessions_with_qualifs.annotate(
+            n_qualifs=Count('qualifications'),
+            n_helpers=Count('qualifications__helpers'),
+            n_leaders=Count('qualifications__leader'),
+            n_actors=Count('qualifications__actor'),
+        )
         return context
 
 
@@ -481,13 +490,13 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
 
     def get_form_kwargs(self):
         form_kwargs = \
-            super(SeasonAvailabilityMixin, self).get_form_kwargs()
+            super(SeasonAvailabilityUpdateView, self).get_form_kwargs()
         form_kwargs['potential_helpers'] = self.potential_helpers()
         return form_kwargs
 
     def get_context_data(self, **kwargs):
         context = \
-            super(SeasonAvailabilityMixin, self).get_context_data(**kwargs)
+            super(SeasonAvailabilityUpdateView, self).get_context_data(**kwargs)
         context['potential_helpers'] = self.potential_helpers()
         return context
 

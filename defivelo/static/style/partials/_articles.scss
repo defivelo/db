@@ -1,0 +1,13 @@
+.articles {
+    .panel-heading {
+        padding-right: 0;
+        span {
+            margin-top: -25px;
+        }
+    }
+    &.panel-default {
+        font-size: 0.8em;
+        font-style: italic;
+    }
+}
+
