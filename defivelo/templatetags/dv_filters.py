@@ -221,7 +221,7 @@ def userstaffsessions(form, user):
                 user=user,
                 sesskey=sesskey,
                 onlyavail=True,
-                avail_content_forced=form.fields[key].widget.render(
+                avail_forced_content=form.fields[key].widget.render(
                     key, form.fields[key].initial, attrs={'id': key}))
     return mark_safe(output)
 
