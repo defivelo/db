@@ -4,6 +4,8 @@
 {% load dv_filters %}
 {% block head_title %}{% trans "Saison" %} {{ season.pk }}{% endblock %}
 
+{% block container-class %}container-fluid{% endblock %}
+
 {% block content %}
     <h1>{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }}</h1>
     <h3>{{ season.cantons_verb|join:", " }}</h3>
