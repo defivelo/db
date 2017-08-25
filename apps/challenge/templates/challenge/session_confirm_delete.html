@@ -9,7 +9,7 @@
 
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
-        <p>{% blocktrans with session=session %}Supprimer la session {{ session }} définitivement (y compris toutes ses qualifications) ?{% endblocktrans %}</p>
+        <p>{% blocktrans with session=session %}Supprimer la session {{ session }} définitivement (y compris toutes ses Qualifs) ?{% endblocktrans %}</p>
 
         <h3>{% trans "Qualifs qui seront supprimées" %}</h3>
         <div class="list-group">

@@ -166,7 +166,7 @@
 
     <tr class="hidden-print">
         <td{% if session.qualifications.count > 0 %} colspan="{{ session.qualifications.count|add:1 }}"{% endif %}>
-            <a class="btn btn-primary pull-right" href="{% url 'quali-create' seasonpk=season.pk sessionpk=session.pk %}">{% trans "Créer une qualification" %}</a>
+            <a class="btn btn-primary pull-right" href="{% url 'quali-create' seasonpk=season.pk sessionpk=session.pk %}">{% trans "Créer une Qualif'" %}</a>
         </td>
     </tr>
     </table>

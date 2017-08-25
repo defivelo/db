@@ -54,7 +54,7 @@ class Session(Address, models.Model):
                                  'address_canton__isnull': False
                              },
                              on_delete=models.CASCADE)  # Don't delete orgas
-    place = models.CharField(_("Lieu de la qualification"),
+    place = models.CharField(_("Lieu de la Qualif'"),
                              max_length=512, blank=True)
     superleader = models.ForeignKey(settings.AUTH_USER_MODEL,
                                     verbose_name=_('Moniteur + / Photographe'),
@@ -99,7 +99,7 @@ class Session(Address, models.Model):
             if quali.errors:
                 errors.append(_("Qualif' {name}").format(name=quali.name))
         if qualiq == 0:
-            errors.append(_('Pas de qualifications'))
+            errors.append(_('Pas de Qualifs'))
         if errors:
             return mark_safe(
                 '<br />'.join([
