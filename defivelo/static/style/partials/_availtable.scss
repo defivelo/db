@@ -1,0 +1,27 @@
+table.table-avail {
+    border-collapse: collapse;
+    &>thead,
+    &>tbody,
+    &>tfoot {
+        &>tr {
+            &>th,
+            &>td {
+                &:not(:first-child) {
+                    border-right: dotted 1px #ddd; 
+                    border-left: dotted 1px #ddd;
+                }
+                padding: 2px;
+            }
+        }
+    }
+
+    dl {
+        margin-bottom: 0;
+        dt {
+            width: auto;
+        }
+        dd {
+            margin-left: auto;
+        }
+    }
+}

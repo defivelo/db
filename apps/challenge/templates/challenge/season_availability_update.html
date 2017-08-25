@@ -11,7 +11,7 @@
     <h4>{% trans "Disponibilités" %}</h4>
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
-        <table class="table text-center">
+        <table class="table text-center table-avail">
         {% include "challenge/season_availability_thead.html" with sessions=sessions season=season user=request.user only %}
         <tbody>
             {% for helper_category,helpers in potential_helpers %}
