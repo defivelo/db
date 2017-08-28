@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^license/', LicenseView.as_view(), name='license'),
     url(r'^agpl-', include('django_agpl.urls')),
     url(r'^article/', include('apps.dv_article.urls')),
+    url(r'^tinymce/', include('tinymce.urls')),
 ]
 
 urlpatterns += i18n_patterns(

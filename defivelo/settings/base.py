@@ -239,6 +239,9 @@ TINYMCE_DEFAULT_CONFIG = {
     'plugins': "autolink,",
     'cleanup_on_startup': True,
 }
+TINYMCE_JS_URL = os.path.join(STATIC_URL, "tiny_mce/tiny_mce.js")
+TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, "tiny_mce")
+TINYMCE_COMPRESSOR = True
 
 
 def defivelo_user_display(u):
