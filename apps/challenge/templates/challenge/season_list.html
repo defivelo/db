@@ -2,25 +2,25 @@
 {% load i18n %}
 {% load bootstrap3 %}
 {% load dv_filters %}
-{% block head_title %}{% blocktrans with year=year.year %}Saisons {{ year }}{% endblocktrans %}{% endblock %}
+{% block head_title %}{% blocktrans with year=year %}Saisons {{ year }}{% endblocktrans %}{% endblock %}
 
 {% block content %}
-    <h1>{% blocktrans with year=year.year %}Saisons {{ year }}{% endblocktrans %}</h1>
+    <h1>{% blocktrans with year=year %}Saisons {{ year }}{% endblocktrans %}</h1>
 
     <nav>
         <ul class="pager">
             <li class="previous btn-xs">
-                <a href="{% url 'season-list' year=previous_year.year %}">
-                    <span aria-hidden="true">&larr;</span> {{ previous_year.year }}
+                <a href="{% url 'season-list' year=year|add:"-1" %}">
+                    <span aria-hidden="true">&larr;</span> {{ year|add:"-1" }}
                 </a>
             </li>
-            {% if year.year != now.year %}
+            {% if year|add:0 != now.year|add:0 %}
                 <li class="btn-xs"><a href="{% url 'season-list' year=now.year %}">{% trans "Année courante" %}</a>
                 </li>
             {% endif %}
             <li class="next btn-xs">
-                <a href="{% url 'season-list' year=next_year.year %}">
-                    {{ next_year.year }} <span aria-hidden="true">&rarr;</span>
+                <a href="{% url 'season-list' year=year|add:"1" %}">
+                    {{ year|add:"1" }} <span aria-hidden="true">&rarr;</span>
                 </a>
             </li>
         </ul>

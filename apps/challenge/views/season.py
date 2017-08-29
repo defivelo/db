@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+import datetime
 import operator
 from collections import OrderedDict
 from functools import reduce
@@ -29,7 +30,7 @@ from django.db.models import Count, Q
 from django.http import HttpResponseRedirect
 from django.template.defaultfilters import date, time
 from django.utils.translation import ugettext as u, ugettext_lazy as _
-from django.views.generic.dates import YearArchiveView
+from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from rolepermissions.mixins import HasPermissionsMixin
@@ -79,7 +80,7 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
         if self.model == Season:
             return self.request.user.profile.get_seasons(
                 self.raise_without_cantons
-            ).prefetch_related('leader').order_by('cantons', 'begin')
+            ).prefetch_related('leader').order_by('cantons', 'season')
 
         qs = super(SeasonMixin, self).get_queryset()
 
@@ -100,13 +101,25 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
         return qs
 
 
-class SeasonListView(SeasonMixin, YearArchiveView):
-    date_field = 'begin'
+class SeasonListView(SeasonMixin, ListView):
     allow_empty = True
     allow_future = True
     context_object_name = 'seasons'
     make_object_list = True
     raise_without_cantons = False
+
+    def get_queryset(self):
+        self.year = self.kwargs.pop('year', datetime.date.today().year)
+        return (
+            super(SeasonListView, self).get_queryset()
+            .filter(year=self.year)
+            .order_by('season', 'cantons')
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super(SeasonListView, self).get_context_data(**kwargs)
+        context['year'] = self.year
+        return context
 
 
 class SeasonDetailView(SeasonMixin, HasPermissionsMixin, DetailView):
