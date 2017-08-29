@@ -23,7 +23,7 @@ import factory
 from factory import Faker, fuzzy
 from factory.django import DjangoModelFactory
 
-from apps.common import DV_STATES
+from apps.common import DV_SEASON_CHOICES, DV_STATES
 from apps.orga.tests.factories import OrganizationFactory
 from apps.user.tests.factories import UserFactory
 
@@ -34,8 +34,8 @@ class SeasonFactory(DjangoModelFactory):
     class Meta:
         model = Season
 
-    begin = fuzzy.FuzzyDate(date(2015, 1, 1), date(2015, 5, 1))
-    end = fuzzy.FuzzyDate(date(2015, 7, 1), date(2015, 12, 31))
+    year = fuzzy.FuzzyInteger(1999, 2050)
+    season = fuzzy.FuzzyChoice([s[0] for s in DV_SEASON_CHOICES])
     # Juste un canton
     cantons = fuzzy.FuzzyChoice(DV_STATES)
     leader = factory.SubFactory(UserFactory)
@@ -46,7 +46,7 @@ class SessionFactory(DjangoModelFactory):
         model = Session
 
     orga = factory.SubFactory(OrganizationFactory)
-    day = fuzzy.FuzzyDate(date(2015, 5, 2), date(2015, 6, 30))
+    day = fuzzy.FuzzyDate(date(1999, 1, 1), date(2050, 1, 1))
 
 
 class QualificationFactory(DjangoModelFactory):

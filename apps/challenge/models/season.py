@@ -69,9 +69,9 @@ class Season(models.Model):
     @property
     def end(self):
         if self.season == DV_SEASON_SPRING:
-            return date(self.year, DV_SEASON_LAST_SPRING_MONTH, 30)
+            return date(self.year, DV_SEASON_LAST_SPRING_MONTH + 1, 1)
         if self.season == DV_SEASON_AUTUMN:
-            return date(self.year, 12, 31)
+            return date(self.year + 1, 1, 1)
 
     @property
     def season_full(self):

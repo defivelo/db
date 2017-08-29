@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from apps.common import DV_STATES
+from apps.common import DV_SEASON_SPRING, DV_STATES
 from apps.common.forms import SWISS_DATE_INPUT_FORMAT
 from apps.orga.tests.factories import OrganizationFactory
 from apps.user.models import FORMATION_M1
@@ -55,10 +55,11 @@ class SeasonTestCaseMixin(TestCase):
         self.season.save()
 
         self.sessions = []
-        for canton in self.mycantons:
+        for canton in self.season.cantons:
             s = SessionFactory()
             s.orga.address_canton = canton
             s.orga.save()
+            s.day = self.season.begin
             s.save()
             for i in range(0, 4):
                 QualificationFactory(session=s).save()
@@ -75,6 +76,7 @@ class SeasonTestCaseMixin(TestCase):
             s = SessionFactory()
             s.orga.address_canton = canton
             s.orga.save()
+            s.day = self.foreignseason.begin
             s.save()
             for i in range(0, 4):
                 QualificationFactory(session=s).save()
@@ -240,8 +242,8 @@ class StateManagerUserTest(SeasonTestCaseMixin):
         self.assertEqual(response.status_code, 200, url)
 
         initial = {
-            'begin': '09.03.2015',
-            'end': '10.03.2015',
+            'year': 2015,
+            'season': DV_SEASON_SPRING,
             'cantons': [],
             'leader': self.client.user.pk,
             }
@@ -259,11 +261,6 @@ class StateManagerUserTest(SeasonTestCaseMixin):
         # That works now
         response = self.client.post(url, initial)
         self.assertEqual(response.status_code, 302, url)
-
-        initial['end'] = '08.03.2015'  # Inverse dates
-        # That must not work
-        response = self.client.post(url, initial)
-        self.assertEqual(response.status_code, 200, url)
 
     def test_session_creation(self):
         url = reverse('session-create', kwargs={'seasonpk': self.season.pk})
