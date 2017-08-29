@@ -1,0 +1,15 @@
+{% load i18n %}
+{% load dv_filters %}
+    <tr>
+        <td rowspan="3" colspan="{{ preamble_columns|default:1 }}">&nbsp;</td>
+        {% for session in sessions %}
+            <th class="text-center" style="vertical-align: top;">
+                {% if session.orga.abbr %}{{ session.orga.abbr_verb }}{% else %}{{ session.orga.name }}{% endif %}
+            </th>
+        {% endfor %}</tr>
+    <tr>{% for session in sessions %}
+            <th class="text-center">{{ session.day|date:"D j b" }}</th>
+        {% endfor %}</tr>
+    <tr>{% for session in sessions %}
+            <td class="text-center">{{ session.begin|date:"H\hi" }}</td>
+        {% endfor %}</tr>

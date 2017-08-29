@@ -26,6 +26,9 @@
                         {{ form|userstaffsessions:helper }}
                     </tr>
                     {% endfor %}
+                    {% if helpers.count > 10 %}
+                        {% include "challenge/season_availability_partial_head.html" with sessions=sessions season=season user=request.user only %}
+                    {% endif %}
                 {% endif %}
             {% endfor %}
         </tbody>
