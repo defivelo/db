@@ -17,15 +17,18 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+from datetime import date
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.template.defaultfilters import date
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from multiselectfield import MultiSelectField
 
-from apps.common import DV_STATE_CHOICES
+from apps.common import (
+    DV_SEASON_AUTUMN, DV_SEASON_CHOICES, DV_SEASON_LAST_SPRING_MONTH, DV_SEASON_SPRING, DV_STATE_CHOICES,
+)
 
 from .session import Session
 
@@ -33,8 +36,10 @@ from .session import Session
 @python_2_unicode_compatible
 class Season(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
-    begin = models.DateField(_('Début'))
-    end = models.DateField(_('Fin'))
+    year = models.PositiveSmallIntegerField(_('Année'))
+    season = models.PositiveSmallIntegerField(_('Saison'),
+                                              choices=DV_SEASON_CHOICES,
+                                              default=DV_SEASON_SPRING)
     cantons = MultiSelectField(_('Cantons'), choices=sorted(DV_STATE_CHOICES))
     leader = models.ForeignKey(settings.AUTH_USER_MODEL,
                                verbose_name=_('Chargé de projet'),
@@ -47,12 +52,30 @@ class Season(models.Model):
     class Meta:
         verbose_name = _('Saison')
         verbose_name_plural = _('Saisons')
-        ordering = ['begin', 'end', ]
+        ordering = ['year', 'season', ]
 
     @property
     def cantons_verb(self):
         if self.cantons:
             return [c[1] for c in DV_STATE_CHOICES if c[0] in self.cantons]
+
+    @property
+    def begin(self):
+        if self.season == DV_SEASON_SPRING:
+            return date(self.year, 1, 1)
+        if self.season == DV_SEASON_AUTUMN:
+            return date(self.year, DV_SEASON_LAST_SPRING_MONTH + 1, 1)
+
+    @property
+    def end(self):
+        if self.season == DV_SEASON_SPRING:
+            return date(self.year, DV_SEASON_LAST_SPRING_MONTH, 30)
+        if self.season == DV_SEASON_AUTUMN:
+            return date(self.year, 12, 31)
+
+    @property
+    def season_full(self):
+        return dict(DV_SEASON_CHOICES)[self.season]
 
     @property
     def sessions(self):
@@ -86,9 +109,9 @@ class Season(models.Model):
         return reverse('season-detail', args=[self.pk])
 
     def desc(self):
-        return _('{cantons} - {depuis_mois} à {jusqu_mois}').format(
-            depuis_mois=date(self.begin, "F").title(),
-            jusqu_mois=date(self.end, "F Y"),
+        return _('{cantons} - {saison} {annee}').format(
+            saison=self.season_full,
+            annee=self.year,
             cantons=", ".join(self.cantons),
             )
 
