@@ -24,10 +24,21 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.common.models import Address
 
+ORGASTATUS_UNDEF = 0
+ORGASTATUS_ACTIVE = 10
+ORGASTATUS_INACTIVE = 30
+
+ORGASTATUS_CHOICES = (
+    (ORGASTATUS_UNDEF, '---------'),
+    (ORGASTATUS_ACTIVE, _('Actif')),
+    (ORGASTATUS_INACTIVE, _('Inactif')),
+)
+
 
 @python_2_unicode_compatible
 class Organization(Address, models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
+    abbr = models.CharField(_('Abbréviation'), max_length=16, blank=True)
     name = models.CharField(_('Nom'), max_length=255)
     website = models.URLField(_('Site web'), blank=True)
     coordinator_fullname = models.CharField(_('Coordinateur'),
@@ -38,6 +49,10 @@ class Organization(Address, models.Model):
                                          max_length=13, blank=True)
     coordinator_email = models.EmailField(_('Courriel'),
                                           blank=True)
+    status = models.PositiveSmallIntegerField(
+        _("Statut"),
+        choices=ORGASTATUS_CHOICES,
+        default=ORGASTATUS_ACTIVE)
     comments = models.TextField(_('Remarques'), blank=True)
 
     @property
