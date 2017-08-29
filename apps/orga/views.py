@@ -23,11 +23,10 @@ from functools import reduce
 from dal_select2.views import Select2QuerySetView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse_lazy
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView
 from django_filters import CharFilter, FilterSet, MultipleChoiceFilter
 from django_filters.views import FilterView
 from filters.views import FilterMixin
