@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from datetime import date
+from datetime import date, timedelta
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -69,9 +69,9 @@ class Season(models.Model):
     @property
     def end(self):
         if self.season == DV_SEASON_SPRING:
-            return date(self.year, DV_SEASON_LAST_SPRING_MONTH + 1, 1)
+            return date(self.year, DV_SEASON_LAST_SPRING_MONTH + 1, 1) - timedelta(days=1)
         if self.season == DV_SEASON_AUTUMN:
-            return date(self.year + 1, 1, 1)
+            return date(self.year, 12, 31)
 
     @property
     def season_full(self):
@@ -82,7 +82,7 @@ class Season(models.Model):
         return Session.objects.filter(
             orga__address_canton__in=self.cantons,
             day__gte=self.begin,
-            day__lt=self.end
+            day__lte=self.end
             ).prefetch_related(
                 'qualifications',
                 'qualifications__activity_A',
