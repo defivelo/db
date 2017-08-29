@@ -28,7 +28,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from apps.common.models import Address
-from apps.orga.models import Organization
+from apps.orga.models import Organization, ORGASTATUS_ACTIVE
 
 from .. import MAX_MONO1_PER_QUALI, SHORTCODE_ACTOR, SHORTCODE_MON1, SHORTCODE_MON2, SHORTCODE_SELECTED
 
@@ -51,7 +51,8 @@ class Session(Address, models.Model):
                              verbose_name=_('Établissement'),
                              related_name='sessions',
                              limit_choices_to={
-                                 'address_canton__isnull': False
+                                 'address_canton__isnull': False,
+                                 'status__in': [ORGASTATUS_ACTIVE],
                              },
                              on_delete=models.CASCADE)  # Don't delete orgas
     place = models.CharField(_("Lieu de la Qualif'"),
