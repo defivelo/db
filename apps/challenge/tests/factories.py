@@ -35,7 +35,7 @@ class SeasonFactory(DjangoModelFactory):
         model = Season
 
     year = fuzzy.FuzzyInteger(1999, 2050)
-    season = fuzzy.FuzzyChoice([s[0] for s in DV_SEASON_CHOICES])
+    season = fuzzy.FuzzyChoice([_s[0] for _s in DV_SEASON_CHOICES])
     # Juste un canton
     cantons = fuzzy.FuzzyChoice(DV_STATES)
     leader = factory.SubFactory(UserFactory)
