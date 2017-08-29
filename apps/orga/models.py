@@ -26,7 +26,6 @@ from django.utils.translation import ugettext_lazy as _
 from apps.common import STDGLYPHICON
 from apps.common.models import Address
 
-
 ORGASTATUS_UNDEF = 0
 ORGASTATUS_ACTIVE = 10
 ORGASTATUS_INACTIVE = 30

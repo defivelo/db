@@ -27,6 +27,7 @@ EXPORT_FIELDS = ['id', 'created_on'] + ORGA_FIELDS
 
 
 class OrganizationResource(resources.ModelResource):
+    abbr = fields.Field(column_name=_('Abbréviation'), attribute='abbr')
     name = fields.Field(column_name=_('Nom'), attribute='name')
     address_street = fields.Field(column_name=_('Rue'),
                                   attribute='address_street')
@@ -50,6 +51,7 @@ class OrganizationResource(resources.ModelResource):
                                      attribute='coordinator_natel')
     coordinator_email = fields.Field(column_name=_('Email'),
                                      attribute='coordinator_email')
+    status = fields.Field(column_name=_("Statut"), attribute='status_full')
     comments = fields.Field(column_name=_('Remarques'),
                             attribute='comments')
 
