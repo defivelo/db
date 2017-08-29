@@ -16,9 +16,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-ORGA_FIELDS = ['name', 'address_street', 'address_no',
+ORGA_FIELDS = ['abbr', 'name', 'address_street', 'address_no',
                'address_additional', 'address_zip', 'address_city',
                'address_canton', 'website',
                'coordinator_fullname', 'coordinator_email',
-               'coordinator_phone', 'coordinator_natel', 'comments',
+               'coordinator_phone', 'coordinator_natel', 'status',
+               'comments',
                ]

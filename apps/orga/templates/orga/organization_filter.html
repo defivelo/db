@@ -56,6 +56,8 @@
     <table class="table">
     <thead>
         <tr>
+            <th>{% trans "Statut" %}</th>
+            <th><abbr title="{% trans "Abbréviation" %}">{% trans "Abbr." %}</abbr></th>
             <th>{% trans "Nom" %}</th>
             <th>{% trans "Ville" %}</th>
             <th>{% trans "Canton" %}</th>
@@ -68,6 +70,12 @@
     <tbody>
     {% for orga in organizations %}
         <tr>
+            <td class="{{ orga.status_class }}">
+                {{ orga.status_icon|safe }}
+            </td>
+            <td>{% if orga.abbr %}
+                <a href="{% url 'organization-detail' pk=orga.pk %}">{{ orga.abbr_verb }}</a>
+                {% endif %}</td>
             <td><a href="{% url 'organization-detail' pk=orga.pk %}">{{ orga.name }}</a></td>
             <td>{{ orga.address_zip }} {{ orga.address_city }}</td>
             <td>{{ orga.address_canton }}</td>

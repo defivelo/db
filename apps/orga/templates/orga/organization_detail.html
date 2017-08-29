@@ -5,14 +5,14 @@
 {% block head_title %}{{ organization }}{% endblock %}
 
 {% block content %}
-    <div class="panel panel-default vcard">
+    <div class="panel panel-{{ organization.status_class }} vcard">
         <div class="panel-heading">
             <h2 class="panel-title"><a href="{{ organization.get_absolute_url }}" class="organization-name">{{ organization.name }}</a></h2>
         </div>
         <div class="panel-body">
           <div role="tabpane" class="tab-pane" id="address">
             <dl class="dl-horizontal">
-                <dt></dt>
+                <dt>{% if organization.abbr %}<h4>{{ organization.abbr_verb }}</h4>{% endif %}</dt>
                 <dd class="adr">
                     <h4>{{ organization.name }}</h4>
                     <div class="street-address">
@@ -52,6 +52,13 @@
                     <dt>{% trans "Téléphone" %}</dt>
                         <dd>{{ organization.coordinator_phone|tel_link }}</dd>
                 {% endif %}
+                {% if organization.status > 0 %}
+                <dt>{% trans "État" %}</dt>
+                    <dd class="text-{{ organization.status_class }}">
+                            {{ organization.status_icon }}
+                            {{ organization.status_full }}
+                    </dd>
+                {% endif %}
             </dl>
           </div>
           {% if organization.comments %}
@@ -67,6 +74,5 @@
     {% buttons %}
         <a class="btn btn-primary pull-right" href="{% url 'organization-update' pk=organization.pk %}">{% trans "Éditer" %}</a>
         <a class="btn btn-default" href="{% url 'organization-list' %}">{% trans "Retour à la liste des établissements" %}</a>
-        <a class="btn btn-danger" href="{% url 'organization-delete' pk=organization.pk %}">{% trans "Supprimer" %}</a>
     {% endbuttons %}
 {% endblock %}
