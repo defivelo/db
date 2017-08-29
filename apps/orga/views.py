@@ -160,10 +160,6 @@ class OrganizationCreateView(OrganizationMixin,
     success_message = _("Établissement créé")
 
 
-class OrganizationDeleteView(OrganizationMixin, DeleteView):
-    success_url = reverse_lazy('organization-list')
-
-
 class OrganizationListExport(ExportMixin, OrganizationsListView):
     export_class = OrganizationResource()
     export_filename = _('Établissements')
