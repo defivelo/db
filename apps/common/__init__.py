@@ -19,6 +19,11 @@
 from localflavor.ch.ch_states import STATE_CHOICES
 from django.utils.translation import ugettext_lazy as _
 
+STDGLYPHICON = (
+    '<span class="glyphicon glyphicon-{icon}" aria-hidden="true"'
+    '      title="{title}"></span>'
+)
+
 # Cantons où DÉFI VÉLO est actif
 DV_STATES = ['VD', 'VS', 'FR', 'NE', 'GE', 'JU',
              'BS', 'SG', 'ZH', 'BE', 'LU', 'AR',

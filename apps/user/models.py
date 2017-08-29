@@ -41,6 +41,7 @@ from rolepermissions.checkers import has_role
 from apps.challenge.models import QualificationActivity, Season
 from apps.common import (
     DV_LANGUAGES, DV_LANGUAGES_WITH_DEFAULT, DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT, MULTISELECTFIELD_REGEXP,
+    STDGLYPHICON
 )
 from apps.common.models import Address
 from defivelo.roles import user_cantons
@@ -75,11 +76,6 @@ BAGSTATUS_CHOICES = (
     (BAGSTATUS_LOAN, _('En prêt')),
     (BAGSTATUS_PAID, _('Payé')),
     (BAGSTATUS_GIFT, _('Offert')),
-)
-
-STDGLYPHICON = (
-    '<span class="glyphicon glyphicon-{icon}" aria-hidden="true"'
-    '      title="{title}"></span>'
 )
 
 PERSONAL_FIELDS = ['language', 'languages_challenges', 'natel', 'birthdate',

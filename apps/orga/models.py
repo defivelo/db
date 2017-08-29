@@ -20,9 +20,12 @@ from __future__ import unicode_literals
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
+from apps.common import STDGLYPHICON
 from apps.common.models import Address
+
 
 ORGASTATUS_UNDEF = 0
 ORGASTATUS_ACTIVE = 10
@@ -56,6 +59,39 @@ class Organization(Address, models.Model):
     comments = models.TextField(_('Remarques'), blank=True)
 
     @property
+    def abbr_verb(self):
+        return mark_safe(
+            '<abbr title="{name}">{abbr}</abbr>'.format(
+                name=self.name,
+                abbr=self.abbr)
+            )
+
+    @property
+    def status_full(self):
+        if self.status:
+            return dict(ORGASTATUS_CHOICES)[self.status]
+        return ''
+
+    def status_icon(self):
+        icon = ''
+        title = self.status_full
+        if self.status == ORGASTATUS_ACTIVE:
+            icon = 'star'
+        elif self.status == ORGASTATUS_INACTIVE:
+            icon = 'hourglass'
+        if icon:
+            return mark_safe(STDGLYPHICON.format(icon=icon, title=title))
+        return ''
+
+    def status_class(self):
+        css_class = 'default'
+        if self.status == ORGASTATUS_ACTIVE:
+            css_class = 'success'  # Green
+        elif self.status == ORGASTATUS_INACTIVE:
+            css_class = 'danger'  # Red
+        return css_class
+
+    @property
     def mailtolink(self):
         return (
             '{name} <{email}>'.format(
@@ -69,7 +105,8 @@ class Organization(Address, models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return "{name}{city}".format(
+        return "{abbr}{name}{city}".format(
+            abbr='%s - ' % self.abbr if self.abbr else '',
             name=self.name,
             city=' (%s)' % self.address_city if self.address_city else '')
 
