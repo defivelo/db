@@ -40,13 +40,21 @@ from defivelo.views import MenuView
 
 from .export import OrganizationResource
 from .forms import OrganizationForm
-from .models import Organization
+from .models import Organization, ORGASTATUS_CHOICES, ORGASTATUS_ACTIVE
 
 
 class OrganizationFilterSet(FilterSet):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, data=None, *args, **kwargs):
         cantons = kwargs.pop('cantons', None)
-        super(OrganizationFilterSet, self).__init__(**kwargs)
+        if data is None:
+            data = {}
+            for name, f in self.base_filters.items():
+                initial = f.extra.get('initial')
+                # filter param is either missing or empty, use initial as default
+                if not data.get(name) and initial:
+                    data[name] = initial
+
+        super(OrganizationFilterSet, self).__init__(data, *args, **kwargs)
         if cantons:
             if len(cantons) > 1:
                 choices = self.filters['address_canton'].extra['choices']
@@ -75,6 +83,12 @@ class OrganizationFilterSet(FilterSet):
         choices=DV_STATE_CHOICES_WITH_DEFAULT,
     )
 
+    status = MultipleChoiceFilter(
+        label=_('Statut'),
+        choices=ORGASTATUS_CHOICES,
+        initial=[ORGASTATUS_ACTIVE, ]
+    )
+
     q = CharFilter(
         label=_('Recherche'),
         method=filter_wide
@@ -82,7 +96,7 @@ class OrganizationFilterSet(FilterSet):
 
     class Meta:
         model = Organization
-        fields = ['q', 'address_canton', ]
+        fields = ['q', 'status', 'address_canton', ]
 
 
 class OrganizationMixin(HasPermissionsMixin, MenuView):
