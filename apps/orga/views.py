@@ -40,7 +40,7 @@ from defivelo.views import MenuView
 
 from .export import OrganizationResource
 from .forms import OrganizationForm
-from .models import Organization, ORGASTATUS_CHOICES, ORGASTATUS_ACTIVE
+from .models import ORGASTATUS_ACTIVE, ORGASTATUS_CHOICES, Organization
 
 
 class OrganizationFilterSet(FilterSet):

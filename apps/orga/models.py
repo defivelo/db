@@ -98,14 +98,18 @@ class Organization(Address, models.Model):
                 email=self.coordinator_email)
             )
 
+    def shortname(self):
+        return "{abbr}{city}".format(
+            abbr=self.abbr_verb if self.abbr else self.name,
+            city=' (%s)' % self.address_city if self.address_city else '')
+
     class Meta:
         verbose_name = _('Établissement')
         verbose_name_plural = _('Établissements')
         ordering = ['name']
 
     def __str__(self):
-        return "{abbr}{name}{city}".format(
-            abbr='%s - ' % self.abbr if self.abbr else '',
+        return "{name}{city}".format(
             name=self.name,
             city=' (%s)' % self.address_city if self.address_city else '')
 
