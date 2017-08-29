@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+from bootstrap3_datetime.widgets import DateTimePicker
 from dal_select2.widgets import ModelSelect2
 from django import forms
 from django.conf import settings
@@ -54,17 +55,11 @@ class SeasonForm(forms.ModelForm):
             )
             self.fields['cantons'].choices = choices
 
-    def clean_end(self):
-        begin = self.cleaned_data.get("begin")
-        end = self.cleaned_data.get("end")
-        if end <= begin:
-            raise forms.ValidationError(
-                _("La fin doit être après le début.")
-            )
-        return end
-
-    begin = SwissDateField(label=_('Début'))
-    end = SwissDateField(label=_('Fin'))
+    year = forms.IntegerField(label=_('Année'),
+                              widget=DateTimePicker(
+                                {'placeholder': 'YYYY'},
+                                options={
+                                    "format": 'YYYY'}))
     leader = LeaderChoiceField(label=_('Chargé·e de projet'),
                                queryset=(
                                    get_user_model().objects
@@ -76,7 +71,7 @@ class SeasonForm(forms.ModelForm):
 
     class Meta:
         model = Season
-        fields = ['begin', 'end', 'cantons', 'leader']
+        fields = ['year', 'season', 'cantons', 'leader']
 
 
 class SessionForm(forms.ModelForm):

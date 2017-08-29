@@ -56,3 +56,15 @@ DV_LANGUAGES_WITH_DEFAULT = tuple(
     list((('', '---------',),)) +
     list(DV_LANGUAGES)
 )
+
+DV_SEASON_SPRING = 1
+# DV_SEASON_SUMMER = 2
+DV_SEASON_AUTUMN = 3
+# DV_SEASON_WINTER = 4
+
+DV_SEASON_CHOICES = (
+    (DV_SEASON_SPRING, _('Printemps')),
+    (DV_SEASON_AUTUMN, _('Automne')),
+)
+
+DV_SEASON_LAST_SPRING_MONTH = 7

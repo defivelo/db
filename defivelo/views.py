@@ -31,7 +31,7 @@ class MenuView(object):
         context = super(MenuView, self).get_context_data(**kwargs)
         context['current_seasons'] = (
             self.request.user.profile.get_seasons()
-            .filter(end__gte=date.today())
+            .filter(year=date.today().year)
         )
         context['now'] = timezone.now()
         return context
