@@ -30,7 +30,9 @@ from defivelo.roles import has_permission, user_cantons
 from defivelo.views import MenuView
 
 from ..forms import UserProfileForm
-from ..models import DV_PRIVATE_FIELDS, DV_PUBLIC_FIELDS, PERSONAL_FIELDS, STD_PROFILE_FIELDS, UserProfile
+from ..models import (
+    DV_PRIVATE_FIELDS, DV_PUBLIC_FIELDS, MULTISELECTFIELD_REGEXP, PERSONAL_FIELDS, STD_PROFILE_FIELDS, UserProfile,
+)
 
 
 class ProfileMixin(MenuView):
@@ -76,9 +78,12 @@ class ProfileMixin(MenuView):
         except LookupError:
             raise PermissionDenied
         if usercantons:
+            # S'il y au moins un canton en commun
+            cantons_regexp = (
+                MULTISELECTFIELD_REGEXP % "|".join([v for v in usercantons if v])
+            )
             allcantons_filter = [
-                Q(profile__activity_cantons__contains=canton)
-                for canton in usercantons
+                Q(profile__activity_cantons__regex=cantons_regexp)
             ] + [
                 Q(profile__affiliation_canton__in=usercantons)
             ]

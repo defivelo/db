@@ -1,8 +1,6 @@
 {% load i18n %}
-<tr class="{% if session.errors %}warning{% endif %}" >
-    <th><a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">
-        {{ session }}
-    </a></th>
+<tr {% if session.errors %}class="warning"{% endif %} >
+    <th><a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">{{ session }}</a></th>
     <td>
         {% if session.errors %}
             <span class="glyphicon glyphicon-warning-sign"></span>

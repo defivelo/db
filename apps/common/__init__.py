@@ -27,12 +27,12 @@ STDGLYPHICON = (
 # Cantons où DÉFI VÉLO est actif
 DV_STATES = ['VD', 'VS', 'FR', 'NE', 'GE', 'JU',
              'BS', 'SG', 'ZH', 'BE', 'LU', 'AR',
-             'VS-OW',  # Haut-Valais
+             'WS',  # Haut-Valais
              ]
 
 # "faux" cantons pour DÉFI VÉLO
 DV_ADDITIONAL_STATES = [
-    ('VS-OW', _('Haut-Valais')),
+    ('WS', _('Haut-Valais')),
 ]
 
 DV_STATE_CHOICES = [c for c in STATE_CHOICES if c[0] in DV_STATES] + \

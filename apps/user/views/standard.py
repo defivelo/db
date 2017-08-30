@@ -249,12 +249,6 @@ class UserDetailedList(UserList):
         context['page_title'] = self.page_title
         return context
 
-    def get_queryset(self):
-        return (
-            super(UserDetailedList, self).get_queryset()
-            .prefetch_related('profile')
-        )
-
 
 class HelpersList(UserDetailedList):
     page_title = _('Liste des moniteurs')

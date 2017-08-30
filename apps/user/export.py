@@ -79,7 +79,7 @@ class UserResource(resources.ModelResource):
                                         attribute='profile__address_zip')
     profile__address_city = fields.Field(column_name=_('Ville'),
                                          attribute='profile__address_city')
-    profile__address_canton = fields.Field(column_name=_('Canton'),
+    profile__address_canton = fields.Field(column_name=_('Canton de domicile'),
                                            attribute='profile__address_canton')
     profile__birthdate = fields.Field(
         column_name=_('Date de naissance'), attribute='profile__birthdate',
@@ -107,7 +107,7 @@ class UserResource(resources.ModelResource):
     profile__actor_for = fields.Field(
         column_name=_("Intervenant"),
         attribute='profile',
-        widget=ObjectMethodWidget(method='actor_for'))
+        widget=ObjectMethodWidget(method='actor_inline'))
     profile__status = fields.Field(
         column_name=_("Statut"),
         attribute='profile',
