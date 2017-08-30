@@ -34,7 +34,7 @@ from django.utils.translation import ugettext_lazy as _
 from django_countries.fields import CountryField
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from localflavor.generic.models import IBANField
-from memoize import memoize
+from memoize import delete_memoized, memoize
 from multiselectfield import MultiSelectField
 from rolepermissions.checkers import has_role
 
@@ -44,7 +44,7 @@ from apps.common import (
     STDGLYPHICON,
 )
 from apps.common.models import Address
-from defivelo.roles import user_cantons
+from defivelo.roles import has_permission, user_cantons
 
 from . import FORMATION_CHOICES, FORMATION_KEYS, FORMATION_M1, FORMATION_M2, get_new_username  # NOQA
 
@@ -192,6 +192,9 @@ class UserProfile(Address, models.Model):
                 self.languages_challenges.remove(self.language)
             except (ValueError, AttributeError):
                 pass
+        delete_memoized(has_permission)
+        delete_memoized(user_cantons, self.user)
+        delete_memoized(self.get_seasons)
         super(UserProfile, self).save(*args, **kwargs)
 
     @property
