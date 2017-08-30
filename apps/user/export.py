@@ -107,7 +107,7 @@ class UserResource(resources.ModelResource):
     profile__actor_for = fields.Field(
         column_name=_("Intervenant"),
         attribute='profile',
-        widget=ObjectMethodWidget(method='actor_for'))
+        widget=ObjectMethodWidget(method='actor_inline'))
     profile__status = fields.Field(
         column_name=_("Statut"),
         attribute='profile',
