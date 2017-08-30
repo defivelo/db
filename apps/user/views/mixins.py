@@ -78,9 +78,12 @@ class ProfileMixin(MenuView):
         except LookupError:
             raise PermissionDenied
         if usercantons:
+            # S'il y au moins un canton en commun
+            cantons_regexp = (
+                MULTISELECTFIELD_REGEXP % "|".join([v for v in usercantons if v])
+            )
             allcantons_filter = [
-                Q(profile__activity_cantons__contains=canton)
-                for canton in usercantons
+                Q(profile__activity_cantons__regex=cantons_regexp)
             ] + [
                 Q(profile__affiliation_canton__in=usercantons)
             ]
