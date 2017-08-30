@@ -514,7 +514,17 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
         return context
 
     def get_success_url(self):
-        if has_permission(self.request.user, 'challenge_season_crud'):
+        try:
+            usercantons = user_cantons(self.request.user)
+        except PermissionDenied:
+            usercantons = None
+        if (
+            has_permission(self.request.user, 'challenge_season_crud') and
+            list(
+                set(usercantons)
+                .intersection(set(self.season.cantons))
+            )
+        ):
             return reverse_lazy('season-availabilities',
                                 kwargs={'pk': self.season.pk})
         else:

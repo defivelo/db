@@ -30,7 +30,9 @@ from defivelo.roles import has_permission, user_cantons
 from defivelo.views import MenuView
 
 from ..forms import UserProfileForm
-from ..models import DV_PRIVATE_FIELDS, DV_PUBLIC_FIELDS, PERSONAL_FIELDS, STD_PROFILE_FIELDS, UserProfile
+from ..models import (
+    DV_PRIVATE_FIELDS, DV_PUBLIC_FIELDS, MULTISELECTFIELD_REGEXP, PERSONAL_FIELDS, STD_PROFILE_FIELDS, UserProfile,
+)
 
 
 class ProfileMixin(MenuView):

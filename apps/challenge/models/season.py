@@ -106,7 +106,6 @@ class Season(models.Model):
                 ).filter(qualifications__count__gt=0, )
         return self.sessions_with_q
 
-
     def get_absolute_url(self):
         return reverse('season-detail', args=[self.pk])
 
