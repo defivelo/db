@@ -5,7 +5,7 @@
 {% block head_title %}{% trans "Saison" %} {{ season.pk }}{% endblock %}
 
 {% block content %}
-    <h1>{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }}</h1>
+    <h1 title="{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }}">{{ season.moment }}</h1>
     <h3>{{ season.cantons_verb|join:", " }}</h3>
 
     <h4>{% trans "Toutes les sessions" %}</h4>

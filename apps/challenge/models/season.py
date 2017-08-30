@@ -23,6 +23,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from multiselectfield import MultiSelectField
 
@@ -54,26 +55,26 @@ class Season(models.Model):
         verbose_name_plural = _('Saisons')
         ordering = ['year', 'season', ]
 
-    @property
+    @cached_property
     def cantons_verb(self):
         if self.cantons:
             return [c[1] for c in DV_STATE_CHOICES if c[0] in self.cantons]
 
-    @property
+    @cached_property
     def begin(self):
         if self.season == DV_SEASON_SPRING:
             return date(self.year, 1, 1)
         if self.season == DV_SEASON_AUTUMN:
             return date(self.year, DV_SEASON_LAST_SPRING_MONTH + 1, 1)
 
-    @property
+    @cached_property
     def end(self):
         if self.season == DV_SEASON_SPRING:
             return date(self.year, DV_SEASON_LAST_SPRING_MONTH + 1, 1) - timedelta(days=1)
         if self.season == DV_SEASON_AUTUMN:
             return date(self.year, 12, 31)
 
-    @property
+    @cached_property
     def season_full(self):
         return dict(DV_SEASON_CHOICES)[self.season]
 
@@ -105,18 +106,26 @@ class Season(models.Model):
                 ).filter(qualifications__count__gt=0, )
         return self.sessions_with_q
 
+
     def get_absolute_url(self):
         return reverse('season-detail', args=[self.pk])
 
-    def desc(self):
-        return _('{cantons} - {saison} {annee}').format(
+    @cached_property
+    def moment(self):
+        return _('{saison} {annee}').format(
             saison=self.season_full,
             annee=self.year,
+            )
+
+    @cached_property
+    def desc(self):
+        return _('{cantons} - {moment}').format(
+            moment=self.moment,
             cantons=", ".join(self.cantons),
             )
 
     def __str__(self):
         return (
-            self.desc() +
+            self.desc +
             (" - " + self.leader.get_full_name() if self.leader else '')
         )
