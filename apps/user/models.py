@@ -37,6 +37,7 @@ from localflavor.generic.models import IBANField
 from memoize import delete_memoized, memoize
 from multiselectfield import MultiSelectField
 from rolepermissions.checkers import has_role
+from rolepermissions.roles import assign_role, clear_roles, get_user_roles, remove_role
 
 from apps.challenge.models import QualificationActivity, Season
 from apps.common import (
@@ -192,10 +193,20 @@ class UserProfile(Address, models.Model):
                 self.languages_challenges.remove(self.language)
             except (ValueError, AttributeError):
                 pass
+        self.reset_cache()
+        super(UserProfile, self).save(*args, **kwargs)
+
+    def reset_cache(self):
         delete_memoized(has_permission)
         delete_memoized(user_cantons, self.user)
         delete_memoized(self.get_seasons)
-        super(UserProfile, self).save(*args, **kwargs)
+
+    def set_role(self, role_str=None):
+        # Enforce that a user can only have one role at a time
+        clear_roles(self.user)
+        if role_str:
+            assign_role(self.user, role_str)
+        self.reset_cache()
 
     def send_credentials(self, context, force=False):
         if self.can_login and not force:
