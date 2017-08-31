@@ -24,6 +24,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from multiselectfield import MultiSelectField
 
@@ -55,10 +56,13 @@ class Season(models.Model):
         verbose_name_plural = _('Saisons')
         ordering = ['year', 'season', ]
 
-    @cached_property
-    def cantons_verb(self):
+    def cantons_verb(self, abbr=False):
         if self.cantons:
-            return [c[1] for c in DV_STATE_CHOICES if c[0] in self.cantons]
+            return [
+                c[1] if not abbr
+                else mark_safe('<abbr title="{title}">{abbr}</abbr>'.format(abbr=c[0], title=c[1]))
+                for c in DV_STATE_CHOICES if c[0] in self.cantons
+            ]
 
     @cached_property
     def begin(self):
@@ -118,10 +122,10 @@ class Season(models.Model):
 
     @cached_property
     def desc(self):
-        return _('{cantons} - {moment}').format(
+        return mark_safe(_('{cantons} - {moment}').format(
             moment=self.moment,
-            cantons=", ".join(self.cantons),
-            )
+            cantons=", ".join(self.cantons_verb(abbr=True)),
+            ))
 
     def __str__(self):
         return (
