@@ -1,11 +1,9 @@
 {% extends "base.html" %}
-{% load i18n %}
-{% load account %}
-{% load dv_filters %}
+{% load i18n account dv_filters %}
 {% block head_title %}{{ page_title }}{% endblock %}
 {% block content %}
     {% if season %}
-        <h2>{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }} ({{ season.cantons_verb|join:", " }})</h3>
+        <h2>{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }} ({{ season.cantons|cantons_abbr:False|join:", " }})</h3>
     {% endif %}
     <h3>{{ page_title }}</h3>
 

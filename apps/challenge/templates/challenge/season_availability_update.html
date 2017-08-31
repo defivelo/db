@@ -1,20 +1,18 @@
 {% extends "base.html" %}
-{% load i18n %}
-{% load bootstrap3 %}
-{% load dv_filters %}
-{% block head_title %}{% trans "Saison" %} {{ season.pk }}{% endblock %}
+{% load i18n bootstrap3 dv_filters %}
+{% block head_title %}{{ season.desc }}{% endblock %}
 
 {% block container-class %}container-fluid{% endblock %}
 
 {% block content %}
     <h1>{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }}</h1>
-    <h3>{{ season.cantons_verb|join:", " }}</h3>
+    <h3>{{ season.cantons|cantons_abbr:False|join:", " }}</h3>
 
     <h4>{% trans "Disponibilités" %}</h4>
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
         <table class="table text-center table-avail">
-        {% include "challenge/season_availability_thead.html" with sessions=sessions season=season user=request.user only %}
+        {% include "challenge/season_availability_thead.html" with sessions=sessions season=season user=request.user preamble_columns=1 only %}
         <tbody>
             {% for helper_category,helpers in potential_helpers %}
                 {% if helpers %}
@@ -25,7 +23,7 @@
                     </tr>
                     {% endfor %}
                     {% if helpers.count > 10 %}
-                        {% include "challenge/season_availability_partial_head.html" with sessions=sessions season=season user=request.user only %}
+                        {% include "challenge/season_availability_partial_head.html" with sessions=sessions season=season user=request.user preamble_columns=1 only %}
                     {% endif %}
                 {% endif %}
             {% endfor %}

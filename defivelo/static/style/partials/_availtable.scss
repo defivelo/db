@@ -6,7 +6,7 @@ table.table-avail {
         &>tr {
             &>th,
             &>td {
-                &:not(:first-child) {
+                &:not(:first-child):not(.no-vert-border) {
                     border-right: dotted 1px #ddd; 
                     border-left: dotted 1px #ddd;
                 }

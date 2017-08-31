@@ -1,14 +1,11 @@
-{% extends "base.html" %}
-{% load i18n %}
-{% load bootstrap3 %}
-{% load dv_filters %}
-{% block head_title %}{% trans "Saison" %} {{ season.pk }}{% endblock %}
+{% extends "base.html" %}{% load i18n bootstrap3 dv_filters %}
+{% block head_title %}{{ season.desc }}{% endblock %}
 
 {% block container-class %}container-fluid{% endblock %}
 
 {% block content %}
     <h1>{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }}</h1>
-    <h3>{{ season.cantons_verb|join:", " }}</h3>
+    <h3>{{ season.cantons|cantons_abbr:False|join:", " }}</h3>
 
     <h4>{% trans "Attributions dans les sessions" %}</h4>
 
@@ -18,11 +15,11 @@
         {% include "challenge/season_availability_thead.html" with sessions=sessions season=season only %}
         <tbody>
             {% for helper_category,helpers in available_helpers %}
-                <tr><th colspan="{{ sessions.count|add:"2" }}">{{ helper_category }}</th></tr>
+                <tr><th colspan="{{ sessions.count|add:"3" }}">{{ helper_category }}</th></tr>
                 {% if helpers %}
                     {% for helper in helpers %}
                     <tr>
-                        <td class="text-left">{{ helper.get_full_name }}</td>
+                        {% include "challenge/season_availability_partial_helper_columns.html" with helper=helper %}
                         {{ form|userstaffsessions:helper }}
                     </tr>
                     {% endfor %}
