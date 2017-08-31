@@ -28,6 +28,7 @@ from multiselectfield.forms.fields import MultiSelectFormField
 from apps.challenge.models import QualificationActivity
 from apps.common import DV_LANGUAGES, DV_LANGUAGES_WITH_DEFAULT, DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.forms import BS3CountriesField, SwissDateField
+from defivelo.roles import DV_AVAILABLE_ROLES
 
 from . import STATE_CHOICES_WITH_DEFAULT
 from .models import BAGSTATUS_CHOICES, FORMATION_CHOICES, USERSTATUS_CHOICES_NORMAL
@@ -133,3 +134,7 @@ class UserProfileForm(forms.ModelForm):
     class Meta:
         model = get_user_model()
         fields = ['first_name', 'last_name', 'email', ]
+
+
+class UserAssignRoleForm(forms.Form):
+    role = forms.ChoiceField(label=_('Niveau d\'accès'), choices=DV_AVAILABLE_ROLES, required=False)

@@ -27,7 +27,7 @@ EXPORT_FIELDS = ['id', 'created_on'] + ORGA_FIELDS
 
 
 class OrganizationResource(resources.ModelResource):
-    abbr = fields.Field(column_name=_('Abbréviation'), attribute='abbr')
+    abbr = fields.Field(column_name=_('Abréviation'), attribute='abbr')
     name = fields.Field(column_name=_('Nom'), attribute='name')
     address_street = fields.Field(column_name=_('Rue'),
                                   attribute='address_street')

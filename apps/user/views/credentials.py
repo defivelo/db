@@ -17,14 +17,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from django.contrib.sites.models import Site
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
 from django.forms import Form as DjangoEmptyForm
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.edit import FormView
 from rolepermissions.mixins import HasPermissionsMixin
+from rolepermissions.roles import get_user_roles
 
+from ..forms import UserAssignRoleForm
 from .mixins import ProfileMixin
 
 
@@ -36,11 +36,7 @@ class UserCredentials(ProfileMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super(UserCredentials, self).get_context_data(**kwargs)
-        # Add our menu_category context
         context['userprofile'] = self.get_object()
-        context['current_site'] = Site.objects.get_current()
-        context['login_uri'] = \
-            self.request.build_absolute_uri(reverse('account_login'))
         context['initial_send'] = self.initial_send
         return context
 
@@ -82,3 +78,38 @@ class ResendUserCredentials(HasPermissionsMixin, UserCredentials):
             )
         else:
             raise PermissionDenied
+
+
+class UserAssignRole(ProfileMixin, HasPermissionsMixin, FormView):
+    template_name = 'roles/assign.html'
+    success_message = _('Rôle assigné à l\'utilisa·teur·trice')
+    form_class = UserAssignRoleForm
+    required_permission = 'user_set_role'
+    cantons = False
+
+    def dispatch(self, request, *args, **kwargs):
+        # Forbid if self
+        if not self.get_object() == self.request.user:
+            return (
+                super(UserAssignRole, self)
+                .dispatch(request, *args, **kwargs)
+            )
+        else:
+            raise PermissionDenied
+
+    def get_context_data(self, **kwargs):
+        context = super(UserAssignRole, self).get_context_data(**kwargs)
+        context['userprofile'] = self.get_object()
+        return context
+
+    def get_initial(self):
+        user = self.get_object()
+        roles = get_user_roles(user)
+        if len(roles) >= 1:
+            return {'role': roles[0].get_name()}
+
+    def form_valid(self, form):
+        user = self.get_object()
+        role = form.cleaned_data['role']
+        user.profile.set_role(role)
+        return super(UserAssignRole, self).form_valid(form)

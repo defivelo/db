@@ -24,6 +24,8 @@ from django.core import mail
 from django.core.urlresolvers import NoReverseMatch, reverse
 from django.test import TestCase
 
+from rolepermissions.roles import get_user_roles
+
 from apps.common import DV_STATES
 from apps.user.models import (
     BAGSTATUS_LOAN, BAGSTATUS_PAID, FORMATION_M1, FORMATION_M2, STD_PROFILE_FIELDS, USERSTATUS_ACTIVE,
@@ -36,7 +38,7 @@ myurlsforall = ['user-detail', 'user-update', 'profile-detail', ]
 myurlsforoffice = ['user-list', 'user-list-export', ]
 
 othersurls = ['user-detail', 'user-update', 'user-create',
-              'user-sendcredentials', 'user-delete', ]
+              'user-sendcredentials', 'user-delete', 'user-assign-role', ]
 
 profile_autocompletes = ['Actors', 'AllPersons', 'Leaders', 'Helpers',
                          'PersonsRelevantForSessions']
@@ -266,6 +268,31 @@ class PowerUserTest(ProfileTestCase):
             # Updated as well
             self.assertEqual(her.profile.formation, FORMATION_M2)
             self.assertEqual(her.profile.affiliation_canton, 'VD')
+
+    def test_roleassign(self):
+        # Can't change my own role
+        url = reverse('user-assign-role', kwargs={'pk': self.client.user.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403, response)
+
+        user = self.users[0]
+        # But I can change any other role
+        url = reverse('user-assign-role', kwargs={'pk': user.pk})
+        response = self.client.get(url)
+        self.assertTemplateUsed(response, 'roles/assign.html')
+        self.assertEqual(response.status_code, 200, response)
+        self.assertEqual(get_user_roles(user), [], user)
+        for role in ['state_manager', 'power_user']:
+            response = self.client.post(url, {'role': role})
+            self.assertEqual(response.status_code, 302, url)
+            self.assertEqual(
+                [r.get_name() for r in get_user_roles(user)],
+                [role], user)
+
+        # Deleting the role also works
+        response = self.client.post(url, {'role': ''})
+        self.assertEqual(response.status_code, 302, url)
+        self.assertEqual(get_user_roles(user), [], user)
 
     def test_autocompletes(self):
         # All autocompletes are permitted

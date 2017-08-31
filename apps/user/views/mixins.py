@@ -21,8 +21,9 @@ import operator
 from functools import reduce
 
 from django.contrib.auth import get_user_model
+from django.contrib.sites.models import Site
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.db.models import Q
 from django.utils import timezone
 
@@ -44,8 +45,11 @@ class ProfileMixin(MenuView):
 
     def get_context_data(self, **kwargs):
         context = super(ProfileMixin, self).get_context_data(**kwargs)
+        context['current_site'] = Site.objects.get_current()
         # Add our menu_category context
         context['menu_category'] = 'user'
+        context['login_uri'] = \
+            self.request.build_absolute_uri(reverse('account_login'))
         return context
 
     def get_object(self):

@@ -210,6 +210,12 @@
                 {% trans "Éditer" %}
             </a>
         {% endif %}
+        {% if request.user.pk != userprofile.pk and request.user|can:"user_set_role" %}
+            <a class="btn btn-warning pull-right" href="{% url 'user-assign-role' pk=userprofile.pk %}">
+                <span class="glyphicon glyphicon-lock" aria-hidden="true" title="{% trans "Modifier le niveau d'accès" %}"></span>
+                {% trans "Modifier le niveau d'accès" %}
+            </a>
+        {% endif %}
         {% if request.user|can:'user_view_list' %}
             <a class="btn btn-default" href="{% url 'user-list' %}">{% trans "Retour à la liste des utilisateurs" %}</a>
         {% endif %}
