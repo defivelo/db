@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load bootstrap3 %}
 {% load dv_filters %}
-{% block head_title %}{% trans "Session" %} {{ session.pk }}{% endblock %}
+{% block head_title %}{% trans "Session" %} {{ session.day|date }}{% if session.begin %}, {{ session.begin|time }}{% endif %}{% endblock %}
 
 {% block content %}
     <h1>

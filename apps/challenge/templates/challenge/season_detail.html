@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load bootstrap3 %}
 {% load dv_filters %}
-{% block head_title %}{% trans "Saison" %} {{ season.pk }}{% endblock %}
+{% block head_title %}{{ season.desc }}{% endblock %}
 
 {% block content %}
     <h1 title="{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }}">{{ season.moment }}</h1>
