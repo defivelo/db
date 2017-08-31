@@ -18,7 +18,6 @@
         <tbody>
             {% for helper_category,helpers in potential_helpers %}
                 {% if helpers %}
-                    <tr><th colspan="{{ season.sessions_with_qualifs.count|add:"2" }}">{{ helper_category }}</th></tr>
                     {% for helper in helpers %}
                     <tr>
                         <td class="text-left">{{ helper.get_full_name }}</td>

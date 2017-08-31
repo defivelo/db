@@ -176,8 +176,8 @@ class SeasonAvailabilityMixin(SeasonMixin):
         return (
             (_('Moniteurs 2'), all_helpers.filter(profile__formation='M2')),
             (_('Moniteurs 1'), all_helpers.filter(profile__formation='M1')),
-            (_('Intervenants'), all_helpers.exclude(
-                profile__actor_for__isnull=True
+            (_('Intervenants'), all_helpers.filter(profile__formation='').exclude(
+                profile__actor_for__isnull=True,
             )),
         )
 
