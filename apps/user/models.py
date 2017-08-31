@@ -197,6 +197,44 @@ class UserProfile(Address, models.Model):
         delete_memoized(self.get_seasons)
         super(UserProfile, self).save(*args, **kwargs)
 
+    def send_credentials(self, context, force=False):
+        if self.can_login and not force:
+            # Has credentials already
+            raise ValidationError(_('A déjà des données de connexion'),
+                                  code='has_login')
+
+        newpassword = get_user_model().objects.make_random_password()
+        self.user.set_password(newpassword)
+        self.user.is_active = True
+
+        context['userprofile'] = self.user
+        context['password'] = newpassword
+        self.user.save()
+
+        # This can raise exception, but that's good
+        send_mail(
+            _('Accès au site \'{site_name}\'').format(
+                site_name=context['current_site'].name),
+            render_to_string(
+                'auth/email_user_send_credentials.txt',
+                context),
+            settings.DEFAULT_FROM_EMAIL,
+            [self.mailtolink, ]
+            )
+
+        # Create a validated email
+        EmailAddress.objects.get_or_create(
+            user=self.user, email=self.user.email, verified=True,
+            primary=True
+            )
+
+    def delete(self):
+        self.user.is_active = False
+        self.user.set_unusable_password()
+        self.user.save()
+        self.status = USERSTATUS_DELETED
+        self.save()
+
     @property
     def formation_full(self):
         if self.formation:
@@ -386,37 +424,6 @@ class UserProfile(Address, models.Model):
     def can_login(self):
         return self.user.is_active and self.user.has_usable_password
 
-    def send_credentials(self, context, force=False):
-        if self.can_login and not force:
-            # Has credentials already
-            raise ValidationError(_('A déjà des données de connexion'),
-                                  code='has_login')
-
-        newpassword = get_user_model().objects.make_random_password()
-        self.user.set_password(newpassword)
-        self.user.is_active = True
-
-        context['userprofile'] = self.user
-        context['password'] = newpassword
-        self.user.save()
-
-        # This can raise exception, but that's good
-        send_mail(
-            _('Accès au site \'{site_name}\'').format(
-                site_name=context['current_site'].name),
-            render_to_string(
-                'auth/email_user_send_credentials.txt',
-                context),
-            settings.DEFAULT_FROM_EMAIL,
-            [self.mailtolink, ]
-            )
-
-        # Create a validated email
-        EmailAddress.objects.get_or_create(
-            user=self.user, email=self.user.email, verified=True,
-            primary=True
-            )
-
     @memoize()
     def get_seasons(self, raise_without_cantons=False):
         qs = Season.objects
@@ -452,13 +459,6 @@ class UserProfile(Address, models.Model):
             not self.user.is_active and
             not self.user.has_usable_password()
         )
-
-    def delete(self):
-        self.user.is_active = False
-        self.user.set_unusable_password()
-        self.user.save()
-        self.status = USERSTATUS_DELETED
-        self.save()
 
     def __str__(self):
         return self.user.get_full_name()
