@@ -252,6 +252,7 @@ def weeknumber(date):
     # This "solves" the weird week numbers in templates
     return date.strftime('%W')
 
+
 @register.filter
 def cantons_abbr(cantons, abbr=True):
     return [
@@ -266,9 +267,11 @@ def cantons_abbr(cantons, abbr=True):
                 for c in DV_STATE_CHOICES if c[0] in cantons
             ]
 
+
 @register.filter
 def canton_abbr(canton, abbr=True):
-    return cantons_abbr([canton])[0]
+    return cantons_abbr([canton], abbr)[0]
+
 
 @register.filter
 def anyofusercantons(user, cantons):

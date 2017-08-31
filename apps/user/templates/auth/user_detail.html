@@ -162,11 +162,11 @@
                         <dl class="dl-horizontal">
                         {% if userprofile.profile.affiliation_canton %}
                             <dt>{% trans "Canton d'affiliation" %}</dt>
-                            <dd>{{ userprofile.profile.affiliation_canton_verb }}</dd>
+                            <dd>{{ userprofile.profile.affiliation_canton|canton_abbr:False }}</dd>
                         {% endif %}
                         {% if userprofile.profile.activity_cantons %}
                             <dt>{% trans "Défi Vélo Mobile" %}</dt>
-                            <dd>{{ userprofile.profile.activity_cantons_verb|join:"<br />" }}
+                            <dd>{{ userprofile.profile.activity_cantons|cantons_abbr:False|join:"<br />" }}
                             </dd>
                         {% endif %}
                         {% if userprofile.profile.can_login %}
@@ -175,7 +175,7 @@
                         {% endif %}
                         {% if userprofile.profile.managed_cantons %}
                             <dt>{% trans "Cantons gérés" %}</dt>
-                            <dd>{{ userprofile.profile.managed_cantons_verb|join:"<br />" }}</dd>
+                            <dd>{{ userprofile.profile.managed_cantons|cantons_abbr:False|join:"<br />" }}</dd>
                         {% endif %}
                         </dl>
                     </div>

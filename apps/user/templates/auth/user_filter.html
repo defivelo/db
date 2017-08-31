@@ -70,7 +70,7 @@
                 {{ user.profile.status_icon|safe }}
             </td>
             <td>
-               {{ user.profile.affiliation_canton }}{% if user.profile.activity_cantons %}, <em>{{ user.profile.activity_cantons|join:"</em>, <em>" }}</em>{% endif %}
+               {{ user.profile.affiliation_canton|canton_abbr }}{% if user.profile.activity_cantons %}, <em>{{ user.profile.activity_cantons|cantons_abbr|join:"</em>, <em>" }}</em>{% endif %}
             </td>
             <td>
                {{ user.profile.language }}{% if user.profile.languages_challenges %}, <em>{{ user.profile.languages_challenges|join:"</em>, <em>" }}</em>{% endif %}

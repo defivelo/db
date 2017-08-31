@@ -377,23 +377,6 @@ class UserProfile(Address, models.Model):
         except IndexError:
             return ''
 
-    @property
-    def affiliation_canton_verb(self):
-        try:
-            return [
-                c[1] for c in DV_STATE_CHOICES
-                if c[0] == self.affiliation_canton
-                ][0]
-        except IndexError:
-            return ''
-
-    @property
-    def activity_cantons_verb(self):
-        return [
-            c[1] for c in DV_STATE_CHOICES
-            if c[0] in self.activity_cantons
-            ]
-
     def access_level(self, textonly=True):
         icon = ''
         title = ''
@@ -427,13 +410,6 @@ class UserProfile(Address, models.Model):
     @property
     def managed_cantons(self):
         return [m.canton for m in self.user.managedstates.all()]
-
-    @property
-    def managed_cantons_verb(self):
-        return [
-            c[1] for c in DV_STATE_CHOICES
-            if c[0] in self.managed_cantons
-            ]
 
     @property
     def mailtolink(self):
