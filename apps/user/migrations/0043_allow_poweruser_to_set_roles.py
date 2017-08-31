@@ -7,7 +7,7 @@ from django.db import migrations
 
 from rolepermissions.checkers import has_role
 from rolepermissions.permissions import grant_permission, revoke_permission
-
+from rolepermissions.roles import assign_role, clear_roles
 
 def add_user_set_role_to_power_user(apps, schema_editor):
     # We can't import the Person model directly as it may be a newer
@@ -15,8 +15,8 @@ def add_user_set_role_to_power_user(apps, schema_editor):
     User = get_user_model()
     for user in User.objects.all():
         if has_role(user, 'power_user'):
-            grant_permission(user, 'user_set_role')
-            user.save()
+            clear_roles(user)
+            assign_role(user, 'power_user')
 
 def remove_user_set_role_from_power_user(apps, schema_editor):
     # We can't import the Person model directly as it may be a newer

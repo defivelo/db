@@ -137,4 +137,4 @@ class UserProfileForm(forms.ModelForm):
 
 
 class UserAssignRoleForm(forms.Form):
-    role = forms.ChoiceField(label=_('Rôle'), choices=DV_AVAILABLE_ROLES, required=False)
+    role = forms.ChoiceField(label=_('Niveau d\'accès'), choices=DV_AVAILABLE_ROLES, required=False)
