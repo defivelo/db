@@ -138,3 +138,6 @@ class UserProfileForm(forms.ModelForm):
 
 class UserAssignRoleForm(forms.Form):
     role = forms.ChoiceField(label=_('Niveau d\'accès'), choices=DV_AVAILABLE_ROLES, required=False)
+    managed_states = MultiSelectFormField(label=_("Cantons gérés"),
+                                          choices=sorted(DV_STATE_CHOICES),
+                                          required=False)

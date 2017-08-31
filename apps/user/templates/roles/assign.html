@@ -20,3 +20,17 @@
   </div>
 {% endblock %}
 
+{% block bootstrap3_extra_script %}
+{{ form.media.js }}
+<script type="text/javascript">
+function onlyStatesIfStateManager() {
+    // Ne permet pas la coche dans le canton d'activité pour Défi Vélo Mobile
+    disabled = $( '#id_role' ).val() != 'state_manager';
+    $( '#id_managed_states input[name="managed_states"]').prop("disabled", disabled);
+}
+
+$( '#id_role' ).change( onlyStatesIfStateManager );
+
+onlyStatesIfStateManager();
+</script>
+{% endblock %}
