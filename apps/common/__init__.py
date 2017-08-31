@@ -35,6 +35,10 @@ DV_ADDITIONAL_STATES = [
     ('WS', _('Haut-Valais')),
 ]
 
+DV_STATES_LONGER_ABBREVIATIONS = {
+    'WS': 'VS-OW'
+}
+
 DV_STATE_CHOICES = [c for c in STATE_CHOICES if c[0] in DV_STATES] + \
     DV_ADDITIONAL_STATES
 

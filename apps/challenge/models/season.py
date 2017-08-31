@@ -22,13 +22,15 @@ from datetime import date, timedelta
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
+from django.utils.encoding import force_text, python_2_unicode_compatible
 from django.utils.functional import cached_property
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from multiselectfield import MultiSelectField
 
 from apps.common import (
     DV_SEASON_AUTUMN, DV_SEASON_CHOICES, DV_SEASON_LAST_SPRING_MONTH, DV_SEASON_SPRING, DV_STATE_CHOICES,
+    DV_STATES_LONGER_ABBREVIATIONS,
 )
 
 from .session import Session
@@ -55,10 +57,19 @@ class Season(models.Model):
         verbose_name_plural = _('Saisons')
         ordering = ['year', 'season', ]
 
-    @cached_property
-    def cantons_verb(self):
+    def cantons_verb(self, abbr=False):
         if self.cantons:
-            return [c[1] for c in DV_STATE_CHOICES if c[0] in self.cantons]
+            return [
+                force_text(c[1]) if not abbr
+                else mark_safe(
+                    '<abbr title="{title}">{abbr}</abbr>'
+                    .format(
+                        abbr=DV_STATES_LONGER_ABBREVIATIONS[c[0]] if c[0] in DV_STATES_LONGER_ABBREVIATIONS else c[0],
+                        title=c[1]
+                    )
+                )
+                for c in DV_STATE_CHOICES if c[0] in self.cantons
+            ]
 
     @cached_property
     def begin(self):
@@ -116,12 +127,15 @@ class Season(models.Model):
             annee=self.year,
             )
 
-    @cached_property
-    def desc(self):
-        return _('{cantons} - {moment}').format(
+    def desc(self, abbr=False):
+        return mark_safe(_('{cantons} - {moment}').format(
             moment=self.moment,
-            cantons=", ".join(self.cantons),
-            )
+            cantons=", ".join(self.cantons_verb(abbr=abbr)),
+            ))
+
+    @cached_property
+    def desc_abbr(self):
+        return self.desc(True)
 
     def __str__(self):
         return (

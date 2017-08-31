@@ -9,7 +9,7 @@
             <li><a href="{% url 'season-list' year=now_year %}" title="{% trans "Toutes les saisons" %}"><span class="glyphicon glyphicon-th-list"></span>&nbsp;</a></li>
             <li class="active">
                 <a href="{% url 'season-detail' season.pk %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                    {{ season.desc }} <span class="caret"></span>
+                    {{ season.desc_abbr }} <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
                     <li{% if 'season-detail' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-detail' season.pk %}">{% trans "Toutes les sessions" %}</a></li>
@@ -31,7 +31,7 @@
                                 <a href="{% url 'season-availabilities-update' pk=season.pk helperpk=user.pk %}"
                                 title="{% trans "Mes disponibilités" %}">
                             {% endif %}
-                            {{ season.desc }}</a></li>
+                            {{ season.desc_abbr }}</a></li>
                     {% endfor %}
                     {% if current_seasons %}
                     <li role="separator" class="divider"></li>
