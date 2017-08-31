@@ -28,6 +28,9 @@
     
     <div class="list-group">
     {% for season in seasons %}
+        {% ifchanged season.season %}
+            <h2>{{ season.season_full }}</h2>
+        {% endifchanged %}
         {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons %}
             <a class="list-group-item" href="{% url 'season-detail' pk=season.pk %}">
         {% else %}
