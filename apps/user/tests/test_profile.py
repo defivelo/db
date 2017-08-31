@@ -36,7 +36,7 @@ myurlsforall = ['user-detail', 'user-update', 'profile-detail', ]
 myurlsforoffice = ['user-list', 'user-list-export', ]
 
 othersurls = ['user-detail', 'user-update', 'user-create',
-              'user-sendcredentials', 'user-delete', ]
+              'user-sendcredentials', 'user-delete', 'user-assign-role', ]
 
 profile_autocompletes = ['Actors', 'AllPersons', 'Leaders', 'Helpers',
                          'PersonsRelevantForSessions']

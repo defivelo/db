@@ -37,7 +37,7 @@ from localflavor.generic.models import IBANField
 from memoize import delete_memoized, memoize
 from multiselectfield import MultiSelectField
 from rolepermissions.checkers import has_role
-from rolepermissions.roles import assign_role, clear_roles, get_user_roles, remove_role
+from rolepermissions.roles import assign_role, clear_roles
 
 from apps.challenge.models import QualificationActivity, Season
 from apps.common import (

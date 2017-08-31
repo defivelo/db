@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+from django.utils.translation import ugettext_lazy as _
 from memoize import memoize
 from rolepermissions.checkers import has_permission as uncached_has_permission
 from rolepermissions.roles import AbstractUserRole
@@ -73,6 +74,7 @@ class PowerUser(AbstractUserRole):
         'user_can_send_credentials': True,
         'user_can_resend_credentials': True,
         'user_deletions': True,
+        'user_set_role': True,
 
         'home_article_crud': True,
 
@@ -81,3 +83,10 @@ class PowerUser(AbstractUserRole):
         'challenge_season_crud': True,
         'challenge_session_crud': True,
     }
+
+
+DV_AVAILABLE_ROLES = (
+    (None, _('Aucun rôle')),
+    ('state_manager', _('Chargé·e de projet')),
+    ('power_user', _('Super-utilisa·teur·trice')),
+)

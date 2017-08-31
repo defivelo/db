@@ -21,7 +21,8 @@ from django.conf.urls import url
 from django.views.decorators.cache import never_cache
 
 from .views import (
-    ResendUserCredentials, SendUserCredentials, UserCreate, UserDetail, UserList, UserListExport, UserUpdate,
+    ResendUserCredentials, SendUserCredentials, UserAssignRole, UserCreate, UserDetail, UserList, UserListExport,
+    UserUpdate,
 )
 from .views.autocomplete import Actors, AllPersons, Helpers, Leaders, PersonsRelevantForSessions
 from .views.deletes import UserDelete
@@ -43,6 +44,9 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/delete/$',
         never_cache(UserDelete.as_view()),
         name="user-delete"),
+    url(r'^(?P<pk>[0-9]+)/assign_role/$',
+        never_cache(UserAssignRole.as_view()),
+        name="user-assign-role"),
     url(r'^me/$', never_cache(UserDetail.as_view()), name="profile-detail"),
     url(r'^(?P<pk>[0-9]+)/update/$', UserUpdate.as_view(), name="user-update"),
     url(r'^ac/all/$', AllPersons.as_view(), name='user-AllPersons-ac'),
