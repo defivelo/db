@@ -18,7 +18,6 @@
     {% endif %}
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
-        {% with no_dv_public_fields=request.user|can:'user_crud_dv_public_fields'|yesno:',True' no_dv_private_fields=request.user|can:'user_crud_dv_private_fields'|yesno:',True' %}
         <div>
 
         {% comment %}
@@ -61,37 +60,36 @@
             
             <div role="tabpanel" class="tab-pane" id="defi">
                 {% bootstrap_field form.status layout='horizontal' size='small' %}
-                {% bootstrap_field form.formation layout='horizontal' size='small' set_disabled=no_dv_public_fields %}
-                {% bootstrap_field form.formation_firstdate layout='horizontal' size='small' set_disabled=no_dv_public_fields %}
-                {% bootstrap_field form.formation_lastdate layout='horizontal' size='small' set_disabled=no_dv_public_fields %}
-                {% bootstrap_field form.actor_for layout='horizontal' size='small' set_disabled=no_dv_public_fields %}
-                {% bootstrap_field form.pedagogical_experience layout='horizontal' size='small' set_disabled=no_dv_public_fields %}
+                {% bootstrap_field form.formation layout='horizontal' size='small' %}
+                {% bootstrap_field form.formation_firstdate layout='horizontal' size='small' %}
+                {% bootstrap_field form.formation_lastdate layout='horizontal' size='small' %}
+                {% bootstrap_field form.actor_for layout='horizontal' size='small' %}
+                {% bootstrap_field form.pedagogical_experience layout='horizontal' size='small' %}
                 <div class="form-group form-group-sm">
                     {% bootstrap_label form.firstmed_course.label label_class='col-md-3 control-label' %}
                     <div class="col-md-1">
                         <div class="checkbox">
                             <label for="id_firstmed_course">
                                 <input {% if form.firstmed_course.value %}checked="checked" {% endif %}
-                                       {% if no_dv_public_fields %}disabled="disabled" {% endif %}
+                                       {% if form.firstmed_course.field.disabled %}disabled {% endif %}
                                        id="id_firstmed_course" name="firstmed_course" type="checkbox" />
                             </label>
                         </div>
                     </div>
-                    {% bootstrap_field form.firstmed_course_comm field_class='col-md-8' form_group_class='none' show_label=False set_disabled=no_dv_public_fields %}
+                    {% bootstrap_field form.firstmed_course_comm field_class='col-md-8' form_group_class='none' show_label=False %}
                 </div>
-                {% bootstrap_field form.bagstatus layout='horizontal' size='small' set_disabled=no_dv_public_fields %}
+                {% bootstrap_field form.bagstatus layout='horizontal' size='small' %}
             </div>
             <div role="tabpanel" class="tab-pane" id="cantons">
-                {% bootstrap_field form.affiliation_canton layout='horizontal' size='small' set_disabled=no_dv_public_fields %}
+                {% bootstrap_field form.affiliation_canton layout='horizontal' size='small' %}
                 {% bootstrap_field form.activity_cantons layout='horizontal' size='small' %}
             </div>
-            {% if not no_dv_private_fields %}
+            {% if request.user|can:'user_crud_dv_private_fields' %}
                 <div role="tabpanel" class="tab-pane" id="notes">
                     {% bootstrap_field form.comments layout='horizontal' size='small' %}
                 </div>
             {% endif %}
         </div>
-        {% endwith %}
 
         </div>
 

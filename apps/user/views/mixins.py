@@ -96,6 +96,19 @@ class ProfileMixin(MenuView):
             return reverse_lazy('profile-detail')
         return reverse_lazy('user-detail', kwargs={'pk': updatepk})
 
+    def get_form(self, *args, **kwargs):
+        form = super(ProfileMixin, self).get_form(*args, **kwargs)
+        disabled_fields = []
+        # if the edit user has access, extend the update_profile_fields
+        if not has_permission(self.request.user, 'user_crud_dv_public_fields'):
+            disabled_fields += DV_PUBLIC_FIELDS
+        if not has_permission(self.request.user, 'user_crud_dv_private_fields'):
+            disabled_fields += DV_PRIVATE_FIELDS
+        for field in form.fields:
+            if field in disabled_fields:
+                form.fields[field].disabled = True
+        return form
+
     def form_valid(self, form):
         ret = super(ProfileMixin, self).form_valid(form)
         """
