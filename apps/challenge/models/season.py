@@ -22,7 +22,7 @@ from datetime import date, timedelta
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.utils.encoding import force_text, python_2_unicode_compatible
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -30,8 +30,8 @@ from multiselectfield import MultiSelectField
 
 from apps.common import (
     DV_SEASON_AUTUMN, DV_SEASON_CHOICES, DV_SEASON_LAST_SPRING_MONTH, DV_SEASON_SPRING, DV_STATE_CHOICES,
-    DV_STATES_LONGER_ABBREVIATIONS,
 )
+from defivelo.templatetags.dv_filters import cantons_abbr
 
 from .session import Session
 
@@ -56,20 +56,6 @@ class Season(models.Model):
         verbose_name = _('Saison')
         verbose_name_plural = _('Saisons')
         ordering = ['year', 'season', ]
-
-    def cantons_verb(self, abbr=False):
-        if self.cantons:
-            return [
-                force_text(c[1]) if not abbr
-                else mark_safe(
-                    '<abbr title="{title}">{abbr}</abbr>'
-                    .format(
-                        abbr=DV_STATES_LONGER_ABBREVIATIONS[c[0]] if c[0] in DV_STATES_LONGER_ABBREVIATIONS else c[0],
-                        title=c[1]
-                    )
-                )
-                for c in DV_STATE_CHOICES if c[0] in self.cantons
-            ]
 
     @cached_property
     def begin(self):
@@ -130,7 +116,7 @@ class Season(models.Model):
     def desc(self, abbr=False):
         return mark_safe(_('{cantons} - {moment}').format(
             moment=self.moment,
-            cantons=", ".join(self.cantons_verb(abbr=abbr)),
+            cantons=", ".join(cantons_abbr(self.cantons, abbr)),
             ))
 
     @cached_property

@@ -3,7 +3,7 @@
 <thead>
   {% with can_crud=user|can:'challenge_season_crud' %}
     <tr>
-        <td rowspan="{% if chosen_stats %}6{% else %}5{% endif %}" colspan="{{ preamble_columns|default:1 }}">&nbsp;</td>
+        <td rowspan="{% if chosen_stats %}6{% else %}5{% endif %}" colspan="{{ preamble_columns|default:3 }}">&nbsp;</td>
         {% for session in sessions %}
             <th class="text-center" style="vertical-align: top;">
                 {% if session.orga.abbr %}{{ session.orga.abbr_verb }}{% else %}{{ session.orga.name }}{% endif %}

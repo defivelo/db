@@ -22,6 +22,7 @@ from re import search, sub
 from django import template
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
+from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from memoize import memoize
@@ -31,6 +32,7 @@ from apps.challenge import (
     AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX, SHORTCODE_ACTOR, SHORTCODE_MON1, SHORTCODE_MON2,
     SHORTCODE_SELECTED, STAFF_FIELDKEY, STAFF_FIELDKEY_HELPER_PREFIX,
 )
+from apps.common import DV_STATE_CHOICES, DV_STATES_LONGER_ABBREVIATIONS
 from defivelo.roles import user_cantons
 
 register = template.Library()
@@ -249,6 +251,26 @@ def weeknumber(date):
         return ''
     # This "solves" the weird week numbers in templates
     return date.strftime('%W')
+
+
+@register.filter
+def cantons_abbr(cantons, abbr=True):
+    return [
+                force_text(c[1]) if not abbr
+                else mark_safe(
+                    '<abbr title="{title}">{abbr}</abbr>'
+                    .format(
+                        abbr=DV_STATES_LONGER_ABBREVIATIONS[c[0]] if c[0] in DV_STATES_LONGER_ABBREVIATIONS else c[0],
+                        title=c[1]
+                    )
+                )
+                for c in DV_STATE_CHOICES if c[0] in cantons
+            ]
+
+
+@register.filter
+def canton_abbr(canton, abbr=True):
+    return cantons_abbr([canton], abbr)[0]
 
 
 @register.filter
