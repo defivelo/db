@@ -246,10 +246,10 @@ class SeasonAvailabilityMixin(SeasonMixin):
         # Add our submenu_category context
         context['submenu_category'] = 'season-availability'
         context['sessions'] = self.object.sessions_with_qualifs.annotate(
-            n_qualifs=Count('qualifications'),
-            n_helpers=Count('qualifications__helpers'),
-            n_leaders=Count('qualifications__leader'),
-            n_actors=Count('qualifications__actor'),
+            n_qualifs=Count('qualifications', distinct=True),
+            n_helpers=Count('qualifications__helpers', distinct=True),
+            n_leaders=Count('qualifications__leader', distinct=True),
+            n_actors=Count('qualifications__actor', distinct=True),
         )
         return context
 
