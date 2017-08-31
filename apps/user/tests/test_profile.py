@@ -37,7 +37,7 @@ myurlsforall = ['user-detail', 'user-update', 'profile-detail', ]
 myurlsforoffice = ['user-list', 'user-list-export', ]
 
 othersurls = ['user-detail', 'user-update', 'user-create',
-              'user-sendcredentials', 'user-delete', 'user-assign-role', ]
+              'user-sendcredentials', 'user-delete', ]
 
 profile_autocompletes = ['Actors', 'AllPersons', 'Leaders', 'Helpers',
                          'PersonsRelevantForSessions']
@@ -102,14 +102,14 @@ class AuthUserTest(ProfileTestCase):
             self.assertEqual(response.status_code, 200, url)
 
     def test_my_restrictions(self):
-        for symbolicurl in myurlsforoffice:
+        for symbolicurl in myurlsforoffice + ['user-assign-role', ]:
             for exportformat in ['csv', 'ods', 'xls']:
                 url = tryurl(symbolicurl, self.client.user, exportformat)
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, 403, url)
 
     def test_otherusers_access(self):
-        for symbolicurl in othersurls:
+        for symbolicurl in othersurls + ['user-assign-role', ]:
             for otheruser in self.users:
                 url = tryurl(symbolicurl, otheruser)
                 response = self.client.get(url)
@@ -274,8 +274,18 @@ class PowerUserTest(ProfileTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 403, response)
 
-        user = self.users[0]
         # But I can change any other role
+        user = self.users[0]
+        url = reverse('user-assign-role', kwargs={'pk': user.pk})
+        response = self.client.get(url)
+        # That user has no login
+        self.assertEqual(response.status_code, 403, response)
+
+        url = tryurl('user-sendcredentials', user)
+        # Now post to it, to get the mail sent
+        response = self.client.post(url, {})
+        self.assertEqual(response.status_code, 302, url)
+
         url = reverse('user-assign-role', kwargs={'pk': user.pk})
         response = self.client.get(url)
         self.assertTemplateUsed(response, 'roles/assign.html')
