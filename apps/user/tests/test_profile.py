@@ -23,7 +23,6 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.urlresolvers import NoReverseMatch, reverse
 from django.test import TestCase
-
 from rolepermissions.roles import get_user_roles
 
 from apps.common import DV_STATES
@@ -38,7 +37,7 @@ myurlsforall = ['user-detail', 'user-update', 'profile-detail', ]
 myurlsforoffice = ['user-list', 'user-list-export', ]
 
 othersurls = ['user-detail', 'user-update', 'user-create',
-              'user-sendcredentials', 'user-delete', 'user-assign-role', ]
+              'user-sendcredentials', 'user-delete', ]
 
 profile_autocompletes = ['Actors', 'AllPersons', 'Leaders', 'Helpers',
                          'PersonsRelevantForSessions']
@@ -103,14 +102,14 @@ class AuthUserTest(ProfileTestCase):
             self.assertEqual(response.status_code, 200, url)
 
     def test_my_restrictions(self):
-        for symbolicurl in myurlsforoffice:
+        for symbolicurl in myurlsforoffice + ['user-assign-role', ]:
             for exportformat in ['csv', 'ods', 'xls']:
                 url = tryurl(symbolicurl, self.client.user, exportformat)
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, 403, url)
 
     def test_otherusers_access(self):
-        for symbolicurl in othersurls:
+        for symbolicurl in othersurls + ['user-assign-role', ]:
             for otheruser in self.users:
                 url = tryurl(symbolicurl, otheruser)
                 response = self.client.get(url)
@@ -275,24 +274,58 @@ class PowerUserTest(ProfileTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 403, response)
 
-        user = self.users[0]
         # But I can change any other role
+        user = self.users[0]
+        url = reverse('user-assign-role', kwargs={'pk': user.pk})
+        response = self.client.get(url)
+        # That user has no login
+        self.assertEqual(response.status_code, 403, response)
+
+        url = tryurl('user-sendcredentials', user)
+        # Now post to it, to get the mail sent
+        response = self.client.post(url, {})
+        self.assertEqual(response.status_code, 302, url)
+
         url = reverse('user-assign-role', kwargs={'pk': user.pk})
         response = self.client.get(url)
         self.assertTemplateUsed(response, 'roles/assign.html')
         self.assertEqual(response.status_code, 200, response)
         self.assertEqual(get_user_roles(user), [], user)
-        for role in ['state_manager', 'power_user']:
-            response = self.client.post(url, {'role': role})
-            self.assertEqual(response.status_code, 302, url)
-            self.assertEqual(
-                [r.get_name() for r in get_user_roles(user)],
-                [role], user)
+        response = self.client.post(url,
+                                    {
+                                        'role': 'state_manager',
+                                        'managed_states': ['VD', ]
+                                    })
+        self.assertEqual(response.status_code, 302, url)
+        self.assertEqual(
+            list(user.managedstates.all().values_list('canton', flat=True)),
+            ['VD'], user)
+        self.assertEqual(
+            [r.get_name() for r in get_user_roles(user)],
+            ['state_manager'], user)
+
+        response = self.client.post(url,
+                                    {
+                                        'role': 'power_user',
+                                        'managed_states': ['VD', ]
+                                    })
+        self.assertEqual(response.status_code, 302, url)
+        # No canton for non-state_manager
+        self.assertEqual(
+            list(user.managedstates.all().values_list('canton', flat=True)),
+            [], user)
+        self.assertEqual(
+            [r.get_name() for r in get_user_roles(user)],
+            ['power_user'], user)
 
         # Deleting the role also works
-        response = self.client.post(url, {'role': ''})
+        response = self.client.post(url, {'role': '', 'managed_states': ['VD']})
         self.assertEqual(response.status_code, 302, url)
         self.assertEqual(get_user_roles(user), [], user)
+        # No canton for non-state_manager
+        self.assertEqual(
+            list(user.managedstates.all().values_list('canton', flat=True)),
+            [], user)
 
     def test_autocompletes(self):
         # All autocompletes are permitted

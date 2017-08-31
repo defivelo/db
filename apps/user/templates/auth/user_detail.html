@@ -210,7 +210,7 @@
                 {% trans "Éditer" %}
             </a>
         {% endif %}
-        {% if request.user.pk != userprofile.pk and request.user|can:"user_set_role" %}
+        {% if request.user.pk != userprofile.pk and userprofile.profile.can_login and request.user|can:"user_set_role" %}
             <a class="btn btn-warning pull-right" href="{% url 'user-assign-role' pk=userprofile.pk %}">
                 <span class="glyphicon glyphicon-lock" aria-hidden="true" title="{% trans "Modifier le niveau d'accès" %}"></span>
                 {% trans "Modifier le niveau d'accès" %}

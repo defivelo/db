@@ -208,6 +208,18 @@ class UserProfile(Address, models.Model):
             assign_role(self.user, role_str)
         self.reset_cache()
 
+    def set_statemanager_for(self, states=[]):
+        for ums in self.user.managedstates.all():
+            if ums.canton not in states:
+                ums.delete()
+            else:
+                states.remove(ums.canton)
+        for canton in states:
+            UserManagedState.objects.get_or_create(
+                user=self.user,
+                canton=canton)
+        self.reset_cache()
+
     def send_credentials(self, context, force=False):
         if self.can_login and not force:
             # Has credentials already

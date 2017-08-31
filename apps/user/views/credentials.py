@@ -89,7 +89,8 @@ class UserAssignRole(ProfileMixin, HasPermissionsMixin, FormView):
 
     def dispatch(self, request, *args, **kwargs):
         # Forbid if self
-        if not self.get_object() == self.request.user:
+        user = self.get_object()
+        if user != self.request.user and user.profile.can_login:
             return (
                 super(UserAssignRole, self)
                 .dispatch(request, *args, **kwargs)
@@ -105,11 +106,18 @@ class UserAssignRole(ProfileMixin, HasPermissionsMixin, FormView):
     def get_initial(self):
         user = self.get_object()
         roles = get_user_roles(user)
+        initial = {}
         if len(roles) >= 1:
-            return {'role': roles[0].get_name()}
+            initial['role'] = roles[0].get_name()
+        initial['managed_states'] = list(user.managedstates.all().values_list('canton', flat=True))
+        return initial
 
     def form_valid(self, form):
         user = self.get_object()
         role = form.cleaned_data['role']
+        managed_states = form.cleaned_data['managed_states']
+        if role != 'state_manager':
+            managed_states = []
+        user.profile.set_statemanager_for(managed_states)
         user.profile.set_role(role)
         return super(UserAssignRole, self).form_valid(form)
