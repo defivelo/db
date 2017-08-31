@@ -97,7 +97,6 @@ class UserAssignRole(ProfileMixin, HasPermissionsMixin, FormView):
         else:
             raise PermissionDenied
 
-
     def get_context_data(self, **kwargs):
         context = super(UserAssignRole, self).get_context_data(**kwargs)
         context['userprofile'] = self.get_object()

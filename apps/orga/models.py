@@ -40,7 +40,7 @@ ORGASTATUS_CHOICES = (
 @python_2_unicode_compatible
 class Organization(Address, models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
-    abbr = models.CharField(_('Abbréviation'), max_length=16, blank=True)
+    abbr = models.CharField(_('Abréviation'), max_length=16, blank=True)
     name = models.CharField(_('Nom'), max_length=255)
     website = models.URLField(_('Site web'), blank=True)
     coordinator_fullname = models.CharField(_('Coordinateur'),
