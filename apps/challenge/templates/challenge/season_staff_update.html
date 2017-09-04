@@ -15,8 +15,8 @@
         {% include "challenge/season_availability_thead.html" with sessions=sessions season=season only %}
         <tbody>
             {% for helper_category,helpers in available_helpers %}
-                <tr><th colspan="{{ sessions.count|add:"3" }}">{{ helper_category }}</th></tr>
                 {% if helpers %}
+                <tr><th colspan="{{ sessions.count|add:"3" }}">{{ helper_category }}</th></tr>
                     {% for helper in helpers %}
                     <tr>
                         {% include "challenge/season_availability_partial_helper_columns.html" with helper=helper %}

@@ -31,9 +31,11 @@
         </nav>
     {% endif %}
 
-    <div class="hidden-print">
-        <a class="btn btn-primary pull-right" href="{% url 'session-update' seasonpk=season.pk pk=session.pk %}">{% trans "Éditer" %}</a>
-    </div>
+    {% if season.manager_can_crud %}
+        <div class="hidden-print">
+            <a class="btn btn-primary pull-right" href="{% url 'session-update' seasonpk=season.pk pk=session.pk %}">{% trans "Éditer" %}</a>
+        </div>
+    {% endif %}
     <table class="table">
     <tr><th>{% trans "Établissement" %}</th>
         <td><a href="{% url 'organization-detail' session.orga.pk %}">{{ session.orga }}</a>
@@ -101,7 +103,7 @@
         <tr><th>{% trans "Classe" %}</th>
             {% for quali in session.qualifications.all %}
                 <th>{% if not quali.errors %}{% include "ok.html" %}{% endif%}
-                {{ forloop.counter }} - <a href="{% url 'quali-update' seasonpk=season.pk sessionpk=session.pk pk=quali.pk %}">{{ quali.name }}</a>
+                {{ forloop.counter }} - {% if season.manager_can_crud %}<a href="{% url 'quali-update' seasonpk=season.pk sessionpk=session.pk pk=quali.pk %}">{{ quali.name }}</a>{% else %}{{ quali.name }}{% endif %}
                 {% if quali.errors %}
                     <br />
                     {{ quali.errors }}
@@ -150,33 +152,40 @@
         </tr>
         <tr><th>{% trans "Remarques" %}</th>
                 {% for quali in session.qualifications.all %}<td><em>{{ quali.comments }}</em></td>{% endfor %}</tr>
-        <tr class="hidden-print"><td></td>
-                {% for quali in session.qualifications.all %}
-                    <td>
-                        <a class="btn btn-primary btn-xs" href="{% url 'quali-update' seasonpk=season.pk sessionpk=session.pk pk=quali.pk %}">
-                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>{% trans "Éditer" %}
-                        </a><br />
-                        <a class="btn btn-danger btn-xs" href="{% url 'quali-delete' seasonpk=season.pk sessionpk=session.pk pk=quali.pk %}">
-                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>{% trans "Supprimer" %}
-                        </a>
-                    </td>
-                {% endfor %}
-        </tr>
+
+        {% if season.manager_can_crud %}
+            <tr class="hidden-print"><td></td>
+                    {% for quali in session.qualifications.all %}
+                        <td>
+                            <a class="btn btn-primary btn-xs" href="{% url 'quali-update' seasonpk=season.pk sessionpk=session.pk pk=quali.pk %}">
+                                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>{% trans "Éditer" %}
+                            </a><br />
+                            <a class="btn btn-danger btn-xs" href="{% url 'quali-delete' seasonpk=season.pk sessionpk=session.pk pk=quali.pk %}">
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>{% trans "Supprimer" %}
+                            </a>
+                        </td>
+                    {% endfor %}
+            </tr>
+        {% endif %}
     {% endif %}
 
-    <tr class="hidden-print">
-        <td{% if session.qualifications.count > 0 %} colspan="{{ session.qualifications.count|add:1 }}"{% endif %}>
-            <form method="POST" action="{% url 'quali-create' seasonpk=season.pk sessionpk=session.pk %}" class="form-horizontal">
-                {% csrf_token %}
-                {{ quali_form_quick }}
-                {% buttons %}<button type="submit" class="btn btn-primary pull-right">{% trans "Créer une Qualif'" %}</button>{% endbuttons %}
-            </form>
-        </td>
-    </tr>
+    {% if season.manager_can_crud %}
+        <tr class="hidden-print">
+            <td{% if session.qualifications.count > 0 %} colspan="{{ session.qualifications.count|add:1 }}"{% endif %}>
+                <form method="POST" action="{% url 'quali-create' seasonpk=season.pk sessionpk=session.pk %}" class="form-horizontal">
+                    {% csrf_token %}
+                    {{ quali_form_quick }}
+                    {% buttons %}<button type="submit" class="btn btn-primary pull-right">{% trans "Créer une Qualif'" %}</button>{% endbuttons %}
+                </form>
+            </td>
+        </tr>
+    {% endif %}
     </table>
 
     <div class="hidden-print">
-        <a class="btn btn-danger pull-right" href="{% url 'session-delete' seasonpk=season.pk pk=session.pk %}">{% trans "Supprimer" %}</a>
+        {% if season.manager_can_crud %}
+            <a class="btn btn-danger pull-right" href="{% url 'session-delete' seasonpk=season.pk pk=session.pk %}">{% trans "Supprimer" %}</a>
+        {% endif %}
         <div class="btn-group" role="group" aria-label="exports">
             {% include 'export_buttons.html' with exporturl='session-export' seasonpk=season.pk exportargs=session.pk filter_querystring=filter_querystring only %}
         </div>

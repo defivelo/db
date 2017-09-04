@@ -25,7 +25,7 @@
                     <tr><th colspan="{{ sessions.count|add:"5" }}">{{ helper_category }}</th></tr>
                     {% for helper in helpers %}
                     <tr>
-                        {% include "challenge/season_availability_partial_helper_columns.html" with helper=helper availabilities=availabilities %}
+                        {% include "challenge/season_availability_partial_helper_columns.html" with helper=helper availabilities=availabilities with_link=season.manager_can_crud %}
                         {{ availabilities|useravailsessions_readonly:helper }}
                     </tr>
                     {% endfor %}
@@ -44,14 +44,16 @@
     <div class="btn-group" role="group" aria-label="exports">
         {% include 'export_buttons.html' with exporturl='season-planning-export' exportargs=season.pk filter_querystring=filter_querystring only %}
     </div>
-    <form method="POST" action="" class="form-inline"  style="display: inline;" novalidate>
-        {% csrf_token %}
-        {% bootstrap_form form %}
-        {% buttons %}
-            <button type="submit" class="btn btn-primary pull-right">{% trans "Disponibilités" %}</button>
-        {% endbuttons %}
-    </form>
+    {% if season.manager_can_crud %}
+        <form method="POST" action="" class="form-inline"  style="display: inline;" novalidate>
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            {% buttons %}
+                <button type="submit" class="btn btn-primary pull-right">{% trans "Disponibilités" %}</button>
+            {% endbuttons %}
+        </form>
 
-    <a class="pull-right btn btn-primary" href="{% url 'season-staff-update' season.pk %}">{% trans "Attribuer les moniteurs" %}</a>
+        <a class="pull-right btn btn-primary" href="{% url 'season-staff-update' season.pk %}">{% trans "Attribuer les moniteurs" %}</a>
+    {% endif %}
 </div>
 {% endblock %}

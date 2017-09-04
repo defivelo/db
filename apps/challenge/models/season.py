@@ -117,12 +117,8 @@ class Season(models.Model):
         return self.state == DV_SEASON_STATE_OPEN
 
     @cached_property
-    def manager_can_update_availability(self):
-        return self.state in [
-            DV_SEASON_STATE_OPEN,
-            DV_SEASON_STATE_RUNNING,
-            DV_SEASON_STATE_FINISHED
-            ]
+    def manager_can_crud(self):
+        return self.state != DV_SEASON_STATE_ARCHIVED
 
     @cached_property
     def season_full(self):

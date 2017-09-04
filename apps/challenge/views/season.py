@@ -148,6 +148,8 @@ class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
 
 
 class SeasonAvailabilityMixin(SeasonMixin):
+    view_is_update = False
+
     def potential_helpers_qs(self, qs=None):
         if not qs:
             qs = get_user_model().objects.exclude(profile__status=USERSTATUS_DELETED)
@@ -189,10 +191,15 @@ class SeasonAvailabilityMixin(SeasonMixin):
                     Q(profile__formation__in=['M1', 'M2']) |
                     Q(profile__actor_for__isnull=False)
                 ).filter(pk=request.user.pk).exists() and
-                self.get_object().can_update_availability
+                self.get_object().staff_can_update_availability
             ) or
-            # Soit j'ai le droit
-            has_permission(request.user, self.required_permission)
+            # Soit j'ai le droit et c'est le bon moment
+            (
+                has_permission(request.user, self.required_permission) and
+                (
+                    not self.view_is_update or self.get_object().manager_can_crud
+                )
+            )
         ):
             return (
                 super(SeasonAvailabilityMixin, self)
@@ -501,6 +508,7 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
     form_class = SeasonAvailabilityForm
     allow_season_fetch = True
     raise_without_cantons = False
+    view_is_update = True
 
     def get_form_kwargs(self):
         form_kwargs = \
@@ -563,6 +571,7 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView,
     template_name = 'challenge/season_staff_update.html'
     success_message = _("Choix du personnel mises à jour")
     form_class = SeasonStaffChoiceForm
+    view_is_update = True
 
     def available_helpers(self):
         if hasattr(self, 'ahelpers'):
