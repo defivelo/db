@@ -95,6 +95,8 @@ class Session(Address, models.Model):
             errors.append(_('Mauvais temps'))
         if not self.apples:
             errors.append(_('Pommes'))
+        if not self.bikes_concept and not self.bikes_phone:
+            errors.append(_('Logistique vélos'))
         if not self.address_city:
             errors.append(_('Emplacement'))
         # Check the qualifications
