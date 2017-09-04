@@ -116,6 +116,8 @@ class SessionForm(forms.ModelForm):
                                    ),
                                    url='user-AllPersons-ac',
                                    required=False)
+    bikes_phone = CHPhoneNumberField(label=_('N° de contact vélos'),
+                                     required=False)
 
     def clean_day(self):
         day = self.cleaned_data['day']
@@ -140,6 +142,7 @@ class SessionForm(forms.ModelForm):
                   'superleader',
                   'apples',
                   'helpers_time', 'helpers_place',
+                  'bikes_concept', 'bikes_phone',
                   'comments']
 
 

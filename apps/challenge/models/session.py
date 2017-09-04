@@ -75,8 +75,10 @@ class Session(Address, models.Model):
     helpers_place = models.CharField(_("Lieu rendez-vous moniteurs"),
                                      max_length=512, blank=True)
     apples = models.CharField(_("Pommes"), max_length=512, blank=True)
-    bikes_concept = models.CharField(max_length=512, blank=True)
-    bikes_phone = models.CharField(max_length=13, blank=True)
+    bikes_concept = models.CharField(_('Logistique vélos'),
+                                     max_length=512, blank=True)
+    bikes_phone = models.CharField(_('N° de contact vélos'),
+                                   max_length=13, blank=True)
     comments = models.TextField(_('Remarques'), blank=True)
 
     class Meta:
