@@ -4,12 +4,20 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 
+from apps.common import (
+    DV_SEASON_STATE_OPEN, DV_SEASON_STATE_ARCHIVED, DV_SEASON_AUTUMN
+)
+
+
 def make_all_seasons_visible(apps, schema_editor):
     # We can't import the Person model directly as it may be a newer
     # version than this migration expects. We use the historical version.
     Season = apps.get_model('challenge', 'Season')
     for season in Season.objects.all():
-        season.state = 2  # DV_SEASON_STATE_OPEN
+        if season.year == 2017 and season.season == DV_SEASON_AUTUMN:
+            season.state = DV_SEASON_STATE_OPEN
+        else:
+            season.state = DV_SEASON_STATE_ARCHIVED
         season.save()
 
 class Migration(migrations.Migration):
