@@ -8,6 +8,6 @@ install:
 script:
   - tox
 env:
-  - TOXENV=py27-coverage
-  - TOXENV=py34
+  - TOXENV=py34-coverage
+  - TOXENV=py27
   - TOXENV=flake8
