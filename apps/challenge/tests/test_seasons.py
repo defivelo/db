@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from apps.common import DV_SEASON_SPRING, DV_STATES
+from apps.common import DV_SEASON_SPRING, DV_SEASON_STATE_OPEN, DV_STATES
 from apps.common.forms import SWISS_DATE_INPUT_FORMAT
 from apps.orga.tests.factories import OrganizationFactory
 from apps.user.models import FORMATION_M1
@@ -246,6 +246,7 @@ class StateManagerUserTest(SeasonTestCaseMixin):
             'season': DV_SEASON_SPRING,
             'cantons': [],
             'leader': self.client.user.pk,
+            'state': DV_SEASON_STATE_OPEN,
             }
 
         # 200 because we're back on the page, because cantons' empty

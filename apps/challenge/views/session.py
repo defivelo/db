@@ -51,7 +51,9 @@ class SessionMixin(CantonSeasonFormMixin, HasPermissionsMixin, MenuView):
     def dispatch(self, request, *args, **kwargs):
         if (
             # Si c'est le bon moment
-            not self.view_does_crud or self.season.manager_can_crud
+            not self.view_does_crud or (
+                self.season and self.season.manager_can_crud
+            )
         ):
             return (
                 super(SessionMixin, self)
