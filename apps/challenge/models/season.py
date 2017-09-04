@@ -29,7 +29,8 @@ from django.utils.translation import ugettext_lazy as _
 from multiselectfield import MultiSelectField
 
 from apps.common import (
-    DV_SEASON_AUTUMN, DV_SEASON_CHOICES, DV_SEASON_LAST_SPRING_MONTH, DV_SEASON_SPRING, DV_STATE_CHOICES,
+    DV_SEASON_AUTUMN, DV_SEASON_CHOICES, DV_SEASON_LAST_SPRING_MONTH, DV_SEASON_SPRING, DV_SEASON_STATE_PLANNING,
+    DV_SEASON_STATES, DV_STATE_CHOICES,
 )
 from defivelo.templatetags.dv_filters import cantons_abbr
 
@@ -51,6 +52,8 @@ class Season(models.Model):
                                },
                                on_delete=models.CASCADE
                                )
+    state = models.PositiveSmallIntegerField(
+        _('État'), choices=DV_SEASON_STATES, default=DV_SEASON_STATE_PLANNING)
 
     class Meta:
         verbose_name = _('Saison')
