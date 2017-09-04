@@ -113,6 +113,10 @@ class Season(models.Model):
         return css_class
 
     @cached_property
+    def can_update_availability(self):
+        return self.state == DV_SEASON_STATE_OPEN
+
+    @cached_property
     def season_full(self):
         return dict(DV_SEASON_CHOICES)[self.season]
 
