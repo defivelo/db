@@ -81,7 +81,7 @@
             <td>{{ orga.address_canton }}</td>
             <td>{{ orga.coordinator_fullname }}</td>
             <td>{% if orga.coordinator_natel %}
-                <a class="tel" href="tel:{{ orga.coordinator_natel|tel_int }}">{{ orga.coordinator_natel }}</a>
+                {{ orga.coordinator_natel|tel_link }}
                 {% endif %}</td>
             <td>{% if orga.coordinator_email %}
                 <a class="email" href="mailto:{{ orga.mailtolink|urlencode }}">{{ orga.coordinator_email }}</a>

@@ -36,7 +36,7 @@
             <a class="btn btn-primary pull-right" href="{% url 'session-update' seasonpk=season.pk pk=session.pk %}">{% trans "Éditer" %}</a>
         </div>
     {% endif %}
-    <table class="table">
+    <table class="table table-condensed">
     <tr><th>{% trans "Établissement" %}</th>
         <td><a href="{% url 'organization-detail' session.orga.pk %}">{{ session.orga }}</a>
             {% if session.orga.coordinator_fullname %}
@@ -77,8 +77,23 @@
             </td>
         </tr>
     {% endif %}
-    {% if session.apples %}
-        <tr><th>{% trans "Pommes" %}</th><td>{{ session.apples }}</td></tr>
+    {% if session.apples or session.bikes_concept or session.bikes_phone %}
+        <tr><th>{% trans "Logistique" %}</th>
+            <td><dl class="dl-horizontal small">
+                    {% if session.apples %}
+                        <dt>{% trans "Pommes" %}</dt>
+                            <dd>{{ session.apples }}</dd>
+                    {% endif %}
+                    {% if session.bikes_concept or session.bikes_phone %}
+                        <dt>{% trans "Livraison de vélos" %}</dt>
+                            <dd>
+                            {{ session.bikes_concept }}{% if session.bikes_concept and session.bikes_phone %}<br />{% endif %}
+                            {{ session.bikes_phone|tel_link }}
+                            </dd>
+                    {% endif %}
+                </dl>
+            </td>
+        </tr>
     {% endif %} 
     <tr><th><span class="visible-print-inline">{% trans "Rendez-vous moniteurs" %}</span>
             <a class="hidden-print" href="{% url 'session-staff-choices' season.pk session.pk %}" title="{% trans "Disponibilités" %}">{% trans "Moniteurs" %}</a></th>
@@ -88,7 +103,7 @@
     </tr>
 
     {% if session.errors %}
-        <tr><th>{% trans "Erreurs" %}</th><td>{{ session.errors }}</td></tr>
+        <tr class="hidden-print"><th>{% trans "Erreurs" %}</th><td>{{ session.errors }}</td></tr>
     {% endif %}
     {% if session.comments %}
         <tr><th>{% trans "Remarques" %}</th><td>{{ session.comments }}</td></tr>
@@ -104,9 +119,9 @@
             {% for quali in session.qualifications.all %}
                 <th>{% if not quali.errors %}{% include "ok.html" %}{% endif%}
                 {{ forloop.counter }} - {% if season.manager_can_crud %}<a href="{% url 'quali-update' seasonpk=season.pk sessionpk=session.pk pk=quali.pk %}">{{ quali.name }}</a>{% else %}{{ quali.name }}{% endif %}
-                {% if quali.errors %}
+                {% if quali.errors %}<span class="hidden-print">
                     <br />
-                    {{ quali.errors }}
+                    {{ quali.errors }}</span>
                 {% endif %}
                 </th>
             {% endfor %}

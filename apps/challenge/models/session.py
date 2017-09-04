@@ -75,6 +75,10 @@ class Session(Address, models.Model):
     helpers_place = models.CharField(_("Lieu rendez-vous moniteurs"),
                                      max_length=512, blank=True)
     apples = models.CharField(_("Pommes"), max_length=512, blank=True)
+    bikes_concept = models.CharField(_('Logistique vélos'),
+                                     max_length=512, blank=True)
+    bikes_phone = models.CharField(_('N° de contact vélos'),
+                                   max_length=13, blank=True)
     comments = models.TextField(_('Remarques'), blank=True)
 
     class Meta:
@@ -91,6 +95,8 @@ class Session(Address, models.Model):
             errors.append(_('Mauvais temps'))
         if not self.apples:
             errors.append(_('Pommes'))
+        if not self.bikes_concept and not self.bikes_phone:
+            errors.append(_('Logistique vélos'))
         if not self.address_city:
             errors.append(_('Emplacement'))
         # Check the qualifications
