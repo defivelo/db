@@ -441,8 +441,9 @@ class UserProfile(Address, models.Model):
                 usercantons += [self.affiliation_canton]
             if self.activity_cantons:
                 usercantons += self.activity_cantons
-            # PLANNING seasons are invisible for these
-            qs = qs.exclude(state__in=[DV_SEASON_STATE_PLANNING, ])
+            if not has_permission(self.user, 'challenge_season_see_state_planning'):
+                # PLANNING seasons are invisible for these
+                qs = qs.exclude(state__in=[DV_SEASON_STATE_PLANNING, ])
 
         # Unique'ify, discard empty values
         usercantons = set([c for c in usercantons if c])
