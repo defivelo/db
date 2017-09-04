@@ -516,7 +516,7 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
     def get_success_url(self):
         try:
             usercantons = user_cantons(self.request.user)
-        except PermissionDenied:
+        except LookupError:
             usercantons = None
         if (
             has_permission(self.request.user, 'challenge_season_crud') and
