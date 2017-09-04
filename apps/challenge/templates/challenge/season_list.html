@@ -26,20 +26,27 @@
         </ul>
     </nav>
     
-    <div class="list-group">
     {% for season in seasons %}
         {% ifchanged season.season %}
+            {% if not forloop.first %}</table>{% endif %}
             <h2>{{ season.season_full }}</h2>
+            <table class="table">
         {% endifchanged %}
-        {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons %}
-            <a class="list-group-item" href="{% url 'season-detail' pk=season.pk %}">
-        {% else %}
-            <a class="list-group-item" href="{% url 'season-availabilities-update' pk=season.pk helperpk=request.user.pk %}"
-               title="{% trans "Mes disponibilités" %}">
-        {% endif %}
-            <span class="badge">{{ season.leader.get_full_name }}</span>
-            {{ season.desc_abbr }}
-        </a>
+        <tr class="{{ season.state_class }}">
+            <td>{{ season.state_icon }}</td>
+            <td>
+                {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons %}
+                    <a href="{% url 'season-detail' pk=season.pk %}">
+                {% else %}
+                    <a href="{% url 'season-availabilities-update' pk=season.pk helperpk=request.user.pk %}"
+                    title="{% trans "Mes disponibilités" %}">
+                {% endif %}
+                    <span class="badge pull-right">{{ season.leader.get_full_name }}</span>
+                    {{ season.desc_abbr }}
+                </a>
+            </td>
+        </tr>
+        {% if forloop.last %}</table>{% endif %}
     {% endfor %}
     </div>
 

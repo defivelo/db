@@ -41,10 +41,9 @@ from rolepermissions.roles import assign_role, clear_roles
 
 from apps.challenge.models import QualificationActivity, Season
 from apps.common import (
-    DV_LANGUAGES, DV_LANGUAGES_WITH_DEFAULT, DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT, MULTISELECTFIELD_REGEXP,
-    STDGLYPHICON,
+    DV_LANGUAGES, DV_LANGUAGES_WITH_DEFAULT, DV_SEASON_STATE_PLANNING, DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT,
+    MULTISELECTFIELD_REGEXP, STDGLYPHICON,
 )
-from apps.common import DV_SEASON_STATE_PLANNING
 from apps.common.models import Address
 from defivelo.roles import has_permission, user_cantons
 
