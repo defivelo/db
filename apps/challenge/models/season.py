@@ -29,7 +29,9 @@ from django.utils.translation import ugettext_lazy as _
 from multiselectfield import MultiSelectField
 
 from apps.common import (
-    DV_SEASON_AUTUMN, DV_SEASON_CHOICES, DV_SEASON_LAST_SPRING_MONTH, DV_SEASON_SPRING, DV_STATE_CHOICES,
+    DV_SEASON_AUTUMN, DV_SEASON_CHOICES, DV_SEASON_LAST_SPRING_MONTH, DV_SEASON_SPRING, DV_SEASON_STATE_ARCHIVED,
+    DV_SEASON_STATE_FINISHED, DV_SEASON_STATE_OPEN, DV_SEASON_STATE_PLANNING, DV_SEASON_STATE_RUNNING, DV_SEASON_STATES,
+    DV_STATE_CHOICES, STDGLYPHICON,
 )
 from defivelo.templatetags.dv_filters import cantons_abbr
 
@@ -51,11 +53,13 @@ class Season(models.Model):
                                },
                                on_delete=models.CASCADE
                                )
+    state = models.PositiveSmallIntegerField(
+        _('État'), choices=DV_SEASON_STATES, default=DV_SEASON_STATE_PLANNING)
 
     class Meta:
         verbose_name = _('Saison')
         verbose_name_plural = _('Saisons')
-        ordering = ['year', 'season', ]
+        ordering = ['year', '-season', 'cantons', ]
 
     @cached_property
     def begin(self):
@@ -70,6 +74,51 @@ class Season(models.Model):
             return date(self.year, DV_SEASON_LAST_SPRING_MONTH + 1, 1) - timedelta(days=1)
         if self.season == DV_SEASON_AUTUMN:
             return date(self.year, 12, 31)
+
+    @cached_property
+    def state_full(self):
+        return dict(DV_SEASON_STATES)[self.state]
+
+    @cached_property
+    def state_icon(self):
+        icon = ''
+        title = self.state_full
+        if self.state == DV_SEASON_STATE_PLANNING:
+            icon = 'calendar'
+        elif self.state == DV_SEASON_STATE_OPEN:
+            icon = 'fullscreen'
+        elif self.state == DV_SEASON_STATE_RUNNING:
+            icon = 'road'
+        elif self.state == DV_SEASON_STATE_FINISHED:
+            icon = 'floppy-saved'
+        elif self.state == DV_SEASON_STATE_ARCHIVED:
+            icon = 'folder-close'
+        if icon:
+            return mark_safe(STDGLYPHICON.format(icon=icon, title=title))
+        return ''
+
+    @cached_property
+    def state_class(self):
+        css_class = 'default'
+        if self.state == DV_SEASON_STATE_PLANNING:
+            css_class = 'warning'  # Orange
+        elif self.state == DV_SEASON_STATE_OPEN:
+            css_class = 'success'  # Green
+        elif self.state == DV_SEASON_STATE_RUNNING:
+            css_class = 'warning'  # Orange
+        elif self.state == DV_SEASON_STATE_FINISHED:
+            css_class = 'default disabled'  # Black
+        elif self.state == DV_SEASON_STATE_ARCHIVED:
+            css_class = 'default disabled'  # Black
+        return css_class
+
+    @cached_property
+    def staff_can_update_availability(self):
+        return self.state == DV_SEASON_STATE_OPEN
+
+    @cached_property
+    def manager_can_crud(self):
+        return self.state != DV_SEASON_STATE_ARCHIVED
 
     @cached_property
     def season_full(self):

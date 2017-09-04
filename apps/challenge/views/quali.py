@@ -31,6 +31,7 @@ class QualiMixin(SessionMixin):
     model = Qualification
     context_object_name = 'qualification'
     form_class = QualificationForm
+    view_does_crud = True
 
     def get_session_pk(self):
         resolvermatch = self.request.resolver_match

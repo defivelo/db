@@ -18,7 +18,7 @@
 from __future__ import unicode_literals
 
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.exceptions import FieldError
+from django.core.exceptions import FieldError, PermissionDenied
 from django.core.urlresolvers import reverse_lazy
 from django.template.defaultfilters import date, time
 from django.utils.encoding import force_text
@@ -46,6 +46,21 @@ class SessionMixin(CantonSeasonFormMixin, HasPermissionsMixin, MenuView):
     model = Session
     context_object_name = 'session'
     form_class = SessionForm
+    view_does_crud = True
+
+    def dispatch(self, request, *args, **kwargs):
+        if (
+            # Si c'est le bon moment
+            not self.view_does_crud or (
+                self.season and self.season.manager_can_crud
+            )
+        ):
+            return (
+                super(SessionMixin, self)
+                .dispatch(request, *args, **kwargs)
+            )
+        else:
+            raise PermissionDenied
 
     def get_queryset(self):
         qs = super(SessionMixin, self).get_queryset()
@@ -103,9 +118,12 @@ class SessionsListView(SessionMixin, WeekArchiveView):
     allow_future = True
     week_format = '%W'
     ordering = ['day', 'begin', 'duration']
+    view_does_crud = False
 
 
 class SessionDetailView(SessionMixin, DetailView):
+    view_does_crud = False
+
     def get_context_data(self, **kwargs):
         context = super(SessionDetailView, self).get_context_data(**kwargs)
         try:
@@ -159,6 +177,8 @@ class SessionStaffChoiceView(SessionDetailView):
 
 class SessionExportView(ExportMixin, SessionMixin,
                         HasPermissionsMixin, DetailView):
+    view_does_crud = False
+
     @property
     def export_filename(self):
         return _('Session') + '-' + force_text(self.object)

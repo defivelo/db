@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from apps.common import DV_SEASON_SPRING, DV_STATES
+from apps.common import DV_SEASON_SPRING, DV_SEASON_STATE_ARCHIVED, DV_SEASON_STATE_OPEN, DV_SEASON_STATES, DV_STATES
 from apps.common.forms import SWISS_DATE_INPUT_FORMAT
 from apps.orga.tests.factories import OrganizationFactory
 from apps.user.models import FORMATION_M1
@@ -144,6 +144,18 @@ class AuthUserTest(SeasonTestCaseMixin):
             self.assertEqual(response.status_code, 200, url)
             self.assertTemplateUsed(response, 'widgets/BSRadioSelect_option.html')
 
+            # The season is not open
+            for state in DV_SEASON_STATES:
+                if state[0] != DV_SEASON_STATE_OPEN:
+                    self.season.state = state[0]
+                    self.season.save()
+                    # … so no access
+                    response = self.client.get(url)
+                    self.assertEqual(response.status_code, 403, url)
+
+            self.season.state = DV_SEASON_STATE_OPEN
+            self.season.save()
+
             # Fails, we have a common canton, but no Formation
             self.client.user.profile.formation = ''
             self.client.user.profile.save()
@@ -208,32 +220,38 @@ class StateManagerUserTest(SeasonTestCaseMixin):
             self.assertEqual(response.status_code, 200, url)
 
     def test_access_to_season_detail(self):
-        for symbolicurl in restrictedspecificurls:
-            url = reverse(symbolicurl, kwargs={'pk': self.season.pk})
-            # Final URL is OK
-            response = self.client.get(url, follow=True)
-            self.assertEqual(response.status_code, 200, url)
-        for symbolicurl in restrictedhelperspecificurls:
-            for helper in self.users:
-                url = reverse(
-                    symbolicurl,
-                    kwargs={
-                        'pk': self.season.pk,
-                        'helperpk': helper.pk
-                        })
-                # Final URL is OK
-                response = self.client.get(url, follow=True)
-                self.assertEqual(response.status_code, 200, url)
-        for exportformat in ['csv', 'ods', 'xls']:
-                url = reverse(
-                    'season-export',
-                    kwargs={
-                        'pk': self.season.pk,
-                        'format': exportformat
-                        })
-                # Final URL is OK
-                response = self.client.get(url, follow=True)
-                self.assertEqual(response.status_code, 200, url)
+        # The season is anything but archived
+        for state in DV_SEASON_STATES:
+            if state[0] != DV_SEASON_STATE_ARCHIVED:
+                self.season.state = state[0]
+                self.season.save()
+                for symbolicurl in restrictedspecificurls:
+                    url = reverse(symbolicurl, kwargs={'pk': self.season.pk})
+                    # Final URL is OK
+                    response = self.client.get(url, follow=True)
+                    self.assertEqual(response.status_code, 200, url)
+
+                for symbolicurl in restrictedhelperspecificurls:
+                    for helper in self.users:
+                        url = reverse(
+                            symbolicurl,
+                            kwargs={
+                                'pk': self.season.pk,
+                                'helperpk': helper.pk
+                                })
+                        # Final URL is OK
+                        response = self.client.get(url, follow=True)
+                        self.assertEqual(response.status_code, 200, url)
+                for exportformat in ['csv', 'ods', 'xls']:
+                        url = reverse(
+                            'season-export',
+                            kwargs={
+                                'pk': self.season.pk,
+                                'format': exportformat
+                                })
+                        # Final URL is OK
+                        response = self.client.get(url, follow=True)
+                        self.assertEqual(response.status_code, 200, url)
 
     def test_season_creation(self):
         url = reverse('season-create')
@@ -246,6 +264,7 @@ class StateManagerUserTest(SeasonTestCaseMixin):
             'season': DV_SEASON_SPRING,
             'cantons': [],
             'leader': self.client.user.pk,
+            'state': DV_SEASON_STATE_OPEN,
             }
 
         # 200 because we're back on the page, because cantons' empty
@@ -263,34 +282,40 @@ class StateManagerUserTest(SeasonTestCaseMixin):
         self.assertEqual(response.status_code, 302, url)
 
     def test_session_creation(self):
-        url = reverse('session-create', kwargs={'seasonpk': self.season.pk})
-        # Final URL is OK
-        response = self.client.get(url, follow=True)
-        self.assertEqual(response.status_code, 200, url)
+        # The season is anything but archived
+        for state in DV_SEASON_STATES:
+            if state[0] != DV_SEASON_STATE_ARCHIVED:
+                self.season.state = state[0]
+                self.season.save()
 
-        initial = {
-            'day': (self.season.begin).strftime(SWISS_DATE_INPUT_FORMAT),
-            'begin': '09:00',
-            }
+                url = reverse('session-create', kwargs={'seasonpk': self.season.pk})
+                # Final URL is OK
+                response = self.client.get(url, follow=True)
+                self.assertEqual(response.status_code, 200, url)
 
-        # 200 because we're back on the page, because orga' empty
-        response = self.client.post(url, initial)
-        self.assertEqual(response.status_code, 200, url)
+                initial = {
+                    'day': (self.season.begin).strftime(SWISS_DATE_INPUT_FORMAT),
+                    'begin': '09:00',
+                    }
 
-        orga = OrganizationFactory(
-            address_canton=self.foreignseason.cantons[0]
-        )
-        initial['orga'] = orga.pk
-        # 200 because we're back on the page, because orga is not
-        # in our canton
-        response = self.client.post(url, initial)
-        self.assertEqual(response.status_code, 200, url)
+                # 200 because we're back on the page, because orga' empty
+                response = self.client.post(url, initial)
+                self.assertEqual(response.status_code, 200, url)
 
-        orga = OrganizationFactory(address_canton=self.season.cantons[0])
-        initial['orga'] = orga.pk
-        # That works now
-        response = self.client.post(url, initial)
-        self.assertEqual(response.status_code, 302, url)
+                orga = OrganizationFactory(
+                    address_canton=self.foreignseason.cantons[0]
+                )
+                initial['orga'] = orga.pk
+                # 200 because we're back on the page, because orga is not
+                # in our canton
+                response = self.client.post(url, initial)
+                self.assertEqual(response.status_code, 200, url)
+
+                orga = OrganizationFactory(address_canton=self.season.cantons[0])
+                initial['orga'] = orga.pk
+                # That works now
+                response = self.client.post(url, initial)
+                self.assertEqual(response.status_code, 302, url)
 
     def test_no_access_to_foreign_season(self):
         for symbolicurl in restrictedspecificurls:
@@ -350,6 +375,59 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                 self.assertEqual(response.status_code, 403, url)
 
     def test_access_to_mysession(self):
+        # The season is anything but archived
+        for state in DV_SEASON_STATES:
+            if state[0] != DV_SEASON_STATE_ARCHIVED:
+                self.season.state = state[0]
+                self.season.save()
+                for session in self.sessions:
+                    urls = [
+                        reverse(
+                            'session-list',
+                            kwargs={
+                                'seasonpk': self.season.pk,
+                                'year': session.day.year,
+                                'week': session.day.strftime('%W'),
+                            }),
+                        reverse(
+                            'session-create',
+                            kwargs={
+                                'seasonpk': self.season.pk,
+                            }),
+                        reverse(
+                            'session-detail',
+                            kwargs={
+                                'seasonpk': self.season.pk,
+                                'pk': session.pk,
+                            }),
+                        reverse(
+                            'session-update',
+                            kwargs={
+                                'seasonpk': self.season.pk,
+                                'pk': session.pk,
+                            }),
+                        reverse(
+                            'session-staff-choices',
+                            kwargs={
+                                'seasonpk': self.season.pk,
+                                'pk': session.pk,
+                            }),
+                        reverse(
+                            'session-delete',
+                            kwargs={
+                                'seasonpk': self.season.pk,
+                                'pk': session.pk,
+                            }),
+                    ]
+                    for url in urls:
+                        # Final URL is granted
+                        response = self.client.get(url, follow=True)
+                        self.assertEqual(response.status_code, 200, url)
+
+    def test_access_to_my_archived_session(self):
+        # The season is archived
+        self.season.state = DV_SEASON_STATE_ARCHIVED
+        self.season.save()
         for session in self.sessions:
             urls = [
                 reverse(
@@ -360,24 +438,32 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                         'week': session.day.strftime('%W'),
                     }),
                 reverse(
-                    'session-create',
-                    kwargs={
-                        'seasonpk': self.season.pk,
-                    }),
-                reverse(
                     'session-detail',
                     kwargs={
                         'seasonpk': self.season.pk,
                         'pk': session.pk,
                     }),
                 reverse(
-                    'session-update',
+                    'session-staff-choices',
                     kwargs={
                         'seasonpk': self.season.pk,
                         'pk': session.pk,
                     }),
+            ]
+            for url in urls:
+                # Final URL is granted
+                response = self.client.get(url, follow=True)
+                self.assertEqual(response.status_code, 200, url)
+        # Test the forbidden ones
+        for session in self.sessions:
+            urls = [
                 reverse(
-                    'session-staff-choices',
+                    'session-create',
+                    kwargs={
+                        'seasonpk': self.season.pk,
+                    }),
+                reverse(
+                    'session-update',
                     kwargs={
                         'seasonpk': self.season.pk,
                         'pk': session.pk,
@@ -392,7 +478,7 @@ class StateManagerUserTest(SeasonTestCaseMixin):
             for url in urls:
                 # Final URL is forbidden
                 response = self.client.get(url, follow=True)
-                self.assertEqual(response.status_code, 200, url)
+                self.assertEqual(response.status_code, 403, url)
 
 
 class PowerUserTest(SeasonTestCaseMixin):

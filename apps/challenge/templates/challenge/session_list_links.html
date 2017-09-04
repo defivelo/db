@@ -7,6 +7,8 @@
     <div class="btn-group" role="group" aria-label="exports">
         {% include 'export_buttons.html' with exporturl='season-export' exportargs=season.pk filter_querystring=filter_querystring only %}
     </div>
-    
-    <a class="btn btn-primary pull-right" href="{% url 'session-create' season.pk %}">{% trans "Créer une nouvelle session" %}</a>
+
+    {% if season.manager_can_crud %}
+        <a class="btn btn-primary pull-right" href="{% url 'session-create' season.pk %}">{% trans "Créer une nouvelle session" %}</a>
+    {% endif %}
 </div>

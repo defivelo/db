@@ -57,6 +57,7 @@ class StateManager(AbstractUserRole):
 
         'challenge_season_crud': True,
         'challenge_session_crud': True,
+        'challenge_season_see_state_planning': True,
     }
 
 
@@ -82,6 +83,7 @@ class PowerUser(AbstractUserRole):
 
         'challenge_season_crud': True,
         'challenge_session_crud': True,
+        'challenge_season_see_state_planning': True,
     }
 
 

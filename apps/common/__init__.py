@@ -72,4 +72,20 @@ DV_SEASON_CHOICES = (
     (DV_SEASON_AUTUMN, _('Automne')),
 )
 
+# Dernier mois des saisons de Printemps
 DV_SEASON_LAST_SPRING_MONTH = 7
+
+# État des saisons
+DV_SEASON_STATE_PLANNING = 1  # RW for StateManager, -- for helpers
+DV_SEASON_STATE_OPEN = 2  # RW for StateManage, RW for helpers
+DV_SEASON_STATE_RUNNING = 3  # RW for SM, R- for helpers
+DV_SEASON_STATE_FINISHED = 4  # RW for SM, R-- for helpers
+DV_SEASON_STATE_ARCHIVED = 5  # R- for SM, R-- for helpers
+
+DV_SEASON_STATES = (
+    (DV_SEASON_STATE_PLANNING, _('Planification (invisible)')),
+    (DV_SEASON_STATE_OPEN, _('Annoncée (rentrée des disponibilités)')),
+    (DV_SEASON_STATE_RUNNING, _('En cours (corrections que par chargé·e·s de projet)')),
+    (DV_SEASON_STATE_FINISHED, _('Terminée')),
+    (DV_SEASON_STATE_ARCHIVED, _('Archivée')),
+)
