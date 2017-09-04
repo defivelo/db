@@ -59,7 +59,7 @@ class Season(models.Model):
     class Meta:
         verbose_name = _('Saison')
         verbose_name_plural = _('Saisons')
-        ordering = ['year', 'season', ]
+        ordering = ['year', '-season', 'cantons', ]
 
     @cached_property
     def begin(self):

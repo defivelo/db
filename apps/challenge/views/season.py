@@ -80,7 +80,7 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
         if self.model == Season:
             return self.request.user.profile.get_seasons(
                 self.raise_without_cantons
-            ).prefetch_related('leader').order_by('cantons', 'season')
+            ).prefetch_related('leader')
 
         qs = super(SeasonMixin, self).get_queryset()
 
@@ -113,7 +113,6 @@ class SeasonListView(SeasonMixin, ListView):
         return (
             super(SeasonListView, self).get_queryset()
             .filter(year=self.year)
-            .order_by('season', 'cantons')
         )
 
     def get_context_data(self, **kwargs):
