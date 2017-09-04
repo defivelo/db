@@ -75,6 +75,10 @@ class Season(models.Model):
             return date(self.year, 12, 31)
 
     @cached_property
+    def state_full(self):
+        return dict(DV_SEASON_STATES)[self.state]
+
+    @cached_property
     def season_full(self):
         return dict(DV_SEASON_CHOICES)[self.season]
 

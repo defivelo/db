@@ -5,6 +5,7 @@
 {% block content %}
     <h1 title="{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }}">{{ season.moment }}</h1>
     <h3>{{ season.cantons|cantons_abbr:False|join:", " }}</h3>
+    <p>{{ season.state_full }}</p>
 
     <h4>{% trans "Toutes les sessions" %}</h4>
     <nav>

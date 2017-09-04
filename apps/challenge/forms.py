@@ -71,7 +71,7 @@ class SeasonForm(forms.ModelForm):
 
     class Meta:
         model = Season
-        fields = ['year', 'season', 'cantons', 'leader']
+        fields = ['year', 'season', 'cantons', 'state', 'leader']
 
 
 class SessionForm(forms.ModelForm):
