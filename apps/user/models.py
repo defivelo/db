@@ -44,6 +44,7 @@ from apps.common import (
     DV_LANGUAGES, DV_LANGUAGES_WITH_DEFAULT, DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT, MULTISELECTFIELD_REGEXP,
     STDGLYPHICON,
 )
+from apps.common import DV_SEASON_STATE_PLANNING
 from apps.common.models import Address
 from defivelo.roles import has_permission, user_cantons
 
@@ -441,6 +442,8 @@ class UserProfile(Address, models.Model):
                 usercantons += [self.affiliation_canton]
             if self.activity_cantons:
                 usercantons += self.activity_cantons
+            # PLANNING seasons are invisible for these
+            qs = qs.exclude(state__in=[DV_SEASON_STATE_PLANNING, ])
 
         # Unique'ify, discard empty values
         usercantons = set([c for c in usercantons if c])
