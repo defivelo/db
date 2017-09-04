@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from apps.common import DV_SEASON_SPRING, DV_SEASON_STATE_OPEN, DV_STATES
+from apps.common import DV_SEASON_SPRING, DV_SEASON_STATE_OPEN, DV_SEASON_STATES, DV_STATES
 from apps.common.forms import SWISS_DATE_INPUT_FORMAT
 from apps.orga.tests.factories import OrganizationFactory
 from apps.user.models import FORMATION_M1
@@ -143,6 +143,18 @@ class AuthUserTest(SeasonTestCaseMixin):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200, url)
             self.assertTemplateUsed(response, 'widgets/BSRadioSelect_option.html')
+
+            # The season is not open
+            for state in DV_SEASON_STATES:
+                if state[0] != DV_SEASON_STATE_OPEN:
+                    self.season.state = state[0]
+                    self.season.save()
+                    # … so no access
+                    response = self.client.get(url)
+                    self.assertEqual(response.status_code, 403, url)
+
+            self.season.state = DV_SEASON_STATE_OPEN
+            self.season.save()
 
             # Fails, we have a common canton, but no Formation
             self.client.user.profile.formation = ''
