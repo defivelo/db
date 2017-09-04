@@ -37,16 +37,21 @@
             <td>
                 {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons %}
                     <a href="{% url 'season-detail' pk=season.pk %}">
-                {% elif season.can_update_availability %}
+                {% elif season.staff_can_update_availability %}
                     <a href="{% url 'season-availabilities-update' pk=season.pk helperpk=request.user.pk %}"
                     title="{% trans "Mes disponibilités" %}">
                 {% endif %}
                     <span class="badge pull-right">{{ season.leader.get_full_name }}</span>
                     {{ season.desc_abbr }}
-                {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons or season.can_update_availability %}
+                {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons or season.staff_can_update_availability  %}
                     </a>
                 {% endif %}
             </td>
+            {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons %}
+            <td>
+                <a class="btn btn-xs btn-primary" href="{% url 'season-availabilities' season.pk %}" title="{% trans "Planning" %}"><span class="glyphicon glyphicon-th"></span></a>
+            </td>
+            {% endif %}
         </tr>
         {% if forloop.last %}</table>{% endif %}
     {% endfor %}
