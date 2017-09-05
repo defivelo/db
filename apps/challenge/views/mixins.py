@@ -50,7 +50,7 @@ class CantonSeasonFormMixin(object):
                             self.request.user.profile.activity_cantons
                         )
                         .intersection(set(self._season.cantons))
-                    ):
+                    ) and not self.raise_without_cantons:
                         raise LookupError
                     raise PermissionDenied
             except LookupError:
