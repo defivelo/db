@@ -47,11 +47,14 @@
                     </a>
                 {% endif %}
             </td>
-            {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons %}
             <td>
-                <a class="btn btn-xs btn-primary" href="{% url 'season-availabilities' season.pk %}" title="{% trans "Planning" %}"><span class="glyphicon glyphicon-th"></span></a>
+                {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons %}
+                    <a class="btn btn-xs btn-primary" href="{% url 'season-availabilities' season.pk %}" title="{% trans "Planning" %}"><span class="glyphicon glyphicon-th"></span></a>
+                {% elif season.staff_can_update_availability %}
+                    <a class="btn btn-xs btn-default" href="{% url 'season-availabilities-update' pk=season.pk helperpk=request.user.pk %}"
+                    title="{% trans "Mes disponibilités" %}"><span class="glyphicon glyphicon-calendar"></span></a>
+                {% endif %}
             </td>
-            {% endif %}
         </tr>
         {% if forloop.last %}</table>{% endif %}
     {% endfor %}
