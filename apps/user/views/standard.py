@@ -152,8 +152,8 @@ class UserProfileFilterSet(FilterSet):
     def filter_wide(queryset, name, value):
         if value:
             allfields_filter = [
-                Q(last_name__icontains=value),
-                Q(first_name__icontains=value),
+                Q(last_name__unaccent__icontains=value),
+                Q(first_name__unaccent__icontains=value),
                 Q(email__icontains=value),
                 Q(profile__natel__icontains=value)
             ]

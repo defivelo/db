@@ -69,11 +69,11 @@ class OrganizationFilterSet(FilterSet):
     def filter_wide(queryset, name, value):
         if value:
             allfields_filter = [
-                Q(name__icontains=value),
-                Q(abbr__icontains=value),
-                Q(address_street__icontains=value),
+                Q(name__unaccent__icontains=value),
+                Q(abbr__unaccent__icontains=value),
+                Q(address_street__unaccent__icontains=value),
                 Q(address_zip__contains=value),
-                Q(address_city__icontains=value),
+                Q(address_city__unaccent__icontains=value),
             ]
             return queryset.filter(reduce(operator.or_, allfields_filter))
         return queryset

@@ -51,6 +51,7 @@ UPSTREAM_APPS = (
     'bootstrap3',
     'bootstrap3_datetime',
     'django.contrib.sites',
+    'django.contrib.postgres',
 
     'allauth',
     'allauth.account',

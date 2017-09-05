@@ -352,6 +352,12 @@ class StateManagerUserTest(ProfileTestCase):
         self.myuser = self.users[0]
         self.foreignuser = self.users[1]
 
+    def test_accented_search(self):
+        self.users[0].first_name = 'Joël'
+        self.users[0].save()
+        response = self.client.get("%s?%s" % (reverse('user-list'), "q=joel"))
+        self.assertContains(response, "Joël")
+
     def test_my_allowances(self):
         for symbolicurl in myurlsforall + myurlsforoffice:
             for exportformat in ['csv', 'ods', 'xls']:

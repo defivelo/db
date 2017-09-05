@@ -130,6 +130,12 @@ class SuperUserTest(OrgaBasicTest):
         else:
             self.assertEqual(entries, allentries)
 
+    def test_accented_search(self):
+        self.orga.abbr = 'ÉCCG'
+        self.orga.save()
+        response = self.client.get("%s?%s" % (reverse('organization-list'), "q=eccg"))
+        self.assertContains(response, "ÉCCG")
+
 
 class OrgaStateManagerUserTest(TestCase):
     expected_code = 200
