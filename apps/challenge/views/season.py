@@ -617,7 +617,7 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView,
                         HelperSessionAvailability.objects.filter(
                                 session=session,
                                 helper=helper
-                            ).update(chosen=form.cleaned_data[fieldkey])
+                            ).update(chosen_as=form.cleaned_data[fieldkey])
                         if form.cleaned_data[fieldkey]:
                             session_helpers[helper.pk] = helper
                         else:

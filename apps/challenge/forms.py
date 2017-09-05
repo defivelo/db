@@ -392,7 +392,7 @@ class SeasonStaffChoiceForm(forms.Form):
                                                          spk=session.pk)
                         # Stupid boolean to integer-as-string conversion.
                         try:
-                            fieldinit = bool(self.initial[staffkey])
+                            fieldinit = self.initial[staffkey]
                         except KeyError:
                             fieldinit = False
 
