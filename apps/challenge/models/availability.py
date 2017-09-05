@@ -32,6 +32,18 @@ class HelperSessionAvailability(models.Model):
         ('i', _('Si nécessaire')),
         ('n', _('Non')),
     )
+    CHOSEN_AS_NOT = 0
+    CHOSEN_AS_LEGACY = 1
+    CHOSEN_AS_ACTOR = 2
+    CHOSEN_AS_HELPER = 3
+    CHOSEN_AS_LEADER = 4
+    CHOICE_CHOICES = (
+        (CHOSEN_AS_NOT, _('Pas choisi')),
+        (CHOSEN_AS_LEGACY, _('Choisi')),  # À ne pas réutiliser
+        (CHOSEN_AS_ACTOR, _('Comme intervenant')),
+        (CHOSEN_AS_HELPER, _('Moniteur 1')),
+        (CHOSEN_AS_LEADER, _('Moniteur 2')),
+    )
     created_on = models.DateTimeField(auto_now_add=True)
     session = models.ForeignKey(Session, verbose_name=_('Session'),
                                 related_name='availability_statuses',
@@ -43,8 +55,9 @@ class HelperSessionAvailability(models.Model):
                                on_delete=models.CASCADE)
     availability = models.CharField(_("Disponible"), max_length=1,
                                     choices=AVAILABILITY_CHOICES)
-    chosen = models.BooleanField(_("Sélectionné pour la session"),
-                                 default=False)
+    chosen_as = models.PositiveSmallIntegerField(
+        _("Sélectionné pour la session comme"),
+        choices=CHOICE_CHOICES, default=CHOSEN_AS_NOT)
 
     class Meta:
         verbose_name = _('Disponibilité par session')
