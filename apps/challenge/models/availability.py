@@ -20,9 +20,11 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from .session import Session
+from .. import CHOICE_CHOICES, CHOSEN_AS_NOT
 
 
 @python_2_unicode_compatible
@@ -31,18 +33,6 @@ class HelperSessionAvailability(models.Model):
         ('y', _('Oui')),
         ('i', _('Si nécessaire')),
         ('n', _('Non')),
-    )
-    CHOSEN_AS_NOT = 0
-    CHOSEN_AS_LEGACY = 1
-    CHOSEN_AS_ACTOR = 2
-    CHOSEN_AS_HELPER = 3
-    CHOSEN_AS_LEADER = 4
-    CHOICE_CHOICES = (
-        (CHOSEN_AS_NOT, _('Pas choisi')),
-        (CHOSEN_AS_LEGACY, _('Choisi')),  # À ne pas réutiliser
-        (CHOSEN_AS_ACTOR, _('Comme intervenant')),
-        (CHOSEN_AS_HELPER, _('Moniteur 1')),
-        (CHOSEN_AS_LEADER, _('Moniteur 2')),
     )
     created_on = models.DateTimeField(auto_now_add=True)
     session = models.ForeignKey(Session, verbose_name=_('Session'),
@@ -58,6 +48,10 @@ class HelperSessionAvailability(models.Model):
     chosen_as = models.PositiveSmallIntegerField(
         _("Sélectionné pour la session comme"),
         choices=CHOICE_CHOICES, default=CHOSEN_AS_NOT)
+
+    @cached_property
+    def chosen(self):
+        return self.chosen_as != CHOSEN_AS_NOT
 
     class Meta:
         verbose_name = _('Disponibilité par session')

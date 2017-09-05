@@ -30,7 +30,7 @@ from django.utils.translation import ugettext_lazy as _
 from apps.common.models import Address
 from apps.orga.models import ORGASTATUS_ACTIVE, Organization
 
-from .. import MAX_MONO1_PER_QUALI, SHORTCODE_ACTOR, SHORTCODE_MON1, SHORTCODE_MON2, SHORTCODE_SELECTED
+from .. import MAX_MONO1_PER_QUALI, SHORTCODE_ACTOR, SHORTCODE_MON1, SHORTCODE_MON2, SHORTCODE_SELECTED, CHOSEN_AS_NOT
 
 DEFAULT_SESSION_DURATION_HOURS = 3
 DEFAULT_EARLY_MINUTES_FOR_HELPERS_MEETINGS = 60
@@ -134,8 +134,10 @@ class Session(Address, models.Model):
     def chosen_staff(self):
         return (
             self.availability_statuses
-            .filter(chosen=True)
-            .exclude(availability='n')
+            .exclude(
+                availability='n',
+                chosen_as=CHOSEN_AS_NOT,
+            )
             .prefetch_related(
                 'helper',
                 'helper__profile',

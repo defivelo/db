@@ -43,7 +43,7 @@ from apps.user.views import ActorsList, HelpersList
 from defivelo.roles import has_permission, user_cantons
 from defivelo.views import MenuView
 
-from .. import AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, STAFF_FIELDKEY
+from .. import AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, STAFF_FIELDKEY, CHOSEN_AS_NOT
 from ..forms import SeasonAvailabilityForm, SeasonForm, SeasonNewHelperAvailabilityForm, SeasonStaffChoiceForm
 from ..models import HelperSessionAvailability, Season
 from ..models.qualification import CATEGORY_CHOICE_A, CATEGORY_CHOICE_B, CATEGORY_CHOICE_C
@@ -439,8 +439,11 @@ class SeasonPlanningExportView(ExportMixin, SeasonAvailabilityMixin,
                 '%s - %s' % (time(session.begin), time(session.end)),
                 session.n_qualifications,
             ]
-            users_selected_in_session = \
-                session.availability_statuses.filter(chosen=True).values_list('helper', flat=True)
+            users_selected_in_session = (
+                session.availability_statuses
+                .exclude(chosen_as=CHOSEN_AS_NOT)
+                .values_list('helper', flat=True)
+            )
             for user in qs:
                 label = ''
                 if user == session.superleader:
