@@ -246,7 +246,7 @@ class SessionExportView(ExportMixin, SessionMixin,
         if session.n_qualifications:
             for quali in session.qualifications.all():
                 if not len(col):
-                    col = [''] * 12
+                    col = [''] * 14
                 col.append(quali.name)
                 col.append(
                     EXPORT_NAMETEL.format(
