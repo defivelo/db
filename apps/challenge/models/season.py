@@ -141,7 +141,7 @@ class Season(models.Model):
                 'orga'
             )
 
-    @property
+    @cached_property
     def sessions_with_qualifs(self):
         if not hasattr(self, 'sessions_with_q'):
             self.sessions_with_q = \

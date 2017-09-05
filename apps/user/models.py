@@ -29,6 +29,7 @@ from django.forms import ValidationError
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible, smart_text
+from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django_countries.fields import CountryField
@@ -258,13 +259,13 @@ class UserProfile(Address, models.Model):
         self.status = USERSTATUS_DELETED
         self.save()
 
-    @property
+    @cached_property
     def formation_full(self):
         if self.formation:
             return dict(FORMATION_CHOICES)[self.formation]
         return ''
 
-    @property
+    @cached_property
     def status_full(self):
         if self.status:
             return dict(USERSTATUS_CHOICES)[self.status]
@@ -299,7 +300,7 @@ class UserProfile(Address, models.Model):
             css_class = 'default disabled'  # Black
         return css_class
 
-    @property
+    @cached_property
     def age(self):
         today = timezone.now()
         return (
@@ -310,7 +311,7 @@ class UserProfile(Address, models.Model):
                 )
                )
 
-    @property
+    @cached_property
     def iban_nice(self):
         if self.iban:
             value = self.iban
@@ -331,21 +332,21 @@ class UserProfile(Address, models.Model):
             return _('M2')
         return ''
 
-    @property
+    @cached_property
     def actor(self):
         return self.actor_for.exists()
 
-    @property
+    @cached_property
     def actor_inline(self):
         return ' - '.join([smart_text(a) for a in self.actor_for.all()])
 
     def actor_icon(self):
-        if self.actor:
+        if self.actor_inline:
             return mark_safe(STDGLYPHICON.format(icon='sunglasses',
                                                  title=self.actor_inline))
         return ''
 
-    @property
+    @cached_property
     def bagstatus_full(self):
         if self.bagstatus:
             return dict(BAGSTATUS_CHOICES)[self.bagstatus]
@@ -367,7 +368,7 @@ class UserProfile(Address, models.Model):
             return mark_safe(STDGLYPHICON.format(icon=icon, title=title))
         return ''
 
-    @property
+    @cached_property
     def language_verb(self):
         try:
             return [
@@ -377,6 +378,7 @@ class UserProfile(Address, models.Model):
         except IndexError:
             return ''
 
+    @cached_property
     def access_level(self, textonly=True):
         icon = ''
         title = ''
@@ -403,15 +405,15 @@ class UserProfile(Address, models.Model):
     def access_level_icon(self):
         return self.access_level(False)
 
-    @property
+    @cached_property
     def access_level_text(self):
         return self.access_level(True)
 
-    @property
+    @cached_property
     def managed_cantons(self):
         return [m.canton for m in self.user.managedstates.all()]
 
-    @property
+    @cached_property
     def mailtolink(self):
         return (
             '{name} <{email}>'.format(
@@ -419,7 +421,7 @@ class UserProfile(Address, models.Model):
                 email=self.user.email)
             )
 
-    @property
+    @cached_property
     def can_login(self):
         return self.user.is_active and self.user.has_usable_password
 
@@ -454,7 +456,7 @@ class UserProfile(Address, models.Model):
 
         return qs.none()
 
-    @property
+    @cached_property
     def deleted(self):
         return (
             self.status == USERSTATUS_DELETED and
