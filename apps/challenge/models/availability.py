@@ -23,8 +23,8 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from .session import Session
 from .. import CHOICE_CHOICES, CHOSEN_AS_NOT
+from .session import Session
 
 
 @python_2_unicode_compatible
