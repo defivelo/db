@@ -86,9 +86,9 @@ class Season(models.Model):
         if self.state == DV_SEASON_STATE_PLANNING:
             icon = 'calendar'
         elif self.state == DV_SEASON_STATE_OPEN:
-            icon = 'fullscreen'
+            icon = 'flash'
         elif self.state == DV_SEASON_STATE_RUNNING:
-            icon = 'road'
+            icon = 'apple'
         elif self.state == DV_SEASON_STATE_FINISHED:
             icon = 'floppy-saved'
         elif self.state == DV_SEASON_STATE_ARCHIVED:

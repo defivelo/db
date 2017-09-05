@@ -190,7 +190,7 @@ class SeasonAvailabilityMixin(SeasonMixin):
                     Q(profile__formation__in=['M1', 'M2']) |
                     Q(profile__actor_for__isnull=False)
                 ).filter(pk=request.user.pk).exists() and
-                self.season.staff_can_update_availability
+                self.season and self.season.staff_can_update_availability
             ) or
             # Soit j'ai le droit et c'est le bon moment
             (
