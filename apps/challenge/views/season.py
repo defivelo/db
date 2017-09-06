@@ -200,7 +200,7 @@ class SeasonAvailabilityMixin(SeasonMixin):
     def available_helpers(self):
         # Only take available people
         # Fill in the helpers with the ones we currently have
-        helpers_pks = [hsa.helper.pk for hsa in self.current_availabilities_present()]
+        helpers_pks = self.current_availabilities_present().values_list('helper_id', flat=True)
         return self.potential_helpers(
             qs=get_user_model().objects.filter(pk__in=helpers_pks)
         )
@@ -498,7 +498,7 @@ class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
         hsas = self.current_availabilities()
         if hsas:
             # Fill in the helpers with the ones we currently have
-            helpers_pks = [hsa.helper.pk for hsa in hsas]
+            helpers_pks = self.current_availabilities_present().values_list('helper_id', flat=True)
             potential_helpers = self.potential_helpers(
                 qs=get_user_model().objects.filter(pk__in=helpers_pks)
             )

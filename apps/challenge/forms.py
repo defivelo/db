@@ -398,8 +398,15 @@ class SeasonStaffChoiceForm(forms.Form):
                             fieldinit = self.initial[staffkey]
                         except KeyError:
                             fieldinit = CHOSEN_AS_NOT
+                        available_choices = [CHOSEN_AS_NOT, CHOSEN_AS_LEGACY]
+                        if helper.profile.actor:
+                            available_choices.append(CHOSEN_AS_ACTOR)
+                        if helper.profile.formation:
+                            available_choices.append(CHOSEN_AS_HELPER)
+                        if helper.profile.formation == FORMATION_M2:
+                            available_choices.append(CHOSEN_AS_LEADER)
                         self.fields[staffkey] = forms.ChoiceField(
-                            choices=CHOICE_CHOICES,  # NOQA
+                            choices=[c for c in list(CHOICE_CHOICES) if c[0] in available_choices],
                             widget=BSChoiceRadioSelect(
                                 attrs={'horizontal': True,
                                        'class': 'btn-group-xs'},
