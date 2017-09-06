@@ -356,7 +356,7 @@ class BSChoiceRadioSelect(forms.RadioSelect):
     def get_context(self, name, value, attrs):
         context = super(BSChoiceRadioSelect, self).get_context(name, value, attrs)
         # User has a status in the session, forbid change
-        disable_all = (self.user_assignment not in [CHOSEN_AS_NOT, CHOSEN_AS_LEGACY])
+        disable_all = self.user_assignment is not None
         for optgroup in context['widget']['optgroups']:
             (group, options, index) = optgroup
             if options[0]['value'] == CHOSEN_AS_LEADER:
