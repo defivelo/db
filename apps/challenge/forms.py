@@ -347,7 +347,7 @@ class SeasonAvailabilityForm(forms.Form):
 class BSChoiceRadioSelect(forms.RadioSelect):
     template_name = 'widgets/BSRadioSelect.html'
     option_template_name = 'widgets/BSChoiceRadioSelect_option.html'
- 
+
     def __init__(self, *args, **kwargs):
         # Trick to pass the 'at which role that user is
         # selected in that quali' information through
