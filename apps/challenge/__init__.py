@@ -21,9 +21,11 @@ from django.utils.translation import ugettext_lazy as _
 
 AVAILABILITY_FIELDKEY_HELPER_PREFIX = 'avail-h{hpk}-'
 STAFF_FIELDKEY_HELPER_PREFIX = 'staff-h{hpk}-'
+CHOICE_FIELDKEY_HELPER_PREFIX = 'choice-h{hpk}-'
 
 AVAILABILITY_FIELDKEY = AVAILABILITY_FIELDKEY_HELPER_PREFIX + 's{spk}'
 STAFF_FIELDKEY = STAFF_FIELDKEY_HELPER_PREFIX + 's{spk}'
+CHOICE_FIELDKEY = CHOICE_FIELDKEY_HELPER_PREFIX + 's{spk}'
 
 MAX_MONO1_PER_QUALI = 2
 
@@ -33,9 +35,9 @@ CHOSEN_AS_ACTOR = 2
 CHOSEN_AS_HELPER = 3
 CHOSEN_AS_LEADER = 4
 CHOICE_CHOICES = (
-    (CHOSEN_AS_LEADER, _('Moniteur 2')),
-    (CHOSEN_AS_HELPER, _('Moniteur 1')),
-    (CHOSEN_AS_ACTOR, _('Comme intervenant')),
-    (CHOSEN_AS_LEGACY, _('Choisi')),  # À ne pas réutiliser
     (CHOSEN_AS_NOT, _('Pas choisi')),
+    (CHOSEN_AS_LEGACY, _('Choisi')),  # À ne pas réutiliser
+    (CHOSEN_AS_ACTOR, _('Comme intervenant')),
+    (CHOSEN_AS_HELPER, _('Moniteur 1')),
+    (CHOSEN_AS_LEADER, _('Moniteur 2')),
 )

@@ -373,7 +373,7 @@ class BSChoiceRadioSelect(forms.RadioSelect):
                 options[0]['class'] = 'warning'
             elif options[0]['value'] == CHOSEN_AS_NOT:
                 options[0]['glyphicon'] = 'remove-circle'
-                options[0]['class'] = 'danger'
+                options[0]['class'] = 'default'
             options[0]['disabled'] = disable_all
         return context
 
@@ -398,7 +398,7 @@ class SeasonStaffChoiceForm(forms.Form):
                             fieldinit = self.initial[staffkey]
                         except KeyError:
                             fieldinit = CHOSEN_AS_NOT
-                        available_choices = [CHOSEN_AS_NOT, CHOSEN_AS_LEGACY]
+                        available_choices = [CHOSEN_AS_NOT]
                         if helper.profile.actor:
                             available_choices.append(CHOSEN_AS_ACTOR)
                         if helper.profile.formation:

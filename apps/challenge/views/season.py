@@ -43,7 +43,7 @@ from apps.user.views import ActorsList, HelpersList
 from defivelo.roles import has_permission, user_cantons
 from defivelo.views import MenuView
 
-from .. import AVAILABILITY_FIELDKEY, CHOSEN_AS_NOT, MAX_MONO1_PER_QUALI, STAFF_FIELDKEY
+from .. import AVAILABILITY_FIELDKEY, CHOICE_FIELDKEY, CHOSEN_AS_NOT, MAX_MONO1_PER_QUALI, STAFF_FIELDKEY
 from ..forms import SeasonAvailabilityForm, SeasonForm, SeasonNewHelperAvailabilityForm, SeasonStaffChoiceForm
 from ..models import HelperSessionAvailability, Season
 from ..models.qualification import CATEGORY_CHOICE_A, CATEGORY_CHOICE_B, CATEGORY_CHOICE_C
@@ -249,16 +249,22 @@ class SeasonAvailabilityMixin(SeasonMixin):
                             hpk=helper.pk, spk=session.pk)
                         staffkey = STAFF_FIELDKEY.format(
                             hpk=helper.pk, spk=session.pk)
+                        choicekey = CHOICE_FIELDKEY.format(
+                            hpk=helper.pk, spk=session.pk)
                         try:
                             hsa = helper_availability[session.id]
                             initials[fieldkey] = hsa.availability
-                            # Si un choix est fait dans une session
+                            # Si un choix est fait _dans_ une session (qualif)
                             initials[staffkey] = session.user_assignment(helper)
+                            initials[choicekey] = True
+                            # Le choix n'est fait qu'au niveau de la session
                             if not initials[staffkey]:
                                 initials[staffkey] = hsa.chosen_as
+                                initials[choicekey] = False
                         except:
                             initials[fieldkey] = ''
                             initials[staffkey] = ''
+                            initials[choicekey] = ''
             return initials
 
     def get_context_data(self, **kwargs):

@@ -13,12 +13,17 @@ table.table-avail {
                 padding: 2px;
                 vertical-align: middle;
 
+                // Les sélections de dispo par session
                 .dv-radio-select {
                     &.btn-group {
                         display: flex;
                         align-items: center;
                         justify-content: center;
                     }
+                }
+                // Les petits cadenas
+                span.glyphicon.dv-tiny {
+                    font-size: 50%;
                 }
             }
         }

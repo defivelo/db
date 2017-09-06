@@ -29,10 +29,10 @@ from memoize import memoize
 from rolepermissions.templatetags.permission_tags import can_template_tag
 
 from apps.challenge import (
-    AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER,
-    CHOSEN_AS_LEGACY, CHOSEN_AS_NOT, STAFF_FIELDKEY, STAFF_FIELDKEY_HELPER_PREFIX,
+    AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX, CHOICE_FIELDKEY, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER,
+    CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY, CHOSEN_AS_NOT, STAFF_FIELDKEY, STAFF_FIELDKEY_HELPER_PREFIX,
 )
-from apps.common import DV_STATE_CHOICES, DV_STATES_LONGER_ABBREVIATIONS
+from apps.common import DV_STATE_CHOICES, DV_STATES_LONGER_ABBREVIATIONS, STDGLYPHICON
 from defivelo.roles import user_cantons
 
 register = template.Library()
@@ -145,6 +145,7 @@ def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=
             avail_label = ''  # Bootstrap glyphicon name
             avail_class = 'active'  # Bootstrap array cell class
             avail_content = avail_forced_content
+            locked = False
             if availability == 'i':
                 # If needed
                 avail_verb = _('Si nécessaire')
@@ -182,22 +183,33 @@ def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=
                         else:
                             avail_verb = _('Pas choisi')
                             avail_label = 'unchecked'
+
+                    choicekey = CHOICE_FIELDKEY.format(hpk=user.pk,
+                                                       spk=thissesskey)
+                    locked = choicekey in struct and struct[choicekey]
+
             elif onlyavail:
                 avail_content = ' '
 
             output += (
-                '<td class="{avail_class}"{avail_verbose}>'
+                '<td class="{avail_class}">'
                 '<!-- {key} -->{avail_label}'
+                '{locked}'
                 '</td>'
             ).format(
                 avail_class=avail_class,
                 avail_verbose=' title="%s"' % avail_verb if avail_verb else '',
                 avail_label=(
                     avail_content if avail_content else
-                    ('<span class="glyphicon glyphicon-%s"></span> '
-                        % avail_label
-                        if avail_label else '')
-                    ),
+                    (STDGLYPHICON.format(
+                        icon=avail_label,
+                        title=avail_verb if avail_verb else ''
+                    ) if avail_label else '')
+                ),
+                locked=STDGLYPHICON.format(
+                    icon='lock dv-tiny',
+                    title=_('Choisi dans une session')
+                ) if locked else '',
                 key=key,
             )
     return mark_safe(output)
