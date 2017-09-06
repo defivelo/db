@@ -13,9 +13,7 @@
 {% block container-class %}container-fluid{% endblock %}
 
 {% block content %}
-    <h1>{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }}</h1>
-    <h3>{{ season.cantons|cantons_abbr:False|join:", " }}</h3>
-
+    {% include "challenge/season_header.html" with season=season only %}
     <h4>{% trans "Planning" %}</h4>
         <table class="table text-center table-avail">
         {% include "challenge/season_availability_thead.html" with sessions=sessions season=season user=request.user preamble_columns=4 chosen_stats=1 only %}

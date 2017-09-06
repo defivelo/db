@@ -5,11 +5,9 @@
 {% block head_title %}{{ season.desc }} - {% trans "Prochaines sessions" %}{% endblock %}
 
 {% block content %}
-    <h1>{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }}</h1>
-    <h3>{{ season.cantons|cantons_abbr:False|join:", " }}</h3>
-
+    {% include "challenge/season_header.html" with season=season only %}
     <h4>{% blocktrans with monday=week %}Semaine du {{ monday }}{% endblocktrans %}</h4>
-    
+
     <nav>
         <ul class="pager">
             <li class="previous btn-xs">
