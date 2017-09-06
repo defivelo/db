@@ -1,0 +1,16 @@
+{% load i18n %}<label{% if widget.attrs.id %} for="{{ widget.attrs.id }}"{% endif %}
+        title="{{ widget.label }}"
+        class="btn btn-default{% if widget.selected %} active {% endif %}{% if widget.disabled %} disabled{% endif %}"
+        {% if widget.class %}data-active-class="{{ widget.class }}"{% endif %}
+        >
+    <input type="{{ widget.type }}"
+           name="{{ widget.name }}"
+           {% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %}
+           {% include "django/forms/widgets/attrs.html" %} />
+    {% if widget.glyphicon %}
+        <span class="glyphicon glyphicon-{{ widget.glyphicon }}"
+            title="{{ widget.label }}"></span>
+    {% elif widget.text %}
+        {{ widget.text }}
+    {% endif %}
+</label>
