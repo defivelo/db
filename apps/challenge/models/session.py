@@ -30,7 +30,7 @@ from django.utils.translation import ugettext_lazy as _
 from apps.common.models import Address
 from apps.orga.models import ORGASTATUS_ACTIVE, Organization
 
-from .. import CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY, CHOSEN_AS_NOT, MAX_MONO1_PER_QUALI
+from .. import CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_NOT, MAX_MONO1_PER_QUALI
 
 DEFAULT_SESSION_DURATION_HOURS = 3
 DEFAULT_EARLY_MINUTES_FOR_HELPERS_MEETINGS = 60
