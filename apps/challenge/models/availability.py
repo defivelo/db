@@ -68,6 +68,6 @@ class HelperSessionAvailability(models.Model):
 
         return _('{session}: {chosen}{helper} {is_available}').format(
              session=self.session,
-             chosen='* ' if self.chosen else '',
+             chosen="(%s) " % self.chosen_as if self.chosen else '',
              helper=self.helper.get_full_name(),
              is_available=is_available)

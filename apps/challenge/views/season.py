@@ -185,6 +185,26 @@ class SeasonAvailabilityMixin(SeasonMixin):
             )),
         )
 
+    def current_availabilities(self):
+        if not hasattr(self, 'object'):
+            self.object = self.get_object()
+        return (
+            HelperSessionAvailability.objects
+            .filter(session__in=self.object.sessions_with_qualifs)
+            .prefetch_related('helper')
+        )
+
+    def current_availabilities_present(self):
+        return self.current_availabilities().exclude(availability='n')
+
+    def available_helpers(self):
+        # Only take available people
+        # Fill in the helpers with the ones we currently have
+        helpers_pks = [hsa.helper.pk for hsa in self.current_availabilities_present()]
+        return self.potential_helpers(
+            qs=get_user_model().objects.filter(pk__in=helpers_pks)
+        )
+
     def dispatch(self, request, *args, **kwargs):
         if (
             # Check that the request user is alone in the potential_helpers
@@ -209,13 +229,6 @@ class SeasonAvailabilityMixin(SeasonMixin):
             )
         else:
             raise PermissionDenied
-
-    def current_availabilities(self):
-        return (
-            HelperSessionAvailability.objects
-            .filter(session__in=self.object.sessions_with_qualifs)
-            .prefetch_related('helper')
-        )
 
     def get_initial(self, all_hsas=None, all_helpers=None):
         initials = OrderedDict()
@@ -485,9 +498,9 @@ class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
         hsas = self.current_availabilities()
         if hsas:
             # Fill in the helpers with the ones we currently have
-            helpers = {hsa.helper.pk: hsa.helper.pk for hsa in hsas}
+            helpers_pks = [hsa.helper.pk for hsa in hsas]
             potential_helpers = self.potential_helpers(
-                qs=get_user_model().objects.filter(pk__in=helpers)
+                qs=get_user_model().objects.filter(pk__in=helpers_pks)
             )
 
             context['potential_helpers'] = potential_helpers
@@ -581,19 +594,6 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView,
     success_message = _("Choix du personnel mises à jour")
     form_class = SeasonStaffChoiceForm
     view_is_update = True
-
-    def available_helpers(self):
-        if hasattr(self, 'ahelpers'):
-            return self.ahelpers
-        # Only take available people
-        hsas = self.current_availabilities().exclude(availability='n')
-        if hsas:
-            # Fill in the helpers with the ones we currently have
-            helpers = {hsa.helper.pk: hsa.helper.pk for hsa in hsas}
-            self.ahelpers = self.potential_helpers(
-                qs=get_user_model().objects.filter(pk__in=helpers)
-            )
-            return self.ahelpers
 
     def get_form_kwargs(self):
         form_kwargs = \
