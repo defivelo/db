@@ -378,7 +378,6 @@ class UserProfile(Address, models.Model):
         except IndexError:
             return ''
 
-    @cached_property
     def access_level(self, textonly=True):
         icon = ''
         title = ''
@@ -402,6 +401,7 @@ class UserProfile(Address, models.Model):
             return mark_safe(STDGLYPHICON.format(icon=icon, title=title))
         return ''
 
+    @cached_property
     def access_level_icon(self):
         return self.access_level(False)
 
