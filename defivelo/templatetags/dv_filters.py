@@ -29,8 +29,8 @@ from memoize import memoize
 from rolepermissions.templatetags.permission_tags import can_template_tag
 
 from apps.challenge import (
-    AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX, SHORTCODE_ACTOR, SHORTCODE_MON1, SHORTCODE_MON2,
-    SHORTCODE_SELECTED, STAFF_FIELDKEY, STAFF_FIELDKEY_HELPER_PREFIX,
+    AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER,
+    CHOSEN_AS_LEGACY, CHOSEN_AS_NOT, STAFF_FIELDKEY, STAFF_FIELDKEY_HELPER_PREFIX,
 )
 from apps.common import DV_STATE_CHOICES, DV_STATES_LONGER_ABBREVIATIONS
 from defivelo.roles import user_cantons
@@ -167,16 +167,16 @@ def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=
                     staffkey = STAFF_FIELDKEY.format(hpk=user.pk,
                                                      spk=thissesskey)
                     if staffkey in struct:
-                        if struct[staffkey] == SHORTCODE_MON2:
+                        if struct[staffkey] == CHOSEN_AS_LEADER:
                             avail_verb = _('Moniteur 2')
                             avail_content = _('M2')
-                        elif struct[staffkey] == SHORTCODE_MON1:
+                        elif struct[staffkey] == CHOSEN_AS_HELPER:
                             avail_verb = _('Moniteur 1')
                             avail_content = _('M1')
-                        elif struct[staffkey] == SHORTCODE_ACTOR:
+                        elif struct[staffkey] == CHOSEN_AS_ACTOR:
                             avail_verb = _('Intervenant')
                             avail_label = 'sunglasses'
-                        elif struct[staffkey] == SHORTCODE_SELECTED:
+                        elif struct[staffkey] == CHOSEN_AS_LEGACY:
                             avail_verb = _('Choisi')
                             avail_label = 'check'
                         else:
@@ -240,7 +240,7 @@ def chosen_staff_for_season(struct, user):
                 staffkey = STAFF_FIELDKEY.format(hpk=user.pk,
                                                  spk=thissesskey)
                 if staffkey in struct:
-                    if struct[staffkey] not in ['', SHORTCODE_SELECTED]:
+                    if struct[staffkey] not in ['', CHOSEN_AS_LEGACY]:
                         accu += 1
     return accu
 
