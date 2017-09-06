@@ -161,10 +161,14 @@ def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=
                 avail_class = 'success'
 
             if availability in ['y', 'i']:
+                thissesskey = int(search(r'-s(\d+)', key).group(1))
+                choicekey = CHOICE_FIELDKEY.format(hpk=user.pk,
+                                                       spk=thissesskey)
+                locked = choicekey in struct and struct[choicekey]
+
                 # Si le choix des moniteurs est connu, remplace le label et
                 # la version verbeuse par l'état du choix
                 if not sesskey:
-                    thissesskey = int(search(r'-s(\d+)', key).group(1))
                     staffkey = STAFF_FIELDKEY.format(hpk=user.pk,
                                                      spk=thissesskey)
                     if staffkey in struct:
@@ -184,20 +188,15 @@ def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=
                             avail_verb = _('Pas choisi')
                             avail_label = 'unchecked'
 
-                    choicekey = CHOICE_FIELDKEY.format(hpk=user.pk,
-                                                       spk=thissesskey)
-                    locked = choicekey in struct and struct[choicekey]
-
             elif onlyavail:
                 avail_content = ' '
 
             output += (
-                '<td class="{avail_class}">'
+                '<td class="{avail_class}"{avail_verbose}>'
                 '<!-- {key} -->{avail_label}'
-                '{locked}'
                 '</td>'
             ).format(
-                avail_class=avail_class,
+                avail_class='info' if locked else avail_class,
                 avail_verbose=' title="%s"' % avail_verb if avail_verb else '',
                 avail_label=(
                     avail_content if avail_content else
@@ -206,10 +205,6 @@ def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=
                         title=avail_verb if avail_verb else ''
                     ) if avail_label else '')
                 ),
-                locked=STDGLYPHICON.format(
-                    icon='lock dv-tiny',
-                    title=_('Choisi dans une session')
-                ) if locked else '',
                 key=key,
             )
     return mark_safe(output)
@@ -248,11 +243,10 @@ def chosen_staff_for_season(struct, user):
         if AVAILABILITY_FIELDKEY_HELPER_PREFIX.format(hpk=user.pk) in key:
             if struct[key] in ['y', 'i']:
                 thissesskey = int(search(r'-s(\d+)', key).group(1))
-                staffkey = STAFF_FIELDKEY.format(hpk=user.pk,
-                                                 spk=thissesskey)
-                if staffkey in struct:
-                    if struct[staffkey] != CHOSEN_AS_NOT:
-                        accu += 1
+                choicekey = CHOICE_FIELDKEY.format(hpk=user.pk,
+                                                   spk=thissesskey)
+                if choicekey in struct and struct[choicekey]:
+                    accu += 1
     return accu
 
 
