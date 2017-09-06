@@ -1,23 +1,23 @@
 dj-database-url==0.4.2
-Django==1.11.4
+Django==1.11.5
 pytz==2017.2
 django-bootstrap3==9.0.0
-psycopg2==2.7.3
-django-compressor==2.1.1
+psycopg2==2.7.3.1
+django-compressor==2.2
 libsass==0.13.2
 django-stronghold==0.2.9
-django-allauth==0.32.0
+django-allauth==0.33.0
 django-localflavor==1.5.2
 # django-bootstrap3-datetimepicker-2==2.5.0
 -e git+https://github.com/defivelo/django-bootstrap3-datetimepicker@ab60a3281ba847832d300dc780b5a07379103ed4#egg=django-bootstrap3-datetimepicker-2==2.5.0+dv0
-django-autocomplete-light==3.2.8
+django-autocomplete-light==3.2.10
 django-parler==1.8
 django-multiselectfield==0.1.8
 django-filter==1.0.4
 django-filters-mixin==0.1.4
 django-import-export==0.5.1
 django-agpl==4.0.0
-tablib==0.11.5
+tablib==0.12.1
 simple-article==0.2.1
 django-role-permissions==2.1.0
 django-tinymce==2.6.0
