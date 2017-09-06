@@ -67,8 +67,7 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
         return context
 
     def get_form_kwargs(self):
-        form_kwargs = \
-            super(SeasonMixin, self).get_form_kwargs()
+        form_kwargs = super(SeasonMixin, self).get_form_kwargs()
         if has_permission(self.request.user, 'cantons_all'):
             form_kwargs['cantons'] = DV_STATES
         else:
@@ -253,11 +252,10 @@ class SeasonAvailabilityMixin(SeasonMixin):
                         try:
                             hsa = helper_availability[session.id]
                             initials[fieldkey] = hsa.availability
-                            if hsa.chosen:
-                                initials[staffkey] = \
-                                    session.user_assignment(helper)
-                            else:
-                                initials[staffkey] = ''
+                            # Si un choix est fait dans une session
+                            initials[staffkey] = session.user_assignment(helper)
+                            if not initials[staffkey]:
+                                initials[staffkey] = hsa.chosen_as
                         except:
                             initials[fieldkey] = ''
                             initials[staffkey] = ''
@@ -595,6 +593,16 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView,
     form_class = SeasonStaffChoiceForm
     view_is_update = True
 
+    def get_initial(self):
+        # Shortcut through giving only the available_helpers
+        return (
+            super(SeasonStaffChoiceUpdateView, self)
+            .get_initial(
+                all_hsas=None,
+                all_helpers=self.available_helpers()
+            )
+        )
+
     def get_form_kwargs(self):
         form_kwargs = \
             super(SeasonStaffChoiceUpdateView, self).get_form_kwargs()
@@ -616,18 +624,15 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView,
                 for helper in helpers:
                     fieldkey = STAFF_FIELDKEY.format(hpk=helper.pk,
                                                      spk=session.pk)
-                    try:
-                        HelperSessionAvailability.objects.filter(
-                                session=session,
-                                helper=helper
-                            ).update(chosen_as=form.cleaned_data[fieldkey])
-                        if form.cleaned_data[fieldkey]:
-                            session_helpers[helper.pk] = helper
-                        else:
-                            session_non_helpers[helper.pk] = helper
-                    # if the fieldkey's not in cleaned_data, or other reasons
-                    except:
-                        pass
+                    HelperSessionAvailability.objects.filter(
+                            session=session,
+                            helper=helper
+                        ).update(chosen_as=form.cleaned_data[fieldkey])
+
+                    if form.cleaned_data[fieldkey]:
+                        session_helpers[helper.pk] = helper
+                    else:
+                        session_non_helpers[helper.pk] = helper
 
             # Do a session-wide check across all helpers picked for that
             # session
