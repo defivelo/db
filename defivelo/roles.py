@@ -51,6 +51,7 @@ class StateManager(AbstractUserRole):
         'user_edit_other': True,
         'user_crud_dv_public_fields': True,
         'user_crud_dv_private_fields': True,
+        'user_can_send_credentials': True,
         'user_create': True,
 
         'orga_crud': True,
