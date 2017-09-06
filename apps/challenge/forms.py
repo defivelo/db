@@ -167,38 +167,38 @@ class QualificationForm(forms.ModelForm):
         kwargs.pop('cantons', None)
         super(QualificationForm, self).__init__(*args, **kwargs)
         other_qualifs = session.qualifications.exclude(pk=self.instance.pk)
+        staff_pks = session.chosen_staff.values_list('helper_id', flat=True)
         available_staff = (
-            get_user_model().objects.filter(
-                availabilities__session=session
-            )
+            get_user_model().objects.filter(pk__in=staff_pks)
             .exclude(
-                availabilities__chosen_as=CHOSEN_AS_NOT
-            ).exclude(
                 Q(qualifs_mon2__in=other_qualifs) |
                 Q(qualifs_mon1__in=other_qualifs) |
-                Q(qualifs_actor__in=other_qualifs) |
-                Q(profile__status=USERSTATUS_DELETED)
+                Q(qualifs_actor__in=other_qualifs)
             )
-            .distinct()
-            .order_by('first_name')
         )
         self.fields['leader'] = LeaderChoiceField(
             label=_('Moniteur 2'),
             queryset=available_staff.filter(
-                Q(profile__formation=FORMATION_M2)
+                availabilities__session=session,
+                availabilities__chosen_as=CHOSEN_AS_LEADER,
+                profile__formation=FORMATION_M2,
             ),
             required=False,
         )
         self.fields['helpers'] = HelpersChoiceField(
             label=_('Moniteurs 1'),
             queryset=available_staff.filter(
-                Q(profile__formation__in=FORMATION_KEYS)
+                availabilities__session=session,
+                availabilities__chosen_as=CHOSEN_AS_HELPER,
+                profile__formation__in=FORMATION_KEYS
             ),
             required=False,
         )
         self.fields['actor'] = ActorChoiceField(
             label=_('Intervenant'),
-            queryset=available_staff.exclude(
+            queryset=available_staff.filter(
+                availabilities__session=session,
+                availabilities__chosen_as=CHOSEN_AS_ACTOR,
                 profile__actor_for__isnull=True
             ),
             required=False
