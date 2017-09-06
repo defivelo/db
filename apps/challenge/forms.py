@@ -395,7 +395,6 @@ class SeasonStaffChoiceForm(forms.Form):
                             hpk=helper.pk, spk=session.pk)
                         staffkey = STAFF_FIELDKEY.format(hpk=helper.pk,
                                                          spk=session.pk)
-                        # Stupid boolean to integer-as-string conversion.
                         try:
                             fieldinit = self.initial[staffkey]
                         except KeyError:
@@ -403,6 +402,8 @@ class SeasonStaffChoiceForm(forms.Form):
                         self.fields[staffkey] = forms.ChoiceField(
                             choices=CHOICE_CHOICES,  # NOQA
                             widget=BSChoiceRadioSelect(
+                                attrs={'horizontal': True,
+                                       'class': 'btn-group-xs'},
                                 user_assignment=session.user_assignment(helper)
                             ),
                             required=False, initial=fieldinit

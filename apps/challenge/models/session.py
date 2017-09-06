@@ -184,8 +184,9 @@ class Session(Address, models.Model):
                 return CHOSEN_AS_HELPER
             if user == q.actor:
                 return CHOSEN_AS_ACTOR
-        if any([a.helper == user for a in self.chosen_staff]):
-            return CHOSEN_AS_LEGACY
+        for a in self.chosen_staff:
+            if a.helper == user:
+                return CHOSEN_AS_LEGACY
         return CHOSEN_AS_NOT
 
     def n_quali_things(self, field):

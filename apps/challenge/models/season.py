@@ -138,7 +138,7 @@ class Season(models.Model):
                 'qualifications__leader',
                 'qualifications__helpers',
                 'qualifications__actor',
-                'orga'
+                'orga',
             )
 
     @cached_property
@@ -173,7 +173,7 @@ class Season(models.Model):
         return self.desc(True)
 
     def __str__(self):
-        return (
-            self.desc +
-            (" - " + self.leader.get_full_name() if self.leader else '')
+        return "{desc}{leader}".format(
+            desc=self.desc(False),
+            leader=" - %s" % self.leader.get_full_name() if self.leader else ''
         )
