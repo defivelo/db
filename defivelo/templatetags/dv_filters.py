@@ -29,7 +29,7 @@ from memoize import memoize
 from rolepermissions.templatetags.permission_tags import can_template_tag
 
 from apps.challenge import (
-    AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER,
+    AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_NOT,
     CHOSEN_AS_LEGACY, STAFF_FIELDKEY, STAFF_FIELDKEY_HELPER_PREFIX,
 )
 from apps.common import DV_STATE_CHOICES, DV_STATES_LONGER_ABBREVIATIONS
@@ -186,8 +186,7 @@ def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=
                 avail_content = ' '
 
             output += (
-                '<td style="vertical-align: middle;"'
-                '    class="{avail_class}"{avail_verbose}>'
+                '<td class="{avail_class}"{avail_verbose}>'
                 '<!-- {key} -->{avail_label}'
                 '</td>'
             ).format(
@@ -240,7 +239,7 @@ def chosen_staff_for_season(struct, user):
                 staffkey = STAFF_FIELDKEY.format(hpk=user.pk,
                                                  spk=thissesskey)
                 if staffkey in struct:
-                    if struct[staffkey] not in ['', CHOSEN_AS_LEGACY]:
+                    if struct[staffkey] != CHOSEN_AS_NOT:
                         accu += 1
     return accu
 

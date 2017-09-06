@@ -11,7 +11,15 @@ table.table-avail {
                     border-left: dotted 1px #ddd;
                 }
                 padding: 2px;
-                vertical-align: top;
+                vertical-align: middle;
+
+                .dv-radio-select {
+                    &.btn-group {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                }
             }
         }
     }
