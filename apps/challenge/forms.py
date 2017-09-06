@@ -169,12 +169,11 @@ class QualificationForm(forms.ModelForm):
         other_qualifs = session.qualifications.exclude(pk=self.instance.pk)
         available_staff = (
             get_user_model().objects.filter(
-                Q(
-                    availabilities__chosen=True,
-                    availabilities__session=session
-                )
+                availabilities__session=session
             )
             .exclude(
+                availabilities__chosen_as=CHOSEN_AS_NOT
+            ).exclude(
                 Q(qualifs_mon2__in=other_qualifs) |
                 Q(qualifs_mon1__in=other_qualifs) |
                 Q(qualifs_actor__in=other_qualifs) |
