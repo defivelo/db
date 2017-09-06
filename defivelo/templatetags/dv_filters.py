@@ -163,7 +163,7 @@ def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=
             if availability in ['y', 'i']:
                 thissesskey = int(search(r'-s(\d+)', key).group(1))
                 choicekey = CHOICE_FIELDKEY.format(hpk=user.pk,
-                                                       spk=thissesskey)
+                                                   spk=thissesskey)
                 locked = choicekey in struct and struct[choicekey]
 
                 # Si le choix des moniteurs est connu, remplace le label et
@@ -238,7 +238,8 @@ def userstaffsessions(form, user):
 def chosen_staff_for_season(struct, user):
     if not struct or not user:
         return ''
-    accu = 0
+    accu_in_qualif = 0
+    accu_in_sess = 0
     for key in struct:
         if AVAILABILITY_FIELDKEY_HELPER_PREFIX.format(hpk=user.pk) in key:
             if struct[key] in ['y', 'i']:
@@ -246,8 +247,16 @@ def chosen_staff_for_season(struct, user):
                 choicekey = CHOICE_FIELDKEY.format(hpk=user.pk,
                                                    spk=thissesskey)
                 if choicekey in struct and struct[choicekey]:
-                    accu += 1
-    return accu
+                    accu_in_qualif += 1
+
+                staffkey = STAFF_FIELDKEY.format(hpk=user.pk,
+                                                 spk=thissesskey)
+                if staffkey in struct:
+                    if struct[staffkey] != CHOSEN_AS_NOT:
+                        accu_in_sess += 1
+    if accu_in_qualif != accu_in_sess:
+        return '%s/%s' % (accu_in_qualif, accu_in_sess)
+    return accu_in_sess
 
 
 @register.filter
