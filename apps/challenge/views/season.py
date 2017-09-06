@@ -169,7 +169,10 @@ class SeasonAvailabilityMixin(SeasonMixin):
                 qs = qs.filter(
                     pk=int(resolvermatch.kwargs['helperpk'])
                 )
-        return qs.prefetch_related('profile')
+        return qs.prefetch_related('profile',
+                                   'profile__actor_for',
+                                   'profile__actor_for__translations',
+                                   )
 
     def potential_helpers(self, qs=None):
         qs = self.potential_helpers_qs(qs)
