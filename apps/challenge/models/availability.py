@@ -21,9 +21,12 @@ from django.conf import settings
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
-from .. import CHOICE_CHOICES, CHOSEN_AS_NOT
+from apps.common import STDGLYPHICON
+
+from .. import CHOICE_CHOICES, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_NOT
 from .session import Session
 
 
@@ -52,6 +55,42 @@ class HelperSessionAvailability(models.Model):
     @cached_property
     def chosen(self):
         return self.chosen_as != CHOSEN_AS_NOT
+
+    @cached_property
+    def chosen_as_icon(self):
+        if self.chosen_as == CHOSEN_AS_HELPER:
+            # Translators: FORMATION_M1 - Moniteur 1
+            return _('M1')
+        if self.chosen_as == CHOSEN_AS_LEADER:
+            # Translators: FORMATION_M2 - Moniteur 2
+            return _('M2')
+        if self.chosen_as == CHOSEN_AS_ACTOR:
+            return mark_safe(STDGLYPHICON.format(
+                icon='sunglasses', title=_('Intervenant')))
+        return ''
+
+    @cached_property
+    def chosen_as_verb(self):
+        if self.chosen_as == CHOSEN_AS_HELPER:
+            return _('Moniteur 1')
+        if self.chosen_as == CHOSEN_AS_LEADER:
+            return _('Moniteur 2')
+        if self.chosen_as == CHOSEN_AS_ACTOR:
+            return _('Intervenant')
+        return ''
+
+    @cached_property
+    def availability_icon(self):
+        title = _('Non')
+        icon = 'remove-sign'
+        if self.availability == 'i':
+            # If needed
+            title = _('Si nécessaire')
+            icon = 'ok-circle'
+        elif self.availability == 'y':
+            title = _('Oui')
+            icon = 'ok-sign'
+        return mark_safe(STDGLYPHICON.format(icon=icon, title=title))
 
     class Meta:
         verbose_name = _('Disponibilité par session')

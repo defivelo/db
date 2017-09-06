@@ -143,7 +143,10 @@ class Session(Address, models.Model):
                 'helper__profile',
                 'session'
             )
-            .order_by('-availability')
+            .order_by(
+                '-chosen_as',
+                '-availability'
+            )
         )
 
     @cached_property
@@ -153,7 +156,8 @@ class Session(Address, models.Model):
     def chosen_helpers(self):
         return (
             self.chosen_staff
-            .filter(helper__profile__formation__in=['M1', 'M2'])
+            .filter(chosen_as__in=[CHOSEN_AS_HELPER, CHOSEN_AS_LEADER],
+                    helper__profile__formation__in=['M1', 'M2'])
             .order_by('-helper__profile__formation',
                       'helper__first_name',
                       'helper__last_name')
@@ -168,8 +172,10 @@ class Session(Address, models.Model):
         return [0] + [n_sessions * (MAX_MONO1_PER_QUALI), n_sessions]
 
     def chosen_actors(self):
-        return self.chosen_staff.exclude(
-            helper__profile__actor_for__isnull=True
+        return (
+            self.chosen_staff
+            .filter(chosen_as=CHOSEN_AS_ACTOR)
+            .exclude(helper__profile__actor_for__isnull=True)
         )
 
     def actor_needs(self):
