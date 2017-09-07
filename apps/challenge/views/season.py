@@ -46,7 +46,7 @@ from defivelo.views import MenuView
 
 from .. import (
     AVAILABILITY_FIELDKEY, CHOICE_FIELDKEY, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_NOT,
-    MAX_MONO1_PER_QUALI, SEASON_WORKWISH_FIELDKEY, STAFF_FIELDKEY,
+    CHOSEN_AS_REPLACEMENT, MAX_MONO1_PER_QUALI, SEASON_WORKWISH_FIELDKEY, STAFF_FIELDKEY,
 )
 from ..forms import SeasonAvailabilityForm, SeasonForm, SeasonNewHelperAvailabilityForm, SeasonStaffChoiceForm
 from ..models import HelperSessionAvailability, Season
@@ -495,10 +495,10 @@ class SeasonPlanningExportView(ExportMixin, SeasonAvailabilityMixin,
                 '%s - %s' % (time(session.begin), time(session.end)),
                 session.n_qualifications,
             ]
-            users_selected_in_session = (
+            user_session_chosen_as = dict(
                 session.availability_statuses
                 .exclude(chosen_as=CHOSEN_AS_NOT)
-                .values_list('helper', flat=True)
+                .values_list('helper_id', 'chosen_as')
             )
             for user in qs:
                 label = ''
@@ -518,8 +518,19 @@ class SeasonPlanningExportView(ExportMixin, SeasonAvailabilityMixin,
                             label = u('Int.')
                             break
                     # Vérifie tout de même si l'utilisateur est déjà sélectionné
-                    if not label and user.id in users_selected_in_session:
-                        label = u('×')
+                    if not label and user.id in user_session_chosen_as:
+                        if user_session_chosen_as[user.id] == CHOSEN_AS_LEADER:
+                            label = formation_short(FORMATION_M2, True)
+                        elif user_session_chosen_as[user.id] == CHOSEN_AS_HELPER:
+                            label = formation_short(FORMATION_M1, True)
+                        elif user_session_chosen_as[user.id] == CHOSEN_AS_ACTOR:
+                            # Translators: Nom court pour 'Intervenant'
+                            label = u('Int.')
+                        elif user_session_chosen_as[user.id] == CHOSEN_AS_REPLACEMENT:
+                            # Translators: Nom court pour 'Moniteur de secours'
+                            label = u('S')
+                        else:
+                            label = u('×')
                 col += [label]
             dataset.append_col(col)
         return dataset
