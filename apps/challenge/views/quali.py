@@ -23,7 +23,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from ..forms import QualificationForm
-from ..models import Qualification, Season, Session
+from ..models import Qualification, Session
 from .session import SessionMixin
 
 

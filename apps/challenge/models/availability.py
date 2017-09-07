@@ -26,7 +26,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.common import STDGLYPHICON
 
-from .. import CHOICE_CHOICES, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_NOT, CHOSEN_AS_LEGACY
+from .. import CHOICE_CHOICES, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY, CHOSEN_AS_NOT
 from .session import Session
 
 

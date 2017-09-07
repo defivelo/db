@@ -26,7 +26,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse_lazy
-from django.db.models import Count, Q
+from django.db.models import Case, Count, F, IntegerField, Q, When
 from django.http import HttpResponseRedirect
 from django.template.defaultfilters import date, time
 from django.utils.translation import ugettext as u, ugettext_lazy as _
@@ -43,7 +43,10 @@ from apps.user.views import ActorsList, HelpersList
 from defivelo.roles import has_permission, user_cantons
 from defivelo.views import MenuView
 
-from .. import AVAILABILITY_FIELDKEY, CHOICE_FIELDKEY, CHOSEN_AS_NOT, MAX_MONO1_PER_QUALI, STAFF_FIELDKEY
+from .. import (
+    AVAILABILITY_FIELDKEY, CHOICE_FIELDKEY, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_NOT,
+    MAX_MONO1_PER_QUALI, STAFF_FIELDKEY,
+)
 from ..forms import SeasonAvailabilityForm, SeasonForm, SeasonNewHelperAvailabilityForm, SeasonStaffChoiceForm
 from ..models import HelperSessionAvailability, Season
 from ..models.qualification import CATEGORY_CHOICE_A, CATEGORY_CHOICE_B, CATEGORY_CHOICE_C
@@ -274,9 +277,36 @@ class SeasonAvailabilityMixin(SeasonMixin):
         context['submenu_category'] = 'season-availability'
         context['sessions'] = self.object.sessions_with_qualifs.annotate(
             n_qualifs=Count('qualifications', distinct=True),
-            n_helpers=Count('qualifications__helpers', distinct=True),
-            n_leaders=Count('qualifications__leader', distinct=True),
-            n_actors=Count('qualifications__actor', distinct=True),
+            n_leaders=Count(
+                Case(
+                    When(
+                        availability_statuses__chosen_as=CHOSEN_AS_LEADER,
+                        then=F('availability_statuses__id')
+                    ),
+                    output_field=IntegerField()
+                ),
+                distinct=True
+            ),
+            n_helpers=Count(
+                Case(
+                    When(
+                        availability_statuses__chosen_as=CHOSEN_AS_HELPER,
+                        then=F('availability_statuses__id')
+                    ),
+                    output_field=IntegerField()
+                ),
+                distinct=True
+            ),
+            n_actors=Count(
+                Case(
+                    When(
+                        availability_statuses__chosen_as=CHOSEN_AS_ACTOR,
+                        then=F('availability_statuses__id')
+                    ),
+                    output_field=IntegerField()
+                ),
+                distinct=True
+            )
         )
         return context
 

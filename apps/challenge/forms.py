@@ -168,22 +168,20 @@ class QualificationForm(forms.ModelForm):
         super(QualificationForm, self).__init__(*args, **kwargs)
         other_qualifs = session.qualifications.exclude(pk=self.instance.pk)
         # Construct chosen_as dict of arrays
-        staff_pks = []
         chosens = {}
         for avail in session.chosen_staff.all():
             if avail.chosen_as not in chosens:
                 chosens[avail.chosen_as] = []
             chosens[avail.chosen_as].append(avail.helper_id)
-            staff_pks.append(avail.helper_id)
 
         available_staff = (
-            get_user_model().objects.filter(pk__in=staff_pks)
+            get_user_model().objects
             .exclude(
                 Q(qualifs_mon2__in=other_qualifs) |
                 Q(qualifs_mon1__in=other_qualifs) |
                 Q(qualifs_actor__in=other_qualifs)
             )
-        ).prefetch_related('profile')
+        )
         self.fields['leader'] = LeaderChoiceField(
             label=_('Moniteur 2'),
             queryset=available_staff.filter(

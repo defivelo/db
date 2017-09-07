@@ -31,8 +31,11 @@
                             <dt>{% trans "M2" %}</dt>
                             <dd>{% if c < session.helper_needs.2 %}
                                     {{ c }}/{{ session.helper_needs.2 }}
-                                {% else %}
+                                {% elif c == session.helper_needs.2 %}
                                     <span class="glyphicon glyphicon-ok" title="{{ c }}/{{ session.helper_needs.2 }}"></span>
+                                {% else %}
+                                    {{ c }}/{{ session.helper_needs.2 }}
+                                    <span class="glyphicon glyphicon-alert" title="{{ c }}/{{ session.helper_needs.2 }}"></span>
                                 {% endif %}
                             </dd>
                         {% endwith %}
@@ -40,8 +43,11 @@
                             <dt>{% trans "M1" %}</dt>
                             <dd>{% if c < session.helper_needs.1 %}
                                     {{ c }}/{{ session.helper_needs.1 }}
-                                {% else %}
+                                {% elif c == session.helper_needs.1 %}
                                     <span class="glyphicon glyphicon-ok" title="{{ c }}/{{ session.helper_needs.1 }}"></span>
+                                {% else %}
+                                    {{ c }}/{{ session.helper_needs.1 }}
+                                    <span class="glyphicon glyphicon-alert" title="{{ c }}/{{ session.helper_needs.1 }}"></span>
                                 {% endif %}
                             </dd>
                         {% endwith %}
@@ -50,8 +56,11 @@
                             <dt>{% trans "Int." %}</dt>
                             <dd>{% if c < session.actor_needs %}
                                     {{ c }}/{{ session.actor_needs }}
-                                {% else %}
+                                {% elif c == session.actor_needs %}
                                     <span class="glyphicon glyphicon-ok" title="{{ c }}/{{ session.actor_needs }}"></span>
+                                {% else %}
+                                    {{ c }}/{{ session.actor_needs }}
+                                    <span class="glyphicon glyphicon-alert" title="{{ c }}/{{ session.actor_needs }}"></span>
                                 {% endif %}
                             </dd>
                         {% endwith %}
