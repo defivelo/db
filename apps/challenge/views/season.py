@@ -45,10 +45,11 @@ from defivelo.views import MenuView
 
 from .. import (
     AVAILABILITY_FIELDKEY, CHOICE_FIELDKEY, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_NOT,
-    MAX_MONO1_PER_QUALI, STAFF_FIELDKEY,
+    MAX_MONO1_PER_QUALI, SEASON_WORKWISH_FIELDKEY, STAFF_FIELDKEY,
 )
 from ..forms import SeasonAvailabilityForm, SeasonForm, SeasonNewHelperAvailabilityForm, SeasonStaffChoiceForm
 from ..models import HelperSessionAvailability, Season
+from ..models.availability import HelperSeasonWorkWish
 from ..models.qualification import CATEGORY_CHOICE_A, CATEGORY_CHOICE_B, CATEGORY_CHOICE_C
 from .mixins import CantonSeasonFormMixin
 
@@ -241,12 +242,16 @@ class SeasonAvailabilityMixin(SeasonMixin):
 
         if all_hsas:
             all_sessions = self.object.sessions_with_qualifs
+            all_wishes = dict(self.object.work_wishes.values_list('helper_id', 'amount'))
             for helper_category, helpers in all_helpers:
                 for helper in helpers:
                     helper_availability = {
                         a.session_id: a for a in all_hsas
                         if a.helper == helper
                     }
+                    # Fill in the wishes
+                    initials[SEASON_WORKWISH_FIELDKEY.format(hpk=helper.pk)] = \
+                        all_wishes[helper.pk] if helper.pk in all_wishes else 0
                     for session in all_sessions:
                         fieldkey = AVAILABILITY_FIELDKEY.format(
                             hpk=helper.pk, spk=session.pk)
@@ -604,6 +609,20 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
         for session in self.object.sessions_with_qualifs:
             for helper_category, helpers in self.potential_helpers():
                 for helper in helpers:
+                    # Fill in the wishes
+                    workwishkey = SEASON_WORKWISH_FIELDKEY.format(hpk=helper.pk)
+                    if workwishkey in form.cleaned_data:
+                        amount = form.cleaned_data[workwishkey]
+                        (hww, created) = HelperSeasonWorkWish.objects.get_or_create(
+                            season=self.season,
+                            helper=helper,
+                            defaults={'amount': amount}
+                        )
+                        if not created:
+                            hww.amount = amount
+                            hww.save()
+
+                    # Fill in the availabilities
                     fieldkey = AVAILABILITY_FIELDKEY.format(hpk=helper.pk,
                                                             spk=session.pk)
                     if fieldkey in form.cleaned_data:

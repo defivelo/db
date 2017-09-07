@@ -30,7 +30,29 @@ from .. import (
     CHOICE_CHOICES, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY, CHOSEN_AS_NOT,
     CHOSEN_AS_REPLACEMENT,
 )
+from .season import Season
 from .session import Session
+
+
+@python_2_unicode_compatible
+class HelperSeasonWorkWish(models.Model):
+    created_on = models.DateTimeField(auto_now_add=True)
+    season = models.ForeignKey(Season, verbose_name=_('Saison'),
+                               related_name='work_wishes',
+                               on_delete=models.CASCADE)
+    helper = models.ForeignKey(settings.AUTH_USER_MODEL,
+                               verbose_name=_('Moniteur'),
+                               related_name='work_wishes',
+                               limit_choices_to={'profile__isnull': False},
+                               on_delete=models.CASCADE)
+    amount = models.PositiveSmallIntegerField(_("Quantité d'engagements souhaités"),
+                                              default=0)
+
+    def __str__(self):
+        return _('{season}: {helper} aimerait travailler {amount} fois').format(
+             session=self.season,
+             helper=self.helper.get_full_name(),
+             amount=self.amount)
 
 
 @python_2_unicode_compatible

@@ -22,6 +22,7 @@ from django.utils.translation import ugettext_lazy as _
 AVAILABILITY_FIELDKEY_HELPER_PREFIX = 'avail-h{hpk}-'
 STAFF_FIELDKEY_HELPER_PREFIX = 'staff-h{hpk}-'
 CHOICE_FIELDKEY_HELPER_PREFIX = 'choice-h{hpk}-'
+SEASON_WORKWISH_FIELDKEY = 'season-ww-h{hpk}'
 
 AVAILABILITY_FIELDKEY = AVAILABILITY_FIELDKEY_HELPER_PREFIX + 's{spk}'
 STAFF_FIELDKEY = STAFF_FIELDKEY_HELPER_PREFIX + 's{spk}'

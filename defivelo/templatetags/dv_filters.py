@@ -30,7 +30,7 @@ from rolepermissions.templatetags.permission_tags import can_template_tag
 
 from apps.challenge import (
     AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX, CHOICE_FIELDKEY, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER,
-    CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY, CHOSEN_AS_NOT, CHOSEN_AS_REPLACEMENT, STAFF_FIELDKEY,
+    CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY, CHOSEN_AS_NOT, CHOSEN_AS_REPLACEMENT, SEASON_WORKWISH_FIELDKEY, STAFF_FIELDKEY,
     STAFF_FIELDKEY_HELPER_PREFIX,
 )
 from apps.common import DV_STATE_CHOICES, DV_STATES_LONGER_ABBREVIATIONS, STDGLYPHICON
@@ -115,7 +115,10 @@ def useravailsessions(form, user):
         return ''
     output = ''
     for key in form.fields:
-        if AVAILABILITY_FIELDKEY_HELPER_PREFIX.format(hpk=user.pk) in key:
+        if (
+            key == SEASON_WORKWISH_FIELDKEY.format(hpk=user.pk) or
+            AVAILABILITY_FIELDKEY_HELPER_PREFIX.format(hpk=user.pk) in key
+        ):
             output += '<td>{field}</td>'.format(
                 field=form.fields[key].widget.render(
                     key, form.fields[key].initial, attrs={'id': key})
@@ -261,6 +264,18 @@ def chosen_staff_for_season(struct, user):
     #  if accu_in_qualif != accu_in_sess:
         #  return '%s/%s' % (accu_in_qualif, accu_in_sess)
     return accu_in_sess
+
+
+@register.filter
+def work_wish_for_season(struct, user):
+    if not struct or not user:
+        return ''
+    workwishkey = SEASON_WORKWISH_FIELDKEY.format(hpk=user.pk)
+    if workwishkey in struct:
+        wish = int(struct[workwishkey])
+        if wish > 0:
+            return wish
+    return ''
 
 
 @register.filter

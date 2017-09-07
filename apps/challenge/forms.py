@@ -35,7 +35,7 @@ from bootstrap3_datetime.widgets import DateTimePicker
 
 from . import (
     AVAILABILITY_FIELDKEY, CHOICE_CHOICES, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY,
-    CHOSEN_AS_NOT, CHOSEN_AS_REPLACEMENT, MAX_MONO1_PER_QUALI, STAFF_FIELDKEY,
+    CHOSEN_AS_NOT, CHOSEN_AS_REPLACEMENT, MAX_MONO1_PER_QUALI, SEASON_WORKWISH_FIELDKEY, STAFF_FIELDKEY,
 )
 from .fields import (
     ActorChoiceField, BSAvailabilityRadioSelect, BSChoiceRadioSelect, HelpersChoiceField, LeaderChoiceField,
@@ -320,6 +320,11 @@ class SeasonAvailabilityForm(forms.Form):
         if self.potential_helpers:
             for helper_category, helpers in self.potential_helpers:
                 for helper in helpers:
+                    workwishkey = SEASON_WORKWISH_FIELDKEY.format(hpk=helper.pk)
+                    self.fields[workwishkey] = forms.IntegerField(
+                        required=False, initial=self.initial[workwishkey], min_value=0,
+                    )
+
                     for session in self.season.sessions_with_qualifs:
                         availkey = AVAILABILITY_FIELDKEY.format(hpk=helper.pk,
                                                                 spk=session.pk)
