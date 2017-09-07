@@ -67,7 +67,7 @@ class QualiMixin(SessionMixin):
         except:
             pass
         try:
-            context['season'] = Season.objects.get(pk=self.get_season_pk())
+            context['season'] = self.season
         except:
             pass
         return context

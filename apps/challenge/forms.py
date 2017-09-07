@@ -167,7 +167,15 @@ class QualificationForm(forms.ModelForm):
         kwargs.pop('cantons', None)
         super(QualificationForm, self).__init__(*args, **kwargs)
         other_qualifs = session.qualifications.exclude(pk=self.instance.pk)
-        staff_pks = session.chosen_staff.values_list('helper_id', flat=True)
+        # Construct chosen_as dict of arrays
+        staff_pks = []
+        chosens = {}
+        for avail in session.chosen_staff.all():
+            if avail.chosen_as not in chosens:
+                chosens[avail.chosen_as] = []
+            chosens[avail.chosen_as].append(avail.helper_id)
+            staff_pks.append(avail.helper_id)
+
         available_staff = (
             get_user_model().objects.filter(pk__in=staff_pks)
             .exclude(
@@ -175,12 +183,11 @@ class QualificationForm(forms.ModelForm):
                 Q(qualifs_mon1__in=other_qualifs) |
                 Q(qualifs_actor__in=other_qualifs)
             )
-        )
+        ).prefetch_related('profile')
         self.fields['leader'] = LeaderChoiceField(
             label=_('Moniteur 2'),
             queryset=available_staff.filter(
-                availabilities__session=session,
-                availabilities__chosen_as__in=[CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY],
+                pk__in=chosens.get(CHOSEN_AS_LEADER, []) + chosens.get(CHOSEN_AS_LEGACY, []),
                 profile__formation=FORMATION_M2,
             ),
             required=False,
@@ -189,8 +196,7 @@ class QualificationForm(forms.ModelForm):
         self.fields['helpers'] = HelpersChoiceField(
             label=_('Moniteurs 1'),
             queryset=available_staff.filter(
-                availabilities__session=session,
-                availabilities__chosen_as__in=[CHOSEN_AS_HELPER, CHOSEN_AS_LEGACY],
+                pk__in=chosens.get(CHOSEN_AS_HELPER, []) + chosens.get(CHOSEN_AS_LEGACY, []),
                 profile__formation__in=FORMATION_KEYS
             ),
             required=False,
@@ -199,9 +205,8 @@ class QualificationForm(forms.ModelForm):
         self.fields['actor'] = ActorChoiceField(
             label=_('Intervenant'),
             queryset=available_staff.filter(
-                availabilities__session=session,
-                availabilities__chosen_as__in=[CHOSEN_AS_ACTOR, CHOSEN_AS_LEGACY],
-                profile__actor_for__isnull=True
+                pk__in=chosens.get(CHOSEN_AS_ACTOR, []) + chosens.get(CHOSEN_AS_LEGACY, []),
+                profile__actor_for__isnull=False
             ),
             required=False,
             session=session,
