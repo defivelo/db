@@ -37,6 +37,7 @@ from apps.common import DV_LANGUAGES_WITH_DEFAULT, DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.roles import user_cantons
 
+from .. import FORMATION_KEYS
 from ..export import UserResource
 from ..models import FORMATION_CHOICES, USERSTATUS_ACTIVE, USERSTATUS_CHOICES, USERSTATUS_RESERVE
 from .mixins import ProfileMixin, UserSelfAccessMixin
@@ -256,7 +257,7 @@ class HelpersList(UserDetailedList):
     def get_queryset(self):
         return (
             super(HelpersList, self).get_queryset()
-            .filter(profile__formation__in=['M1', 'M2'])
+            .filter(profile__formation__in=FORMATION_KEYS)
         )
 
 

@@ -48,7 +48,7 @@ from apps.common import (
 from apps.common.models import Address
 from defivelo.roles import has_permission, user_cantons
 
-from . import FORMATION_CHOICES, FORMATION_KEYS, FORMATION_M1, FORMATION_M2, get_new_username  # NOQA
+from . import FORMATION_CHOICES, formation_short, get_new_username
 
 USERSTATUS_UNDEF = 0
 USERSTATUS_ACTIVE = 10
@@ -324,13 +324,7 @@ class UserProfile(Address, models.Model):
         return ''
 
     def formation_icon(self):
-        if self.formation == FORMATION_M1:
-            # Translators: FORMATION_M1 - Moniteur 1
-            return _('M1')
-        elif self.formation == FORMATION_M2:
-            # Translators: FORMATION_M2 - Moniteur 2
-            return _('M2')
-        return ''
+        return formation_short(self.formation)
 
     @cached_property
     def actor(self):

@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from apps.user.models import FORMATION_M1
+from apps.user import FORMATION_M1, FORMATION_M2, formation_short
 
 from . import (
     CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY, CHOSEN_AS_NOT, CHOSEN_AS_REPLACEMENT,
@@ -45,10 +45,10 @@ class BSChoiceRadioSelect(forms.RadioSelect):
         for optgroup in context['widget']['optgroups']:
             (group, options, index) = optgroup
             if options[0]['value'] == CHOSEN_AS_LEADER:
-                options[0]['text'] = _('M2')
+                options[0]['text'] = formation_short(FORMATION_M2)
                 options[0]['class'] = 'success'
             elif options[0]['value'] == CHOSEN_AS_HELPER:
-                options[0]['text'] = _('M1')
+                options[0]['text'] = formation_short(FORMATION_M1)
                 options[0]['class'] = 'success'
             elif options[0]['value'] == CHOSEN_AS_REPLACEMENT:
                 options[0]['text'] = _('S')

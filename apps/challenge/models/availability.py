@@ -25,6 +25,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from apps.common import STDGLYPHICON
+from apps.user import FORMATION_M1, FORMATION_M2, formation_short
 
 from .. import (
     CHOICE_CHOICES, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY, CHOSEN_AS_NOT,
@@ -85,10 +86,10 @@ class HelperSessionAvailability(models.Model):
     def chosen_as_icon(self):
         if self.chosen_as == CHOSEN_AS_HELPER:
             # Translators: FORMATION_M1 - Moniteur 1
-            return _('M1')
+            return formation_short(FORMATION_M1)
         if self.chosen_as == CHOSEN_AS_LEADER:
             # Translators: FORMATION_M2 - Moniteur 2
-            return _('M2')
+            return formation_short(FORMATION_M2)
         if self.chosen_as == CHOSEN_AS_REPLACEMENT:
             # Translators: Moniteur de secours
             return _('S')

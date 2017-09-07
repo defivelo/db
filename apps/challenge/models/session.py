@@ -30,6 +30,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.common.models import Address
 from apps.orga.models import ORGASTATUS_ACTIVE, Organization
+from apps.user import FORMATION_KEYS, FORMATION_M2
 
 from .. import CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_NOT, MAX_MONO1_PER_QUALI
 
@@ -159,14 +160,14 @@ class Session(Address, models.Model):
         return (
             self.chosen_staff
             .filter(chosen_as__in=[CHOSEN_AS_HELPER, CHOSEN_AS_LEADER],
-                    helper__profile__formation__in=['M1', 'M2'])
+                    helper__profile__formation__in=FORMATION_KEYS)
             .order_by('-helper__profile__formation',
                       'helper__first_name',
                       'helper__last_name')
         )
 
     def chosen_helpers_M2(self):
-        return self.chosen_helpers().filter(helper__profile__formation='M2')
+        return self.chosen_helpers().filter(helper__profile__formation=FORMATION_M2)
 
     def helper_needs(self):
         # Struct with 0:0, 1:needs in helper_formation 1, same for 2

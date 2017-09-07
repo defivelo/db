@@ -38,7 +38,8 @@ from tablib import Dataset
 
 from apps.common import DV_STATES, MULTISELECTFIELD_REGEXP
 from apps.common.views import ExportMixin
-from apps.user.models import FORMATION_M2, USERSTATUS_DELETED
+from apps.user import FORMATION_KEYS, FORMATION_M1, FORMATION_M2, formation_short
+from apps.user.models import USERSTATUS_DELETED
 from apps.user.views import ActorsList, HelpersList
 from defivelo.roles import has_permission, user_cantons
 from defivelo.views import MenuView
@@ -181,8 +182,8 @@ class SeasonAvailabilityMixin(SeasonMixin):
         qs = self.potential_helpers_qs(qs)
         all_helpers = qs.order_by('first_name', 'last_name')
         return (
-            (_('Moniteurs 2'), all_helpers.filter(profile__formation='M2')),
-            (_('Moniteurs 1'), all_helpers.filter(profile__formation='M1')),
+            (_('Moniteurs 2'), all_helpers.filter(profile__formation=FORMATION_M2)),
+            (_('Moniteurs 1'), all_helpers.filter(profile__formation=FORMATION_M1)),
             (_('Intervenants'), all_helpers.filter(profile__formation='').exclude(
                 profile__actor_for__isnull=True,
             )),
@@ -213,7 +214,7 @@ class SeasonAvailabilityMixin(SeasonMixin):
             # Check that the request user is alone in the potential_helpers
             (
                 self.potential_helpers_qs().filter(
-                    Q(profile__formation__in=['M1', 'M2']) |
+                    Q(profile__formation__in=FORMATION_KEYS) |
                     Q(profile__actor_for__isnull=False)
                 ).filter(pk=request.user.pk).exists() and
                 self.season and self.season.staff_can_update_availability
@@ -507,12 +508,10 @@ class SeasonPlanningExportView(ExportMixin, SeasonAvailabilityMixin,
                 else:
                     for quali in session.qualifications.all():
                         if user == quali.leader:
-                            # Translators: Nom court pour 'Moniteur 2'
-                            label = u('M2')
+                            label = formation_short(FORMATION_M2, True)
                             break
                         elif user in quali.helpers.all():
-                            # Translators: Nom court pour 'Moniteur 1'
-                            label = u('M1')
+                            label = formation_short(FORMATION_M1, True)
                             break
                         elif user == quali.actor:
                             # Translators: Nom court pour 'Intervenant'

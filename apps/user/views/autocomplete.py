@@ -26,7 +26,8 @@ from six import get_unbound_function
 from apps.challenge import MAX_MONO1_PER_QUALI
 from defivelo.roles import has_permission
 
-from ..models import FORMATION_KEYS, FORMATION_M2, USERSTATUS_DELETED
+from .. import FORMATION_KEYS, FORMATION_M2
+from ..models import USERSTATUS_DELETED
 from .mixins import ProfileMixin
 from .standard import UserProfileFilterSet
 
