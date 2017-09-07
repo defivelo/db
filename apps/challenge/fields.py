@@ -86,6 +86,8 @@ class SessionChoiceField(object):
         return super(SessionChoiceField, self).__init__(*args, **kwargs)
 
     def get_chosen_as(self, user):
+        if not self.session:
+            return
         try:
             return user.availabilities.get(session=self.session).chosen_as
         except HelperSessionAvailability.DoesNotExist:

@@ -26,10 +26,8 @@ from django.test import TestCase
 from rolepermissions.roles import get_user_roles
 
 from apps.common import DV_STATES
-from apps.user.models import (
-    BAGSTATUS_LOAN, BAGSTATUS_PAID, FORMATION_M1, FORMATION_M2, STD_PROFILE_FIELDS, USERSTATUS_ACTIVE,
-    USERSTATUS_INACTIVE,
-)
+from apps.user import FORMATION_M1, FORMATION_M2
+from apps.user.models import BAGSTATUS_LOAN, BAGSTATUS_PAID, STD_PROFILE_FIELDS, USERSTATUS_ACTIVE, USERSTATUS_INACTIVE
 from apps.user.tests.factories import UserFactory
 from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient, SuperUserAuthClient
 

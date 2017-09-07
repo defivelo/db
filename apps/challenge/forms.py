@@ -320,8 +320,12 @@ class SeasonAvailabilityForm(forms.Form):
             for helper_category, helpers in self.potential_helpers:
                 for helper in helpers:
                     workwishkey = SEASON_WORKWISH_FIELDKEY.format(hpk=helper.pk)
+                    try:
+                        fieldinit = self.initial[workwishkey]
+                    except KeyError:
+                        fieldinit = 0
                     self.fields[workwishkey] = forms.IntegerField(
-                        required=False, initial=self.initial[workwishkey], min_value=0,
+                        required=False, initial=fieldinit, min_value=0,
                     )
 
                     for session in self.season.sessions_with_qualifs:
@@ -331,7 +335,7 @@ class SeasonAvailabilityForm(forms.Form):
                                                          spk=session.pk)
                         try:
                             fieldinit = self.initial[availkey]
-                        except:
+                        except KeyError:
                             fieldinit = ''
                         try:
                             forbid_absence = self.initial[staffkey]

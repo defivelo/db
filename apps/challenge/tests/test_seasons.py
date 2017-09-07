@@ -23,7 +23,7 @@ from django.test import TestCase
 from apps.common import DV_SEASON_SPRING, DV_SEASON_STATE_ARCHIVED, DV_SEASON_STATE_OPEN, DV_SEASON_STATES, DV_STATES
 from apps.common.forms import SWISS_DATE_INPUT_FORMAT
 from apps.orga.tests.factories import OrganizationFactory
-from apps.user.models import FORMATION_M1
+from apps.user import FORMATION_M1
 from apps.user.tests.factories import UserFactory
 from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient
 
