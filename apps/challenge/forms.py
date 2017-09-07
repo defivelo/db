@@ -180,28 +180,31 @@ class QualificationForm(forms.ModelForm):
             label=_('Moniteur 2'),
             queryset=available_staff.filter(
                 availabilities__session=session,
-                availabilities__chosen_as=CHOSEN_AS_LEADER,
+                availabilities__chosen_as__in=[CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY],
                 profile__formation=FORMATION_M2,
             ),
             required=False,
+            session=session,
         )
         self.fields['helpers'] = HelpersChoiceField(
             label=_('Moniteurs 1'),
             queryset=available_staff.filter(
                 availabilities__session=session,
-                availabilities__chosen_as=CHOSEN_AS_HELPER,
+                availabilities__chosen_as__in=[CHOSEN_AS_HELPER, CHOSEN_AS_LEGACY],
                 profile__formation__in=FORMATION_KEYS
             ),
             required=False,
+            session=session,
         )
         self.fields['actor'] = ActorChoiceField(
             label=_('Intervenant'),
             queryset=available_staff.filter(
                 availabilities__session=session,
-                availabilities__chosen_as=CHOSEN_AS_ACTOR,
+                availabilities__chosen_as__in=[CHOSEN_AS_ACTOR, CHOSEN_AS_LEGACY],
                 profile__actor_for__isnull=True
             ),
-            required=False
+            required=False,
+            session=session,
         )
 
     def clean_helpers(self):
