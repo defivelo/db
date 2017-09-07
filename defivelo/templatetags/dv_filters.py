@@ -254,8 +254,8 @@ def chosen_staff_for_season(struct, user):
                 if staffkey in struct:
                     if struct[staffkey] != CHOSEN_AS_NOT:
                         accu_in_sess += 1
-    if accu_in_qualif != accu_in_sess:
-        return '%s/%s' % (accu_in_qualif, accu_in_sess)
+    #  if accu_in_qualif != accu_in_sess:
+        #  return '%s/%s' % (accu_in_qualif, accu_in_sess)
     return accu_in_sess
 
 
