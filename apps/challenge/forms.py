@@ -31,10 +31,11 @@ from localflavor.ch.forms import CHPhoneNumberField, CHStateSelect
 from apps.common.forms import SwissDateField, SwissTimeField, UserAutoComplete
 from apps.user import STATE_CHOICES_WITH_DEFAULT
 from apps.user.models import FORMATION_KEYS, FORMATION_M2, USERSTATUS_DELETED
+from bootstrap3_datetime.widgets import DateTimePicker
 
 from . import (
     AVAILABILITY_FIELDKEY, CHOICE_CHOICES, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY,
-    CHOSEN_AS_NOT, MAX_MONO1_PER_QUALI, STAFF_FIELDKEY,
+    CHOSEN_AS_NOT, CHOSEN_AS_REPLACEMENT, MAX_MONO1_PER_QUALI, STAFF_FIELDKEY,
 )
 from .fields import (
     ActorChoiceField, BSAvailabilityRadioSelect, BSChoiceRadioSelect, HelpersChoiceField, LeaderChoiceField,
@@ -176,6 +177,12 @@ class QualificationForm(forms.ModelForm):
                 chosens[avail.chosen_as] = []
             chosens[avail.chosen_as].append(avail.helper_id)
 
+        legacys = chosens.get(CHOSEN_AS_LEGACY, [])
+        replacements = chosens.get(CHOSEN_AS_REPLACEMENT, [])
+        leaders = legacys + replacements + chosens.get(CHOSEN_AS_LEADER, [])
+        helpers = legacys + replacements + chosens.get(CHOSEN_AS_HELPER, [])
+        actors = legacys + replacements + chosens.get(CHOSEN_AS_ACTOR, [])
+
         available_staff = (
             get_user_model().objects
             .exclude(
@@ -187,7 +194,7 @@ class QualificationForm(forms.ModelForm):
         self.fields['leader'] = LeaderChoiceField(
             label=_('Moniteur 2'),
             queryset=available_staff.filter(
-                pk__in=chosens.get(CHOSEN_AS_LEADER, []) + chosens.get(CHOSEN_AS_LEGACY, []),
+                pk__in=leaders,
                 profile__formation=FORMATION_M2,
             ),
             required=False,
@@ -196,7 +203,7 @@ class QualificationForm(forms.ModelForm):
         self.fields['helpers'] = HelpersChoiceField(
             label=_('Moniteurs 1'),
             queryset=available_staff.filter(
-                pk__in=chosens.get(CHOSEN_AS_HELPER, []) + chosens.get(CHOSEN_AS_LEGACY, []),
+                pk__in=helpers,
                 profile__formation__in=FORMATION_KEYS
             ),
             required=False,
@@ -205,7 +212,7 @@ class QualificationForm(forms.ModelForm):
         self.fields['actor'] = ActorChoiceField(
             label=_('Intervenant'),
             queryset=available_staff.filter(
-                pk__in=chosens.get(CHOSEN_AS_ACTOR, []) + chosens.get(CHOSEN_AS_LEGACY, []),
+                pk__in=actors,
                 profile__actor_for__isnull=False
             ),
             required=False,
@@ -362,6 +369,7 @@ class SeasonStaffChoiceForm(forms.Form):
                             available_choices.append(CHOSEN_AS_ACTOR)
                         if helper.profile.formation:
                             available_choices.append(CHOSEN_AS_HELPER)
+                            available_choices.append(CHOSEN_AS_REPLACEMENT)
                         if helper.profile.formation == FORMATION_M2:
                             available_choices.append(CHOSEN_AS_LEADER)
                         self.fields[staffkey] = forms.ChoiceField(

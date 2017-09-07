@@ -22,7 +22,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.user.models import FORMATION_M1
 
-from . import CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY, CHOSEN_AS_NOT
+from . import (
+    CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY, CHOSEN_AS_NOT, CHOSEN_AS_REPLACEMENT,
+)
 from .models.availability import HelperSessionAvailability
 
 
@@ -48,6 +50,9 @@ class BSChoiceRadioSelect(forms.RadioSelect):
             elif options[0]['value'] == CHOSEN_AS_HELPER:
                 options[0]['text'] = _('M1')
                 options[0]['class'] = 'success'
+            elif options[0]['value'] == CHOSEN_AS_REPLACEMENT:
+                options[0]['text'] = _('S')
+                options[0]['class'] = 'warning'
             elif options[0]['value'] == CHOSEN_AS_ACTOR:
                 options[0]['glyphicon'] = 'sunglasses'
                 options[0]['class'] = 'success'
@@ -86,26 +91,32 @@ class SessionChoiceField(object):
         except HelperSessionAvailability.DoesNotExist:
             pass
 
+    def if_replacement(self, user):
+        return ' (%s)' % _('S') if self.get_chosen_as(user) == CHOSEN_AS_REPLACEMENT else ''
+
 
 class LeaderChoiceField(SessionChoiceField, forms.ModelChoiceField):
     def label_from_instance(self, obj):
-        return obj.get_full_name()
+        return '%s%s' % (obj.get_full_name(), self.if_replacement(obj))
 
 
 class HelpersChoiceField(SessionChoiceField, forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
-        return '%s%s' % (
+        return '%s%s%s' % (
             obj.get_full_name(),
             (
                 ' (%s)' % obj.profile.formation
                 if obj.profile.formation not in ['', FORMATION_M1]
                 else ''
             ),
+            self.if_replacement(obj)
         )
 
 
 class ActorChoiceField(SessionChoiceField, forms.ModelChoiceField):
     def label_from_instance(self, obj):
-        return "{name} ({actor_for})".format(
+        return "{name} ({actor_for}){replacement}".format(
              name=obj.get_full_name(),
-             actor_for=obj.profile.actor_inline)
+             actor_for=obj.profile.actor_inline,
+             replacement=self.if_replacement(obj),
+        )

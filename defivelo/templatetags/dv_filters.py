@@ -30,7 +30,8 @@ from rolepermissions.templatetags.permission_tags import can_template_tag
 
 from apps.challenge import (
     AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX, CHOICE_FIELDKEY, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER,
-    CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY, CHOSEN_AS_NOT, STAFF_FIELDKEY, STAFF_FIELDKEY_HELPER_PREFIX,
+    CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY, CHOSEN_AS_NOT, CHOSEN_AS_REPLACEMENT, STAFF_FIELDKEY,
+    STAFF_FIELDKEY_HELPER_PREFIX,
 )
 from apps.common import DV_STATE_CHOICES, DV_STATES_LONGER_ABBREVIATIONS, STDGLYPHICON
 from defivelo.roles import user_cantons
@@ -181,6 +182,9 @@ def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=
                         elif struct[staffkey] == CHOSEN_AS_ACTOR:
                             avail_verb = _('Intervenant')
                             avail_label = 'sunglasses'
+                        elif struct[staffkey] == CHOSEN_AS_REPLACEMENT:
+                            avail_verb = _('Moniteur de secours')
+                            avail_content = _('S')
                         elif struct[staffkey] == CHOSEN_AS_LEGACY:
                             avail_verb = _('Choisi')
                             avail_label = 'check'

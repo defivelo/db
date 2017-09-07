@@ -34,10 +34,12 @@ CHOSEN_AS_LEGACY = 1
 CHOSEN_AS_ACTOR = 2
 CHOSEN_AS_HELPER = 3
 CHOSEN_AS_LEADER = 4
+CHOSEN_AS_REPLACEMENT = 5
 CHOICE_CHOICES = (
     (CHOSEN_AS_NOT, _('Pas choisi')),
     (CHOSEN_AS_LEGACY, _('Choisi')),  # À ne pas réutiliser
     (CHOSEN_AS_ACTOR, _('Comme intervenant')),
+    (CHOSEN_AS_REPLACEMENT, _('Moniteur de Secours')),
     (CHOSEN_AS_HELPER, _('Moniteur 1')),
     (CHOSEN_AS_LEADER, _('Moniteur 2')),
 )

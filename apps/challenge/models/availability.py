@@ -26,7 +26,10 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.common import STDGLYPHICON
 
-from .. import CHOICE_CHOICES, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY, CHOSEN_AS_NOT
+from .. import (
+    CHOICE_CHOICES, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY, CHOSEN_AS_NOT,
+    CHOSEN_AS_REPLACEMENT,
+)
 from .session import Session
 
 
@@ -64,6 +67,9 @@ class HelperSessionAvailability(models.Model):
         if self.chosen_as == CHOSEN_AS_LEADER:
             # Translators: FORMATION_M2 - Moniteur 2
             return _('M2')
+        if self.chosen_as == CHOSEN_AS_REPLACEMENT:
+            # Translators: Moniteur de secours
+            return _('S')
         if self.chosen_as == CHOSEN_AS_ACTOR:
             return mark_safe(STDGLYPHICON.format(
                 icon='sunglasses', title=_('Intervenant')))
@@ -75,6 +81,8 @@ class HelperSessionAvailability(models.Model):
             return _('Moniteur 1')
         if self.chosen_as == CHOSEN_AS_LEADER:
             return _('Moniteur 2')
+        if self.chosen_as == CHOSEN_AS_REPLACEMENT:
+            return _('Moniteur de secours')
         if self.chosen_as == CHOSEN_AS_ACTOR:
             return _('Intervenant')
         if self.chosen_as == CHOSEN_AS_LEGACY:
