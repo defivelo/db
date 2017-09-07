@@ -21,6 +21,7 @@ from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 from django.template.defaultfilters import date
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
@@ -135,8 +136,8 @@ class Session(Address, models.Model):
         return (
             self.availability_statuses
             .exclude(
-                availability='n',
-                chosen_as=CHOSEN_AS_NOT,
+                Q(availability='n') |
+                Q(chosen_as=CHOSEN_AS_NOT),
             )
             .prefetch_related(
                 'helper',
@@ -145,7 +146,8 @@ class Session(Address, models.Model):
             )
             .order_by(
                 '-chosen_as',
-                '-availability'
+                '-availability',
+                '-helper__profile__formation'
             )
         )
 
