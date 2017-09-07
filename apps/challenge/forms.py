@@ -31,7 +31,6 @@ from localflavor.ch.forms import CHPhoneNumberField, CHStateSelect
 from apps.common.forms import SwissDateField, SwissTimeField, UserAutoComplete
 from apps.user import FORMATION_KEYS, FORMATION_M2, STATE_CHOICES_WITH_DEFAULT
 from apps.user.models import USERSTATUS_DELETED
-from bootstrap3_datetime.widgets import DateTimePicker
 
 from . import (
     AVAILABILITY_FIELDKEY, CHOICE_CHOICES, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY,

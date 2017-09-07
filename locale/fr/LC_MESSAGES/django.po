@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-07 14:43+0200\n"
+"POT-Creation-Date: 2017-09-07 14:51+0200\n"
 "PO-Revision-Date: 2015-10-08 12:11+0100\n"
 "Last-Translator: Didier Raboud <me+defivelo@odyx.org>\n"
 "Language: fr\n"
@@ -52,7 +52,7 @@ msgstr ""
 msgid "S"
 msgstr ""
 
-#: apps/challenge/forms.py:61 apps/challenge/models/season.py:45
+#: apps/challenge/forms.py:61 apps/challenge/models/season.py:44
 msgid "Année"
 msgstr ""
 
@@ -158,8 +158,8 @@ msgstr ""
 msgid "Disponibilités pour :"
 msgstr ""
 
-#: apps/challenge/models/availability.py:41 apps/challenge/models/season.py:46
-#: apps/challenge/models/season.py:61 apps/challenge/views/season.py:324
+#: apps/challenge/models/availability.py:41 apps/challenge/models/season.py:45
+#: apps/challenge/models/season.py:60 apps/challenge/views/season.py:324
 msgid "Saison"
 msgstr ""
 
@@ -299,32 +299,32 @@ msgstr ""
 msgid "Qualifs"
 msgstr ""
 
-#: apps/challenge/models/season.py:49 apps/orga/views.py:82
+#: apps/challenge/models/season.py:48 apps/orga/views.py:82
 #: apps/user/templates/auth/user_filter.html:56
 #: apps/user/views/standard.py:183
 msgid "Cantons"
 msgstr ""
 
-#: apps/challenge/models/season.py:51
+#: apps/challenge/models/season.py:50
 msgid "Chargé de projet"
 msgstr ""
 
-#: apps/challenge/models/season.py:58
+#: apps/challenge/models/season.py:57
 #: apps/orga/templates/orga/organization_detail.html:56
 #: apps/user/templates/auth/user_detail.html:137
 msgid "État"
 msgstr ""
 
-#: apps/challenge/models/season.py:62 defivelo/templates/header.html:24
+#: apps/challenge/models/season.py:61 defivelo/templates/header.html:24
 msgid "Saisons"
 msgstr ""
 
-#: apps/challenge/models/season.py:161
+#: apps/challenge/models/season.py:160
 #, python-brace-format
 msgid "{saison} {annee}"
 msgstr ""
 
-#: apps/challenge/models/season.py:167
+#: apps/challenge/models/season.py:166
 #, python-brace-format
 msgid "{cantons} - {moment}"
 msgstr ""
