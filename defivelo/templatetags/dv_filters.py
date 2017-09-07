@@ -34,7 +34,7 @@ from apps.challenge import (
     STAFF_FIELDKEY_HELPER_PREFIX,
 )
 from apps.common import DV_STATE_CHOICES, DV_STATES_LONGER_ABBREVIATIONS, STDGLYPHICON
-from apps.user import FORMATION_M2, formation_short
+from apps.user import FORMATION_M1, FORMATION_M2, formation_short
 from defivelo.roles import user_cantons
 
 register = template.Library()
@@ -182,7 +182,7 @@ def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=
                             avail_content = formation_short(FORMATION_M2)
                         elif struct[staffkey] == CHOSEN_AS_HELPER:
                             avail_verb = _('Moniteur 1')
-                            avail_content = formation_short(FORMATION_M2)
+                            avail_content = formation_short(FORMATION_M1)
                         elif struct[staffkey] == CHOSEN_AS_ACTOR:
                             avail_verb = _('Intervenant')
                             avail_label = 'sunglasses'
