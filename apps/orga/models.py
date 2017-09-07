@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
@@ -57,7 +58,7 @@ class Organization(Address, models.Model):
         default=ORGASTATUS_ACTIVE)
     comments = models.TextField(_('Remarques'), blank=True)
 
-    @property
+    @cached_property
     def abbr_verb(self):
         return mark_safe(
             '<abbr title="{name}">{abbr}</abbr>'.format(
@@ -65,7 +66,11 @@ class Organization(Address, models.Model):
                 abbr=self.abbr)
             )
 
-    @property
+    @cached_property
+    def ifabbr(self):
+        return self.abbr_verb if self.abbr else self.name
+
+    @cached_property
     def status_full(self):
         if self.status:
             return dict(ORGASTATUS_CHOICES)[self.status]
@@ -100,7 +105,7 @@ class Organization(Address, models.Model):
 
     def shortname(self):
         return "{abbr}{city}".format(
-            abbr=self.abbr_verb if self.abbr else self.name,
+            abbr=self.ifabbr,
             city=' (%s)' % self.address_city if self.address_city else '')
 
     class Meta:

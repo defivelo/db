@@ -17,15 +17,27 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+from django.utils.translation import ugettext_lazy as _
+
 AVAILABILITY_FIELDKEY_HELPER_PREFIX = 'avail-h{hpk}-'
 STAFF_FIELDKEY_HELPER_PREFIX = 'staff-h{hpk}-'
+CHOICE_FIELDKEY_HELPER_PREFIX = 'choice-h{hpk}-'
 
 AVAILABILITY_FIELDKEY = AVAILABILITY_FIELDKEY_HELPER_PREFIX + 's{spk}'
 STAFF_FIELDKEY = STAFF_FIELDKEY_HELPER_PREFIX + 's{spk}'
+CHOICE_FIELDKEY = CHOICE_FIELDKEY_HELPER_PREFIX + 's{spk}'
 
 MAX_MONO1_PER_QUALI = 2
 
-SHORTCODE_MON1 = '1'
-SHORTCODE_MON2 = '2'
-SHORTCODE_ACTOR = 'A'
-SHORTCODE_SELECTED = 'x'
+CHOSEN_AS_NOT = 0
+CHOSEN_AS_LEGACY = 1
+CHOSEN_AS_ACTOR = 2
+CHOSEN_AS_HELPER = 3
+CHOSEN_AS_LEADER = 4
+CHOICE_CHOICES = (
+    (CHOSEN_AS_NOT, _('Pas choisi')),
+    (CHOSEN_AS_LEGACY, _('Choisi')),  # À ne pas réutiliser
+    (CHOSEN_AS_ACTOR, _('Comme intervenant')),
+    (CHOSEN_AS_HELPER, _('Moniteur 1')),
+    (CHOSEN_AS_LEADER, _('Moniteur 2')),
+)

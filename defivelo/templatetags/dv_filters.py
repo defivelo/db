@@ -29,10 +29,10 @@ from memoize import memoize
 from rolepermissions.templatetags.permission_tags import can_template_tag
 
 from apps.challenge import (
-    AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX, SHORTCODE_ACTOR, SHORTCODE_MON1, SHORTCODE_MON2,
-    SHORTCODE_SELECTED, STAFF_FIELDKEY, STAFF_FIELDKEY_HELPER_PREFIX,
+    AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX, CHOICE_FIELDKEY, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER,
+    CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY, CHOSEN_AS_NOT, STAFF_FIELDKEY, STAFF_FIELDKEY_HELPER_PREFIX,
 )
-from apps.common import DV_STATE_CHOICES, DV_STATES_LONGER_ABBREVIATIONS
+from apps.common import DV_STATE_CHOICES, DV_STATES_LONGER_ABBREVIATIONS, STDGLYPHICON
 from defivelo.roles import user_cantons
 
 register = template.Library()
@@ -145,6 +145,7 @@ def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=
             avail_label = ''  # Bootstrap glyphicon name
             avail_class = 'active'  # Bootstrap array cell class
             avail_content = avail_forced_content
+            locked = False
             if availability == 'i':
                 # If needed
                 avail_verb = _('Si nécessaire')
@@ -160,45 +161,50 @@ def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=
                 avail_class = 'success'
 
             if availability in ['y', 'i']:
+                thissesskey = int(search(r'-s(\d+)', key).group(1))
+                choicekey = CHOICE_FIELDKEY.format(hpk=user.pk,
+                                                   spk=thissesskey)
+                locked = choicekey in struct and struct[choicekey]
+
                 # Si le choix des moniteurs est connu, remplace le label et
                 # la version verbeuse par l'état du choix
                 if not sesskey:
-                    thissesskey = int(search(r'-s(\d+)', key).group(1))
                     staffkey = STAFF_FIELDKEY.format(hpk=user.pk,
                                                      spk=thissesskey)
                     if staffkey in struct:
-                        if struct[staffkey] == SHORTCODE_MON2:
+                        if struct[staffkey] == CHOSEN_AS_LEADER:
                             avail_verb = _('Moniteur 2')
                             avail_content = _('M2')
-                        elif struct[staffkey] == SHORTCODE_MON1:
+                        elif struct[staffkey] == CHOSEN_AS_HELPER:
                             avail_verb = _('Moniteur 1')
                             avail_content = _('M1')
-                        elif struct[staffkey] == SHORTCODE_ACTOR:
+                        elif struct[staffkey] == CHOSEN_AS_ACTOR:
                             avail_verb = _('Intervenant')
                             avail_label = 'sunglasses'
-                        elif struct[staffkey] == SHORTCODE_SELECTED:
+                        elif struct[staffkey] == CHOSEN_AS_LEGACY:
                             avail_verb = _('Choisi')
                             avail_label = 'check'
                         else:
                             avail_verb = _('Pas choisi')
                             avail_label = 'unchecked'
+
             elif onlyavail:
                 avail_content = ' '
 
             output += (
-                '<td style="vertical-align: middle;"'
-                '    class="{avail_class}"{avail_verbose}>'
+                '<td class="{avail_class}"{avail_verbose}>'
                 '<!-- {key} -->{avail_label}'
                 '</td>'
             ).format(
-                avail_class=avail_class,
+                avail_class='info' if locked else avail_class,
                 avail_verbose=' title="%s"' % avail_verb if avail_verb else '',
                 avail_label=(
                     avail_content if avail_content else
-                    ('<span class="glyphicon glyphicon-%s"></span> '
-                        % avail_label
-                        if avail_label else '')
-                    ),
+                    (STDGLYPHICON.format(
+                        icon=avail_label,
+                        title=avail_verb if avail_verb else ''
+                    ) if avail_label else '')
+                ),
                 key=key,
             )
     return mark_safe(output)
@@ -232,17 +238,25 @@ def userstaffsessions(form, user):
 def chosen_staff_for_season(struct, user):
     if not struct or not user:
         return ''
-    accu = 0
+    accu_in_qualif = 0
+    accu_in_sess = 0
     for key in struct:
         if AVAILABILITY_FIELDKEY_HELPER_PREFIX.format(hpk=user.pk) in key:
             if struct[key] in ['y', 'i']:
                 thissesskey = int(search(r'-s(\d+)', key).group(1))
+                choicekey = CHOICE_FIELDKEY.format(hpk=user.pk,
+                                                   spk=thissesskey)
+                if choicekey in struct and struct[choicekey]:
+                    accu_in_qualif += 1
+
                 staffkey = STAFF_FIELDKEY.format(hpk=user.pk,
                                                  spk=thissesskey)
                 if staffkey in struct:
-                    if struct[staffkey] not in ['', SHORTCODE_SELECTED]:
-                        accu += 1
-    return accu
+                    if struct[staffkey] != CHOSEN_AS_NOT:
+                        accu_in_sess += 1
+    if accu_in_qualif != accu_in_sess:
+        return '%s/%s' % (accu_in_qualif, accu_in_sess)
+    return accu_in_sess
 
 
 @register.filter

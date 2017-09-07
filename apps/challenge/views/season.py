@@ -43,7 +43,7 @@ from apps.user.views import ActorsList, HelpersList
 from defivelo.roles import has_permission, user_cantons
 from defivelo.views import MenuView
 
-from .. import AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, STAFF_FIELDKEY
+from .. import AVAILABILITY_FIELDKEY, CHOICE_FIELDKEY, CHOSEN_AS_NOT, MAX_MONO1_PER_QUALI, STAFF_FIELDKEY
 from ..forms import SeasonAvailabilityForm, SeasonForm, SeasonNewHelperAvailabilityForm, SeasonStaffChoiceForm
 from ..models import HelperSessionAvailability, Season
 from ..models.qualification import CATEGORY_CHOICE_A, CATEGORY_CHOICE_B, CATEGORY_CHOICE_C
@@ -67,8 +67,7 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
         return context
 
     def get_form_kwargs(self):
-        form_kwargs = \
-            super(SeasonMixin, self).get_form_kwargs()
+        form_kwargs = super(SeasonMixin, self).get_form_kwargs()
         if has_permission(self.request.user, 'cantons_all'):
             form_kwargs['cantons'] = DV_STATES
         else:
@@ -169,7 +168,10 @@ class SeasonAvailabilityMixin(SeasonMixin):
                 qs = qs.filter(
                     pk=int(resolvermatch.kwargs['helperpk'])
                 )
-        return qs.prefetch_related('profile')
+        return qs.prefetch_related('profile',
+                                   'profile__actor_for',
+                                   'profile__actor_for__translations',
+                                   )
 
     def potential_helpers(self, qs=None):
         qs = self.potential_helpers_qs(qs)
@@ -180,6 +182,26 @@ class SeasonAvailabilityMixin(SeasonMixin):
             (_('Intervenants'), all_helpers.filter(profile__formation='').exclude(
                 profile__actor_for__isnull=True,
             )),
+        )
+
+    def current_availabilities(self):
+        if not hasattr(self, 'object'):
+            self.object = self.get_object()
+        return (
+            HelperSessionAvailability.objects
+            .filter(session__in=self.object.sessions_with_qualifs)
+            .prefetch_related('helper')
+        )
+
+    def current_availabilities_present(self):
+        return self.current_availabilities().exclude(availability='n')
+
+    def available_helpers(self):
+        # Only take available people
+        # Fill in the helpers with the ones we currently have
+        helpers_pks = self.current_availabilities_present().values_list('helper_id', flat=True)
+        return self.potential_helpers(
+            qs=get_user_model().objects.filter(pk__in=helpers_pks)
         )
 
     def dispatch(self, request, *args, **kwargs):
@@ -207,13 +229,6 @@ class SeasonAvailabilityMixin(SeasonMixin):
         else:
             raise PermissionDenied
 
-    def current_availabilities(self):
-        return (
-            HelperSessionAvailability.objects
-            .filter(session__in=self.object.sessions_with_qualifs)
-            .prefetch_related('helper')
-        )
-
     def get_initial(self, all_hsas=None, all_helpers=None):
         initials = OrderedDict()
         if not all_hsas:
@@ -234,17 +249,22 @@ class SeasonAvailabilityMixin(SeasonMixin):
                             hpk=helper.pk, spk=session.pk)
                         staffkey = STAFF_FIELDKEY.format(
                             hpk=helper.pk, spk=session.pk)
+                        choicekey = CHOICE_FIELDKEY.format(
+                            hpk=helper.pk, spk=session.pk)
                         try:
                             hsa = helper_availability[session.id]
                             initials[fieldkey] = hsa.availability
-                            if hsa.chosen:
-                                initials[staffkey] = \
-                                    session.user_assignment(helper)
-                            else:
-                                initials[staffkey] = ''
+                            # Si un choix est fait _dans_ une session (qualif)
+                            initials[staffkey] = session.user_assignment(helper)
+                            initials[choicekey] = True
+                            # Le choix n'est fait qu'au niveau de la session
+                            if not initials[staffkey]:
+                                initials[staffkey] = hsa.chosen_as
+                                initials[choicekey] = False
                         except:
                             initials[fieldkey] = ''
                             initials[staffkey] = ''
+                            initials[choicekey] = ''
             return initials
 
     def get_context_data(self, **kwargs):
@@ -439,8 +459,11 @@ class SeasonPlanningExportView(ExportMixin, SeasonAvailabilityMixin,
                 '%s - %s' % (time(session.begin), time(session.end)),
                 session.n_qualifications,
             ]
-            users_selected_in_session = \
-                session.availability_statuses.filter(chosen=True).values_list('helper', flat=True)
+            users_selected_in_session = (
+                session.availability_statuses
+                .exclude(chosen_as=CHOSEN_AS_NOT)
+                .values_list('helper', flat=True)
+            )
             for user in qs:
                 label = ''
                 if user == session.superleader:
@@ -479,9 +502,9 @@ class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
         hsas = self.current_availabilities()
         if hsas:
             # Fill in the helpers with the ones we currently have
-            helpers = {hsa.helper.pk: hsa.helper.pk for hsa in hsas}
+            helpers_pks = self.current_availabilities_present().values_list('helper_id', flat=True)
             potential_helpers = self.potential_helpers(
-                qs=get_user_model().objects.filter(pk__in=helpers)
+                qs=get_user_model().objects.filter(pk__in=helpers_pks)
             )
 
             context['potential_helpers'] = potential_helpers
@@ -576,18 +599,15 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView,
     form_class = SeasonStaffChoiceForm
     view_is_update = True
 
-    def available_helpers(self):
-        if hasattr(self, 'ahelpers'):
-            return self.ahelpers
-        # Only take available people
-        hsas = self.current_availabilities().exclude(availability='n')
-        if hsas:
-            # Fill in the helpers with the ones we currently have
-            helpers = {hsa.helper.pk: hsa.helper.pk for hsa in hsas}
-            self.ahelpers = self.potential_helpers(
-                qs=get_user_model().objects.filter(pk__in=helpers)
+    def get_initial(self):
+        # Shortcut through giving only the available_helpers
+        return (
+            super(SeasonStaffChoiceUpdateView, self)
+            .get_initial(
+                all_hsas=None,
+                all_helpers=self.available_helpers()
             )
-            return self.ahelpers
+        )
 
     def get_form_kwargs(self):
         form_kwargs = \
@@ -610,18 +630,18 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView,
                 for helper in helpers:
                     fieldkey = STAFF_FIELDKEY.format(hpk=helper.pk,
                                                      spk=session.pk)
-                    try:
+
+                    chosen_as = form.cleaned_data[fieldkey]
+                    if chosen_as:
                         HelperSessionAvailability.objects.filter(
                                 session=session,
                                 helper=helper
-                            ).update(chosen=form.cleaned_data[fieldkey])
-                        if form.cleaned_data[fieldkey]:
-                            session_helpers[helper.pk] = helper
-                        else:
-                            session_non_helpers[helper.pk] = helper
-                    # if the fieldkey's not in cleaned_data, or other reasons
-                    except:
-                        pass
+                            ).update(chosen_as=chosen_as)
+
+                    if form.cleaned_data[fieldkey]:
+                        session_helpers[helper.pk] = helper
+                    else:
+                        session_non_helpers[helper.pk] = helper
 
             # Do a session-wide check across all helpers picked for that
             # session

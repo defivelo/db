@@ -18,6 +18,7 @@
 from __future__ import unicode_literals
 
 from django.core.exceptions import PermissionDenied
+from django.utils.functional import cached_property
 
 from defivelo.roles import user_cantons
 
@@ -27,45 +28,44 @@ from ..models import Season
 class CantonSeasonFormMixin(object):
     allow_season_fetch = False
 
-    @property
+    @cached_property
     def season(self):
-        if not hasattr(self, '_season'):
-            try:
-                seasonpk = int(
-                    self.kwargs['seasonpk'] if 'seasonpk' in self.kwargs
-                    else self.kwargs['pk']
-                )
-                self._season = Season.objects.get(pk=seasonpk)
+        try:
+            seasonpk = int(
+                self.kwargs['seasonpk'] if 'seasonpk' in self.kwargs
+                else self.kwargs['pk']
+            )
+            season = Season.objects.prefetch_related('leader').get(pk=seasonpk)
 
-                # Check that the intersection isn't empty
-                usercantons = user_cantons(self.request.user)
-                if usercantons and not list(
-                        set(usercantons)
-                        .intersection(set(self._season.cantons))
-                ):
-                    # Verify that this state manager can access that canton as mobile
-                    if list(
-                        set(
-                            [self.request.user.profile.affiliation_canton] +
-                            self.request.user.profile.activity_cantons
-                        )
-                        .intersection(set(self._season.cantons))
-                    ) and not self.raise_without_cantons:
-                        raise LookupError
-                    raise PermissionDenied
-            except LookupError:
-                # That user doesn't have allowed seasons
-                if self.allow_season_fetch:
-                    self._season = Season.objects.get(pk=seasonpk)
-                else:
-                    self._season = None
-            except KeyError:
-                # We're looking at a list
-                self._season = None
-            except Season.DoesNotExist:
-                # I can't see it, or it doesn't exist
-                raise ValueError("Can't see season or it doesn't exist")
-        return self._season
+            # Check that the intersection isn't empty
+            usercantons = user_cantons(self.request.user)
+            if usercantons and not list(
+                    set(usercantons)
+                    .intersection(set(season.cantons))
+            ):
+                # Verify that this state manager can access that canton as mobile
+                if list(
+                    set(
+                        [self.request.user.profile.affiliation_canton] +
+                        self.request.user.profile.activity_cantons
+                    )
+                    .intersection(set(season.cantons))
+                ) and not self.raise_without_cantons:
+                    raise LookupError
+                raise PermissionDenied
+        except LookupError:
+            # That user doesn't have allowed seasons
+            if self.allow_season_fetch:
+                season = Season.objects.prefetch_related('leader').get(pk=seasonpk)
+            else:
+                season = None
+        except KeyError:
+            # We're looking at a list
+            season = None
+        except Season.DoesNotExist:
+            # I can't see it, or it doesn't exist
+            raise ValueError("Can't see season or it doesn't exist")
+        return season
 
     def get_form_kwargs(self):
         kwargs = super(CantonSeasonFormMixin, self).get_form_kwargs()

@@ -30,7 +30,7 @@ from django.utils.translation import ugettext_lazy as _
 from apps.common.models import Address
 from apps.orga.models import ORGASTATUS_ACTIVE, Organization
 
-from .. import MAX_MONO1_PER_QUALI, SHORTCODE_ACTOR, SHORTCODE_MON1, SHORTCODE_MON2, SHORTCODE_SELECTED
+from .. import CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_NOT, MAX_MONO1_PER_QUALI
 
 DEFAULT_SESSION_DURATION_HOURS = 3
 DEFAULT_EARLY_MINUTES_FOR_HELPERS_MEETINGS = 60
@@ -134,14 +134,19 @@ class Session(Address, models.Model):
     def chosen_staff(self):
         return (
             self.availability_statuses
-            .filter(chosen=True)
-            .exclude(availability='n')
+            .exclude(
+                availability='n',
+                chosen_as=CHOSEN_AS_NOT,
+            )
             .prefetch_related(
                 'helper',
                 'helper__profile',
                 'session'
             )
-            .order_by('-availability')
+            .order_by(
+                '-chosen_as',
+                '-availability'
+            )
         )
 
     @cached_property
@@ -151,7 +156,8 @@ class Session(Address, models.Model):
     def chosen_helpers(self):
         return (
             self.chosen_staff
-            .filter(helper__profile__formation__in=['M1', 'M2'])
+            .filter(chosen_as__in=[CHOSEN_AS_HELPER, CHOSEN_AS_LEADER],
+                    helper__profile__formation__in=['M1', 'M2'])
             .order_by('-helper__profile__formation',
                       'helper__first_name',
                       'helper__last_name')
@@ -166,8 +172,10 @@ class Session(Address, models.Model):
         return [0] + [n_sessions * (MAX_MONO1_PER_QUALI), n_sessions]
 
     def chosen_actors(self):
-        return self.chosen_staff.exclude(
-            helper__profile__actor_for__isnull=True
+        return (
+            self.chosen_staff
+            .filter(chosen_as=CHOSEN_AS_ACTOR)
+            .exclude(helper__profile__actor_for__isnull=True)
         )
 
     def actor_needs(self):
@@ -177,14 +185,12 @@ class Session(Address, models.Model):
         # Check as what a user is assigned to that session
         for q in self.qualifications.all():
             if user == q.leader:
-                return SHORTCODE_MON2
+                return CHOSEN_AS_LEADER
             if user in q.helpers.all():
-                return SHORTCODE_MON1
+                return CHOSEN_AS_HELPER
             if user == q.actor:
-                return SHORTCODE_ACTOR
-        if any([a.helper == user for a in self.chosen_staff]):
-            return SHORTCODE_SELECTED
-        return ''
+                return CHOSEN_AS_ACTOR
+        return None
 
     def n_quali_things(self, field):
         return sum(

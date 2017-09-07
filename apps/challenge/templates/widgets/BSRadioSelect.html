@@ -1,5 +1,5 @@
 {% with id=widget.attrs.id %}
-    <div{% if id %} id="{{ id }}"{% endif %} class="btn-group-vertical{% if widget.attrs.class %} {{ widget.attrs.class }}{% endif %}" data-toggle="buttons">
+    <div{% if id %} id="{{ id }}"{% endif %} class="dv-radio-select btn-group{% if not widget.attrs.horizontal %}-vertical{% endif %}{% if widget.attrs.class %} {{ widget.attrs.class }}{% endif %}" data-toggle="buttons">
         {% for group, options, index in widget.optgroups %}
             {% for option in options %}
                 {% include option.template_name with widget=option forbid_absence=widget.forbid_absence %}

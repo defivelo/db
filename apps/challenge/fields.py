@@ -21,21 +21,39 @@ from django import forms
 
 from apps.user.models import FORMATION_M1
 
+from .models.availability import HelperSessionAvailability
 
-class LeaderChoiceField(forms.ModelChoiceField):
+
+class SessionChoiceField(object):
+    def __init__(self, *args, **kwargs):
+        self.session = kwargs.pop('session', False)
+        return super(SessionChoiceField, self).__init__(*args, **kwargs)
+
+    def get_chosen_as(self, user):
+        try:
+            return user.availabilities.get(session=self.session).chosen_as
+        except HelperSessionAvailability.DoesNotExist:
+            pass
+
+
+class LeaderChoiceField(SessionChoiceField, forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.get_full_name()
 
 
-class HelpersChoiceField(forms.ModelMultipleChoiceField):
+class HelpersChoiceField(SessionChoiceField, forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
-        postfix = ''
-        if obj.profile.formation not in ['', FORMATION_M1]:
-            postfix = ' (%s)' % obj.profile.formation
-        return obj.get_full_name() + postfix
+        return '%s%s' % (
+            obj.get_full_name(),
+            (
+                ' (%s)' % obj.profile.formation
+                if obj.profile.formation not in ['', FORMATION_M1]
+                else ''
+            ),
+        )
 
 
-class ActorChoiceField(forms.ModelChoiceField):
+class ActorChoiceField(SessionChoiceField, forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return "{name} ({actor_for})".format(
              name=obj.get_full_name(),

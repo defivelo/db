@@ -33,7 +33,8 @@ from apps.user import STATE_CHOICES_WITH_DEFAULT
 from apps.user.models import FORMATION_KEYS, FORMATION_M2, USERSTATUS_DELETED
 
 from . import (
-    AVAILABILITY_FIELDKEY, MAX_MONO1_PER_QUALI, SHORTCODE_ACTOR, SHORTCODE_MON1, SHORTCODE_MON2, STAFF_FIELDKEY,
+    AVAILABILITY_FIELDKEY, CHOICE_CHOICES, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY,
+    CHOSEN_AS_NOT, MAX_MONO1_PER_QUALI, STAFF_FIELDKEY,
 )
 from .fields import ActorChoiceField, HelpersChoiceField, LeaderChoiceField
 from .models import Qualification, Season, Session
@@ -166,42 +167,44 @@ class QualificationForm(forms.ModelForm):
         kwargs.pop('cantons', None)
         super(QualificationForm, self).__init__(*args, **kwargs)
         other_qualifs = session.qualifications.exclude(pk=self.instance.pk)
+        staff_pks = session.chosen_staff.values_list('helper_id', flat=True)
         available_staff = (
-            get_user_model().objects.filter(
-                Q(
-                    availabilities__chosen=True,
-                    availabilities__session=session
-                )
-            )
+            get_user_model().objects.filter(pk__in=staff_pks)
             .exclude(
                 Q(qualifs_mon2__in=other_qualifs) |
                 Q(qualifs_mon1__in=other_qualifs) |
-                Q(qualifs_actor__in=other_qualifs) |
-                Q(profile__status=USERSTATUS_DELETED)
+                Q(qualifs_actor__in=other_qualifs)
             )
-            .distinct()
-            .order_by('first_name')
         )
         self.fields['leader'] = LeaderChoiceField(
             label=_('Moniteur 2'),
             queryset=available_staff.filter(
-                Q(profile__formation=FORMATION_M2)
+                availabilities__session=session,
+                availabilities__chosen_as__in=[CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY],
+                profile__formation=FORMATION_M2,
             ),
             required=False,
+            session=session,
         )
         self.fields['helpers'] = HelpersChoiceField(
             label=_('Moniteurs 1'),
             queryset=available_staff.filter(
-                Q(profile__formation__in=FORMATION_KEYS)
+                availabilities__session=session,
+                availabilities__chosen_as__in=[CHOSEN_AS_HELPER, CHOSEN_AS_LEGACY],
+                profile__formation__in=FORMATION_KEYS
             ),
             required=False,
+            session=session,
         )
         self.fields['actor'] = ActorChoiceField(
             label=_('Intervenant'),
-            queryset=available_staff.exclude(
+            queryset=available_staff.filter(
+                availabilities__session=session,
+                availabilities__chosen_as__in=[CHOSEN_AS_ACTOR, CHOSEN_AS_LEGACY],
                 profile__actor_for__isnull=True
             ),
-            required=False
+            required=False,
+            session=session,
         )
 
     def clean_helpers(self):
@@ -279,48 +282,17 @@ class QualificationForm(forms.ModelForm):
                   'comments']
 
 
-class BSRadioSelect(forms.RadioSelect):
+class BSAvailabilityRadioSelect(forms.RadioSelect):
     template_name = 'widgets/BSRadioSelect.html'
     option_template_name = 'widgets/BSRadioSelect_option.html'
 
     def __init__(self, *args, **kwargs):
         self.forbid_absence = kwargs.pop('forbid_absence', False)
-        return super(BSRadioSelect, self).__init__(*args, **kwargs)
+        return super(BSAvailabilityRadioSelect, self).__init__(*args, **kwargs)
 
     def get_context(self, name, value, attrs):
-        context = super(BSRadioSelect, self).get_context(name, value, attrs)
+        context = super(BSAvailabilityRadioSelect, self).get_context(name, value, attrs)
         context['widget']['forbid_absence'] = self.forbid_absence
-        return context
-
-
-class BSCheckboxInput(forms.widgets.CheckboxInput):
-    template_name = 'widgets/BSCheckboxInput.html'
-
-    def __init__(self, *args, **kwargs):
-        # Trick to pass the 'at which role that user is
-        # selected in that quali' information through
-        self.user_assignment = kwargs.pop('user_assignment', False)
-        return super(BSCheckboxInput, self).__init__(*args, **kwargs)
-
-    def get_context(self, name, value, attrs):
-        context = super(BSCheckboxInput, self).get_context(name, value, attrs)
-        glyphicon = 'check'
-        title = _('Choisir pour cette session')
-        active_content = ''
-        if self.user_assignment == SHORTCODE_MON2:  # Moniteur 2
-            glyphicon = 'invalid'
-            title = _('Moniteur 2')
-            active_content = _('M2')
-        if self.user_assignment == SHORTCODE_MON1:  # Moniteur 1
-            glyphicon = 'invalid'
-            title = _('Moniteur 1')
-            active_content = _('M1')
-        if self.user_assignment == SHORTCODE_ACTOR:  # Intervenant
-            glyphicon = 'sunglasses'
-            title = _('Intervenant')
-        context['widget']['glyphicon'] = glyphicon
-        context['widget']['active_content'] = active_content
-        context['widget']['title'] = title
         return context
 
 
@@ -366,12 +338,47 @@ class SeasonAvailabilityForm(forms.Form):
                         # Trick to pass the 'chosen' information through
                         self.fields[availkey] = forms.ChoiceField(
                             choices=HelperSessionAvailability.AVAILABILITY_CHOICES,  # NOQA
-                            widget=BSRadioSelect(forbid_absence=forbid_absence),
+                            widget=BSAvailabilityRadioSelect(forbid_absence=forbid_absence),
                             required=False, initial=fieldinit
                         )
 
     def save(self):
         pass
+
+
+class BSChoiceRadioSelect(forms.RadioSelect):
+    template_name = 'widgets/BSRadioSelect.html'
+    option_template_name = 'widgets/BSChoiceRadioSelect_option.html'
+
+    def __init__(self, *args, **kwargs):
+        # Trick to pass the 'at which role that user is
+        # selected in that quali' information through
+        self.user_assignment = kwargs.pop('user_assignment', False)
+        return super(BSChoiceRadioSelect, self).__init__(*args, **kwargs)
+
+    def get_context(self, name, value, attrs):
+        context = super(BSChoiceRadioSelect, self).get_context(name, value, attrs)
+        # User has a status in the session, forbid change
+        disable_all = self.user_assignment is not None
+        for optgroup in context['widget']['optgroups']:
+            (group, options, index) = optgroup
+            if options[0]['value'] == CHOSEN_AS_LEADER:
+                options[0]['text'] = _('M2')
+                options[0]['class'] = 'success'
+            elif options[0]['value'] == CHOSEN_AS_HELPER:
+                options[0]['text'] = _('M1')
+                options[0]['class'] = 'success'
+            elif options[0]['value'] == CHOSEN_AS_ACTOR:
+                options[0]['glyphicon'] = 'sunglasses'
+                options[0]['class'] = 'success'
+            elif options[0]['value'] == CHOSEN_AS_LEGACY:
+                options[0]['glyphicon'] = 'ok-sign'
+                options[0]['class'] = 'warning'
+            elif options[0]['value'] == CHOSEN_AS_NOT:
+                options[0]['glyphicon'] = 'remove-circle'
+                options[0]['class'] = 'default'
+            options[0]['disabled'] = disable_all
+        return context
 
 
 class SeasonStaffChoiceForm(forms.Form):
@@ -390,14 +397,24 @@ class SeasonStaffChoiceForm(forms.Form):
                             hpk=helper.pk, spk=session.pk)
                         staffkey = STAFF_FIELDKEY.format(hpk=helper.pk,
                                                          spk=session.pk)
-                        # Stupid boolean to integer-as-string conversion.
                         try:
-                            fieldinit = bool(self.initial[staffkey])
+                            fieldinit = self.initial[staffkey]
                         except KeyError:
-                            fieldinit = False
-
-                        self.fields[staffkey] = forms.BooleanField(
-                            widget=BSCheckboxInput(user_assignment=session.user_assignment(helper)),
+                            fieldinit = CHOSEN_AS_NOT
+                        available_choices = [CHOSEN_AS_NOT]
+                        if helper.profile.actor:
+                            available_choices.append(CHOSEN_AS_ACTOR)
+                        if helper.profile.formation:
+                            available_choices.append(CHOSEN_AS_HELPER)
+                        if helper.profile.formation == FORMATION_M2:
+                            available_choices.append(CHOSEN_AS_LEADER)
+                        self.fields[staffkey] = forms.ChoiceField(
+                            choices=[c for c in list(CHOICE_CHOICES) if c[0] in available_choices],
+                            widget=BSChoiceRadioSelect(
+                                attrs={'horizontal': True,
+                                       'class': 'btn-group-xs'},
+                                user_assignment=session.user_assignment(helper)
+                            ),
                             required=False, initial=fieldinit
                         )
 

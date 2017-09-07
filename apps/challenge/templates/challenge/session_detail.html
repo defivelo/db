@@ -5,10 +5,7 @@
 {% block head_title %}{% trans "Session" %} {{ session.day|date }}{% if session.begin %}, {{ session.begin|time }}{% endif %}{% endblock %}
 
 {% block content %}
-    <h1>
-        {{ session.orga.name }}{% if session.address_city %}, {{ session.address_city }}{% elif session.orga.address_city %}, {{ session.orga.address_city }}{% endif %}
-        <small>{{ session.day|date }}{% if session.begin %}, {{ session.begin|time }}{% endif %}</small>
-    </h1>
+    {% include 'challenge/session_header.html' with session=session only %}
 
     {% if session_previous or session_next %}
         <nav class="hidden-print">
