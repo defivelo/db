@@ -36,7 +36,9 @@ from . import (
     AVAILABILITY_FIELDKEY, CHOICE_CHOICES, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY,
     CHOSEN_AS_NOT, MAX_MONO1_PER_QUALI, STAFF_FIELDKEY,
 )
-from .fields import ActorChoiceField, HelpersChoiceField, LeaderChoiceField
+from .fields import (
+    ActorChoiceField, BSAvailabilityRadioSelect, BSChoiceRadioSelect, HelpersChoiceField, LeaderChoiceField,
+)
 from .models import Qualification, Season, Session
 from .models.availability import HelperSessionAvailability
 
@@ -285,20 +287,6 @@ class QualificationForm(forms.ModelForm):
                   'comments']
 
 
-class BSAvailabilityRadioSelect(forms.RadioSelect):
-    template_name = 'widgets/BSRadioSelect.html'
-    option_template_name = 'widgets/BSRadioSelect_option.html'
-
-    def __init__(self, *args, **kwargs):
-        self.forbid_absence = kwargs.pop('forbid_absence', False)
-        return super(BSAvailabilityRadioSelect, self).__init__(*args, **kwargs)
-
-    def get_context(self, name, value, attrs):
-        context = super(BSAvailabilityRadioSelect, self).get_context(name, value, attrs)
-        context['widget']['forbid_absence'] = self.forbid_absence
-        return context
-
-
 class SeasonNewHelperAvailabilityForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(SeasonNewHelperAvailabilityForm, self).__init__(*args, **kwargs)
@@ -347,41 +335,6 @@ class SeasonAvailabilityForm(forms.Form):
 
     def save(self):
         pass
-
-
-class BSChoiceRadioSelect(forms.RadioSelect):
-    template_name = 'widgets/BSRadioSelect.html'
-    option_template_name = 'widgets/BSChoiceRadioSelect_option.html'
-
-    def __init__(self, *args, **kwargs):
-        # Trick to pass the 'at which role that user is
-        # selected in that quali' information through
-        self.user_assignment = kwargs.pop('user_assignment', False)
-        return super(BSChoiceRadioSelect, self).__init__(*args, **kwargs)
-
-    def get_context(self, name, value, attrs):
-        context = super(BSChoiceRadioSelect, self).get_context(name, value, attrs)
-        # User has a status in the session, forbid change
-        disable_all = self.user_assignment is not None
-        for optgroup in context['widget']['optgroups']:
-            (group, options, index) = optgroup
-            if options[0]['value'] == CHOSEN_AS_LEADER:
-                options[0]['text'] = _('M2')
-                options[0]['class'] = 'success'
-            elif options[0]['value'] == CHOSEN_AS_HELPER:
-                options[0]['text'] = _('M1')
-                options[0]['class'] = 'success'
-            elif options[0]['value'] == CHOSEN_AS_ACTOR:
-                options[0]['glyphicon'] = 'sunglasses'
-                options[0]['class'] = 'success'
-            elif options[0]['value'] == CHOSEN_AS_LEGACY:
-                options[0]['glyphicon'] = 'ok-sign'
-                options[0]['class'] = 'warning'
-            elif options[0]['value'] == CHOSEN_AS_NOT:
-                options[0]['glyphicon'] = 'remove-circle'
-                options[0]['class'] = 'default'
-            options[0]['disabled'] = disable_all
-        return context
 
 
 class SeasonStaffChoiceForm(forms.Form):
