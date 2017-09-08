@@ -5,10 +5,11 @@
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Quicksand%7CQuestrial%7COpen+Sans:400,600" />
 {% endblock %}
 {% block content %}
+<h2>{% trans "Prochaines Qualifs" %}</h2>
 <div class="row">
 {% for session in sessions %}
     {% ifchanged session.day session.orga %}
-        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 dvqualif-badge">
+        <div class="col-xs-6 col-sm-4 col-md-3 dvqualif-badge">
             <a class="dvstate-txt-none dvstate-txt-hov-{{ session.orga.address_canton|lower }}">
                 <span class="dvstate-round pull-left dvstate-bg-{{ session.orga.address_canton|lower }}">{{ session.orga.address_canton|canton_abbr }}</span>
                 <div class="pull-left card-content">
