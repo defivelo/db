@@ -1,31 +1,6 @@
-<!DOCTYPE html>
-{% load bootstrap3 static compress i18n %}
-{% load dv_filters %}
-<html{% if request.LANGUAGE_CODE %} lang="{{ request.LANGUAGE_CODE }}"{% endif %}>
-<head>
-    <meta charset="utf-8">
-    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge" /><![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block bootstrap3_title %}{% block head_title %}{% trans "Accueil" %}{% endblock %}{% block head_title_postfix %} - {% trans "Défi Vélo" %}{% endblock %}{% endblock %}
-</title>
-    {% bootstrap_css %}
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}" />
-    {% compress css %}
-        <link rel="stylesheet" type="text/x-scss" href="{% static "style/main.scss" %}">
-        <link rel="stylesheet" type="text/x-scss" media="print" href="{% static "style/print.scss" %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-datetimepicker.css' %}" />
-    {% endcompress %}
-    {% if 'javascript_in_head'|bootstrap_setting %}{% bootstrap_javascript jquery=True %}{% endif %}
-    {% block bootstrap3_extra_head %}{% endblock %}
-</head>
-
-<body>
+{% extends "skel.html" %}
+{% load bootstrap3 static compress i18n dv_filters %}
+{% block body %}
 {% include "print/header.html" %}
 
 {% block bootstrap3_content %}
@@ -71,11 +46,4 @@
     </div>
 </footer>
 {% include "print/footer.html" %}
-{% if not 'javascript_in_head'|bootstrap_setting %}{% bootstrap_javascript jquery=True %}{% endif %}
-
-{% compress js %}
-    {% block bootstrap3_extra_script %}{% endblock %}
-{% endcompress %}
-{% block body_end %}{% endblock %}
-</body>
-</html>
+{% endblock %}
