@@ -51,6 +51,9 @@
             {% if user|can:'orga_crud' %}
                 <li{% if 'organization' in menu_category  %} class="active"{% endif %}><a href="{% url 'organization-list' %}">{% trans "Établissements" %}</a></li>
             {% endif %}
+            {% if user|can:'challenge_season_crud' %}
+                <li{% if 'exports' in menu_category  %} class="active"{% endif %}><a href="{% url 'exports' %}">{% trans "Exports" %}</a></li>
+            {% endif %}
         {% endif %}
     {% endif %}
 </ul>

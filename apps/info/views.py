@@ -60,6 +60,7 @@ class Exports(MenuView, HasPermissionsMixin, TemplateView):
         except TypeError:
             export_season = self.current_season()
         context = super(Exports, self).get_context_data(**kwargs)
+        context['menu_category'] = 'exports'
         context['previous_period'] = {
             'year': export_year - (1 if export_season == DV_SEASON_SPRING else 0),
             'season': DV_SEASON_AUTUMN if export_season == DV_SEASON_SPRING else DV_SEASON_SPRING,
