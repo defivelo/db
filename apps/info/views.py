@@ -31,6 +31,7 @@ from tablib import Dataset
 from apps.challenge.models.session import Session
 from apps.common import DV_SEASON_AUTUMN, DV_SEASON_LAST_SPRING_MONTH, DV_SEASON_SPRING, DV_STATE_CHOICES
 from apps.common.views import ExportMixin, PaginatorMixin
+from apps.orga.models import Organization
 from defivelo.templatetags.dv_filters import season_verb
 from defivelo.views.common import MenuView
 
@@ -114,6 +115,7 @@ class SeasonStatsExportView(StatsExportsMixin, ExportMixin, ListView):
         dataset.append([
             u('Canton'),
             u('Canton'),
+            u('Établissements'),
             u('Sessions'),
             u('Qualifs'),
             u('Nombre d\'élèves'),
@@ -125,6 +127,7 @@ class SeasonStatsExportView(StatsExportsMixin, ExportMixin, ListView):
             u('… comme intervenants'),
         ])
         volunteers = get_user_model().objects
+        orgas = Organization.objects
         for (canton, canton_verb) in DV_STATE_CHOICES:
             cantonal_sessions = (
                 self.object_list
@@ -142,6 +145,7 @@ class SeasonStatsExportView(StatsExportsMixin, ExportMixin, ListView):
                 dataset.append([
                     canton,
                     canton_verb,
+                    orgas.filter(sessions__in=sessions_pks).distinct().count(),
                     n_sessions,
                     cantonal_sessions.aggregate(total=Sum('n_qualifs'))['total'],
                     cantonal_sessions.aggregate(total=Sum('n_participants'))['total'],
