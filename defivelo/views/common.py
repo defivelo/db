@@ -29,13 +29,20 @@ from defivelo.roles import has_permission
 
 
 class MenuView(object):
+    def current_season(self):
+        return (
+            DV_SEASON_SPRING
+            if date.today().month <= DV_SEASON_LAST_SPRING_MONTH
+            else DV_SEASON_AUTUMN
+        )
+
     def get_context_data(self, **kwargs):
         context = super(MenuView, self).get_context_data(**kwargs)
         today = date.today()
-        season = DV_SEASON_SPRING if today.month <= DV_SEASON_LAST_SPRING_MONTH else DV_SEASON_AUTUMN
+
         context['current_seasons'] = (
             self.request.user.profile.get_seasons()
-            .filter(year=today.year, season=season)
+            .filter(year=today.year, season=self.current_season())
         )
         context['now'] = timezone.now()
         return context

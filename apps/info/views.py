@@ -19,11 +19,15 @@ from __future__ import unicode_literals
 
 from datetime import date
 
+from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
+from rolepermissions.mixins import HasPermissionsMixin
 from stronghold.views import StrongholdPublicMixin
 
 from apps.challenge.models.session import Session
+from apps.common import DV_SEASON_AUTUMN, DV_SEASON_SPRING
 from apps.common.views import PaginatorMixin
+from defivelo.views.common import MenuView
 
 
 class PublicView(StrongholdPublicMixin):
@@ -40,3 +44,32 @@ class NextQualifs(PublicView, PaginatorMixin, ListView):
         .order_by('day', 'orga')
         .prefetch_related('orga')
     )
+
+
+class Exports(MenuView, HasPermissionsMixin, TemplateView):
+    challenge_season_crud = 'challenge_season_crud'
+    template_name = 'info/exports.html'
+
+    def get_context_data(self, **kwargs):
+        try:
+            export_year = int(kwargs.pop('year'))
+        except TypeError:
+            export_year = date.today().year
+        try:
+            export_season = int(kwargs.pop('dv_season'))
+        except TypeError:
+            export_season = self.current_season()
+        context = super(Exports, self).get_context_data(**kwargs)
+        context['previous_period'] = {
+            'year': export_year - (1 if export_season == DV_SEASON_SPRING else 0),
+            'season': DV_SEASON_AUTUMN if export_season == DV_SEASON_SPRING else DV_SEASON_SPRING,
+        }
+        context['export_period'] = {
+            'year': export_year,
+            'season': export_season,
+        }
+        context['next_period'] = {
+            'year': export_year + (1 if export_season == DV_SEASON_AUTUMN else 0),
+            'season': DV_SEASON_AUTUMN if export_season == DV_SEASON_SPRING else DV_SEASON_SPRING,
+        }
+        return context

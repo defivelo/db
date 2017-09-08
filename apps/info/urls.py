@@ -21,10 +21,13 @@ from __future__ import unicode_literals
 from django.conf.urls import url
 from django.views.decorators.cache import never_cache
 
-from .views import NextQualifs
+from .views import Exports, NextQualifs
 
 urlpatterns = [
     url(r'^qualifs/$',
         never_cache(NextQualifs.as_view()),
         name='public-nextqualifs'),
+    url(r'^exports/(?:(?P<year>[0-9]{4})/(?P<dv_season>[0-9]+)/)?$',
+        never_cache(Exports.as_view()),
+        name='exports'),
 ]
