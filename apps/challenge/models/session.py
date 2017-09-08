@@ -221,6 +221,13 @@ class Session(Address, models.Model):
         return ''
 
     @cached_property
+    def city(self):
+        if self.address_city:
+            return self.address_city
+        elif self.orga.address_city:
+            return self.orga.address_city
+
+    @cached_property
     def short(self):
         return _('{place} {date}{time}').format(
             date=date(self.day, settings.DATE_FORMAT_SHORT),
