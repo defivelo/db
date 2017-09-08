@@ -1,5 +1,23 @@
-{% extends "base_public.html" %}{% load i18n %}
-
+{% extends "base_public.html" %}{% load i18n dv_filters %}
+{% block container-class %}container-fluid{% endblock %}
+{% block head_title %}{% trans "Prochaines Qualifs" %}{% endblock %}
+{% block bootstrap3_extra_head %}
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Quicksand%7CQuestrial%7COpen+Sans:400,600" />
+{% endblock %}
 {% block content %}
-Yolo ?
+<div class="row">
+{% for session in sessions %}
+    {% ifchanged session.day session.orga %}
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 dvqualif-badge">
+            <a class="dvstate-txt-none dvstate-txt-hov-{{ session.orga.address_canton|lower }}">
+                <span class="dvstate-round pull-left dvstate-bg-{{ session.orga.address_canton|lower }}">{{ session.orga.address_canton|canton_abbr }}</span>
+                <div class="pull-left card-content">
+                    <h6 class="date_big">{{ session.day|date:'j M' }}</h6>
+                    <p>{{ session.orga.ifabbr }}<br />{{session.city}} ({{ session.orga.address_canton|canton_abbr }})</p>
+                </div>
+            </a>
+        </div>
+    {% endifchanged %}
+{% endfor %}
+</div>
 {% endblock %}

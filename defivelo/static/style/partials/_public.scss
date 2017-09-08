@@ -1,0 +1,29 @@
+body.dvpublic {
+    h2, h3, h6 {
+        font-family: "Quicksand", sans-serif;
+    }
+    .dvqualif-badge {
+        .dvstate-round {
+            position: absolute;
+            top: 38%;
+
+            border-radius: 50%;
+            width: 26px; 
+            font-size: 13px;
+            padding: 0;
+            color: white;
+            * {
+                text-align: center;
+                line-height: 26px;
+                display: block;
+            }
+        }
+        .card-content {
+            margin-left: 40px;
+        }
+
+        .date_big {
+            font-size: 50px;
+        }
+    }
+}
