@@ -23,7 +23,7 @@ from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
-from .views import HomeView, LicenseView
+from .views.common import HomeView, LicenseView
 
 admin.autodiscover()
 
