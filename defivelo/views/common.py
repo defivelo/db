@@ -22,6 +22,7 @@ from datetime import date
 from article.models import Article
 from django.utils import timezone
 from django.views.generic.base import TemplateView
+from stronghold.views import StrongholdPublicMixin
 
 from apps.common import DV_SEASON_AUTUMN, DV_SEASON_LAST_SPRING_MONTH, DV_SEASON_SPRING
 from defivelo.roles import has_permission
@@ -54,5 +55,5 @@ class HomeView(MenuView, TemplateView):
         return context
 
 
-class LicenseView(MenuView, TemplateView):
+class LicenseView(StrongholdPublicMixin, TemplateView):
     template_name = "license.html"
