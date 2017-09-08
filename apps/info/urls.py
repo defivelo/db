@@ -18,16 +18,20 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from django.conf.urls import url
+from django.conf.urls import include, url
 from django.views.decorators.cache import never_cache
 
-from .views import Exports, NextQualifs
+from .views import Exports, NextQualifs, SeasonStatsExportView
 
 urlpatterns = [
     url(r'^qualifs/$',
         never_cache(NextQualifs.as_view()),
         name='public-nextqualifs'),
-    url(r'^exports/(?:(?P<year>[0-9]{4})/(?P<dv_season>[0-9]+)/)?$',
-        never_cache(Exports.as_view()),
-        name='exports'),
+    url(r'^exports/(?:(?P<year>[0-9]{4})/(?P<dv_season>[0-9]+)/)?',
+        include([
+            url(r'^$', never_cache(Exports.as_view()), name='exports'),
+            url(r'^stats.(?P<format>[a-z]+)$',
+                never_cache(SeasonStatsExportView.as_view()),
+                name='season-stats-export'),
+        ]))
 ]
