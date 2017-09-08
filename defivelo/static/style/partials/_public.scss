@@ -14,7 +14,18 @@ body.dvpublic {
         margin-bottom: 20px;
         margin-top: 40px;
     }
+    .pager li>a {
+        color: inherit;
+        background-color: inherit;
+        border: 0;
+        border-radius: 0;
+        text-transform: uppercase;
 
+        &:hover {
+            background-color: transparent;
+            color: #53a9d7;
+        }
+    }
     .dvqualif-badge {
         .dvstate-round {
             position: absolute;

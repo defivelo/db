@@ -18,40 +18,25 @@
 from __future__ import unicode_literals
 
 from datetime import date
-from django.views.generic.base import TemplateView
+
+from django.views.generic.list import ListView
 from stronghold.views import StrongholdPublicMixin
 
 from apps.challenge.models.session import Session
-from defivelo.views.common import MenuView
+from apps.common.views import PaginatorMixin
 
 
 class PublicView(StrongholdPublicMixin):
     pass
 
 
-class InfoCSS(PublicView, TemplateView):
-    template_name = 'info/info.css'
-    
-    def render_to_response(self, context, **response_kwargs):
-        return super(InfoCSS, self).render_to_response(
-            context, content_type='text/css; charset=utf-8', **response_kwargs
-        )
-    
-    def get_context_data(self, *args, **kwargs):
-        context = super(InfoCSS, self).get_context_data(*args, **kwargs)
-        context['colors'] = DV_STATE_COLORS
-        return context
-
-
-class NextQualifs(PublicView, TemplateView):
+class NextQualifs(PublicView, PaginatorMixin, ListView):
     template_name = 'info/next_qualifs.html'
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(NextQualifs, self).get_context_data(*args, **kwargs)
-        context['sessions'] = (
-            Session.objects
-            .filter(day__gte=date.today())
-            .order_by('day', 'orga')
-            .prefetch_related('orga')
-        )
-        return context
+    context_object_name = 'sessions'
+    paginate_by = 6
+    queryset = (
+        Session.objects
+        .filter(day__gte=date.today())
+        .order_by('day', 'orga')
+        .prefetch_related('orga')
+    )
