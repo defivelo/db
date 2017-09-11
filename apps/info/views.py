@@ -72,7 +72,7 @@ class StatsExportsMixin(MenuView, HasPermissionsMixin):
 
 
 class Exports(StatsExportsMixin, TemplateView):
-    challenge_season_crud = 'challenge_season_crud'
+    required_permission = 'challenge_season_crud'
     template_name = 'info/exports.html'
 
     def get_context_data(self, **kwargs):
