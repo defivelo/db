@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load i18n dv_filters %}
+
+{% block head_title %}{% blocktrans with year=export_period.year season=export_period.season|season_verb %}Exports pour la saison {{ season }} {{year}}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+<nav>
+    <ul class="pager">
+        <li class="previous">
+            <a href="{% url 'exports' dv_season=previous_period.season year=previous_period.year %}">
+                <span aria-hidden="true">←</span> {{ previous_period.season|season_verb }} {{ previous_period.year }} 
+            </a>
+        </li>
+        <li class="next">
+            <a href="{% url 'exports' dv_season=next_period.season year=next_period.year %}">
+                {{ next_period.season|season_verb }} {{ next_period.year }} <span aria-hidden="true">→</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+{% with season=export_period.season year=export_period.year %}
+<h1>{% blocktrans with year=year season=season|season_verb %}Exports pour la saison {{ season }} {{year}}{% endblocktrans %}</h1>
+
+<ul>
+    <li>{% include 'export_buttons.html' with noprint=True exporturl='season-stats-export' year=year season=season only %}
+    {% trans "Statistiques de la saison" %}</li>
+</ul>
+{% endwith %}
+{% endblock %}
