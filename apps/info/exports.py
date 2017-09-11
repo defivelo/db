@@ -21,8 +21,10 @@ from datetime import date, timedelta
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.urlresolvers import reverse
 from django.db.models import Count, Q, Sum
 from django.template.defaultfilters import date as datefilter
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _, ugettext as u
 from tablib import Dataset
 
@@ -150,6 +152,7 @@ class OrgaInvoicesExport(SeasonExportMixin):
                 'sessions__qualifications',
             )
         )
+        linktxt = '<a href="{url}">{content}</a>'
         row = []
         for orga in orgas:
             orga_row = list(row)
@@ -157,8 +160,16 @@ class OrgaInvoicesExport(SeasonExportMixin):
             orga_row.append(orga.ifabbr if html else orga.name)
             for orga_session in sessions.filter(orga=orga):
                 session_row = list(orga_row)
-                session_row.append(datefilter(orga_session.day, settings.DATE_FORMAT))
-                session_row.append(datefilter(orga_session.begin, settings.TIME_FORMAT))
+                session_url = reverse('session-detail',
+                                      kwargs={
+                                          'seasonpk': orga_session.season.pk,
+                                          'pk': orga_session.id
+                                          }
+                                      )
+                datetxt = datefilter(orga_session.day, settings.DATE_FORMAT)
+                timetxt = datefilter(orga_session.begin, settings.TIME_FORMAT)
+                session_row.append(mark_safe(linktxt.format(url=session_url, content=datetxt)) if html else datetxt)
+                session_row.append(mark_safe(linktxt.format(url=session_url, content=timetxt)) if html else timetxt)
                 for qualif in orga_session.qualifications.all():
                     qualif_row = list(session_row)
                     qualif_row.append(qualif.name)

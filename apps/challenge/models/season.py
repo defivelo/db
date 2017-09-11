@@ -35,8 +35,6 @@ from apps.common import (
 )
 from defivelo.templatetags.dv_filters import cantons_abbr
 
-from .session import Session
-
 
 @python_2_unicode_compatible
 class Season(models.Model):
@@ -126,6 +124,7 @@ class Season(models.Model):
 
     @property
     def sessions(self):
+        from .session import Session
         return Session.objects.filter(
             orga__address_canton__in=self.cantons,
             day__gte=self.begin,

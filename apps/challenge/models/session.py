@@ -28,6 +28,7 @@ from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
+from apps.common import DV_SEASON_AUTUMN, DV_SEASON_LAST_SPRING_MONTH, DV_SEASON_SPRING
 from apps.common.models import Address
 from apps.orga.models import ORGASTATUS_ACTIVE, Organization
 from apps.user import FORMATION_KEYS, FORMATION_M2
@@ -226,6 +227,15 @@ class Session(Address, models.Model):
             return self.address_city
         elif self.orga.address_city:
             return self.orga.address_city
+
+    @cached_property
+    def season(self):
+        from .season import Season
+        return Season.objects.filter(
+            year=self.day.year,
+            season=DV_SEASON_SPRING if self.day.month <= DV_SEASON_LAST_SPRING_MONTH else DV_SEASON_AUTUMN,
+            cantons__contains=self.orga.address_canton
+        ).first()
 
     @cached_property
     def short(self):
