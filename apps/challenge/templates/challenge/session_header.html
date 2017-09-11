@@ -1,2 +1,2 @@
-<h1>{{ session.orga.ifabbr|safe }}{{ session.city }}<br />
+<h1>{{ session.orga.ifabbr|safe }}, {{ session.city }}<br />
 <small>{{ session.day|date }}{% if session.begin %}, {{ session.begin|time }}{% endif %}</small></h1>
