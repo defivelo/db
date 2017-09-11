@@ -4,23 +4,7 @@
 {% block head_title %}{% blocktrans with year=export_period.year season=export_period.season|season_verb %}Exports pour la saison {{ season }} {{year}}{% endblocktrans %}{% endblock %}
 
 {% block content %}
-<nav>
-    <ul class="pager">
-        <li class="previous">
-            <a href="{% url nav_url dv_season=previous_period.season year=previous_period.year %}">
-                <span aria-hidden="true">←</span> {{ previous_period.season|season_verb }} {{ previous_period.year }} 
-            </a>
-        </li>
-        {% if dataset %}
-            <li><a href="{% url 'exports' dv_season=export_period.season year=export_period.year %}">{% trans "Retour aux exports" %}</a></li>
-        {% endif %}
-        <li class="next">
-            <a href="{% url nav_url dv_season=next_period.season year=next_period.year %}">
-                {{ next_period.season|season_verb }} {{ next_period.year }} <span aria-hidden="true">→</span>
-            </a>
-        </li>
-    </ul>
-</nav>
+{% include 'info/_season_nav.html' with nav_url=nav_url previous_period=previous_period next_period=next_period only %}
 {% with season=export_period.season year=export_period.year %}
 
 {% if dataset %}

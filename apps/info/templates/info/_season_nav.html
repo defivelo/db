@@ -1,0 +1,16 @@
+{% load dv_filters i18n %}
+<nav>
+    <ul class="pager">
+        <li class="previous">
+            <a href="{% url nav_url dv_season=previous_period.season year=previous_period.year %}">
+                <span aria-hidden="true">←</span> {{ previous_period.season|season_verb }} {{ previous_period.year }} 
+            </a>
+        </li>
+
+        <li class="next">
+            <a href="{% url nav_url dv_season=next_period.season year=next_period.year %}">
+                {{ next_period.season|season_verb }} {{ next_period.year }} <span aria-hidden="true">→</span>
+            </a>
+        </li>
+    </ul>
+</nav>
