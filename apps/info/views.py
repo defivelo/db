@@ -40,7 +40,7 @@ class PublicView(StrongholdPublicMixin):
 class NextQualifs(PublicView, PaginatorMixin, ListView):
     template_name = 'info/next_qualifs.html'
     context_object_name = 'sessions'
-    paginate_by = 6
+    paginate_by = 8
     queryset = (
         Session.objects
         .filter(day__gte=date.today())
