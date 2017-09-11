@@ -25,7 +25,7 @@
 
 {% if dataset %}
     <h1>{{ dataset_title }}</h1>
-
+    {% include 'export_buttons.html' with exporturl=dataset_exporturl year=year season=season only %}
     <table class="table">
     {% for row in dataset %}
         <tr>
@@ -39,7 +39,6 @@
         </tr>
     {% endfor %}
     </table>
-    {% include 'export_buttons.html' with noprint=True exporturl=dataset_exporturl year=year season=season only %}
 {% else %}
     <h1>{% blocktrans with year=year season=season|season_verb %}Exports pour la saison {{ season }} {{year}}{% endblocktrans %}</h1>
 
