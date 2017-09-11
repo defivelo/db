@@ -52,7 +52,15 @@
                 <li{% if 'organization' in menu_category  %} class="active"{% endif %}><a href="{% url 'organization-list' %}">{% trans "Établissements" %}</a></li>
             {% endif %}
             {% if user|can:'challenge_season_crud' %}
-                <li{% if 'exports' in menu_category  %} class="active"{% endif %}><a href="{% url 'exports' %}">{% trans "Exports" %}</a></li>
+                <li{% if 'exports' in menu_category  %} class="active"{% endif %}>
+                    <a href="{% url 'exports' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Exports" %}<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url 'exports' %}">{% trans "Exports par saison" %}</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a target="_blank" href="{% url 'public-nextqualifs' %}">{% trans "Prochaines Qualifs (public)" %}</a></li>
+                        </ul>
+                    </a>
+                </li>
             {% endif %}
         {% endif %}
     {% endif %}
