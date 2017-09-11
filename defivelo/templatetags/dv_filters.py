@@ -34,7 +34,8 @@ from apps.challenge import (
     STAFF_FIELDKEY_HELPER_PREFIX,
 )
 from apps.common import (
-    DV_SEASON_CHOICES, DV_STATE_CHOICES, DV_STATE_COLORS, DV_STATES_LONGER_ABBREVIATIONS, STDGLYPHICON,
+    DV_SEASON_CHOICES, DV_STATE_CHOICES, DV_STATE_COLORS, DV_STATES_LONGER_ABBREVIATIONS, DV_STATES_REAL_FALLBACKS,
+    STDGLYPHICON,
 )
 from apps.user import FORMATION_M1, FORMATION_M2, formation_short
 from defivelo.roles import user_cantons
@@ -290,13 +291,14 @@ def weeknumber(date):
 
 
 @register.filter
-def cantons_abbr(cantons, abbr=True):
+def cantons_abbr(cantons, abbr=True, long=True):
+    special_cantons = DV_STATES_LONGER_ABBREVIATIONS if long else DV_STATES_REAL_FALLBACKS
     return [
                 force_text(c[1]) if not abbr
                 else mark_safe(
                     '<abbr title="{title}">{abbr}</abbr>'
                     .format(
-                        abbr=DV_STATES_LONGER_ABBREVIATIONS[c[0]] if c[0] in DV_STATES_LONGER_ABBREVIATIONS else c[0],
+                        abbr=special_cantons[c[0]] if c[0] in special_cantons else c[0],
                         title=c[1]
                     )
                 )
@@ -307,6 +309,11 @@ def cantons_abbr(cantons, abbr=True):
 @register.filter
 def canton_abbr(canton, abbr=True):
     return cantons_abbr([canton], abbr)[0]
+
+
+@register.filter
+def canton_abbr_short(canton, abbr=True):
+    return cantons_abbr([canton], abbr, long=False)[0]
 
 
 @register.filter

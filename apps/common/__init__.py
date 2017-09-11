@@ -40,18 +40,41 @@ DV_STATES_LONGER_ABBREVIATIONS = {
     'WS': 'VS-OW'
 }
 
+DV_STATES_REAL_FALLBACKS = {
+    'WS': 'VS'
+}
+
 DV_STATE_COLORS = {
     None: '#000',
-    'BE': '#86C5F0',
-    'BS': '#81BCB1',
-    'FR': '#8A659A',
-    'GE': '#F0CA2F',
-    'JU': '#CA4853',
-    'NE': '#D67E60',
-    'SG': '#7A8E9C',
-    'AR': '#7A8E9C',
-    'VD': '#83B886',
-    'VS': '#D7849E',
+    # Dans le même ordre que la charte graphique
+    'VD': '#64B984',
+    'NE': '#EF7F5E',
+    'FR': '#97669E',
+    'GE': '#FECC01',
+    'JU': '#E84653',
+    'BE': '#5EC5F2',
+    'VS': '#EF86A1',
+    'BS': '#5DBDB2',
+    'UR': '#206FB7',
+    'SZ': '#E84C0F',
+    'OW': '#00595F',
+    'NW': '#663265',
+    'LU': '#9DC762',
+    'AI': '#1D1D1B',
+    'AR': '#F7AE1A',
+    'SH': '#A4D1A6',
+    'BL': '#FEED40',
+    'TG': '#363777',
+    'SO': '#C61650',
+    'ZG': '#00837E',
+    'TI': '#B0CB22',
+    'GL': '#8075B4',
+    'AG': '#8075B4',
+    'GR': '#E7206A',
+    'SG': '#608A9B',
+    'ZH': '#7ABEE4',
+    # Spéciale
+    'WS': '#EF86A1',
 }
 
 DV_STATE_CHOICES = [c for c in STATE_CHOICES if c[0] in DV_STATES] + \
