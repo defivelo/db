@@ -20,7 +20,9 @@ from __future__ import unicode_literals
 from django.conf.urls import include, url
 from django.views.decorators.cache import never_cache
 
-from .views import Exports, NextQualifs, SeasonStatsExportView, SeasonStatsView
+from .views import (
+    Exports, NextQualifs, OrgaInvoicesExportView, OrgaInvoicesView, SeasonStatsExportView, SeasonStatsView,
+)
 
 urlpatterns = [
     url(r'^qualifs/$',
@@ -29,11 +31,15 @@ urlpatterns = [
     url(r'^exports/(?:(?P<year>[0-9]{4})/(?P<dv_season>[0-9]+)/)?',
         include([
             url(r'^$', never_cache(Exports.as_view()), name='exports'),
+            # Statistiques de Saison
             url(r'^stats/$',
-                never_cache(SeasonStatsView.as_view()),
-                name='season-stats'),
-            url(r'^stats.(?P<format>[a-z]+)$',
-                never_cache(SeasonStatsExportView.as_view()),
-                name='season-stats-export'),
+                never_cache(SeasonStatsView.as_view()), name='season-stats'),
+            url(r'^stats-(?P<format>[a-z]+)$',
+                never_cache(SeasonStatsExportView.as_view()), name='season-stats-export'),
+            # Facturation établissements
+            url(r'^orga-invoice/$',
+                never_cache(OrgaInvoicesView.as_view()), name='orga-invoices'),
+            url(r'^orga-invoice-(?P<format>[a-z]+)$',
+                never_cache(OrgaInvoicesExportView.as_view()), name='orga-invoices-export'),
         ]))
 ]

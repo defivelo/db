@@ -30,7 +30,7 @@ from apps.common import DV_SEASON_AUTUMN, DV_SEASON_SPRING
 from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.views.common import MenuView
 
-from .exports import SeasonStatsExport
+from .exports import OrgaInvoicesExport, SeasonStatsExport
 
 
 class PublicView(StrongholdPublicMixin):
@@ -87,7 +87,7 @@ class Exports(StatsExportsMixin, TemplateView):
         }
         context['nav_url'] = resolve(self.request.path).url_name
         try:
-            context['dataset'] = self.get_dataset()
+            context['dataset'] = self.get_dataset(html=True)
             context['dataset_title'] = self.get_dataset_title()
             context['dataset_exporturl'] = context['nav_url'] + '-export'
         except AttributeError:
@@ -100,4 +100,12 @@ class SeasonStatsView(SeasonStatsExport, Exports):
 
 
 class SeasonStatsExportView(SeasonStatsExport, StatsExportsMixin, ExportMixin, ListView):
+    pass
+
+
+class OrgaInvoicesView(OrgaInvoicesExport, Exports):
+    pass
+
+
+class OrgaInvoicesExportView(OrgaInvoicesExport, StatsExportsMixin, ExportMixin, ListView):
     pass

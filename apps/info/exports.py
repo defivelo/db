@@ -19,8 +19,10 @@ from __future__ import unicode_literals
 
 from datetime import date, timedelta
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Count, Q, Sum
+from django.template.defaultfilters import date as datefilter
 from django.utils.translation import gettext_lazy as _, ugettext as u
 from tablib import Dataset
 
@@ -30,7 +32,7 @@ from apps.orga.models import Organization
 from defivelo.templatetags.dv_filters import season_verb
 
 
-class SeasonStatsExport(object):
+class SeasonExportMixin(object):
     def get_queryset(self):
         begin = date(self.export_year, 1, 1)
         if self.export_season == DV_SEASON_AUTUMN:
@@ -40,6 +42,8 @@ class SeasonStatsExport(object):
             end = date(self.export_year, 12, 31)
         return Session.objects.filter(day__gte=begin, day__lte=end)
 
+
+class SeasonStatsExport(SeasonExportMixin):
     def get_dataset_title(self):
         return _('Statistiques de la saison {season} {year}').format(
             season=season_verb(self.export_season),
@@ -54,7 +58,7 @@ class SeasonStatsExport(object):
             season_verb(self.export_season)
         )
 
-    def get_dataset(self):
+    def get_dataset(self, html=False):
         dataset = Dataset()
         # Prépare le fichier
         dataset.append([
@@ -104,4 +108,62 @@ class SeasonStatsExport(object):
                     volunteers.filter(qualifs_mon1__session__in=sessions_pks).distinct().count(),
                     volunteers.filter(qualifs_actor__session__in=sessions_pks).distinct().count(),
                 ])
+        return dataset
+
+
+class OrgaInvoicesExport(SeasonExportMixin):
+    def get_dataset_title(self):
+        return _('Facturation établissements dans la saison {season} {year}').format(
+            season=season_verb(self.export_season),
+            year=self.export_year
+        )
+
+    @property
+    def export_filename(self):
+        return '%s-%s-%s' % (
+            _('Etablissements_Saison'),
+            self.export_year,
+            season_verb(self.export_season)
+        )
+
+    def get_dataset(self, html=False):
+        dataset = Dataset()
+        # Prépare le fichier
+        dataset.append([
+            u('Canton'),
+            u('Établissement'),
+            u('Date'),
+            u('Heure'),
+            u('Classe'),
+            u('Participants'),
+            u('Vélos loués'),
+            u('Casques loués'),
+        ])
+        sessions = self.get_queryset()
+        sessions_pks = sessions.values_list('id', flat=True)
+        orgas = (
+            Organization.objects.filter(sessions__in=sessions_pks)
+            .order_by('address_canton', 'abbr', 'name')
+            .distinct()
+            .prefetch_related(
+                'sessions',
+                'sessions__qualifications',
+            )
+        )
+        row = []
+        for orga in orgas:
+            orga_row = list(row)
+            orga_row.append(orga.address_canton)
+            orga_row.append(orga.ifabbr if html else orga.name)
+            for orga_session in sessions.filter(orga=orga):
+                session_row = list(orga_row)
+                session_row.append(datefilter(orga_session.day, settings.DATE_FORMAT))
+                session_row.append(datefilter(orga_session.begin, settings.TIME_FORMAT))
+                for qualif in orga_session.qualifications.all():
+                    qualif_row = list(session_row)
+                    qualif_row.append(qualif.name)
+                    qualif_row.append(qualif.n_participants)
+                    qualif_row.append(qualif.n_bikes)
+                    qualif_row.append(qualif.n_helmets)
+                    dataset.append(qualif_row)
         return dataset
