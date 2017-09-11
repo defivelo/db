@@ -28,7 +28,8 @@
                 <p class="text-center">{{ struct.day|date:'j M' }}</p>
                 {% for session in struct.sessions %}
                     <a class="{% if struct.sessions|length != 1 %} dvstate-bg-{{ session.orga.address_canton|lower }}{% endif %}"{% if session.season %} href="{% url 'session-detail' seasonpk=session.season.pk pk=session.id %}"{% endif %}>
-                        <span class="badge pull-right dvstate-bg-none dvstate-txt-{{ session.orga.address_canton|lower }} ">{{ session.begin }}</span>{{ session.orga.ifabbr|safe }}<span class="visible-print-inline"> - {{ session.orga.address_canton|canton_abbr:False }}</span>
+                        {% if session.begin %}<span class="badge pull-right dvstate-bg-none dvstate-txt-{{ session.orga.address_canton|lower }} ">{{ session.begin }}</span>{% endif %}
+                        {{ session.orga.ifabbr|safe }}<span class="visible-print-inline"> - {{ session.orga.address_canton|canton_abbr:False }}</span>
                     </a>
                 {% endfor %}
             </td>
