@@ -21,8 +21,8 @@ from django.conf.urls import include, url
 from django.views.decorators.cache import never_cache
 
 from .views import (
-    Exports, NextQualifs, OrgaInvoicesExportView, OrgaInvoicesView, SeasonStatsExportView, SeasonStatsView,
-    QualifsCalendar,
+    Exports, NextQualifs, OrgaInvoicesExportView, OrgaInvoicesView, QualifsCalendar, SeasonStatsExportView,
+    SeasonStatsView,
 )
 
 urlpatterns = [

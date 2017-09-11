@@ -30,7 +30,7 @@ from apps.common import DV_SEASON_AUTUMN, DV_SEASON_SPRING
 from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.views.common import MenuView
 
-from .exports import OrgaInvoicesExport, SeasonStatsExport, SeasonExportMixin
+from .exports import OrgaInvoicesExport, SeasonExportMixin, SeasonStatsExport
 
 
 class PublicView(StrongholdPublicMixin):
