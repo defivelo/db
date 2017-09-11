@@ -50,6 +50,8 @@ class NextQualifs(PublicView, PaginatorMixin, ListView):
 
 
 class StatsExportsMixin(MenuView, HasPermissionsMixin):
+    required_permission = 'challenge_season_crud'
+
     def dispatch(self, *args, **kwargs):
         try:
             self.export_year = int(kwargs.pop('year'))
@@ -72,7 +74,6 @@ class StatsExportsMixin(MenuView, HasPermissionsMixin):
 
 
 class Exports(StatsExportsMixin, TemplateView):
-    required_permission = 'challenge_season_crud'
     template_name = 'info/exports.html'
 
     def get_context_data(self, **kwargs):
