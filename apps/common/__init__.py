@@ -40,6 +40,20 @@ DV_STATES_LONGER_ABBREVIATIONS = {
     'WS': 'VS-OW'
 }
 
+DV_STATE_COLORS = {
+    None: '#000',
+    'BE': '#86C5F0',
+    'BS': '#81BCB1',
+    'FR': '#8A659A',
+    'GE': '#F0CA2F',
+    'JU': '#CA4853',
+    'NE': '#D67E60',
+    'SG': '#7A8E9C',
+    'AR': '#7A8E9C',
+    'VD': '#83B886',
+    'VS': '#D7849E',
+}
+
 DV_STATE_CHOICES = [c for c in STATE_CHOICES if c[0] in DV_STATES] + \
     DV_ADDITIONAL_STATES
 

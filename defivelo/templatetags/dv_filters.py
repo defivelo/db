@@ -33,7 +33,9 @@ from apps.challenge import (
     CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY, CHOSEN_AS_NOT, CHOSEN_AS_REPLACEMENT, SEASON_WORKWISH_FIELDKEY, STAFF_FIELDKEY,
     STAFF_FIELDKEY_HELPER_PREFIX,
 )
-from apps.common import DV_STATE_CHOICES, DV_STATES_LONGER_ABBREVIATIONS, STDGLYPHICON
+from apps.common import (
+    DV_SEASON_CHOICES, DV_STATE_CHOICES, DV_STATE_COLORS, DV_STATES_LONGER_ABBREVIATIONS, STDGLYPHICON,
+)
 from apps.user import FORMATION_M1, FORMATION_M2, formation_short
 from defivelo.roles import user_cantons
 
@@ -308,6 +310,14 @@ def canton_abbr(canton, abbr=True):
 
 
 @register.filter
+def season_verb(season_id):
+    try:
+        return [s[1] for s in DV_SEASON_CHOICES if s[0] == season_id][0]
+    except IndexError:
+        return ''
+
+
+@register.filter
 def anyofusercantons(user, cantons):
     try:
         usercantons = user_cantons(user)
@@ -336,3 +346,8 @@ def lettercounter(count):
     if 0 <= icount <= 26:
         return chr(64 + icount)
     return icount
+
+
+@register.simple_tag
+def canton_colors():
+    return DV_STATE_COLORS

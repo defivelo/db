@@ -1,0 +1,11 @@
+{% extends "skel.html" %}
+{% load bootstrap3 static compress i18n dv_filters %}
+{% block body_class %}dvpublic{% endblock %}
+{% block bootstrap3_extra_head %}
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Quicksand%7CQuestrial%7COpen+Sans:400,600" />
+{% endblock %}
+{% block body %}{% block bootstrap3_content %}
+    <div class="{% block container-class %}container{% endblock %}" role="main">{% block container %}
+      <span class="hidden-print">{% bootstrap_messages %}</span>
+      {% block content %}{% endblock %}
+    {% endblock %}</div><!-- /container -->{% endblock %}{% endblock %}

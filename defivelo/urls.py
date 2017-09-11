@@ -23,7 +23,7 @@ from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
-from .views import HomeView, LicenseView
+from .views.common import HomeView, LicenseView
 
 admin.autodiscover()
 
@@ -42,6 +42,7 @@ urlpatterns += i18n_patterns(
     url(r'^season/', include('apps.challenge.urls')),
     url(r'^orga/', include('apps.orga.urls')),
     url(r'^user/', include('apps.user.urls')),
+    url(r'^info/', include('apps.info.urls')),
 )
 
 if settings.DEBUG:

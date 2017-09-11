@@ -1,0 +1,39 @@
+{% extends "base_public.html" %}{% load i18n dv_filters %}
+{% block container-class %}container-fluid{% endblock %}
+{% block head_title %}{% trans "Prochaines Qualifs" %}{% endblock %}
+{% block content %}
+<h2>{% trans "Prochaines Qualifs" %}</h2>
+{% if page_obj.has_next or page_obj.has_previous %}
+    <nav>
+        <ul class="pager">
+        {% if page_obj.has_previous %}
+            <li class="previous">
+                <a href="{% url 'public-nextqualifs' %}?page={{ page_obj.previous_page_number }}">
+                    <span aria-hidden="true">←</span> {% trans "Qualifs antérieures" %}
+                </a>
+            </li>
+        {% endif %}
+        {% if page_obj.has_next %}
+            <li class="next">
+                <a href="{% url 'public-nextqualifs' %}?page={{ page_obj.next_page_number }}">
+                    {% trans "Qualifs ultérieures" %} <span aria-hidden="true">→</span>
+                </a>
+            </li>
+        {% endif %}
+        </ul>
+    </nav>
+{% endif %}
+<div class="row">
+{% for session in sessions %}
+    <div class="col-xs-6 col-sm-4 col-md-3 dvqualif-badge">
+        <a class="dvstate-txt-none dvstate-txt-hov-{{ session.orga.address_canton|lower }}">
+            <span class="dvstate-round pull-left dvstate-bg-{{ session.orga.address_canton|lower }}">{{ session.orga.address_canton|canton_abbr }}</span>
+            <div class="pull-left card-content">
+                <h6 class="date_big">{{ session.day|date:'j M' }}</h6>
+                <p>{{ session.begin }}<br />{{ session.orga.ifabbr }}<br />{{session.city}} ({{ session.orga.address_canton|canton_abbr }})</p>
+            </div>
+        </a>
+    </div>
+{% endfor %}
+</div>
+{% endblock %}

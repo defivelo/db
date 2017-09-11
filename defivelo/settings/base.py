@@ -219,7 +219,11 @@ MEDIA_URL = get_env_variable('MEDIA_URL', '/media/')
 MEDIA_ROOT = get_env_variable('MEDIA_ROOT', '/tmp/static/media')
 
 # Adapt Stronghold for allauth
-STRONGHOLD_PUBLIC_URLS = [r'^/admin/.*$', r'^/accounts/.*$']
+STRONGHOLD_PUBLIC_URLS = [
+    r'^/admin/.*$',   # Administration
+    r'^/accounts/.*$',  # Login
+    r'^/agpl-.*$',  # License
+]
 
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`

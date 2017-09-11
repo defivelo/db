@@ -22,19 +22,27 @@ from datetime import date
 from article.models import Article
 from django.utils import timezone
 from django.views.generic.base import TemplateView
+from stronghold.views import StrongholdPublicMixin
 
 from apps.common import DV_SEASON_AUTUMN, DV_SEASON_LAST_SPRING_MONTH, DV_SEASON_SPRING
 from defivelo.roles import has_permission
 
 
 class MenuView(object):
+    def current_season(self):
+        return (
+            DV_SEASON_SPRING
+            if date.today().month <= DV_SEASON_LAST_SPRING_MONTH
+            else DV_SEASON_AUTUMN
+        )
+
     def get_context_data(self, **kwargs):
         context = super(MenuView, self).get_context_data(**kwargs)
         today = date.today()
-        season = DV_SEASON_SPRING if today.month <= DV_SEASON_LAST_SPRING_MONTH else DV_SEASON_AUTUMN
+
         context['current_seasons'] = (
             self.request.user.profile.get_seasons()
-            .filter(year=today.year, season=season)
+            .filter(year=today.year, season=self.current_season())
         )
         context['now'] = timezone.now()
         return context
@@ -54,5 +62,5 @@ class HomeView(MenuView, TemplateView):
         return context
 
 
-class LicenseView(MenuView, TemplateView):
+class LicenseView(StrongholdPublicMixin, TemplateView):
     template_name = "license.html"

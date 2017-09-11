@@ -1,0 +1,16 @@
+{% load dv_filters %}
+<style type="text/css">
+{% canton_colors as colors %}{% for short, color in colors.items %}
+.dvstate-txt-{{ short|lower }} {
+    color: {{ color }};
+}
+.dvstate-txt-hov-{{ short|lower }}:hover {
+    color: {{ color }};
+}
+.dvstate-bg-{{ short|lower }} {
+    background-color: {{ color }};
+}
+.dvstate-bg-hov-{{ short|lower }}:hover {
+    background-color: {{ color }};
+}{% endfor %}
+</style>
