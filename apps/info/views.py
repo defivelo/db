@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from datetime import date
+from datetime import date, timedelta
 
 from django.core.urlresolvers import resolve
 from django.views.generic.base import TemplateView
@@ -30,7 +30,7 @@ from apps.common import DV_SEASON_AUTUMN, DV_SEASON_SPRING
 from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.views.common import MenuView
 
-from .exports import OrgaInvoicesExport, SeasonStatsExport
+from .exports import OrgaInvoicesExport, SeasonStatsExport, SeasonExportMixin
 
 
 class PublicView(StrongholdPublicMixin):
@@ -69,15 +69,6 @@ class StatsExportsMixin(MenuView, HasPermissionsMixin):
             'year': self.export_year,
             'season': self.export_season,
         }
-        context['menu_category'] = 'exports'
-        return context
-
-
-class Exports(StatsExportsMixin, TemplateView):
-    template_name = 'info/exports.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(Exports, self).get_context_data(**kwargs)
         context['previous_period'] = {
             'year': self.export_year - (1 if self.export_season == DV_SEASON_SPRING else 0),
             'season': DV_SEASON_AUTUMN if self.export_season == DV_SEASON_SPRING else DV_SEASON_SPRING,
@@ -87,6 +78,54 @@ class Exports(StatsExportsMixin, TemplateView):
             'season': DV_SEASON_AUTUMN if self.export_season == DV_SEASON_SPRING else DV_SEASON_SPRING,
         }
         context['nav_url'] = resolve(self.request.path).url_name
+        context['menu_category'] = 'exports'
+        return context
+
+
+class QualifsCalendar(SeasonExportMixin, StatsExportsMixin, ListView):
+    template_name = 'info/qualifs_calendar.html'
+    context_object_name = 'sessions'
+
+    def get_context_data(self, **kwargs):
+        context = super(QualifsCalendar, self).get_context_data(**kwargs)
+        our_sessions = list(context['sessions'])
+        if len(our_sessions) == 0:
+            return context
+        context['date_sessions'] = []
+        context['legend_cantons'] = {s.orga.address_canton: '' for s in our_sessions}
+        # Get to its monday (see https://stackoverflow.com/questions/1622038/find-mondays-date-with-python)
+        first_session_day = our_sessions[0].day
+        first_monday = first_session_day + timedelta(days=-first_session_day.weekday())
+        thisday = first_monday
+        offset = 0
+        while len(our_sessions) > 0:
+            thisday = first_monday + timedelta(days=offset)
+            struct = {
+                'day': thisday,
+                'sessions': []
+            }
+            while our_sessions and our_sessions[0].day == thisday:
+                struct['sessions'].append(our_sessions.pop(0))
+            context['date_sessions'].append(struct)
+            # Go to next day
+            offset = offset + 1
+        # Fill in the missing days
+        while thisday.weekday() != 6:
+            thisday = first_monday + timedelta(days=offset)
+            context['date_sessions'].append({
+                'day': thisday,
+                'sessions': []
+            })
+            offset = offset + 1
+
+        return context
+
+
+class Exports(StatsExportsMixin, TemplateView):
+    template_name = 'info/exports.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(Exports, self).get_context_data(**kwargs)
         try:
             context['dataset'] = self.get_dataset(html=True)
             context['dataset_title'] = self.get_dataset_title()

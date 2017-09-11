@@ -1,0 +1,20 @@
+table.dvqualifs-calendar {
+    &>tbody {
+        &>tr {
+            &>td,
+            &>th {
+                padding: 0;
+
+                a {
+                    display: block;
+                    padding-top: 8px;
+                    padding-left: 8px;
+                    padding-right: 8px;
+                    padding-bottom: 10px;
+                    margin-bottom: 0;
+                    color: #333;
+                }
+            }
+        }
+    }
+}

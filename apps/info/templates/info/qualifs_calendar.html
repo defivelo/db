@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load i18n dv_filters %}
+
+{% block head_title %}{% blocktrans with year=export_period.year season=export_period.season|season_verb %}Calendrier de la saison {{ season }} {{year}}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+{% include 'info/_season_nav.html' with nav_url=nav_url previous_period=previous_period next_period=next_period only %}
+{% with season=export_period.season year=export_period.year %}
+
+<h1>{% blocktrans with year=year season=season|season_verb %}Calendrier de la saison {{ season }} {{year}}{% endblocktrans %}</h1>
+{% endwith %}
+{% include 'export_buttons.html' with printonly=True %}
+
+{% if date_sessions %}
+    <table class="table table-striped table-bordered dvqualifs-calendar">
+        <thead>
+            <tr><td></td>
+            {% for struct in date_sessions|slice:":7" %}
+                <th class="text-center">{{ struct.day|date:'l' }}</th>
+            {% endfor %}
+            </tr>
+        </thead>
+        {% for struct in date_sessions %}
+            {% if struct.day.weekday == 0 %}
+                <tr><th>{{ struct.day|weeknumber }}</th>
+            {% endif %}
+            <td{% if struct.sessions|length == 1 %} class="dvstate-bg-{{ struct.sessions.0.orga.address_canton|lower }}"{% endif %}>
+                <p class="text-center">{{ struct.day|date:'j M' }}</p>
+                {% for session in struct.sessions %}
+                    <a class="{% if struct.sessions|length != 1 %} dvstate-bg-{{ session.orga.address_canton|lower }}{% endif %}"{% if session.season %} href="{% url 'session-detail' seasonpk=session.season.pk pk=session.id %}"{% endif %}>
+                        <span class="badge pull-right dvstate-bg-none dvstate-txt-{{ session.orga.address_canton|lower }} ">{{ session.begin }}</span>{{ session.orga.ifabbr|safe }}<span class="visible-print-inline"> - {{ session.orga.address_canton|canton_abbr:False }}</span>
+                    </a>
+                {% endfor %}
+            </td>
+            {% if struct.day.weekday == 6 %}
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+
+    <table class="table table-bordered">
+        <tfoot><tr>
+        {% for canton in legend_cantons %}
+        <th class="text-center dvstate-bg-{{ canton|lower }}">{{canton|canton_abbr:False}}</th>
+        {% endfor %}
+        </tr></tfoot>
+    </table>
+{% else %}
+    <div class="alert alert-warning row" role="alert">
+        {% trans "Aucune Qualif n'est planifiée pour l'instant!" %}
+    </div>
+{% endif %}
+
+{% endblock %}
+

@@ -42,7 +42,12 @@ class SeasonExportMixin(object):
         end = date(self.export_year, DV_SEASON_LAST_SPRING_MONTH + 1, 1) - timedelta(days=1)
         if self.export_season == DV_SEASON_AUTUMN:
             end = date(self.export_year, 12, 31)
-        return Session.objects.filter(day__gte=begin, day__lte=end)
+        return (
+            Session.objects
+            .filter(day__gte=begin, day__lte=end)
+            .order_by('day', 'begin')
+            .prefetch_related('orga')
+        )
 
 
 class SeasonStatsExport(SeasonExportMixin):

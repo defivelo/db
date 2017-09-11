@@ -22,15 +22,17 @@ from django.views.decorators.cache import never_cache
 
 from .views import (
     Exports, NextQualifs, OrgaInvoicesExportView, OrgaInvoicesView, SeasonStatsExportView, SeasonStatsView,
+    QualifsCalendar,
 )
 
 urlpatterns = [
     url(r'^qualifs/$',
         never_cache(NextQualifs.as_view()),
         name='public-nextqualifs'),
-    url(r'^exports/(?:(?P<year>[0-9]{4})/(?P<dv_season>[0-9]+)/)?',
+    url(r'^(?:(?P<year>[0-9]{4})/(?P<dv_season>[0-9]+)/)?',
         include([
             url(r'^$', never_cache(Exports.as_view()), name='exports'),
+            url(r'^calendar/$', never_cache(QualifsCalendar.as_view()), name='qualifs-calendar'),
             # Statistiques de Saison
             url(r'^stats/$',
                 never_cache(SeasonStatsView.as_view()), name='season-stats'),
