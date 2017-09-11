@@ -310,6 +310,14 @@ def canton_abbr(canton, abbr=True):
 
 
 @register.filter
+def ifcanton_abbr(canton):
+    try:
+        return canton_abbr(canton)
+    except IndexError:
+        return canton
+
+
+@register.filter
 def season_verb(season_id):
     try:
         return [s[1] for s in DV_SEASON_CHOICES if s[0] == season_id][0]

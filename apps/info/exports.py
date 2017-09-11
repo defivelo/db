@@ -40,6 +40,12 @@ class SeasonStatsExport(object):
             end = date(self.export_year, 12, 31)
         return Session.objects.filter(day__gte=begin, day__lte=end)
 
+    def get_dataset_title(self):
+        return _('Statistiques de la saison {season} {year}').format(
+            season=season_verb(self.export_season),
+            year=self.export_year
+        )
+
     @property
     def export_filename(self):
         return '%s-%s-%s' % (
@@ -53,13 +59,12 @@ class SeasonStatsExport(object):
         # Prépare le fichier
         dataset.append([
             u('Canton'),
-            u('Canton'),
             u('Établissements'),
             u('Sessions'),
             u('Qualifs'),
             u('Nombre d\'élèves'),
-            u('Nombre de vélos'),
-            u('Nombre de casques'),
+            u('Prêts de vélos'),
+            u('Prêts de casques'),
             u('Nombre de personnes ayant exercé'),
             u('… comme moniteurs 2'),
             u('… comme moniteurs 1'),
@@ -67,9 +72,10 @@ class SeasonStatsExport(object):
         ])
         volunteers = get_user_model().objects
         orgas = Organization.objects
+        object_list = self.get_queryset()
         for (canton, canton_verb) in DV_STATE_CHOICES:
             cantonal_sessions = (
-                self.object_list
+                object_list
                 .filter(orga__address_canton=canton)
                 .annotate(
                     n_qualifs=Count('qualifications'),
@@ -83,7 +89,6 @@ class SeasonStatsExport(object):
                 sessions_pks = cantonal_sessions.values_list('id', flat=True)
                 dataset.append([
                     canton,
-                    canton_verb,
                     orgas.filter(sessions__in=sessions_pks).distinct().count(),
                     n_sessions,
                     cantonal_sessions.aggregate(total=Sum('n_qualifs'))['total'],

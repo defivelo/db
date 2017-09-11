@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 
 from datetime import date
 
+from django.core.urlresolvers import resolve
 from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 from rolepermissions.mixins import HasPermissionsMixin
@@ -84,7 +85,18 @@ class Exports(StatsExportsMixin, TemplateView):
             'year': self.export_year + (1 if self.export_season == DV_SEASON_AUTUMN else 0),
             'season': DV_SEASON_AUTUMN if self.export_season == DV_SEASON_SPRING else DV_SEASON_SPRING,
         }
+        context['nav_url'] = resolve(self.request.path).url_name
+        try:
+            context['dataset'] = self.get_dataset()
+            context['dataset_title'] = self.get_dataset_title()
+            context['dataset_exporturl'] = context['nav_url'] + '-export'
+        except AttributeError:
+            pass
         return context
+
+
+class SeasonStatsView(SeasonStatsExport, Exports):
+    pass
 
 
 class SeasonStatsExportView(SeasonStatsExport, StatsExportsMixin, ExportMixin, ListView):
