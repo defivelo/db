@@ -12,6 +12,7 @@ body {
 
 .container {
     width: auto;
+    margin-bottom: 16px;
 }
 
 header#print-header {
@@ -59,7 +60,7 @@ a[href]:after {
 }
 
 /* Reduce margins */
-table.table {
+table.table:not(.dvqualifs-calendar) {
     margin: 0;
     &>tbody,
     &>tfoot,
