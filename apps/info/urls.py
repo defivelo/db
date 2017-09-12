@@ -21,15 +21,15 @@ from django.conf.urls import include, url
 from django.views.decorators.cache import never_cache
 
 from .views import (
-    MonthExports, NextQualifs, OrgaInvoicesExportView, OrgaInvoicesView, QualifsCalendar, SeasonExports,
-    SeasonStatsExportView, SeasonStatsView,
+    MonthExports, NextQualifs, OrgaInvoicesExportView, OrgaInvoicesView, QualifsCalendar, SalariesExportView,
+    SalariesView, SeasonExports, SeasonStatsExportView, SeasonStatsView,
 )
 
 urlpatterns = [
     url(r'^qualifs/$',
         never_cache(NextQualifs.as_view()),
         name='public-nextqualifs'),
-    url(r'^(?:(?P<dv_season>[0-9]+)/(?P<year>[0-9]{4})/)?',
+    url(r'^(?:(?P<year>[0-9]{4})/(?P<dv_season>[0-9]+)/)?',
         include([
             url(r'^$', never_cache(SeasonExports.as_view()), name='season-exports'),
             url(r'^calendar/$', never_cache(QualifsCalendar.as_view()), name='qualifs-calendar'),
@@ -44,8 +44,13 @@ urlpatterns = [
             url(r'^orga-invoice-(?P<format>[a-z]+)$',
                 never_cache(OrgaInvoicesExportView.as_view()), name='orga-invoices-export'),
         ])),
-    url(r'^m(?:(?P<month>[0-9]+)/(?P<year>[0-9]{4})/)?',
+    url(r'^m/(?:(?P<year>[0-9]{4})/(?P<month>[0-9]+)/)?',
         include([
             url(r'^$', never_cache(MonthExports.as_view()), name='month-exports'),
+            # Salaires
+            url(r'^salaries/$',
+                never_cache(SalariesView.as_view()), name='salaries'),
+            url(r'^salaries-(?P<format>[a-z]+)$',
+                never_cache(SalariesExportView.as_view()), name='salaries-export'),
         ]))
 ]

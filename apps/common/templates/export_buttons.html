@@ -10,7 +10,7 @@
         {% with 'ods xls csv' as formats %}
             {% for format in formats.split %}
                 <a class="btn btn-info btn-sm" title="{% blocktrans %}Télécharger au format {{ format }}{% endblocktrans %}"
-                    href="{% if seasonpk %}{% url exporturl seasonpk exportargs format %}{% elif year and season %}{% url exporturl year season format %}{% else %}{% url exporturl exportargs format %}{% endif %}{% if filter_querystring %}?{{ filter_querystring }}{% endif %}"
+                    href="{% if seasonpk %}{% url exporturl seasonpk exportargs format %}{% elif year and season %}{% url exporturl year season format %}{% elif year and month %}{% url exporturl year month format %}{% else %}{% url exporturl exportargs format %}{% endif %}{% if filter_querystring %}?{{ filter_querystring }}{% endif %}"
                     ">
                     {% ifchanged %}
                         <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>

@@ -1,0 +1,16 @@
+{% load dv_filters i18n %}
+<nav>
+    <ul class="pager">
+        <li class="previous">
+            <a href="{% url nav_url month=previous_month.month year=previous_month.year %}">
+                <span aria-hidden="true">←</span> {{ previous_month|date:'F' }} {{ previous_month.year }} 
+            </a>
+        </li>
+
+        <li class="next">
+            <a href="{% url nav_url month=next_month.month year=next_month.year %}">
+                {{ next_month|date:'F' }} {{ next_month.year }} <span aria-hidden="true">→</span>
+            </a>
+        </li>
+    </ul>
+</nav>

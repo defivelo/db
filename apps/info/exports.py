@@ -183,3 +183,26 @@ class OrgaInvoicesExport(SeasonExportMixin):
                     qualif_row.append(qualif.n_helmets)
                     dataset.append(qualif_row)
         return dataset
+
+
+class SalariesExport(object):
+    def export_month(self):
+        return date(int(self.get_year()), int(self.get_month()), 1)
+
+    def get_dataset_title(self):
+        return _('Salaires - {month_year}').format(
+            month_year=datefilter(self.export_month(), 'F Y')
+        )
+
+    @property
+    def export_filename(self):
+        return '%s-%s-%s' % (
+            _('Salaires_Mois'),
+            self.export_month().month,
+            self.export_month().year
+        )
+
+    def get_dataset(self, html=False):
+        dataset = Dataset()
+        dataset.append(['test'])
+        return dataset

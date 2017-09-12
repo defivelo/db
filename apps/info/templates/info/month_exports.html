@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load i18n dv_filters %}
+
+{% block head_title %}{% blocktrans with year=month.year month=month|date:'F' %}Exports pour {{ month }} {{year}}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+{% include 'info/_month_nav.html' with nav_url=nav_url previous_month=previous_month next_month=next_month only %}
+
+{% if dataset %}
+    <h1>{{ dataset_title }}</h1>
+    {% include 'export_buttons.html' with exporturl=dataset_exporturl year=month.year month=month.month only %}
+    <table class="table">
+    {% for row in dataset %}
+        <tr>
+        {% for entry in row %}
+            {% if forloop.first or forloop.parentloop.first %}
+                <th>{{ entry|ifcanton_abbr|default:'' }}</th>
+            {% else %}
+                <td>{{ entry|default:'' }}</td>
+            {% endif %}
+        {% endfor %}
+        </tr>
+    {% endfor %}
+    </table>
+{% else %}
+    <h1>{% blocktrans with year=month.year month=month|date:'F' %}Exports pour {{ month }} {{year}}{% endblocktrans %}</h1>
+
+    <ul>
+    </ul>
+{% endif %}
+{% endblock %}

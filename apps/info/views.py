@@ -31,7 +31,7 @@ from apps.common import DV_SEASON_AUTUMN, DV_SEASON_SPRING
 from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.views.common import MenuView
 
-from .exports import OrgaInvoicesExport, SeasonExportMixin, SeasonStatsExport
+from .exports import OrgaInvoicesExport, SalariesExport, SeasonExportMixin, SeasonStatsExport
 
 
 class PublicView(StrongholdPublicMixin):
@@ -49,12 +49,16 @@ class NextQualifs(PublicView, PaginatorMixin, ListView):
         .prefetch_related('orga')
     )
 
-class MonthExportsMixin(MonthArchiveView, MenuView, HasPermissionsMixin):
+
+class MonthExportsMixin(MenuView, MonthArchiveView, HasPermissionsMixin):
     required_permission = 'challenge_season_crud'
     date_field = "day"
     month_format = '%m'
     allow_empty = True
     allow_future = True
+
+    def get_queryset(self):
+        return Session.objects.all()
 
     def get_month(self):
         month = super(MonthExportsMixin, self).get_month()
@@ -64,12 +68,10 @@ class MonthExportsMixin(MonthArchiveView, MenuView, HasPermissionsMixin):
         year = super(MonthExportsMixin, self).get_year()
         return year if year is not None else str(date.today().year)
 
-    def get_queryset(self):
-        return Session.objects.all()
-
     def get_context_data(self, **kwargs):
         context = super(MonthExportsMixin, self).get_context_data(**kwargs)
         context['nav_url'] = resolve(self.request.path).url_name
+        context['dataset_exporturl'] = context['nav_url'] + '-export'
         context['menu_category'] = 'exports'
         return context
 
@@ -103,6 +105,7 @@ class SeasonExportsMixin(MenuView, HasPermissionsMixin):
             'season': DV_SEASON_AUTUMN if self.export_season == DV_SEASON_SPRING else DV_SEASON_SPRING,
         }
         context['nav_url'] = resolve(self.request.path).url_name
+        context['dataset_exporturl'] = context['nav_url'] + '-export'
         context['menu_category'] = 'exports'
         return context
 
@@ -145,20 +148,28 @@ class QualifsCalendar(SeasonExportMixin, SeasonExportsMixin, ListView):
 
         return context
 
+
 class IfDatasetExportMixin(object):
     def get_context_data(self, **kwargs):
         context = super(IfDatasetExportMixin, self).get_context_data(**kwargs)
         try:
             context['dataset'] = self.get_dataset(html=True)
             context['dataset_title'] = self.get_dataset_title()
-            context['dataset_exporturl'] = context['nav_url'] + '-export'
         except AttributeError:
             pass
         return context
 
 
-class MonthExports(MonthExportsMixin):
+class MonthExports(IfDatasetExportMixin, MonthExportsMixin):
     template_name = 'info/month_exports.html'
+
+
+class SalariesView(SalariesExport, MonthExports):
+    pass
+
+
+class SalariesExportView(SalariesExport, MonthExports, ExportMixin, ListView):
+    pass
 
 
 class SeasonExports(SeasonExportsMixin, IfDatasetExportMixin, TemplateView):
