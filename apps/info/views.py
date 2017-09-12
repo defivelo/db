@@ -21,6 +21,7 @@ from datetime import date, timedelta
 
 from django.core.urlresolvers import resolve
 from django.views.generic.base import TemplateView
+from django.views.generic.dates import MonthArchiveView
 from django.views.generic.list import ListView
 from rolepermissions.mixins import HasPermissionsMixin
 from stronghold.views import StrongholdPublicMixin
@@ -48,8 +49,32 @@ class NextQualifs(PublicView, PaginatorMixin, ListView):
         .prefetch_related('orga')
     )
 
+class MonthExportsMixin(MonthArchiveView, MenuView, HasPermissionsMixin):
+    required_permission = 'challenge_season_crud'
+    date_field = "day"
+    month_format = '%m'
+    allow_empty = True
+    allow_future = True
 
-class StatsExportsMixin(MenuView, HasPermissionsMixin):
+    def get_month(self):
+        month = super(MonthExportsMixin, self).get_month()
+        return month if month is not None else str(date.today().month)
+
+    def get_year(self):
+        year = super(MonthExportsMixin, self).get_year()
+        return year if year is not None else str(date.today().year)
+
+    def get_queryset(self):
+        return Session.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super(MonthExportsMixin, self).get_context_data(**kwargs)
+        context['nav_url'] = resolve(self.request.path).url_name
+        context['menu_category'] = 'exports'
+        return context
+
+
+class SeasonExportsMixin(MenuView, HasPermissionsMixin):
     required_permission = 'challenge_season_crud'
 
     def dispatch(self, *args, **kwargs):
@@ -61,10 +86,10 @@ class StatsExportsMixin(MenuView, HasPermissionsMixin):
             self.export_season = int(kwargs.pop('dv_season'))
         except TypeError:
             self.export_season = self.current_season()
-        return super(StatsExportsMixin, self).dispatch(*args, **kwargs)
+        return super(SeasonExportsMixin, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(StatsExportsMixin, self).get_context_data(**kwargs)
+        context = super(SeasonExportsMixin, self).get_context_data(**kwargs)
         context['export_period'] = {
             'year': self.export_year,
             'season': self.export_season,
@@ -82,7 +107,7 @@ class StatsExportsMixin(MenuView, HasPermissionsMixin):
         return context
 
 
-class QualifsCalendar(SeasonExportMixin, StatsExportsMixin, ListView):
+class QualifsCalendar(SeasonExportMixin, SeasonExportsMixin, ListView):
     template_name = 'info/qualifs_calendar.html'
     context_object_name = 'sessions'
 
@@ -120,12 +145,9 @@ class QualifsCalendar(SeasonExportMixin, StatsExportsMixin, ListView):
 
         return context
 
-
-class Exports(StatsExportsMixin, TemplateView):
-    template_name = 'info/exports.html'
-
+class IfDatasetExportMixin(object):
     def get_context_data(self, **kwargs):
-        context = super(Exports, self).get_context_data(**kwargs)
+        context = super(IfDatasetExportMixin, self).get_context_data(**kwargs)
         try:
             context['dataset'] = self.get_dataset(html=True)
             context['dataset_title'] = self.get_dataset_title()
@@ -135,17 +157,25 @@ class Exports(StatsExportsMixin, TemplateView):
         return context
 
 
-class SeasonStatsView(SeasonStatsExport, Exports):
+class MonthExports(MonthExportsMixin):
+    template_name = 'info/month_exports.html'
+
+
+class SeasonExports(SeasonExportsMixin, IfDatasetExportMixin, TemplateView):
+    template_name = 'info/exports.html'
+
+
+class SeasonStatsView(SeasonStatsExport, SeasonExports):
     pass
 
 
-class SeasonStatsExportView(SeasonStatsExport, StatsExportsMixin, ExportMixin, ListView):
+class SeasonStatsExportView(SeasonStatsExport, SeasonExportsMixin, ExportMixin, ListView):
     pass
 
 
-class OrgaInvoicesView(OrgaInvoicesExport, Exports):
+class OrgaInvoicesView(OrgaInvoicesExport, SeasonExports):
     pass
 
 
-class OrgaInvoicesExportView(OrgaInvoicesExport, StatsExportsMixin, ExportMixin, ListView):
+class OrgaInvoicesExportView(OrgaInvoicesExport, SeasonExportsMixin, ExportMixin, ListView):
     pass
