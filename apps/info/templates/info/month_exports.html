@@ -27,7 +27,7 @@
     <h1>{% blocktrans with year=month.year month=month|date:'F' %}Exports pour {{ month }} {{year}}{% endblocktrans %}</h1>
 
     <ul>
-        <li><a href="{% url 'salaries' year=month.year month=month.month %}">{% trans "Export pour les salaires" %}</a></li>
+        <li><a href="{% url 'salaries' year=month.year month=month.month %}">{% trans "Export pour les salaires moniteurs" %}</a></li>
     </ul>
 {% endif %}
 {% endblock %}

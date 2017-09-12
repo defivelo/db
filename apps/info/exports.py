@@ -188,11 +188,13 @@ class OrgaInvoicesExport(SeasonExportMixin):
 
 
 class SalariesExport(object):
+    # Seulement les _salaires_ (moniteurs)
+
     def export_month(self):
         return date(int(self.get_year()), int(self.get_month()), 1)
 
     def get_dataset_title(self):
-        return _('Salaires - {month_year}').format(
+        return _('Salaires Moniteurs - {month_year}').format(
             month_year=datefilter(self.export_month(), 'F Y')
         )
 
@@ -208,6 +210,9 @@ class SalariesExport(object):
         dataset = Dataset()
         # Cases en haut à gauche
         dataset.append_col(['' for i in range(2)] + [u('Nom')])
+        dataset.append_col(['' for i in range(2)] + [u('Adresse')])
+        dataset.append_col(['' for i in range(2)] + [u('NPA')])
+        dataset.append_col(['' for i in range(2)] + [u('Ville')])
         dataset.append_col(['' for i in range(2)] + [u('N° AVS')])
         dataset.append_col(['' for i in range(2)] + [u('IBAN')])
         dataset.append_col(['' for i in range(2)] + [u('Canton d\'affiliation')])
@@ -222,7 +227,6 @@ class SalariesExport(object):
         # All helpers in these sessions
         everyone = (
             get_user_model().objects.filter(
-                Q(qualifs_actor__session__in=sessions_pks) |
                 Q(qualifs_mon1__session__in=sessions_pks) |
                 Q(qualifs_mon2__session__in=sessions_pks)
             )
@@ -234,6 +238,9 @@ class SalariesExport(object):
         for user in everyone:
             row = [
                 user.get_full_name(),
+                '%s %s' % (user.profile.address_street, user.profile.address_no),
+                user.profile.address_zip,
+                user.profile.address_city,
                 (
                     (user.profile.iban[:5] + '…' if len(user.profile.iban) > 0 else '')
                     if html else user.profile.iban_nice
@@ -246,21 +253,13 @@ class SalariesExport(object):
             ]
             for session in self.object_list:
                 label = ''
-                if user.id == session.superleader_id:
-                    # Translators: Nom court pour 'Moniteur +'
-                    label = u('M+')
-                else:
-                    for quali in session.qualifications.all():
-                        if user.id == quali.leader_id:
-                            label = formation_short(FORMATION_M2, True)
-                            break
-                        elif user in quali.helpers.all():
-                            label = formation_short(FORMATION_M1, True)
-                            break
-                        elif user.id == quali.actor_id:
-                            # Translators: Nom court pour 'Intervenant'
-                            label = u('Int.')
-                            break
+                for quali in session.qualifications.all():
+                    if user.id == quali.leader_id:
+                        label = formation_short(FORMATION_M2, True)
+                        break
+                    elif user in quali.helpers.all():
+                        label = formation_short(FORMATION_M1, True)
+                        break
                 row.append(label)
             dataset.append(row)
         return dataset
