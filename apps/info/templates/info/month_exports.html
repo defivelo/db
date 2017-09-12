@@ -28,6 +28,7 @@
 
     <ul>
         <li><a href="{% url 'salaries' year=month.year month=month.month %}">{% trans "Export pour les salaires moniteurs" %}</a></li>
+        <li><a href="{% url 'expenses' year=month.year month=month.month %}">{% trans "Export pour les défraiments intervenants" %}</a></li>
     </ul>
 {% endif %}
 {% endblock %}

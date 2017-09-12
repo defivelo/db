@@ -189,19 +189,22 @@ class OrgaInvoicesExport(SeasonExportMixin):
 
 class SalariesExport(object):
     # Seulement les _salaires_ (moniteurs)
+    salaries_not_expenses = True
 
     def export_month(self):
         return date(int(self.get_year()), int(self.get_month()), 1)
 
     def get_dataset_title(self):
-        return _('Salaires Moniteurs - {month_year}').format(
-            month_year=datefilter(self.export_month(), 'F Y')
+        return '{title} - {date}'.format(
+            title=u('Salaires') if self.salaries_not_expenses else u('Défraiements'),
+            date=datefilter(self.export_month(), 'F Y')
         )
 
     @property
     def export_filename(self):
-        return '%s-%s-%s' % (
-            _('Salaires_Mois'),
+        return '%s-%s-%s-%s' % (
+            u('Salaires') if self.salaries_not_expenses else u('Défraiements'),
+            _('Mois'),
             self.export_month().month,
             self.export_month().year
         )
@@ -209,13 +212,14 @@ class SalariesExport(object):
     def get_dataset(self, html=False):
         dataset = Dataset()
         # Cases en haut à gauche
-        dataset.append_col(['' for i in range(2)] + [u('Nom')])
-        dataset.append_col(['' for i in range(2)] + [u('Adresse')])
-        dataset.append_col(['' for i in range(2)] + [u('NPA')])
-        dataset.append_col(['' for i in range(2)] + [u('Ville')])
-        dataset.append_col(['' for i in range(2)] + [u('N° AVS')])
-        dataset.append_col(['' for i in range(2)] + [u('IBAN')])
-        dataset.append_col(['' for i in range(2)] + [u('Canton d\'affiliation')])
+        session_cols = ['' for i in range(2)]
+        dataset.append_col(session_cols + [u('Nom')])
+        dataset.append_col(session_cols + [u('Adresse')])
+        dataset.append_col(session_cols + [u('NPA')])
+        dataset.append_col(session_cols + [u('Ville')])
+        dataset.append_col(session_cols + [u('N° AVS')])
+        dataset.append_col(session_cols + [u('IBAN')])
+        dataset.append_col(session_cols + [u('Canton d\'affiliation')])
 
         for session in self.object_list:
             dataset.append_col([
@@ -224,12 +228,18 @@ class SalariesExport(object):
                 datefilter(session.begin, settings.TIME_FORMAT)
             ])
         sessions_pks = self.object_list.values_list('id', flat=True)
-        # All helpers in these sessions
-        everyone = (
-            get_user_model().objects.filter(
+        everyone = get_user_model().objects
+        if self.salaries_not_expenses:
+            # All helpers in these sessions
+            everyone = everyone.filter(
                 Q(qualifs_mon1__session__in=sessions_pks) |
                 Q(qualifs_mon2__session__in=sessions_pks)
             )
+        else:
+            # All actors in these sessions
+            everyone = everyone.filter(qualifs_actor__session__in=sessions_pks)
+        everyone = (
+            everyone
             .filter(profile__affiliation_canton__in=user_cantons(self.request.user))
             .prefetch_related('profile')
             .order_by('profile__affiliation_canton', 'last_name')
@@ -254,12 +264,21 @@ class SalariesExport(object):
             for session in self.object_list:
                 label = ''
                 for quali in session.qualifications.all():
-                    if user.id == quali.leader_id:
-                        label = formation_short(FORMATION_M2, True)
-                        break
-                    elif user in quali.helpers.all():
-                        label = formation_short(FORMATION_M1, True)
+                    if self.salaries_not_expenses:
+                        if user.id == quali.leader_id:
+                            label = formation_short(FORMATION_M2, True)
+                            break
+                        elif user in quali.helpers.all():
+                            label = formation_short(FORMATION_M1, True)
+                            break
+                    elif user.id == quali.actor_id:
+                        label = u('Int.')
                         break
                 row.append(label)
             dataset.append(row)
         return dataset
+
+
+class ExpensesExport(SalariesExport):
+    # Seulement les _défraiments_ (intervenants)
+    salaries_not_expenses = False

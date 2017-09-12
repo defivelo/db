@@ -32,7 +32,7 @@ from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.roles import user_cantons
 from defivelo.views.common import MenuView
 
-from .exports import OrgaInvoicesExport, SalariesExport, SeasonExportMixin, SeasonStatsExport
+from .exports import ExpensesExport, OrgaInvoicesExport, SalariesExport, SeasonExportMixin, SeasonStatsExport
 
 
 class PublicView(StrongholdPublicMixin):
@@ -62,6 +62,7 @@ class MonthExportsMixin(MenuView, MonthArchiveView, HasPermissionsMixin):
         return (
             Session.objects
             .filter(orga__address_canton__in=user_cantons(self.request.user))
+            .order_by('day', 'orga', 'begin')
             .prefetch_related(
                 'orga',
                 'qualifications',
@@ -178,6 +179,14 @@ class SalariesView(SalariesExport, MonthExports):
 
 
 class SalariesExportView(SalariesExport, MonthExports, ExportMixin, ListView):
+    pass
+
+
+class ExpensesView(ExpensesExport, MonthExports):
+    pass
+
+
+class ExpensesExportView(ExpensesExport, MonthExports, ExportMixin, ListView):
     pass
 
 

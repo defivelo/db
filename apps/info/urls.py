@@ -21,8 +21,8 @@ from django.conf.urls import include, url
 from django.views.decorators.cache import never_cache
 
 from .views import (
-    MonthExports, NextQualifs, OrgaInvoicesExportView, OrgaInvoicesView, QualifsCalendar, SalariesExportView,
-    SalariesView, SeasonExports, SeasonStatsExportView, SeasonStatsView,
+    ExpensesExportView, ExpensesView, MonthExports, NextQualifs, OrgaInvoicesExportView, OrgaInvoicesView,
+    QualifsCalendar, SalariesExportView, SalariesView, SeasonExports, SeasonStatsExportView, SeasonStatsView,
 )
 
 urlpatterns = [
@@ -52,5 +52,10 @@ urlpatterns = [
                 never_cache(SalariesView.as_view()), name='salaries'),
             url(r'^salaries-(?P<format>[a-z]+)$',
                 never_cache(SalariesExportView.as_view()), name='salaries-export'),
+            # Défraiements
+            url(r'^expenses/$',
+                never_cache(ExpensesView.as_view()), name='expenses'),
+            url(r'^expenses-(?P<format>[a-z]+)$',
+                never_cache(ExpensesExportView.as_view()), name='expenses-export'),
         ]))
 ]
