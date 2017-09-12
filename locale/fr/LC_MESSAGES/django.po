@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-07 14:51+0200\n"
+"POT-Creation-Date: 2017-09-12 08:38+0200\n"
 "PO-Revision-Date: 2015-10-08 12:11+0100\n"
 "Last-Translator: Didier Raboud <me+defivelo@odyx.org>\n"
 "Language: fr\n"
@@ -15,12 +15,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps/challenge/__init__.py:40 defivelo/templatetags/dv_filters.py:196
+#: apps/challenge/__init__.py:40 defivelo/templatetags/dv_filters.py:199
 msgid "Pas choisi"
 msgstr ""
 
 #: apps/challenge/__init__.py:41 apps/challenge/models/availability.py:112
-#: defivelo/templatetags/dv_filters.py:193
+#: defivelo/templatetags/dv_filters.py:196
 msgid "Choisi"
 msgstr ""
 
@@ -33,7 +33,7 @@ msgid "Moniteur de Secours"
 msgstr ""
 
 #: apps/challenge/__init__.py:44 apps/challenge/models/availability.py:104
-#: apps/user/__init__.py:39 defivelo/templatetags/dv_filters.py:184
+#: apps/user/__init__.py:39 defivelo/templatetags/dv_filters.py:187
 msgid "Moniteur 1"
 msgstr ""
 
@@ -41,18 +41,18 @@ msgstr ""
 #: apps/challenge/models/availability.py:106
 #: apps/challenge/models/qualification.py:105
 #: apps/challenge/templates/challenge/session_detail.html:136
-#: apps/user/__init__.py:40 defivelo/templatetags/dv_filters.py:181
+#: apps/user/__init__.py:40 defivelo/templatetags/dv_filters.py:184
 msgid "Moniteur 2"
 msgstr ""
 
 #. Translators: Moniteur de secours
-#: apps/challenge/fields.py:54 apps/challenge/fields.py:95
+#: apps/challenge/fields.py:54 apps/challenge/fields.py:97
 #: apps/challenge/models/availability.py:95
-#: defivelo/templatetags/dv_filters.py:191
+#: defivelo/templatetags/dv_filters.py:194
 msgid "S"
 msgstr ""
 
-#: apps/challenge/forms.py:61 apps/challenge/models/season.py:44
+#: apps/challenge/forms.py:61 apps/challenge/models/season.py:42
 msgid "Année"
 msgstr ""
 
@@ -60,13 +60,13 @@ msgstr ""
 msgid "Chargé·e de projet"
 msgstr ""
 
-#: apps/challenge/forms.py:100 apps/challenge/models/session.py:46
+#: apps/challenge/forms.py:100 apps/challenge/models/session.py:47
 #: apps/challenge/templates/challenge/session_detail.html:56
 #: apps/user/models.py:123
 msgid "Date"
 msgstr ""
 
-#: apps/challenge/forms.py:101 apps/challenge/models/session.py:47
+#: apps/challenge/forms.py:101 apps/challenge/models/session.py:48
 msgid "Début"
 msgstr ""
 
@@ -76,8 +76,8 @@ msgstr ""
 msgid "Canton"
 msgstr ""
 
-#: apps/challenge/forms.py:106 apps/challenge/models/session.py:79
-#: apps/challenge/models/session.py:99
+#: apps/challenge/forms.py:106 apps/challenge/models/session.py:80
+#: apps/challenge/models/session.py:100
 #: apps/challenge/templates/challenge/session_detail.html:81
 msgid "Pommes"
 msgstr ""
@@ -86,16 +86,16 @@ msgstr ""
 msgid "Organisation de la livraison de pommes (quantité & logistique)"
 msgstr ""
 
-#: apps/challenge/forms.py:113 apps/challenge/models/session.py:75
+#: apps/challenge/forms.py:113 apps/challenge/models/session.py:76
 msgid "Heure rendez-vous moniteurs"
 msgstr ""
 
-#: apps/challenge/forms.py:115 apps/challenge/models/session.py:63
+#: apps/challenge/forms.py:115 apps/challenge/models/session.py:64
 #: apps/challenge/templates/challenge/session_detail.html:61
 msgid "Moniteur + / Photographe"
 msgstr ""
 
-#: apps/challenge/forms.py:122 apps/challenge/models/session.py:82
+#: apps/challenge/forms.py:122 apps/challenge/models/session.py:83
 msgid "N° de contact vélos"
 msgstr ""
 
@@ -104,7 +104,7 @@ msgstr ""
 msgid "La session doit être dans la saison (entre {begin} et {end})"
 msgstr ""
 
-#: apps/challenge/forms.py:139 apps/challenge/models/session.py:53
+#: apps/challenge/forms.py:139 apps/challenge/models/session.py:54
 #: apps/challenge/templates/challenge/session_detail.html:37
 #: apps/orga/models.py:112
 msgid "Établissement"
@@ -125,7 +125,7 @@ msgstr ""
 #: apps/challenge/models/qualification.py:120 apps/user/export.py:108
 #: apps/user/forms.py:104 apps/user/models.py:154
 #: apps/user/templates/auth/user_detail.html:134
-#: apps/user/views/standard.py:198 defivelo/templatetags/dv_filters.py:187
+#: apps/user/views/standard.py:198 defivelo/templatetags/dv_filters.py:190
 msgid "Intervenant"
 msgstr ""
 
@@ -158,8 +158,8 @@ msgstr ""
 msgid "Disponibilités pour :"
 msgstr ""
 
-#: apps/challenge/models/availability.py:41 apps/challenge/models/season.py:45
-#: apps/challenge/models/season.py:60 apps/challenge/views/season.py:324
+#: apps/challenge/models/availability.py:41 apps/challenge/models/season.py:43
+#: apps/challenge/models/season.py:58 apps/challenge/views/season.py:324
 msgid "Saison"
 msgstr ""
 
@@ -179,24 +179,24 @@ msgstr ""
 
 #: apps/challenge/models/availability.py:62
 #: apps/challenge/models/availability.py:124
-#: defivelo/templatetags/dv_filters.py:164
+#: defivelo/templatetags/dv_filters.py:167
 msgid "Oui"
 msgstr ""
 
 #: apps/challenge/models/availability.py:63
 #: apps/challenge/models/availability.py:121
-#: defivelo/templatetags/dv_filters.py:156
+#: defivelo/templatetags/dv_filters.py:159
 msgid "Si nécessaire"
 msgstr ""
 
 #: apps/challenge/models/availability.py:64
 #: apps/challenge/models/availability.py:117
-#: defivelo/templatetags/dv_filters.py:160
+#: defivelo/templatetags/dv_filters.py:163
 msgid "Non"
 msgstr ""
 
 #: apps/challenge/models/availability.py:67
-#: apps/challenge/models/session.py:87
+#: apps/challenge/models/session.py:88
 #: apps/challenge/templates/challenge/session_detail.html:5
 #: apps/challenge/views/session.py:184
 msgid "Session"
@@ -211,7 +211,7 @@ msgid "Sélectionné pour la session comme"
 msgstr ""
 
 #: apps/challenge/models/availability.py:108
-#: defivelo/templatetags/dv_filters.py:190
+#: defivelo/templatetags/dv_filters.py:193
 msgid "Moniteur de secours"
 msgstr ""
 
@@ -281,11 +281,11 @@ msgid "Nombre de casques"
 msgstr ""
 
 #: apps/challenge/models/qualification.py:127
-#: apps/challenge/models/session.py:84
+#: apps/challenge/models/session.py:85
 #: apps/challenge/templates/challenge/session_detail.html:106
 #: apps/challenge/templates/challenge/session_detail.html:165
 #: apps/orga/export.py:55 apps/orga/models.py:59
-#: apps/orga/templates/orga/organization_detail.html:66 apps/user/forms.py:123
+#: apps/orga/templates/orga/organization_detail.html:65 apps/user/forms.py:123
 #: apps/user/models.py:177
 msgid "Remarques"
 msgstr ""
@@ -299,97 +299,97 @@ msgstr ""
 msgid "Qualifs"
 msgstr ""
 
-#: apps/challenge/models/season.py:48 apps/orga/views.py:82
+#: apps/challenge/models/season.py:46 apps/orga/views.py:82
 #: apps/user/templates/auth/user_filter.html:56
 #: apps/user/views/standard.py:183
 msgid "Cantons"
 msgstr ""
 
-#: apps/challenge/models/season.py:50
+#: apps/challenge/models/season.py:48
 msgid "Chargé de projet"
 msgstr ""
 
-#: apps/challenge/models/season.py:57
-#: apps/orga/templates/orga/organization_detail.html:56
+#: apps/challenge/models/season.py:55
+#: apps/orga/templates/orga/organization_detail.html:55
 #: apps/user/templates/auth/user_detail.html:137
 msgid "État"
 msgstr ""
 
-#: apps/challenge/models/season.py:61 defivelo/templates/header.html:24
+#: apps/challenge/models/season.py:59 defivelo/templates/header.html:24
 msgid "Saisons"
 msgstr ""
 
-#: apps/challenge/models/season.py:160
+#: apps/challenge/models/season.py:159
 #, python-brace-format
 msgid "{saison} {annee}"
 msgstr ""
 
-#: apps/challenge/models/season.py:166
+#: apps/challenge/models/season.py:165
 #, python-brace-format
 msgid "{cantons} - {moment}"
 msgstr ""
 
-#: apps/challenge/models/session.py:48
+#: apps/challenge/models/session.py:49
 msgid "Durée"
 msgstr ""
 
-#: apps/challenge/models/session.py:60
+#: apps/challenge/models/session.py:61
 msgid "Lieu de la Qualif'"
 msgstr ""
 
-#: apps/challenge/models/session.py:68
+#: apps/challenge/models/session.py:69
 msgid "Programme déluge"
 msgstr ""
 
-#: apps/challenge/models/session.py:69
+#: apps/challenge/models/session.py:70
 msgid "Annulation"
 msgstr ""
 
-#: apps/challenge/models/session.py:70
+#: apps/challenge/models/session.py:71
 msgid "Report …"
 msgstr ""
 
-#: apps/challenge/models/session.py:71
+#: apps/challenge/models/session.py:72
 msgid "Autre …"
 msgstr ""
 
-#: apps/challenge/models/session.py:73 apps/challenge/models/session.py:97
+#: apps/challenge/models/session.py:74 apps/challenge/models/session.py:98
 #: apps/challenge/templates/challenge/session_detail.html:64
 msgid "Mauvais temps"
 msgstr ""
 
-#: apps/challenge/models/session.py:77
+#: apps/challenge/models/session.py:78
 msgid "Lieu rendez-vous moniteurs"
 msgstr ""
 
-#: apps/challenge/models/session.py:80 apps/challenge/models/session.py:101
+#: apps/challenge/models/session.py:81 apps/challenge/models/session.py:102
 msgid "Logistique vélos"
 msgstr ""
 
-#: apps/challenge/models/session.py:88
+#: apps/challenge/models/session.py:89
 msgid "Sessions"
 msgstr ""
 
-#: apps/challenge/models/session.py:95
+#: apps/challenge/models/session.py:96
 #: apps/challenge/templates/challenge/session_detail.html:58
 msgid "Horaire"
 msgstr ""
 
-#: apps/challenge/models/session.py:103
+#: apps/challenge/models/session.py:104
 #: apps/challenge/templates/challenge/session_form.html:48
 msgid "Emplacement"
 msgstr ""
 
-#: apps/challenge/models/session.py:109
+#: apps/challenge/models/session.py:110
 #, python-brace-format
 msgid "Qualif' {name}"
 msgstr ""
 
-#: apps/challenge/models/session.py:111
+#: apps/challenge/models/session.py:112
 msgid "Pas de Qualifs"
 msgstr ""
 
-#: apps/challenge/models/session.py:225
+#: apps/challenge/models/session.py:242
 #, python-brace-format
 msgid "{place} {date}{time}"
 msgstr ""
@@ -570,7 +570,7 @@ msgstr ""
 msgid "Mes disponibilités"
 msgstr ""
 
-#: apps/challenge/templates/challenge/season_list.html:65
+#: apps/challenge/templates/challenge/season_list.html:64
 msgid "Créer une nouvelle saison"
 msgstr ""
 
@@ -627,7 +627,7 @@ msgstr ""
 
 #: apps/challenge/templates/challenge/session_detail.html:33
 #: apps/challenge/templates/challenge/session_detail.html:173
-#: apps/orga/templates/orga/organization_detail.html:75
+#: apps/orga/templates/orga/organization_detail.html:74
 #: apps/orga/templates/orga/organization_filter.html:92
 #: apps/user/templates/auth/user_detail.html:210
 #: apps/user/templates/auth/user_detail.html:211
@@ -791,27 +791,27 @@ msgstr ""
 msgid "Planning_Saison"
 msgstr ""
 
-#: apps/challenge/views/season.py:567
+#: apps/challenge/views/season.py:578
 msgid "Disponibilités mises à jour"
 msgstr ""
 
-#: apps/challenge/views/season.py:646
+#: apps/challenge/views/season.py:657
 msgid "Choix du personnel mises à jour"
 msgstr ""
 
-#: apps/challenge/views/season.py:737
+#: apps/challenge/views/season.py:748
 msgid "Saison créée"
 msgstr ""
 
-#: apps/challenge/views/season.py:742
+#: apps/challenge/views/season.py:753
 msgid "Saison supprimée"
 msgstr ""
 
-#: apps/challenge/views/season.py:748
+#: apps/challenge/views/season.py:759
 msgid "Moniteurs de la saison"
 msgstr ""
 
-#: apps/challenge/views/season.py:769
+#: apps/challenge/views/season.py:780
 msgid "Intervenants de la saison"
 msgstr ""
 
@@ -836,47 +836,47 @@ msgstr ""
 msgid "Haut-Valais"
 msgstr ""
 
-#: apps/common/__init__.py:54 defivelo/settings/base.py:166
+#: apps/common/__init__.py:91 defivelo/settings/base.py:166
 msgid "French"
 msgstr "Français"
 
-#: apps/common/__init__.py:55 defivelo/settings/base.py:167
+#: apps/common/__init__.py:92 defivelo/settings/base.py:167
 msgid "German"
 msgstr "Allemand"
 
-#: apps/common/__init__.py:56
+#: apps/common/__init__.py:93
 msgid "Italian"
 msgstr ""
 
-#: apps/common/__init__.py:57
+#: apps/common/__init__.py:94
 msgid "English"
 msgstr ""
 
-#: apps/common/__init__.py:71
+#: apps/common/__init__.py:108
 msgid "Printemps"
 msgstr ""
 
-#: apps/common/__init__.py:72
+#: apps/common/__init__.py:109
 msgid "Automne"
 msgstr ""
 
-#: apps/common/__init__.py:86
+#: apps/common/__init__.py:123
 msgid "Planification (invisible)"
 msgstr ""
 
-#: apps/common/__init__.py:87
+#: apps/common/__init__.py:124
 msgid "Annoncée (rentrée des disponibilités)"
 msgstr ""
 
-#: apps/common/__init__.py:88
+#: apps/common/__init__.py:125
 msgid "En cours (corrections que par chargé·e·s de projet)"
 msgstr ""
 
-#: apps/common/__init__.py:89
+#: apps/common/__init__.py:126
 msgid "Terminée"
 msgstr ""
 
-#: apps/common/__init__.py:90
+#: apps/common/__init__.py:127
 msgid "Archivée"
 msgstr ""
 
@@ -905,11 +905,11 @@ msgstr ""
 msgid "Ville"
 msgstr ""
 
-#: apps/common/templates/export_buttons.html:3
+#: apps/common/templates/export_buttons.html:4
 msgid "Imprimer"
 msgstr ""
 
-#: apps/common/templates/export_buttons.html:10
+#: apps/common/templates/export_buttons.html:12
 #: defivelo/templates/license.html:10
 #, python-format
 msgid "Télécharger au format %(format)s"
@@ -972,29 +972,84 @@ msgstr ""
 msgid "Article mis à jour"
 msgstr ""
 
+#: apps/info/exports.py:55
+#, python-brace-format
+msgid "Statistiques de la saison {season} {year}"
+msgstr ""
+
+#: apps/info/exports.py:63
+msgid "Stats_Saison"
+msgstr ""
+
+#: apps/info/exports.py:123
+#, python-brace-format
+msgid "Facturation établissements dans la saison {season} {year}"
+msgstr ""
+
+#: apps/info/exports.py:131
+msgid "Etablissements_Saison"
+msgstr ""
+
+#: apps/info/templates/info/exports.html:4
+#: apps/info/templates/info/exports.html:27
+#, python-format
+msgid "Exports pour la saison %(season)s %(year)s"
+msgstr ""
+
+#: apps/info/templates/info/exports.html:30
+msgid "Statistiques de la saison"
+msgstr ""
+
+#: apps/info/templates/info/exports.html:31
+msgid "Facturation établissements"
+msgstr ""
+
+#: apps/info/templates/info/next_qualifs.html:3
+#: apps/info/templates/info/next_qualifs.html:5
+msgid "Prochaines Qualifs"
+msgstr ""
+
+#: apps/info/templates/info/next_qualifs.html:12
+msgid "Qualifs antérieures"
+msgstr ""
+
+#: apps/info/templates/info/next_qualifs.html:19
+msgid "Qualifs ultérieures"
+msgstr ""
+
+#: apps/info/templates/info/qualifs_calendar.html:4
+#: apps/info/templates/info/qualifs_calendar.html:10
+#, python-format
+msgid "Calendrier de la saison %(season)s %(year)s"
+msgstr ""
+
+#: apps/info/templates/info/qualifs_calendar.html:51
+msgid "Aucune Qualif n'est planifiée pour l'instant!"
+msgstr ""
+
 #: apps/orga/export.py:30 apps/orga/models.py:44
 #: apps/orga/templates/orga/organization_filter.html:60
 msgid "Abréviation"
 msgstr ""
 
 #: apps/orga/export.py:44 apps/orga/models.py:46
-#: apps/orga/templates/orga/organization_detail.html:32
+#: apps/orga/templates/orga/organization_detail.html:27
 msgid "Site web"
 msgstr ""
 
 #: apps/orga/export.py:46 apps/orga/models.py:47
-#: apps/orga/templates/orga/organization_detail.html:40
+#: apps/orga/templates/orga/organization_detail.html:39
 #: apps/orga/templates/orga/organization_filter.html:64
 msgid "Coordinateur"
 msgstr ""
 
 #: apps/orga/export.py:48 apps/orga/forms.py:49 apps/orga/models.py:49
-#: apps/orga/templates/orga/organization_detail.html:52
+#: apps/orga/templates/orga/organization_detail.html:51
 msgid "Téléphone"
 msgstr ""
 
 #: apps/orga/export.py:50 apps/orga/forms.py:50 apps/orga/models.py:51
-#: apps/orga/templates/orga/organization_detail.html:48
+#: apps/orga/templates/orga/organization_detail.html:47
 #: apps/orga/templates/orga/organization_filter.html:65 apps/user/export.py:72
 #: apps/user/forms.py:79 apps/user/templates/auth/user_detail.html:89
 #: apps/user/templates/auth/user_detailed_list.html:16
@@ -1025,12 +1080,12 @@ msgstr ""
 msgid "Inactif"
 msgstr ""
 
-#: apps/orga/models.py:53 apps/orga/templates/orga/organization_detail.html:44
+#: apps/orga/models.py:53 apps/orga/templates/orga/organization_detail.html:43
 msgid "Courriel"
 msgstr ""
 
 #: apps/orga/models.py:113 apps/orga/templates/orga/organization_filter.html:5
-#: apps/orga/views.py:165 defivelo/templates/header.html:52
+#: apps/orga/views.py:165 defivelo/templates/header.html:53
 msgid "Établissements"
 msgstr ""
 
@@ -1048,8 +1103,15 @@ msgid ""
 msgstr ""
 
 #: apps/orga/templates/orga/organization_confirm_delete.html:14
-#: apps/orga/templates/orga/organization_detail.html:76
+#: apps/orga/templates/orga/organization_detail.html:75
 msgid "Retour à la liste des établissements"
+msgstr ""
+
+#: apps/orga/templates/orga/organization_detail.html:35
+#: apps/user/export.py:134 apps/user/forms.py:127 apps/user/models.py:139
+#: apps/user/templates/auth/user_detail.html:165
+#: apps/user/views/standard.py:177
+msgid "Canton d'affiliation"
 msgstr ""
 
 #: apps/orga/templates/orga/organization_filter.html:13
@@ -1192,12 +1254,6 @@ msgstr ""
 msgid "Date de la dernière formation"
 msgstr ""
 
-#: apps/user/export.py:134 apps/user/forms.py:127 apps/user/models.py:139
-#: apps/user/templates/auth/user_detail.html:165
-#: apps/user/views/standard.py:177
-msgid "Canton d'affiliation"
-msgstr ""
-
 #: apps/user/export.py:137 apps/user/forms.py:130
 #: apps/user/templates/auth/user_detail.html:169
 msgid "Défi Vélo Mobile"
@@ -1291,7 +1347,7 @@ msgid "Super-utilisa·teur·trice"
 msgstr ""
 
 #: apps/user/models.py:468 apps/user/templates/auth/user_form.html:7
-#: defivelo/templates/header.html:65
+#: defivelo/templates/header.html:77
 msgid "Profil"
 msgstr ""
 
@@ -1773,38 +1829,34 @@ msgstr ""
 msgid "Your password is now changed."
 msgstr "Votre mot de passe a été modifié."
 
-#: defivelo/templates/base.html:9
-msgid "Accueil"
+#: defivelo/templates/base.html:11
+msgid "Dérouler la navigation"
 msgstr ""
 
-#: defivelo/templates/base.html:9 defivelo/templates/base.html:41
-#: defivelo/templates/base.html:42 defivelo/templates/base.html:63
-#: defivelo/templates/print/header.html:4
+#: defivelo/templates/base.html:16 defivelo/templates/base.html:17
+#: defivelo/templates/base.html:38 defivelo/templates/print/header.html:4
+#: defivelo/templates/skel.html:7
 msgid "Défi Vélo"
 msgstr ""
 
 #: defivelo/templates/base.html:36
-msgid "Dérouler la navigation"
-msgstr ""
-
-#: defivelo/templates/base.html:61
 #, python-format
 msgid "Version %(vcs_version)s"
 msgstr ""
 
-#: defivelo/templates/base.html:62
+#: defivelo/templates/base.html:37
 msgid "AGPLv3 License"
 msgstr ""
 
-#: defivelo/templates/base.html:66
+#: defivelo/templates/base.html:41
 msgid "Code source"
 msgstr ""
 
-#: defivelo/templates/base.html:67
+#: defivelo/templates/base.html:42
 msgid "Rapports de bugs"
 msgstr ""
 
-#: defivelo/templates/base.html:68
+#: defivelo/templates/base.html:43
 msgid "Traduction"
 msgstr ""
 
@@ -1816,23 +1868,39 @@ msgstr ""
 msgid "Saison pas ouverte"
 msgstr ""
 
-#: defivelo/templates/header.html:44
+#: defivelo/templates/header.html:43
+msgid "Calendrier"
+msgstr ""
+
+#: defivelo/templates/header.html:45
 msgid "Créer une saison"
 msgstr ""
 
-#: defivelo/templates/header.html:49
+#: defivelo/templates/header.html:50
 msgid "Personnes"
 msgstr ""
 
-#: defivelo/templates/header.html:66
+#: defivelo/templates/header.html:57
+msgid "Exports"
+msgstr ""
+
+#: defivelo/templates/header.html:59
+msgid "Exports par saison"
+msgstr ""
+
+#: defivelo/templates/header.html:61
+msgid "Prochaines Qualifs (public)"
+msgstr ""
+
+#: defivelo/templates/header.html:78
 msgid "Change password"
 msgstr "Changer mon mot de passe"
 
-#: defivelo/templates/header.html:67
+#: defivelo/templates/header.html:79
 msgid "Log out"
 msgstr "Se déconnecter"
 
-#: defivelo/templates/header.html:71
+#: defivelo/templates/header.html:83
 msgid "Log in"
 msgstr "Se connecter"
 
@@ -1852,7 +1920,11 @@ msgstr ""
 msgid "Télécharger le projet"
 msgstr ""
 
-#: defivelo/urls.py:53
+#: defivelo/templates/skel.html:7
+msgid "Accueil"
+msgstr ""
+
+#: defivelo/urls.py:54
 msgid "Intranet DÉFI VÉLO"
 msgstr ""
 
