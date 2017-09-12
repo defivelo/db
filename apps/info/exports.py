@@ -31,6 +31,8 @@ from tablib import Dataset
 from apps.challenge.models.session import Session
 from apps.common import DV_SEASON_AUTUMN, DV_SEASON_LAST_SPRING_MONTH, DV_STATE_CHOICES
 from apps.orga.models import Organization
+from apps.user import FORMATION_M1, FORMATION_M2, formation_short
+from defivelo.roles import user_cantons
 from defivelo.templatetags.dv_filters import season_verb
 
 
@@ -204,5 +206,61 @@ class SalariesExport(object):
 
     def get_dataset(self, html=False):
         dataset = Dataset()
-        dataset.append(['test'])
+        # Cases en haut à gauche
+        dataset.append_col(['' for i in range(2)] + [u('Nom')])
+        dataset.append_col(['' for i in range(2)] + [u('N° AVS')])
+        dataset.append_col(['' for i in range(2)] + [u('IBAN')])
+        dataset.append_col(['' for i in range(2)] + [u('Canton d\'affiliation')])
+
+        for session in self.object_list:
+            dataset.append_col([
+                session.orga.ifabbr if html else session.orga.name,
+                datefilter(session.day, 'j.m'),
+                datefilter(session.begin, settings.TIME_FORMAT)
+            ])
+        sessions_pks = self.object_list.values_list('id', flat=True)
+        # All helpers in these sessions
+        everyone = (
+            get_user_model().objects.filter(
+                Q(qualifs_actor__session__in=sessions_pks) |
+                Q(qualifs_mon1__session__in=sessions_pks) |
+                Q(qualifs_mon2__session__in=sessions_pks)
+            )
+            .filter(profile__affiliation_canton__in=user_cantons(self.request.user))
+            .prefetch_related('profile')
+            .order_by('profile__affiliation_canton', 'last_name')
+            .distinct()
+        )
+        for user in everyone:
+            row = [
+                user.get_full_name(),
+                (
+                    (user.profile.iban[:5] + '…' if len(user.profile.iban) > 0 else '')
+                    if html else user.profile.iban_nice
+                ),
+                (
+                    (user.profile.social_security[:5] + '…' if len(user.profile.social_security) > 0 else '')
+                    if html else user.profile.social_security
+                ),
+                user.profile.affiliation_canton
+            ]
+            for session in self.object_list:
+                label = ''
+                if user.id == session.superleader_id:
+                    # Translators: Nom court pour 'Moniteur +'
+                    label = u('M+')
+                else:
+                    for quali in session.qualifications.all():
+                        if user.id == quali.leader_id:
+                            label = formation_short(FORMATION_M2, True)
+                            break
+                        elif user in quali.helpers.all():
+                            label = formation_short(FORMATION_M1, True)
+                            break
+                        elif user.id == quali.actor_id:
+                            # Translators: Nom court pour 'Intervenant'
+                            label = u('Int.')
+                            break
+                row.append(label)
+            dataset.append(row)
         return dataset

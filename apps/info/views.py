@@ -29,6 +29,7 @@ from stronghold.views import StrongholdPublicMixin
 from apps.challenge.models.session import Session
 from apps.common import DV_SEASON_AUTUMN, DV_SEASON_SPRING
 from apps.common.views import ExportMixin, PaginatorMixin
+from defivelo.roles import user_cantons
 from defivelo.views.common import MenuView
 
 from .exports import OrgaInvoicesExport, SalariesExport, SeasonExportMixin, SeasonStatsExport
@@ -58,7 +59,15 @@ class MonthExportsMixin(MenuView, MonthArchiveView, HasPermissionsMixin):
     allow_future = True
 
     def get_queryset(self):
-        return Session.objects.all()
+        return (
+            Session.objects
+            .filter(orga__address_canton__in=user_cantons(self.request.user))
+            .prefetch_related(
+                'orga',
+                'qualifications',
+                'qualifications__helpers',
+                )
+        )
 
     def get_month(self):
         month = super(MonthExportsMixin, self).get_month()

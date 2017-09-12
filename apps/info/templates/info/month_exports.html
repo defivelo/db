@@ -2,6 +2,7 @@
 {% load i18n dv_filters %}
 
 {% block head_title %}{% blocktrans with year=month.year month=month|date:'F' %}Exports pour {{ month }} {{year}}{% endblocktrans %}{% endblock %}
+{% block container-class %}{% if dataset %}container-fluid{% endif %}{% endblock %}
 
 {% block content %}
 {% include 'info/_month_nav.html' with nav_url=nav_url previous_month=previous_month next_month=next_month only %}
