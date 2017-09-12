@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Intranet\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-12 08:38+0200\n"
+"POT-Creation-Date: 2017-09-12 13:04+0200\n"
 "PO-Revision-Date: 2017-09-07 12:48+0000\n"
 "Last-Translator: Laura Mosimann <laura.mosimann@label-vert.ch>\n"
 "Language-Team: German (http://www.transifex.com/defivelo/db/language/de/)\n"
@@ -996,28 +996,32 @@ msgstr "Artikel kreiert"
 msgid "Article mis à jour"
 msgstr "Artikel aktualisiert"
 
-#: apps/info/exports.py:55
+#: apps/info/exports.py:57
 #, fuzzy, python-brace-format
 #| msgid "Suppression de la saison %(season)s ?"
 msgid "Statistiques de la saison {season} {year}"
 msgstr "Saison %(season)s löschen?"
 
-#: apps/info/exports.py:63
+#: apps/info/exports.py:65
 #, fuzzy
 #| msgid "Saison"
 msgid "Stats_Saison"
 msgstr "Saison"
 
-#: apps/info/exports.py:123
+#: apps/info/exports.py:125
 #, python-brace-format
 msgid "Facturation établissements dans la saison {season} {year}"
 msgstr ""
 
-#: apps/info/exports.py:131
+#: apps/info/exports.py:133
 #, fuzzy
 #| msgid "Établissements"
 msgid "Etablissements_Saison"
 msgstr "Schulen"
+
+#: apps/info/exports.py:207
+msgid "Mois"
+msgstr ""
 
 #: apps/info/templates/info/exports.html:4
 #: apps/info/templates/info/exports.html:27
@@ -1037,6 +1041,25 @@ msgstr "LeiterInnen der Saison"
 #| msgid "Édition de l'établissement"
 msgid "Facturation établissements"
 msgstr "Bearbeitung der Schule"
+
+#: apps/info/templates/info/month_exports.html:4
+#: apps/info/templates/info/month_exports.html:27
+#, fuzzy, python-format
+#| msgid "Suppression de la saison %(season)s ?"
+msgid "Exports pour %(month)s %(year)s"
+msgstr "Saison %(season)s löschen?"
+
+#: apps/info/templates/info/month_exports.html:30
+#, fuzzy
+#| msgid "Suppression de la saison %(season)s ?"
+msgid "Export pour les salaires moniteurs"
+msgstr "Saison %(season)s löschen?"
+
+#: apps/info/templates/info/month_exports.html:31
+#, fuzzy
+#| msgid "Liste des intervenants"
+msgid "Export pour les défraiments intervenants"
+msgstr "Liste der ReferentInnen"
 
 #: apps/info/templates/info/next_qualifs.html:3
 #: apps/info/templates/info/next_qualifs.html:5
@@ -1388,7 +1411,7 @@ msgid "Super-utilisa·teur·trice"
 msgstr "Super-NutzerIn"
 
 #: apps/user/models.py:468 apps/user/templates/auth/user_form.html:7
-#: defivelo/templates/header.html:77
+#: defivelo/templates/header.html:78
 msgid "Profil"
 msgstr "Profil"
 
@@ -1943,19 +1966,25 @@ msgstr ""
 msgid "Exports par saison"
 msgstr "Alle Saisons"
 
-#: defivelo/templates/header.html:61
+#: defivelo/templates/header.html:60
+#, fuzzy
+#| msgid "Toutes les saisons"
+msgid "Exports par mois"
+msgstr "Alle Saisons"
+
+#: defivelo/templates/header.html:62
 msgid "Prochaines Qualifs (public)"
 msgstr ""
 
-#: defivelo/templates/header.html:78
+#: defivelo/templates/header.html:79
 msgid "Change password"
 msgstr "Passwort ändern"
 
-#: defivelo/templates/header.html:79
+#: defivelo/templates/header.html:80
 msgid "Log out"
 msgstr "Abmelden"
 
-#: defivelo/templates/header.html:83
+#: defivelo/templates/header.html:84
 msgid "Log in"
 msgstr "Anmelden"
 
