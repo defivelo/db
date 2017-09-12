@@ -51,6 +51,12 @@ a, a:visited {
 a[href]:after {
     content: "";
 }
+/* And no attr afters in the calendar either */
+.dvqualifs-calendar {
+    abbr[title]:after {
+        content: "";
+    }
+}
 
 /* Reduce margins */
 table.table {

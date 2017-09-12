@@ -13,4 +13,27 @@
 .dvstate-bg-hov-{{ short|lower }}:hover {
     background-color: {{ color }};
 }{% endfor %}
+@media print {
+{% canton_colors as colors %}{% for short, color in colors.items %}
+.table.dvqualifs-calendar td.dvstate-txt-{{ short|lower }},
+.table.dvqualifs-calendar th.dvstate-txt-{{ short|lower }},
+.table.dvqualifs-calendar a.dvstate-txt-{{ short|lower }} {
+    color: {{ color }} !important;
+}
+.table.dvqualifs-calendar td.dvstate-txt-hov-{{ short|lower }}:hover,
+.table.dvqualifs-calendar th.dvstate-txt-hov-{{ short|lower }}:hover,
+.table.dvqualifs-calendar a.dvstate-txt-hov-{{ short|lower }}:hover {
+    color: {{ color }} !important;
+}
+.table.dvqualifs-calendar td.dvstate-bg-{{ short|lower }},
+.table.dvqualifs-calendar th.dvstate-bg-{{ short|lower }},
+.table.dvqualifs-calendar a.dvstate-bg-{{ short|lower }} {
+    background-color: {{ color }} !important;
+}
+.table.dvqualifs-calendar td.dvstate-bg-hov-{{ short|lower }}:hover,
+.table.dvqualifs-calendar th.dvstate-bg-hov-{{ short|lower }}:hover,
+.table.dvqualifs-calendar a.dvstate-bg-hov-{{ short|lower }}:hover {
+    background-color: {{ color }} !important;
+}{% endfor %}
+}
 </style>
