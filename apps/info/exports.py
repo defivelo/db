@@ -46,7 +46,10 @@ class SeasonExportMixin(object):
             end = date(self.export_year, 12, 31)
         return (
             Session.objects
-            .filter(day__gte=begin, day__lte=end)
+            .filter(
+                day__gte=begin, day__lte=end,
+                orga__address_canton__in=user_cantons(self.request.user)
+            )
             .order_by('day', 'begin')
             .prefetch_related('orga')
         )
@@ -121,16 +124,25 @@ class SeasonStatsExport(SeasonExportMixin):
 
 
 class OrgaInvoicesExport(SeasonExportMixin):
+    # Saison par canton puis qualif par établissement
+    canton_orga_not_sessions = True
+
     def get_dataset_title(self):
-        return _('Facturation établissements dans la saison {season} {year}').format(
+        return '{title} - {season} {year}'.format(
+            title=(
+                u('Facturation établissements dans la saison')
+                if self.canton_orga_not_sessions
+                else u('Planification logistique')
+            ),
             season=season_verb(self.export_season),
             year=self.export_year
         )
 
     @property
     def export_filename(self):
-        return '%s-%s-%s' % (
-            _('Etablissements_Saison'),
+        return '%s-%s-%s-%s' % (
+            u('Établissements') if self.canton_orga_not_sessions else u('Logistique'),
+            u('Saison'),
             self.export_year,
             season_verb(self.export_season)
         )
@@ -138,17 +150,29 @@ class OrgaInvoicesExport(SeasonExportMixin):
     def get_dataset(self, html=False):
         dataset = Dataset()
         # Prépare le fichier
-        dataset.append([
+        row = [
             u('Canton'),
             u('Établissement'),
+        ]
+        if not self.canton_orga_not_sessions:
+            row = row + [u('Lieu')]
+        row = row + [
             u('Date'),
             u('Heure'),
-            u('Classe'),
+            u('Classe') if self.canton_orga_not_sessions else u('Classes'),
             u('Participants'),
             u('Vélos loués'),
             u('Casques loués'),
-        ])
+        ]
+        dataset.append(row)
         sessions = self.get_queryset()
+        if not self.canton_orga_not_sessions:
+            sessions = sessions.annotate(
+                n_qualifs=Count('qualifications'),
+                n_participants=Sum('qualifications__n_participants'),
+                n_bikes=Sum('qualifications__n_bikes'),
+                n_helmets=Sum('qualifications__n_helmets'),
+            )
         sessions_pks = sessions.values_list('id', flat=True)
         orgas = (
             Organization.objects.filter(sessions__in=sessions_pks)
@@ -161,29 +185,51 @@ class OrgaInvoicesExport(SeasonExportMixin):
         )
         linktxt = '<a href="{url}">{content}</a>'
         row = []
-        for orga in orgas:
-            orga_row = list(row)
-            orga_row.append(orga.address_canton)
-            orga_row.append(orga.ifabbr if html else orga.name)
-            for orga_session in sessions.filter(orga=orga):
-                session_row = list(orga_row)
+        if self.canton_orga_not_sessions:
+            for orga in orgas:
+                orga_row = list(row)
+                orga_row.append(orga.address_canton)
+                orga_row.append(orga.ifabbr if html else orga.name)
+                for orga_session in sessions.filter(orga=orga):
+                    session_row = list(orga_row)
+                    session_url = reverse('session-detail',
+                                          kwargs={
+                                              'seasonpk': orga_session.season.pk,
+                                              'pk': orga_session.id
+                                              }
+                                          )
+                    datetxt = datefilter(orga_session.day, settings.DATE_FORMAT_COMPACT)
+                    timetxt = datefilter(orga_session.begin, settings.TIME_FORMAT_SHORT)
+                    session_row.append(mark_safe(linktxt.format(url=session_url, content=datetxt)) if html else datetxt)
+                    session_row.append(mark_safe(linktxt.format(url=session_url, content=timetxt)) if html else timetxt)
+                    for qualif in orga_session.qualifications.all():
+                        qualif_row = list(session_row)
+                        qualif_row.append(qualif.name)
+                        qualif_row.append(qualif.n_participants)
+                        qualif_row.append(qualif.n_bikes)
+                        qualif_row.append(qualif.n_helmets)
+                        dataset.append(qualif_row)
+        else:
+            for session in sessions:
                 session_url = reverse('session-detail',
                                       kwargs={
-                                          'seasonpk': orga_session.season.pk,
-                                          'pk': orga_session.id
+                                          'seasonpk': session.season.pk,
+                                          'pk': session.id
                                           }
                                       )
-                datetxt = datefilter(orga_session.day, settings.DATE_FORMAT)
-                timetxt = datefilter(orga_session.begin, settings.TIME_FORMAT)
-                session_row.append(mark_safe(linktxt.format(url=session_url, content=datetxt)) if html else datetxt)
-                session_row.append(mark_safe(linktxt.format(url=session_url, content=timetxt)) if html else timetxt)
-                for qualif in orga_session.qualifications.all():
-                    qualif_row = list(session_row)
-                    qualif_row.append(qualif.name)
-                    qualif_row.append(qualif.n_participants)
-                    qualif_row.append(qualif.n_bikes)
-                    qualif_row.append(qualif.n_helmets)
-                    dataset.append(qualif_row)
+                datetxt = datefilter(session.day, settings.DATE_FORMAT_COMPACT)
+                timetxt = datefilter(session.begin, settings.TIME_FORMAT_SHORT)
+                dataset.append([
+                    session.orga.address_canton,
+                    session.orga.ifabbr if html else session.orga.name,
+                    session.city,
+                    mark_safe(linktxt.format(url=session_url, content=datetxt)) if html else datetxt,
+                    mark_safe(linktxt.format(url=session_url, content=timetxt)) if html else timetxt,
+                    session.n_qualifs,
+                    session.n_participants,
+                    session.n_bikes,
+                    session.n_helmets,
+                ])
         return dataset
 
 
@@ -204,7 +250,7 @@ class SalariesExport(object):
     def export_filename(self):
         return '%s-%s-%s-%s' % (
             u('Salaires') if self.salaries_not_expenses else u('Défraiements'),
-            _('Mois'),
+            u('Mois'),
             self.export_month().month,
             self.export_month().year
         )
@@ -282,3 +328,8 @@ class SalariesExport(object):
 class ExpensesExport(SalariesExport):
     # Seulement les _défraiments_ (intervenants)
     salaries_not_expenses = False
+
+
+class LogisticsExport(OrgaInvoicesExport):
+    # Saison dans l'ordre avec les besoins de vélos, pas par Qualif'
+    canton_orga_not_sessions = False

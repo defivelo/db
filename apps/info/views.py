@@ -32,7 +32,9 @@ from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.roles import user_cantons
 from defivelo.views.common import MenuView
 
-from .exports import ExpensesExport, OrgaInvoicesExport, SalariesExport, SeasonExportMixin, SeasonStatsExport
+from .exports import (
+    ExpensesExport, LogisticsExport, OrgaInvoicesExport, SalariesExport, SeasonExportMixin, SeasonStatsExport,
+)
 
 
 class PublicView(StrongholdPublicMixin):
@@ -207,4 +209,12 @@ class OrgaInvoicesView(OrgaInvoicesExport, SeasonExports):
 
 
 class OrgaInvoicesExportView(OrgaInvoicesExport, SeasonExportsMixin, ExportMixin, ListView):
+    pass
+
+
+class LogisticsView(LogisticsExport, SeasonExports):
+    pass
+
+
+class LogisticsExportView(LogisticsExport, SeasonExportsMixin, ExportMixin, ListView):
     pass

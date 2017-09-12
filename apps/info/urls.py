@@ -21,8 +21,9 @@ from django.conf.urls import include, url
 from django.views.decorators.cache import never_cache
 
 from .views import (
-    ExpensesExportView, ExpensesView, MonthExports, NextQualifs, OrgaInvoicesExportView, OrgaInvoicesView,
-    QualifsCalendar, SalariesExportView, SalariesView, SeasonExports, SeasonStatsExportView, SeasonStatsView,
+    ExpensesExportView, ExpensesView, LogisticsExportView, LogisticsView, MonthExports, NextQualifs,
+    OrgaInvoicesExportView, OrgaInvoicesView, QualifsCalendar, SalariesExportView, SalariesView, SeasonExports,
+    SeasonStatsExportView, SeasonStatsView,
 )
 
 urlpatterns = [
@@ -39,10 +40,15 @@ urlpatterns = [
             url(r'^stats-(?P<format>[a-z]+)$',
                 never_cache(SeasonStatsExportView.as_view()), name='season-stats-export'),
             # Facturation établissements
-            url(r'^orga-invoice/$',
+            url(r'^orgas/$',
                 never_cache(OrgaInvoicesView.as_view()), name='orga-invoices'),
-            url(r'^orga-invoice-(?P<format>[a-z]+)$',
+            url(r'^orgas-(?P<format>[a-z]+)$',
                 never_cache(OrgaInvoicesExportView.as_view()), name='orga-invoices-export'),
+            # Planification Logistique
+            url(r'^logistics/$',
+                never_cache(LogisticsView.as_view()), name='logistics'),
+            url(r'^logistics-(?P<format>[a-z]+)$',
+                never_cache(LogisticsExportView.as_view()), name='logistics-export'),
         ])),
     url(r'^m/(?:(?P<year>[0-9]{4})/(?P<month>[0-9]+)/)?',
         include([

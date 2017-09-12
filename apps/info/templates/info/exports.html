@@ -28,6 +28,7 @@
 
     <ul>
         <li><a href="{% url 'season-stats' year=year dv_season=season %}">{% trans "Statistiques de la saison" %}</a></li>
+        <li><a href="{% url 'logistics' year=year dv_season=season %}">{% trans "Logistique vélos" %}</a></li>
         <li><a href="{% url 'orga-invoices' year=year dv_season=season %}">{% trans "Facturation établissements" %}</a></li>
     </ul>
 {% endif %}
