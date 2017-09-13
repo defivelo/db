@@ -196,11 +196,11 @@ class OrgaInvoicesExport(SeasonExportMixin):
                     url = None
                     if season and html:
                         url = reverse('session-detail',
-                                    kwargs={
-                                        'seasonpk': season.pk,
-                                        'pk': orga_session.id
-                                        }
-                                    )
+                                      kwargs={
+                                          'seasonpk': season.pk,
+                                          'pk': orga_session.id
+                                          }
+                                      )
                     datetxt = datefilter(orga_session.day, settings.DATE_FORMAT_COMPACT)
                     timetxt = datefilter(orga_session.begin, settings.TIME_FORMAT_SHORT)
                     session_row.append(mark_safe(linktxt.format(url=url, content=datetxt)) if url else datetxt)
