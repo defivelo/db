@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-13 12:29+0200\n"
+"POT-Creation-Date: 2017-09-13 12:42+0200\n"
 "PO-Revision-Date: 2015-10-08 12:11+0100\n"
 "Last-Translator: Didier Raboud <me+defivelo@odyx.org>\n"
 "Language: fr\n"
@@ -29,7 +29,7 @@ msgid "Comme intervenant"
 msgstr ""
 
 #: apps/challenge/__init__.py:43
-#: apps/challenge/templates/challenge/session_detail.html:68
+#: apps/challenge/templates/challenge/session_detail.html:100
 msgid "Moniteur de Secours"
 msgstr ""
 
@@ -41,7 +41,7 @@ msgstr ""
 #: apps/challenge/__init__.py:45 apps/challenge/forms.py:194
 #: apps/challenge/models/availability.py:106
 #: apps/challenge/models/qualification.py:105
-#: apps/challenge/templates/challenge/session_detail.html:148
+#: apps/challenge/templates/challenge/session_detail.html:141
 #: apps/user/__init__.py:40 defivelo/templatetags/dv_filters.py:184
 msgid "Moniteur 2"
 msgstr ""
@@ -79,7 +79,7 @@ msgstr ""
 
 #: apps/challenge/forms.py:106 apps/challenge/models/session.py:82
 #: apps/challenge/models/session.py:102
-#: apps/challenge/templates/challenge/session_detail.html:93
+#: apps/challenge/templates/challenge/session_detail.html:81
 msgid "Pommes"
 msgstr ""
 
@@ -92,7 +92,7 @@ msgid "Heure rendez-vous moniteurs"
 msgstr ""
 
 #: apps/challenge/forms.py:115 apps/challenge/models/session.py:66
-#: apps/challenge/templates/challenge/session_detail.html:64
+#: apps/challenge/templates/challenge/session_detail.html:61
 msgid "Moniteur + / Photographe"
 msgstr ""
 
@@ -116,7 +116,7 @@ msgid "Natel enseignant"
 msgstr ""
 
 #: apps/challenge/forms.py:203 apps/challenge/models/qualification.py:113
-#: apps/challenge/templates/challenge/session_detail.html:150
+#: apps/challenge/templates/challenge/session_detail.html:143
 #: apps/challenge/views/season.py:186
 msgid "Moniteurs 1"
 msgstr ""
@@ -283,8 +283,8 @@ msgstr ""
 
 #: apps/challenge/models/qualification.py:127
 #: apps/challenge/models/session.py:87
-#: apps/challenge/templates/challenge/session_detail.html:118
-#: apps/challenge/templates/challenge/session_detail.html:177
+#: apps/challenge/templates/challenge/session_detail.html:111
+#: apps/challenge/templates/challenge/session_detail.html:170
 #: apps/orga/export.py:55 apps/orga/models.py:59
 #: apps/orga/templates/orga/organization_detail.html:65 apps/user/forms.py:123
 #: apps/user/models.py:177
@@ -296,7 +296,7 @@ msgid "Qualif'"
 msgstr ""
 
 #: apps/challenge/models/qualification.py:153
-#: apps/challenge/templates/challenge/session_detail.html:124
+#: apps/challenge/templates/challenge/session_detail.html:117
 msgid "Qualifs"
 msgstr ""
 
@@ -355,7 +355,7 @@ msgid "Autre …"
 msgstr ""
 
 #: apps/challenge/models/session.py:76 apps/challenge/models/session.py:100
-#: apps/challenge/templates/challenge/session_detail.html:76
+#: apps/challenge/templates/challenge/session_detail.html:64
 msgid "Mauvais temps"
 msgstr ""
 
@@ -364,7 +364,7 @@ msgid "Lieu rendez-vous moniteurs"
 msgstr ""
 
 #: apps/challenge/models/session.py:83 apps/challenge/models/session.py:104
-#: apps/challenge/templates/challenge/session_detail.html:97
+#: apps/challenge/templates/challenge/session_detail.html:85
 #: apps/info/templates/info/exports.html:31
 msgid "Logistique vélos"
 msgstr ""
@@ -459,7 +459,7 @@ msgstr ""
 
 #: apps/challenge/templates/challenge/season_availability.html:17
 #: apps/challenge/templates/challenge/season_list.html:52
-#: apps/challenge/templates/challenge/session_detail.html:122
+#: apps/challenge/templates/challenge/session_detail.html:115
 #: apps/challenge/templates/challenge/session_list_links.html:5
 #: defivelo/templates/header.html:16
 msgid "Planning"
@@ -472,7 +472,7 @@ msgstr ""
 #: apps/challenge/templates/challenge/season_availability.html:50
 #: apps/challenge/templates/challenge/season_availability_update.html:9
 #: apps/challenge/templates/challenge/session_availability.html:5
-#: apps/challenge/templates/challenge/session_detail.html:108
+#: apps/challenge/templates/challenge/session_detail.html:95
 msgid "Disponibilités"
 msgstr ""
 
@@ -624,12 +624,12 @@ msgid "Qualifs qui seront supprimées"
 msgstr ""
 
 #: apps/challenge/templates/challenge/session_confirm_delete.html:23
-#: apps/challenge/templates/challenge/session_detail.html:216
+#: apps/challenge/templates/challenge/session_detail.html:209
 msgid "Retour à la liste des sessions"
 msgstr ""
 
 #: apps/challenge/templates/challenge/session_detail.html:33
-#: apps/challenge/templates/challenge/session_detail.html:185
+#: apps/challenge/templates/challenge/session_detail.html:178
 #: apps/orga/templates/orga/organization_detail.html:74
 #: apps/orga/templates/orga/organization_filter.html:92
 #: apps/user/templates/auth/user_detail.html:210
@@ -642,86 +642,78 @@ msgstr ""
 msgid "Emplacement de la session"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_detail.html:61
-msgid "Encadrement"
-msgstr ""
-
-#: apps/challenge/templates/challenge/session_detail.html:79
-#: apps/challenge/templates/challenge/session_detail.html:166
+#: apps/challenge/templates/challenge/session_detail.html:67
+#: apps/challenge/templates/challenge/session_detail.html:159
 msgid "Vélos"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_detail.html:81
-#: apps/challenge/templates/challenge/session_detail.html:169
+#: apps/challenge/templates/challenge/session_detail.html:69
+#: apps/challenge/templates/challenge/session_detail.html:162
 #, python-format
 msgid "1 vélo"
 msgid_plural "%(n)s vélos"
 msgstr[0] ""
 msgstr[1] ""
 
-#: apps/challenge/templates/challenge/session_detail.html:84
-#: apps/challenge/templates/challenge/session_detail.html:172
+#: apps/challenge/templates/challenge/session_detail.html:72
+#: apps/challenge/templates/challenge/session_detail.html:165
 #, python-format
 msgid "1 casque"
 msgid_plural "%(n)s casques"
 msgstr[0] ""
 msgstr[1] ""
 
-#: apps/challenge/templates/challenge/session_detail.html:90
+#: apps/challenge/templates/challenge/session_detail.html:78
 #: apps/challenge/templates/challenge/session_form.html:54
 msgid "Logistique"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_detail.html:107
-msgid "Rendez-vous moniteurs"
-msgstr ""
-
-#: apps/challenge/templates/challenge/session_detail.html:108
+#: apps/challenge/templates/challenge/session_detail.html:95
 msgid "Moniteurs"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_detail.html:109
-msgid "Rendez-vous :"
+#: apps/challenge/templates/challenge/session_detail.html:97
+msgid "Rendez-vous"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_detail.html:115
+#: apps/challenge/templates/challenge/session_detail.html:108
 msgid "Erreurs"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_detail.html:127
+#: apps/challenge/templates/challenge/session_detail.html:120
 msgid "Classe"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_detail.html:143
+#: apps/challenge/templates/challenge/session_detail.html:136
 #, python-format
 msgid "%(n)s participants"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_detail.html:152
+#: apps/challenge/templates/challenge/session_detail.html:145
 msgid "Vélo urbain"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_detail.html:154
+#: apps/challenge/templates/challenge/session_detail.html:147
 msgid "Mécanique"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_detail.html:156
+#: apps/challenge/templates/challenge/session_detail.html:149
 msgid "Rencontre"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_detail.html:164
+#: apps/challenge/templates/challenge/session_detail.html:157
 msgid "Parcours"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_detail.html:188
-#: apps/challenge/templates/challenge/session_detail.html:211
+#: apps/challenge/templates/challenge/session_detail.html:181
+#: apps/challenge/templates/challenge/session_detail.html:204
 #: apps/user/templates/auth/user_detail.html:35
 #: apps/user/templates/auth/user_detail.html:36
 #: apps/user/templates/delete/user_delete.html:19
 msgid "Supprimer"
 msgstr ""
 
-#: apps/challenge/templates/challenge/session_detail.html:202
+#: apps/challenge/templates/challenge/session_detail.html:195
 msgid "Créer une Qualif'"
 msgstr ""
 
