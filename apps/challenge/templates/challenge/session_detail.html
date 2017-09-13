@@ -94,7 +94,7 @@
                             <dd>{{ session.apples }}</dd>
                     {% endif %}
                     {% if session.bikes_concept or session.bikes_phone %}
-                        <dt>{% trans "Livraison de vélos" %}</dt>
+                        <dt>{% trans "Logistique vélos" %}</dt>
                             <dd>
                             {{ session.bikes_concept }}{% if session.bikes_concept and session.bikes_phone %}<br />{% endif %}
                             {{ session.bikes_phone|tel_link }}
