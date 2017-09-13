@@ -29,6 +29,7 @@
 {% if not 'javascript_in_head'|bootstrap_setting %}{% bootstrap_javascript jquery=True %}{% endif %}
 {% compress js %}
     {% block bootstrap3_extra_script %}{% endblock %}
+    <script src="{% static 'js/bootstrap3_fixes.js' %}" type="text/javascript" charset="utf-8"></script>
 {% endcompress %}
 {% block body_end %}{% endblock %}
 </body>
