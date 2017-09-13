@@ -5,7 +5,7 @@
     <tr>
         <td rowspan="{% if chosen_stats %}6{% else %}5{% endif %}" colspan="{{ preamble_columns|default:3 }}">&nbsp;</td>
         {% if chosen_stats %}<td rowspan="6">{% trans "Sél." %}</td>{% endif %}
-        {% if wishfield %}<td rowspan="6">{% trans "Qualif' max" %}</td>{% endif %}
+        {% if wishfield %}<td rowspan="6">{% trans "Qualifs max" %}</td>{% endif %}
         {% for session in sessions %}
             <th class="text-center" style="vertical-align: top;">
                 {% if session.orga.abbr %}{{ session.orga.abbr_verb }}{% else %}{{ session.orga.name }}{% endif %}
