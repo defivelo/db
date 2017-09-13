@@ -33,7 +33,7 @@ from apps.common import DV_SEASON_AUTUMN, DV_SEASON_LAST_SPRING_MONTH, DV_STATE_
 from apps.orga.models import Organization
 from apps.user import FORMATION_M1, FORMATION_M2, formation_short
 from defivelo.roles import user_cantons
-from defivelo.templatetags.dv_filters import season_verb, canton_abbr_short
+from defivelo.templatetags.dv_filters import canton_abbr_short, season_verb
 
 linktxt = '<a href="{url}">{content}</a>'
 
