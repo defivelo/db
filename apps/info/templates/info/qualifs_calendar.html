@@ -3,6 +3,8 @@
 
 {% block head_title %}{% blocktrans with year=export_period.year season=export_period.season|season_verb %}Calendrier de la saison {{ season }} {{year}}{% endblocktrans %}{% endblock %}
 
+{% block container-class %}container-fluid{% endblock %}
+
 {% block content %}
 {% include 'info/_season_nav.html' with nav_url=nav_url previous_period=previous_period next_period=next_period only %}
 {% with season=export_period.season year=export_period.year %}
@@ -24,12 +26,12 @@
             {% if struct.day.weekday == 0 %}
                 <tr><th>{{ struct.day|weeknumber }}</th>
             {% endif %}
-            <td{% if struct.sessions|length == 1 %} class="dvstate-bg-{{ struct.sessions.0.orga.address_canton|lower }}"{% endif %}>
+            <td>
                 <p class="text-center">{{ struct.day|date:'j M' }}</p>
                 {% for session in struct.sessions %}
-                    <a class="{% if struct.sessions|length != 1 %} dvstate-bg-{{ session.orga.address_canton|lower }}{% endif %}"{% if session.season and user|anyofusercantons:session.season.cantons %} href="{% url 'session-detail' seasonpk=session.season.pk pk=session.id %}"{% endif %}>
+                    <a class="dvstate-bg-{{ session.orga.address_canton|lower }}"{% if session.season and user|anyofusercantons:session.season.cantons %} href="{% url 'session-detail' seasonpk=session.season.pk pk=session.id %}"{% endif %}>
                         {% if session.begin %}<span class="badge pull-right dvstate-bg-none dvstate-txt-{{ session.orga.address_canton|lower }} ">{{ session.begin }}</span>{% endif %}
-                        <span class="visible-print-inline">{{ session.orga.address_canton|canton_abbr:True }} - </span>{{ session.orga.ifabbr|safe }}
+                        {{ session.orga.ifabbr|safe }}<span class="small visible-print-inline"> ({{ session.orga.address_canton|canton_abbr:True }})</span>
                     </a>
                 {% endfor %}
             </td>

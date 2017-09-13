@@ -3,7 +3,9 @@ table.dvqualifs-calendar {
         &>tr {
             &>td,
             &>th {
-                padding: 0;
+                padding-top: 0;
+                padding-left: 0;
+                padding-right: 0;
 
                 a {
                     display: block;
