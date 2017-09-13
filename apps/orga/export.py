@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 from django.utils.translation import ugettext_lazy as _
 from import_export import fields, resources
 
-from defivelo.templatetags.dv_filters import canton_abbr, cantons_abbr
+from defivelo.templatetags.dv_filters import canton_abbr
 
 from . import ORGA_FIELDS
 from .models import Organization
