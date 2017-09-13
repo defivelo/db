@@ -20,6 +20,8 @@
     {% if helper.profile.affiliation_canton in season.cantons %}</em>{% endif %}
 </td>
 {% if availabilities %}
-    <td>{{ availabilities|chosen_staff_for_season:helper }}</td>
-    <td>{{ availabilities|work_wish_for_season:helper }}</td>
+    {% with chosen_for=availabilities|chosen_staff_for_season:helper work_wish=availabilities|work_wish_for_season:helper %}
+        <td>{{ chosen_for }}</td>
+        <td>{% if work_wish > 0 and chosen_for > work_wish %}<span class="glyphicon glyphicon-alert" title="{{ chosen_for }}/{{ work_wish }}"></span> {% endif %}{{ work_wish }}</td>
+    {% endwith %}
 {% endif %}
