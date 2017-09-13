@@ -164,6 +164,11 @@ class OrgaInvoicesExport(SeasonExportMixin):
             u('Vélos loués'),
             u('Casques loués'),
         ]
+        if not self.canton_orga_not_sessions:
+            row = row + [
+                u('Logistique vélos'),
+                u('N° de contact vélos')
+            ]
         dataset.append(row)
         sessions = self.get_queryset()
         if not self.canton_orga_not_sessions:
@@ -235,6 +240,8 @@ class OrgaInvoicesExport(SeasonExportMixin):
                     session.n_participants,
                     session.n_bikes,
                     session.n_helmets,
+                    session.bikes_concept,
+                    session.bikes_phone,
                 ])
         return dataset
 
