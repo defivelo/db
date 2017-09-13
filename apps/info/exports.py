@@ -326,12 +326,12 @@ class SalariesExport(object):
                 user.profile.address_zip,
                 user.profile.address_city,
                 (
-                    (user.profile.iban[:5] + '…' if len(user.profile.iban) > 0 else '')
-                    if html else user.profile.iban_nice
-                ),
-                (
                     (user.profile.social_security[:5] + '…' if len(user.profile.social_security) > 0 else '')
                     if html else user.profile.social_security
+                ),
+                (
+                    (user.profile.iban[:5] + '…' if len(user.profile.iban) > 0 else '')
+                    if html else user.profile.iban_nice
                 ),
                 user.profile.affiliation_canton
             ]
