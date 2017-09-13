@@ -192,16 +192,19 @@ class OrgaInvoicesExport(SeasonExportMixin):
                 orga_row.append(orga.ifabbr if html else orga.name)
                 for orga_session in sessions.filter(orga=orga):
                     session_row = list(orga_row)
-                    session_url = reverse('session-detail',
-                                          kwargs={
-                                              'seasonpk': orga_session.season.pk,
-                                              'pk': orga_session.id
-                                              }
-                                          )
+                    season = orga_session.season
+                    url = None
+                    if season and html:
+                        url = reverse('session-detail',
+                                    kwargs={
+                                        'seasonpk': season.pk,
+                                        'pk': orga_session.id
+                                        }
+                                    )
                     datetxt = datefilter(orga_session.day, settings.DATE_FORMAT_COMPACT)
                     timetxt = datefilter(orga_session.begin, settings.TIME_FORMAT_SHORT)
-                    session_row.append(mark_safe(linktxt.format(url=session_url, content=datetxt)) if html else datetxt)
-                    session_row.append(mark_safe(linktxt.format(url=session_url, content=timetxt)) if html else timetxt)
+                    session_row.append(mark_safe(linktxt.format(url=url, content=datetxt)) if url else datetxt)
+                    session_row.append(mark_safe(linktxt.format(url=url, content=timetxt)) if url else timetxt)
                     for qualif in orga_session.qualifications.all():
                         qualif_row = list(session_row)
                         qualif_row.append(qualif.name)
@@ -211,20 +214,23 @@ class OrgaInvoicesExport(SeasonExportMixin):
                         dataset.append(qualif_row)
         else:
             for session in sessions:
-                session_url = reverse('session-detail',
-                                      kwargs={
-                                          'seasonpk': session.season.pk,
-                                          'pk': session.id
-                                          }
-                                      )
+                season = session.season
+                url = None
+                if season and html:
+                    url = reverse('session-detail',
+                                  kwargs={
+                                      'seasonpk': season.pk,
+                                      'pk': session.id
+                                      }
+                                  )
                 datetxt = datefilter(session.day, settings.DATE_FORMAT_COMPACT)
                 timetxt = datefilter(session.begin, settings.TIME_FORMAT_SHORT)
                 dataset.append([
                     session.orga.address_canton,
                     session.orga.ifabbr if html else session.orga.name,
                     session.city,
-                    mark_safe(linktxt.format(url=session_url, content=datetxt)) if html else datetxt,
-                    mark_safe(linktxt.format(url=session_url, content=timetxt)) if html else timetxt,
+                    mark_safe(linktxt.format(url=url, content=datetxt)) if url else datetxt,
+                    mark_safe(linktxt.format(url=url, content=timetxt)) if url else timetxt,
                     session.n_qualifs,
                     session.n_participants,
                     session.n_bikes,
