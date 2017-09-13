@@ -33,7 +33,7 @@ from apps.common import DV_SEASON_AUTUMN, DV_SEASON_LAST_SPRING_MONTH, DV_STATE_
 from apps.orga.models import Organization
 from apps.user import FORMATION_M1, FORMATION_M2, formation_short
 from defivelo.roles import user_cantons
-from defivelo.templatetags.dv_filters import season_verb
+from defivelo.templatetags.dv_filters import season_verb, canton_abbr_short
 
 linktxt = '<a href="{url}">{content}</a>'
 
@@ -319,7 +319,7 @@ class SalariesExport(object):
         )
         for user in everyone:
             fullname = user.get_full_name()
-            url = reverse('user-detail', kwargs={'pk': user.pk })
+            url = reverse('user-detail', kwargs={'pk': user.pk})
             row = [
                 mark_safe(linktxt.format(url=url, content=fullname)) if html else fullname,
                 '%s %s' % (user.profile.address_street, user.profile.address_no),
@@ -333,7 +333,7 @@ class SalariesExport(object):
                     (user.profile.iban[:5] + '…' if len(user.profile.iban) > 0 else '')
                     if html else user.profile.iban_nice
                 ),
-                user.profile.affiliation_canton
+                canton_abbr_short(user.profile.affiliation_canton, abbr=False),
             ]
             for session in self.object_list:
                 label = ''

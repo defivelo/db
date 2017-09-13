@@ -294,7 +294,10 @@ def weeknumber(date):
 def cantons_abbr(cantons, abbr=True, long=True):
     special_cantons = DV_STATES_LONGER_ABBREVIATIONS if long else DV_STATES_REAL_FALLBACKS
     return [
-                force_text(c[1]) if not abbr
+                force_text(
+                    c[1] if long
+                    else special_cantons[c[0]] if c[0] in special_cantons else c[0]
+                ) if not abbr
                 else mark_safe(
                     '<abbr title="{title}">{abbr}</abbr>'
                     .format(
