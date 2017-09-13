@@ -19,7 +19,7 @@
                     <li{% if 'season-actorlist' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-actorlist' season.pk %}">{% trans "Liste des intervenants" %}</a></li>
                 </ul>
             </li>
-        {% elif user|can:'challenge_season_crud' or current_seasons %}
+        {% else %}
             <li{% if 'season' in menu_category %} class="active"{% endif %}>
                 <a href="{% url 'season-list' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Saisons" %}<span class="caret"></span></a>
                     <ul class="dropdown-menu">
@@ -41,6 +41,9 @@
                     {% endif %}
                     <li><a href="{% url 'season-list' year=now_year %}">{% trans "Toutes les saisons" %}</a></li>
                     <li><a href="{% url 'qualifs-calendar' %}">{% trans "Calendrier" %}</a></li>
+                    {% if not user|can:'challenge_season_crud' %}
+                        <li><a target="_blank" href="{% url 'public-nextqualifs' %}">{% trans "Prochaines Qualifs" %}</a></li>
+                    {% endif %}
                     {% if user|can:'challenge_season_crud' %}
                         <li><a href="{% url 'season-create' %}">{% trans "Créer une saison" %}</a></li>
                     {% endif %}
