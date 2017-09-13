@@ -35,6 +35,8 @@ from apps.user import FORMATION_M1, FORMATION_M2, formation_short
 from defivelo.roles import user_cantons
 from defivelo.templatetags.dv_filters import season_verb
 
+linktxt = '<a href="{url}">{content}</a>'
+
 
 class SeasonExportMixin(object):
     def get_queryset(self):
@@ -188,7 +190,6 @@ class OrgaInvoicesExport(SeasonExportMixin):
                 'sessions__qualifications',
             )
         )
-        linktxt = '<a href="{url}">{content}</a>'
         row = []
         if self.canton_orga_not_sessions:
             for orga in orgas:
@@ -281,8 +282,20 @@ class SalariesExport(object):
         dataset.append_col(session_cols + [u('Canton d\'affiliation')])
 
         for session in self.object_list:
+            orga = session.orga.ifabbr if html else session.orga.name
+            season = session.season
+            link = None
+            if season and html:
+                link = mark_safe(
+                    linktxt.format(
+                        url=reverse('session-detail',
+                                    kwargs={
+                                        'seasonpk': season.pk,
+                                        'pk': session.pk
+                                        }),
+                        content=orga))
             dataset.append_col([
-                session.orga.ifabbr if html else session.orga.name,
+                link if link else orga,
                 datefilter(session.day, 'j.m'),
                 datefilter(session.begin, settings.TIME_FORMAT)
             ])
@@ -305,8 +318,10 @@ class SalariesExport(object):
             .distinct()
         )
         for user in everyone:
+            fullname = user.get_full_name()
+            url = reverse('user-detail', kwargs={'pk': user.pk })
             row = [
-                user.get_full_name(),
+                mark_safe(linktxt.format(url=url, content=fullname)) if html else fullname,
                 '%s %s' % (user.profile.address_street, user.profile.address_no),
                 user.profile.address_zip,
                 user.profile.address_city,
