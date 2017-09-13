@@ -38,7 +38,7 @@ from defivelo.templatetags.dv_filters import canton_abbr_short, season_verb
 linktxt = '<a href="{url}">{content}</a>'
 
 
-class SeasonExportMixin(object):
+class SeasonSessionsMixin(object):
     def get_queryset(self):
         begin = date(self.export_year, 1, 1)
         if self.export_season == DV_SEASON_AUTUMN:
@@ -57,7 +57,7 @@ class SeasonExportMixin(object):
         )
 
 
-class SeasonStatsExport(SeasonExportMixin):
+class SeasonStatsExport(SeasonSessionsMixin):
     def get_dataset_title(self):
         return _('Statistiques de la saison {season} {year}').format(
             season=season_verb(self.export_season),
@@ -125,7 +125,7 @@ class SeasonStatsExport(SeasonExportMixin):
         return dataset
 
 
-class OrgaInvoicesExport(SeasonExportMixin):
+class OrgaInvoicesExport(SeasonSessionsMixin):
     # Saison par canton puis qualif par établissement
     canton_orga_not_sessions = True
 

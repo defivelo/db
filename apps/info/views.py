@@ -33,7 +33,7 @@ from defivelo.roles import user_cantons
 from defivelo.views.common import MenuView
 
 from .exports import (
-    ExpensesExport, LogisticsExport, OrgaInvoicesExport, SalariesExport, SeasonExportMixin, SeasonStatsExport,
+    ExpensesExport, LogisticsExport, OrgaInvoicesExport, SalariesExport, SeasonSessionsMixin, SeasonStatsExport,
 )
 
 
@@ -122,7 +122,7 @@ class SeasonExportsMixin(MenuView, HasPermissionsMixin):
         return context
 
 
-class QualifsCalendar(SeasonExportMixin, SeasonExportsMixin, ListView):
+class QualifsCalendar(SeasonSessionsMixin, SeasonExportsMixin, ListView):
     template_name = 'info/qualifs_calendar.html'
     context_object_name = 'sessions'
 
@@ -193,7 +193,7 @@ class ExpensesExportView(ExpensesExport, MonthExports, ExportMixin, ListView):
 
 
 class SeasonExports(SeasonExportsMixin, IfDatasetExportMixin, TemplateView):
-    template_name = 'info/exports.html'
+    template_name = 'info/season_exports.html'
 
 
 class SeasonStatsView(SeasonStatsExport, SeasonExports):
