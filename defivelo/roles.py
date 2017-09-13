@@ -77,6 +77,7 @@ class PowerUser(AbstractUserRole):
         'user_can_resend_credentials': True,
         'user_deletions': True,
         'user_set_role': True,
+        'user_mark_inactive': True,
 
         'home_article_crud': True,
 

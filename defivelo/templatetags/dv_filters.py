@@ -311,17 +311,23 @@ def cantons_abbr(cantons, abbr=True, long=True, fix_special=False):
 
 @register.filter
 def canton_abbr(canton, abbr=True, long=True, fix_special=False):
-    return cantons_abbr([canton], abbr, long, fix_special)[0]
+    try:
+        return cantons_abbr([canton], abbr, long, fix_special)[0]
+    except IndexError:
+        return ''
 
 
 @register.filter
 def canton_abbr_short(canton, abbr=True, fix_special=False):
-    return cantons_abbr(
-        [canton],
-        abbr=abbr,
-        long=False,
-        fix_special=fix_special
-    )[0]
+    try:
+        return cantons_abbr(
+            [canton],
+            abbr=abbr,
+            long=False,
+            fix_special=fix_special
+        )[0]
+    except IndexError:
+        return ''
 
 
 @register.filter

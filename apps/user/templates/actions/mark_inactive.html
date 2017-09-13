@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load i18n bootstrap3 dv_filters %}
+
+{% block head_title %}{% trans "Marquer tous les moniteurs comme inactifs ?" %}{% endblock %}
+{% block content %}
+    <h2>{% trans "Marquer tous les moniteurs comme inactifs ?" %}</h2>
+
+    <div class="alert alert-danger">{% blocktrans with count=affected_accounts.count %}<b>Tous</b> les moniteurs M1 et M2 ({{count}} profils) de l'Intranet qui sont actifs ou inactifs vont être <strong>marqués comme inactifs</strong> !{% endblocktrans %}</div>
+    
+    <dl class="dl-horizontal">
+    {% for profile in affected_accounts %}
+        <dt>{{ profile.user.get_full_name }}</dt>
+            <dd>{{ profile.status_icon }} {{ profile.formation_icon }} {{ profile.affiliation_canton|canton_abbr }} </dd>
+    {% endfor %}
+    </dl>
+
+    <form method="POST" action="" class="form-horizontal">
+        {% csrf_token %}
+        {% bootstrap_form form layout='horizontal' size='small' %}
+        {% buttons %}
+            <button type="submit" class="btn btn-danger pull-right">{% trans 'Confirmer' %}</button>
+            <a class="btn btn-default" href="{% url 'user-list' %}">{% trans "Annuler" %}</a>
+        {% endbuttons %}
+    </form>
+{% endblock %}

@@ -17,13 +17,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from django.conf.urls import url
+from django.conf.urls import include, url
 from django.views.decorators.cache import never_cache
 
 from .views import (
     ResendUserCredentials, SendUserCredentials, UserAssignRole, UserCreate, UserDetail, UserList, UserListExport,
     UserUpdate,
 )
+from .views.actions import MarkInactive
 from .views.autocomplete import Actors, AllPersons, Helpers, Leaders, PersonsRelevantForSessions
 from .views.deletes import UserDelete
 
@@ -33,6 +34,7 @@ urlpatterns = [
         never_cache(UserListExport.as_view()),
         name="user-list-export"),
     url(r'^new/$', UserCreate.as_view(), name="user-create"),
+    url(r'^me/$', never_cache(UserDetail.as_view()), name="profile-detail"),
     url(r'^(?P<pk>[0-9]+)/$',
         never_cache(UserDetail.as_view()), name="user-detail"),
     url(r'^(?P<pk>[0-9]+)/sendcreds/$',
@@ -47,7 +49,10 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/assign_role/$',
         never_cache(UserAssignRole.as_view()),
         name="user-assign-role"),
-    url(r'^me/$', never_cache(UserDetail.as_view()), name="profile-detail"),
+    url(r'^actions/',
+        include([
+            url(r'^mark-inactive$', never_cache(MarkInactive.as_view()), name='users-actions-markinactive'),
+        ])),
     url(r'^(?P<pk>[0-9]+)/update/$', UserUpdate.as_view(), name="user-update"),
     url(r'^ac/all/$', AllPersons.as_view(), name='user-AllPersons-ac'),
     url(r'^ac/prfs/$', PersonsRelevantForSessions.as_view(), name='user-PersonsRelevantForSessions-ac'),
