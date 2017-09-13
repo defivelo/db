@@ -57,8 +57,20 @@
     {% if session.begin and session.duration %}
         <tr><th>{% trans "Horaire" %}</th><td>{{ session.begin|time }} - {{ session.end|time }}</td></tr>
     {% endif %}
-    {% if session.superleader %}
-        <tr><th>{% trans "Moniteur + / Photographe" %}</th><td>{{ session.superleader|profile_tag }}</td></tr>
+    {% if session.superleader or session.replacement_staff.count > 0 %}
+        <tr><th>{% trans "Encadrement" %}</th>
+            <td><dl class="dl-horizontal small">
+                    {% if session.superleader %}
+                        <dt>{% trans "Moniteur + / Photographe" %}</dt>
+                            <dd>{{ session.superleader|profile_tag }}</dd>
+                    {% endif %}
+                    {% if session.replacement_staff.count > 0 %}
+                        <dt>{% trans "Moniteur de Secours" %}</dt>
+                            <dd>{% for avail in session.replacement_staff %}{% if not forloop.first %}<br />{% endif %}{{ avail.helper|profile_tag }}{% endfor %}</dd>
+                    {% endif %}
+                </dl>
+            </td>
+        </tr>
     {% endif %}
     {% if session.fallback %}
         <tr><th>{% trans "Mauvais temps" %}</th><td>{{ session.fallback }}</td></tr>

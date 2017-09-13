@@ -33,7 +33,9 @@ from apps.common.models import Address
 from apps.orga.models import ORGASTATUS_ACTIVE, Organization
 from apps.user import FORMATION_KEYS, FORMATION_M2
 
-from .. import CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_NOT, MAX_MONO1_PER_QUALI
+from .. import (
+    CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_NOT, CHOSEN_AS_REPLACEMENT, MAX_MONO1_PER_QUALI,
+)
 
 DEFAULT_SESSION_DURATION_HOURS = 3
 DEFAULT_EARLY_MINUTES_FOR_HELPERS_MEETINGS = 60
@@ -152,6 +154,10 @@ class Session(Address, models.Model):
                 '-helper__profile__formation'
             )
         )
+
+    @cached_property
+    def replacement_staff(self):
+        return self.chosen_staff.filter(chosen_as=CHOSEN_AS_REPLACEMENT)
 
     @cached_property
     def n_qualifications(self):
