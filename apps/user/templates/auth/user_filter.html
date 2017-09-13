@@ -113,4 +113,12 @@
     </div>
     {% endif %}
 
+    {% if request.user|can:"user_mark_inactive" %}
+    <div class="hidden-print">
+        <a class="btn btn-xs btn-danger" href="{% url 'users-actions-markinactive' %}">
+            <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
+            {% trans "Rendre tous les moniteurs inactifs" %}
+        </a>
+    </div>
+    {% endif %}
 {% endblock %}
