@@ -9,7 +9,7 @@
 
 {% if dataset %}
     <h1>{{ dataset_title }}</h1>
-    {% include 'export_buttons.html' with exporturl=dataset_exporturl year=month.year month=month.month only %}
+    {% include 'export_buttons.html' with noprint=True exporturl=dataset_exporturl year=month.year month=month.month only %}
     <table class="table">
     {% for row in dataset %}
         <tr>
