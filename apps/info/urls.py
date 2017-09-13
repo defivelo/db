@@ -30,7 +30,7 @@ urlpatterns = [
     url(r'^qualifs/$',
         never_cache(NextQualifs.as_view()),
         name='public-nextqualifs'),
-    url(r'^(?:(?P<year>[0-9]{4})/(?P<dv_season>[0-9]+)/)?',
+    url(r'^(?:(?P<year>[0-9]{4})_(?P<dv_season>[0-9]+)/)?',
         include([
             url(r'^$', never_cache(SeasonExports.as_view()), name='season-exports'),
             url(r'^calendar/$', never_cache(QualifsCalendar.as_view()), name='qualifs-calendar'),
@@ -50,7 +50,7 @@ urlpatterns = [
             url(r'^logistics-(?P<format>[a-z]+)$',
                 never_cache(LogisticsExportView.as_view()), name='logistics-export'),
         ])),
-    url(r'^m/(?:(?P<year>[0-9]{4})/(?P<month>[0-9]+)/)?',
+    url(r'^m/(?:(?P<year>[0-9]{4})-(?P<month>[0-9]+)/)?',
         include([
             url(r'^$', never_cache(MonthExports.as_view()), name='month-exports'),
             # Salaires

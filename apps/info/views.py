@@ -88,9 +88,7 @@ class MonthExportsMixin(HasPermissionsMixin, MenuView, MonthArchiveView):
         return context
 
 
-class SeasonExportsMixin(HasPermissionsMixin, MenuView):
-    required_permission = 'challenge_season_crud'
-
+class SeasonExportsMixin(MenuView):
     def dispatch(self, *args, **kwargs):
         try:
             self.export_year = int(kwargs.pop('year'))
@@ -192,7 +190,9 @@ class ExpensesExportView(ExpensesExport, MonthExports, ExportMixin, ListView):
     pass
 
 
-class SeasonExports(SeasonExportsMixin, IfDatasetExportMixin, TemplateView):
+class SeasonExports(SeasonExportsMixin, HasPermissionsMixin,
+                    IfDatasetExportMixin, TemplateView):
+    required_permission = 'challenge_season_crud'
     template_name = 'info/season_exports.html'
 
 
