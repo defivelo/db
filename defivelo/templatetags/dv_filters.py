@@ -291,11 +291,11 @@ def weeknumber(date):
 
 
 @register.filter
-def cantons_abbr(cantons, abbr=True, long=True):
+def cantons_abbr(cantons, abbr=True, long=True, fix_special=False):
     special_cantons = DV_STATES_LONGER_ABBREVIATIONS if long else DV_STATES_REAL_FALLBACKS
     return [
                 force_text(
-                    c[1] if long
+                    c[1] if not fix_special
                     else special_cantons[c[0]] if c[0] in special_cantons else c[0]
                 ) if not abbr
                 else mark_safe(
@@ -310,13 +310,18 @@ def cantons_abbr(cantons, abbr=True, long=True):
 
 
 @register.filter
-def canton_abbr(canton, abbr=True):
-    return cantons_abbr([canton], abbr)[0]
+def canton_abbr(canton, abbr=True, long=True, fix_special=False):
+    return cantons_abbr([canton], abbr, long, fix_special)[0]
 
 
 @register.filter
-def canton_abbr_short(canton, abbr=True):
-    return cantons_abbr([canton], abbr, long=False)[0]
+def canton_abbr_short(canton, abbr=True, fix_special=False):
+    return cantons_abbr(
+        [canton],
+        abbr=abbr,
+        long=False,
+        fix_special=fix_special
+    )[0]
 
 
 @register.filter

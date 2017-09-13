@@ -78,7 +78,7 @@
                 {% endif %}</td>
             <td><a href="{% url 'organization-detail' pk=orga.pk %}">{{ orga.name }}</a></td>
             <td>{{ orga.address_zip }} {{ orga.address_city }}</td>
-            <td>{{ orga.address_canton }}</td>
+            <td>{{ orga.address_canton|canton_abbr }}</td>
             <td>{{ orga.coordinator_fullname }}</td>
             <td>{% if orga.coordinator_natel %}
                 {{ orga.coordinator_natel|tel_link }}

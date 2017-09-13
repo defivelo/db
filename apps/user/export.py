@@ -22,6 +22,8 @@ from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 from import_export import fields, resources, widgets
 
+from defivelo.templatetags.dv_filters import canton_abbr, cantons_abbr
+
 from .models import STD_PROFILE_FIELDS
 
 
@@ -131,8 +133,7 @@ class UserResource(resources.ModelResource):
         widget=widgets.DateWidget(format='%d.%m.%Y')
     )
     profile__affiliation_canton = fields.Field(
-        column_name=_("Canton d'affiliation"),
-        attribute='profile__affiliation_canton')
+        column_name=_("Canton d'affiliation"))
     profile__activity_cantons = fields.Field(
         column_name=_("Défi Vélo Mobile"),
         attribute='profile__activity_cantons',
@@ -154,3 +155,21 @@ class UserResource(resources.ModelResource):
         model = get_user_model()
         fields = ALL_PROFILE_FIELDS
         export_order = ALL_PROFILE_FIELDS
+
+    def dehydrate_profile__address_canton(self, field):
+        return canton_abbr(
+            field.profile.address_canton,
+            abbr=False, long=True, fix_special=True
+        )
+
+    def dehydrate_profile__affiliation_canton(self, field):
+        return canton_abbr(
+            field.profile.affiliation_canton,
+            abbr=False, long=True, fix_special=True
+        )
+
+    def dehydrate_profile__activity_cantons(self, field):
+        return ', '.join(cantons_abbr(
+            field.profile.activity_cantons,
+            abbr=False, long=True, fix_special=True
+        ))

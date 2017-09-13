@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 from django.utils.translation import ugettext_lazy as _
 from import_export import fields, resources
 
+from defivelo.templatetags.dv_filters import canton_abbr, cantons_abbr
+
 from . import ORGA_FIELDS
 from .models import Organization
 
@@ -39,7 +41,7 @@ class OrganizationResource(resources.ModelResource):
                                attribute='address_zip')
     address_city = fields.Field(column_name=_('Ville'),
                                 attribute='address_city')
-    address_canton = fields.Field(column_name=_('Canton'),
+    address_canton = fields.Field(column_name=_('Canton d\'affiliation'),
                                   attribute='address_canton')
     website = fields.Field(column_name=_('Site web'),
                            attribute='website')
@@ -59,3 +61,9 @@ class OrganizationResource(resources.ModelResource):
         model = Organization
         fields = EXPORT_FIELDS
         export_order = EXPORT_FIELDS
+
+    def dehydrate_address_canton(self, field):
+        return canton_abbr(
+            field.address_canton,
+            abbr=False, long=True, fix_special=True
+        )
