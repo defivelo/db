@@ -121,6 +121,7 @@ class SeasonExportsMixin(MenuView):
 
 
 class QualifsCalendar(SeasonSessionsMixin, SeasonExportsMixin, ListView):
+    limit_to_my_cantons = False
     template_name = 'info/qualifs_calendar.html'
     context_object_name = 'sessions'
 

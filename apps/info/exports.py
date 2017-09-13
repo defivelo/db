@@ -39,6 +39,8 @@ linktxt = '<a href="{url}">{content}</a>'
 
 
 class SeasonSessionsMixin(object):
+    limit_to_my_cantons = True
+
     def get_queryset(self):
         begin = date(self.export_year, 1, 1)
         if self.export_season == DV_SEASON_AUTUMN:
@@ -46,15 +48,19 @@ class SeasonSessionsMixin(object):
         end = date(self.export_year, DV_SEASON_LAST_SPRING_MONTH + 1, 1) - timedelta(days=1)
         if self.export_season == DV_SEASON_AUTUMN:
             end = date(self.export_year, 12, 31)
-        return (
+        sessions = (
             Session.objects
             .filter(
                 day__gte=begin, day__lte=end,
-                orga__address_canton__in=user_cantons(self.request.user)
             )
             .order_by('day', 'begin')
             .prefetch_related('orga')
         )
+        if self.limit_to_my_cantons:
+            sessions = sessions.filter(
+                orga__address_canton__in=user_cantons(self.request.user)
+            )
+        return sessions
 
 
 class SeasonStatsExport(SeasonSessionsMixin):
