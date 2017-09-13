@@ -53,7 +53,7 @@ class NextQualifs(PublicView, PaginatorMixin, ListView):
     )
 
 
-class MonthExportsMixin(MenuView, MonthArchiveView, HasPermissionsMixin):
+class MonthExportsMixin(HasPermissionsMixin, MenuView, MonthArchiveView):
     required_permission = 'challenge_season_crud'
     date_field = "day"
     month_format = '%m'
@@ -88,7 +88,7 @@ class MonthExportsMixin(MenuView, MonthArchiveView, HasPermissionsMixin):
         return context
 
 
-class SeasonExportsMixin(MenuView, HasPermissionsMixin):
+class SeasonExportsMixin(HasPermissionsMixin, MenuView):
     required_permission = 'challenge_season_crud'
 
     def dispatch(self, *args, **kwargs):
