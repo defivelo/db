@@ -256,7 +256,7 @@ class QualificationForm(forms.ModelForm):
                             "prévue !"),
                         code='unqualified-actor')
             helpers = self.cleaned_data.get('helpers')
-            if helpers.filter(id=actor.id).exists():
+            if helpers and helpers.filter(id=actor.id).exists():
                 raise ValidationError(
                     _("L'intervenant ne peut pas aussi être moniteur !"),
                     code='helper-actor')
