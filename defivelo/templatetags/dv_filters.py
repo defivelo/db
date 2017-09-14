@@ -212,9 +212,9 @@ def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=
                 avail_content = ' '
 
             output += (
-                '<td class="{avail_class}"{avail_verbose}>'
+                '<td class="{avail_class}"{avail_verbose}><div class="dvflex">'
                 '<!-- {key} -->{avail_label}{conflict_warning}'
-                '</td>'
+                '</div></td>'
             ).format(
                 avail_class='info' if locked else avail_class,
                 avail_verbose=' title="%s"' % avail_verb if avail_verb else '',

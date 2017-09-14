@@ -21,6 +21,11 @@ table.table-avail {
                         justify-content: center;
                     }
                 }
+                .dvflex {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
                 input[type=number] {
                     width: 3em;
                 }
