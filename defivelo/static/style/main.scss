@@ -13,6 +13,12 @@ body {
     margin-bottom: ($global-footer-height + 20px);
 }
 
+#dv-navbar-logo {
+    margin-top: -15px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
 @import 'partials/bootstrap-fixes';
 @import 'partials/footer';
 @import 'partials/flags';
