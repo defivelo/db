@@ -22,10 +22,11 @@ from dal_select2.widgets import ModelSelect2
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.staticfiles import finders
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.template.defaultfilters import date
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import get_language, ugettext_lazy as _
 from localflavor.ch.forms import CHPhoneNumberField, CHStateSelect
 
 from apps.common.forms import SwissDateField, SwissTimeField, UserAutoComplete
@@ -77,7 +78,26 @@ class SeasonForm(forms.ModelForm):
         fields = ['year', 'season', 'cantons', 'state', 'leader']
 
 
-class SessionForm(forms.ModelForm):
+class Select2Mixin(object):
+    # Ajoute la traduction du JS pour Select2
+    @property
+    def media(self):
+        medias = super(Select2Mixin, self).media
+        new_js_order = []
+        for path in medias._js:
+            if path == 'autocomplete_light/select2.js':
+                # The translation has to appear _before_ autocomplete_light instantiates
+                # select2
+                trad = 'autocomplete_light/vendor/select2/dist/js/i18n/%s.js' % get_language()
+                # Try getting it with the static finder
+                if finders.find(trad):
+                    new_js_order.append(trad)
+            new_js_order.append(path)
+        medias._js = new_js_order
+        return medias
+
+
+class SessionForm(Select2Mixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         kwargs.pop('cantons', None)
         self.season = kwargs.pop('season', None)
@@ -293,7 +313,7 @@ class QualificationForm(forms.ModelForm):
                   'comments']
 
 
-class SeasonNewHelperAvailabilityForm(forms.Form):
+class SeasonNewHelperAvailabilityForm(Select2Mixin, forms.Form):
     def __init__(self, *args, **kwargs):
         super(SeasonNewHelperAvailabilityForm, self).__init__(*args, **kwargs)
         self.fields['helper'] = \

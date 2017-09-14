@@ -279,6 +279,7 @@ class SalariesExport(object):
         dataset = Dataset()
         # Cases en haut à gauche
         session_cols = ['' for i in range(2)]
+
         def bolden(s):
             return mark_safe('<b>%s</b>' % s) if html else s
 

@@ -2,13 +2,8 @@
 {% load i18n bootstrap3 dv_filters %}
 {% block head_title %}{{ season.desc }}{% endblock %}
 
-{% block bootstrap3_extra_head %}
-    {{ form.media.css }}
-{% endblock %}
-{% block bootstrap3_extra_script %}
-    {{ form.media.js }}
-    {% include 'snippets/autocomplete_i18n_js.html' %}
-{% endblock %}
+{% block bootstrap3_extra_head %}{{ form.media.css }}{% endblock %}
+{% block bootstrap3_extra_script %}{{ form.media.js }}{% endblock %}
 
 {% block container-class %}container-fluid{% endblock %}
 
