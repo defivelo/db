@@ -27,7 +27,7 @@ from rolepermissions.mixins import HasPermissionsMixin
 from stronghold.views import StrongholdPublicMixin
 
 from apps.challenge.models.session import Session
-from apps.common import DV_SEASON_AUTUMN, DV_SEASON_SPRING, DV_STATES
+from apps.common import DV_SEASON_AUTUMN, DV_SEASON_SPRING
 from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.roles import user_cantons
 from defivelo.views.common import MenuView
@@ -35,6 +35,7 @@ from defivelo.views.common import MenuView
 from .exports import (
     ExpensesExport, LogisticsExport, OrgaInvoicesExport, SalariesExport, SeasonSessionsMixin, SeasonStatsExport,
 )
+from .forms import CantonFilterForm
 
 
 class PublicView(StrongholdPublicMixin):
@@ -125,15 +126,18 @@ class QualifsCalendar(SeasonSessionsMixin, SeasonExportsMixin, ListView):
     template_name = 'info/qualifs_calendar.html'
     context_object_name = 'sessions'
 
-    def dispatch(self, request, *args, **kwargs):
-        raw_cantons = request.GET.get('cantons', '').split(',')
-        self.cantons = [c for c in DV_STATES if c in raw_cantons]
-        return super(QualifsCalendar, self).dispatch(request, *args, **kwargs)
+    def post(self, request, *args, **kwargs):
+        form = CantonFilterForm(request.POST)
+        if form.is_valid():
+            self.cantons = form.cleaned_data['canton']
+        return self.get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(QualifsCalendar, self).get_context_data(**kwargs)
         context['menu_category'] = 'season'
         context['submenu_category'] = 'qualifs-calendar'
+        # Add the form for picking a new helper
+        context['form'] = CantonFilterForm()
         our_sessions = context['sessions']
         if len(self.cantons) > 0:
             our_sessions = our_sessions.filter(

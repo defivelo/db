@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n dv_filters %}
+{% load i18n dv_filters bootstrap3 %}
 
 {% block head_title %}{% blocktrans with year=export_period.year season=export_period.season|season_verb %}Calendrier de la saison {{ season }} {{year}}{% endblocktrans %}{% endblock %}
 
@@ -13,6 +13,14 @@
 {% endwith %}
 {% include 'export_buttons.html' with printonly=True %}
 
+      <form method="POST" action="" class="form-inline"  style="display: inline;" novalidate>
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            {% buttons %}
+                <button type="submit" class="btn btn-primary pull-right">{% trans "Filtrer" %}</button>
+            {% endbuttons %}
+        </form>
+        
 {% if date_sessions %}
     <table class="table table-striped table-bordered dvqualifs-calendar">
         <thead>
