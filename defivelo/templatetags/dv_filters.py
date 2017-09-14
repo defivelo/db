@@ -22,6 +22,7 @@ from re import search, sub
 from django import template
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -30,8 +31,8 @@ from rolepermissions.templatetags.permission_tags import can_template_tag
 
 from apps.challenge import (
     AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX, CHOICE_FIELDKEY, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER,
-    CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY, CHOSEN_AS_NOT, CHOSEN_AS_REPLACEMENT, SEASON_WORKWISH_FIELDKEY, STAFF_FIELDKEY,
-    STAFF_FIELDKEY_HELPER_PREFIX,
+    CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY, CHOSEN_AS_NOT, CHOSEN_AS_REPLACEMENT, CONFLICT_FIELDKEY,
+    SEASON_WORKWISH_FIELDKEY, STAFF_FIELDKEY, STAFF_FIELDKEY_HELPER_PREFIX,
 )
 from apps.common import (
     DV_SEASON_CHOICES, DV_STATE_CHOICES, DV_STATE_COLORS, DV_STATES_LONGER_ABBREVIATIONS, DV_STATES_REAL_FALLBACKS,
@@ -153,6 +154,7 @@ def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=
             avail_label = ''  # Bootstrap glyphicon name
             avail_class = 'active'  # Bootstrap array cell class
             avail_content = avail_forced_content
+            conflict = False
             locked = False
             if availability == 'i':
                 # If needed
@@ -173,6 +175,10 @@ def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=
                 choicekey = CHOICE_FIELDKEY.format(hpk=user.pk,
                                                    spk=thissesskey)
                 locked = choicekey in struct and struct[choicekey]
+
+                conflictkey = CONFLICT_FIELDKEY.format(hpk=user.pk,
+                                                       spk=thissesskey)
+                conflict = struct[conflictkey].first() if conflictkey in struct else False
 
                 # Si le choix des moniteurs est connu, remplace le label et
                 # la version verbeuse par l'état du choix
@@ -204,7 +210,7 @@ def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=
 
             output += (
                 '<td class="{avail_class}"{avail_verbose}>'
-                '<!-- {key} -->{avail_label}'
+                '<!-- {key} -->{avail_label}{conflict_warning}'
                 '</td>'
             ).format(
                 avail_class='info' if locked else avail_class,
@@ -215,6 +221,17 @@ def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=
                         icon=avail_label,
                         title=avail_verb if avail_verb else ''
                     ) if avail_label else '')
+                ),
+                conflict_warning=(
+                    (
+                        '<a href="{session_url}">{glyph}</a>'.format(
+                            session_url=reverse(
+                                'season-availabilities',
+                                kwargs={'pk': conflict.session.season.pk}
+                            ),
+                            glyph=STDGLYPHICON.format(icon='alert', title=conflict.session)
+                        )
+                    ) if conflict else ''
                 ),
                 key=key,
             )

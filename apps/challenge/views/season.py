@@ -46,7 +46,8 @@ from defivelo.views import MenuView
 
 from .. import (
     AVAILABILITY_FIELDKEY, CHOICE_FIELDKEY, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_NOT,
-    CHOSEN_AS_REPLACEMENT, MAX_MONO1_PER_QUALI, SEASON_WORKWISH_FIELDKEY, STAFF_FIELDKEY,
+    CHOSEN_AS_REPLACEMENT, CHOSEN_KEYS, CONFLICT_FIELDKEY, MAX_MONO1_PER_QUALI, SEASON_WORKWISH_FIELDKEY,
+    STAFF_FIELDKEY,
 )
 from ..forms import SeasonAvailabilityForm, SeasonForm, SeasonNewHelperAvailabilityForm, SeasonStaffChoiceForm
 from ..models import HelperSessionAvailability, Season
@@ -244,6 +245,14 @@ class SeasonAvailabilityMixin(SeasonMixin):
         if all_hsas:
             all_sessions = self.object.sessions_with_qualifs
             all_wishes = dict(self.object.work_wishes.values_list('helper_id', 'amount'))
+            potential_conflicts = (
+                HelperSessionAvailability.objects
+                # Seulement des sessions concernées
+                .filter(session__day__in=all_sessions.values_list('day', flat=True))
+                .exclude(session__id__in=all_sessions)
+                # Seulement dans les états qui nous intéressent
+                .filter(chosen_as__in=CHOSEN_KEYS)
+            )
             for helper_category, helpers in all_helpers:
                 for helper in helpers:
                     helper_availability = {
@@ -253,12 +262,18 @@ class SeasonAvailabilityMixin(SeasonMixin):
                     # Fill in the wishes
                     initials[SEASON_WORKWISH_FIELDKEY.format(hpk=helper.pk)] = \
                         all_wishes[helper.pk] if helper.pk in all_wishes else 0
+
+                    # Trouve les disponibilités en conflit potentiel
+                    potential_conflicts_for = potential_conflicts.filter(helper=helper)
+
                     for session in all_sessions:
                         fieldkey = AVAILABILITY_FIELDKEY.format(
                             hpk=helper.pk, spk=session.pk)
                         staffkey = STAFF_FIELDKEY.format(
                             hpk=helper.pk, spk=session.pk)
                         choicekey = CHOICE_FIELDKEY.format(
+                            hpk=helper.pk, spk=session.pk)
+                        conflictkey = CONFLICT_FIELDKEY.format(
                             hpk=helper.pk, spk=session.pk)
                         try:
                             hsa = helper_availability[session.id]
@@ -274,6 +289,8 @@ class SeasonAvailabilityMixin(SeasonMixin):
                             initials[fieldkey] = ''
                             initials[staffkey] = ''
                             initials[choicekey] = ''
+
+                        initials[conflictkey] = potential_conflicts_for.filter(session__day=session.day)
             return initials
 
     def get_context_data(self, **kwargs):
