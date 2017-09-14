@@ -328,7 +328,7 @@ class SeasonNewHelperAvailabilityForm(Select2Mixin, forms.Form):
                 .distinct(),
                 widget=ModelSelect2(
                     url='user-PersonsRelevantForSessions-ac',
-                    forward=[dal_const(cantons, 'cantons'),]
+                    forward=[dal_const(cantons, 'cantons'), ]
                 )
             )
 
