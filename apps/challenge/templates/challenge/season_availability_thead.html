@@ -15,7 +15,7 @@
             <th class="text-center">{% if session.address_city %}{{ session.address_city }}{% elif session.orga.address_city %}{{ session.orga.address_city }}{% endif %}</th>
         {% endfor %}</tr>
     <tr>{% for session in sessions %}
-            <th class="text-center">{{ session.day|date:"D j b" }}</th>
+            <th class="text-center">{{ session.day|date:"D" }} {{ session.day|date_ch_short }}</th>
         {% endfor %}</tr>
     <tr>{% for session in sessions %}
             <td class="text-center">{{ session.begin|date:"H\hi" }} {{ session.end|date:"H\hi" }}</td>

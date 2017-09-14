@@ -27,7 +27,7 @@
                 <tr><th>{{ struct.day|weeknumber }}</th>
             {% endif %}
             <td>
-                <p class="text-center">{{ struct.day|date:'j M' }}</p>
+                <p class="text-center">{{ struct.day|date_ch_short }}</p>
                 {% for session in struct.sessions %}
                     <a class="dvstate-bg-{{ session.orga.address_canton|lower }}"{% if session.season and user|anyofusercantons:session.season.cantons %} href="{% url 'session-detail' seasonpk=session.season.pk pk=session.id %}"{% endif %}>
                         {% if session.begin %}<span class="badge pull-right dvstate-bg-none dvstate-txt-{{ session.orga.address_canton|lower }} ">{{ session.begin }}</span>{% endif %}

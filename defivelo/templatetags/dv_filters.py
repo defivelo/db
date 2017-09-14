@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 from re import search, sub
 
 from django import template
+from django.template.defaultfilters import date as datefilter
+from django.utils.translation import get_language
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
@@ -308,6 +310,17 @@ def weeknumber(date):
         return ''
     # This "solves" the weird week numbers in templates
     return date.strftime('%W')
+
+
+@register.filter
+def date_ch_short(date):
+    if not date:
+        return ''
+    lang = get_language()
+    if lang == 'de':
+        return datefilter(date, 'j. N')
+    else:
+        return datefilter(date, 'j N')
 
 
 @register.filter
