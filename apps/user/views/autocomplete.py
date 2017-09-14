@@ -40,7 +40,14 @@ class PersonAutocomplete(ProfileMixin, Select2QuerySetView):
     widget_attrs = {'data-widget-maximum-values': 1, }
 
     def get_result_label(self, choice):
-        return choice.get_full_name()
+        return '{name}{ifcanton}'.format(
+            name=choice.get_full_name(),
+            ifcanton=(
+                (' (%s)' % choice.profile.affiliation_canton)
+                if choice.profile and choice.profile.affiliation_canton
+                else ''
+            )
+        )
 
     def get_queryset(self):
         if has_permission(self.request.user, self.required_permission):
