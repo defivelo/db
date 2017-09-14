@@ -40,7 +40,7 @@
                     <li role="separator" class="divider"></li>
                     {% endif %}
                     <li><a href="{% url 'season-list' year=now_year %}">{% trans "Toutes les saisons" %}</a></li>
-                    <li><a href="{% url 'qualifs-calendar' %}">{% trans "Calendrier" %}</a></li>
+                    <li{% if 'qualifs-calendar' in submenu_category %} class="active"{% endif %}><a href="{% url 'qualifs-calendar' %}">{% trans "Calendrier" %}</a></li>
                     {% if not user|can:'challenge_season_crud' %}
                         <li><a target="_blank" href="{% url 'public-nextqualifs' %}">{% trans "Prochaines Qualifs" %}</a></li>
                     {% endif %}
@@ -59,8 +59,8 @@
                 <li{% if 'exports' in menu_category  %} class="active"{% endif %}>
                     <a href="{% url 'season-exports' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Exports" %}<span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{% url 'season-exports' %}">{% trans "Exports par saison" %}</a></li>
-                            <li><a href="{% url 'month-exports' %}">{% trans "Exports par mois" %}</a></li>
+                            <li{% if 'exports-season' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-exports' %}">{% trans "Exports par saison" %}</a></li>
+                            <li{% if 'exports-month' in submenu_category %} class="active"{% endif %}><a href="{% url 'month-exports' %}">{% trans "Exports par mois" %}</a></li>
                             <li role="separator" class="divider"></li>
                             <li><a target="_blank" href="{% url 'public-nextqualifs' %}">{% trans "Prochaines Qualifs (public)" %}</a></li>
                         </ul>

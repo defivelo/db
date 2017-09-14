@@ -157,7 +157,8 @@ class QualifsCalendar(SeasonSessionsMixin, SeasonExportsMixin, ListView):
             })
             offset = offset + 1
 
-        context['menu_category'] = 'season calendar'
+        context['menu_category'] = 'season'
+        context['submenu_category'] = 'qualifs-calendar'
         return context
 
 
@@ -174,6 +175,11 @@ class IfDatasetExportMixin(object):
 
 class MonthExports(IfDatasetExportMixin, MonthExportsMixin):
     template_name = 'info/month_exports.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(MonthExports, self).get_context_data(**kwargs)
+        context['submenu_category'] = 'exports-month'
+        return context
 
 
 class SalariesView(SalariesExport, MonthExports):
@@ -196,6 +202,11 @@ class SeasonExports(SeasonExportsMixin, HasPermissionsMixin,
                     IfDatasetExportMixin, TemplateView):
     required_permission = 'challenge_season_crud'
     template_name = 'info/season_exports.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SeasonExports, self).get_context_data(**kwargs)
+        context['submenu_category'] = 'exports-month'
+        return context
 
 
 class SeasonStatsView(SeasonStatsExport, SeasonExports):
