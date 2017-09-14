@@ -253,7 +253,7 @@ class SeasonAvailabilityMixin(SeasonMixin):
                 .filter(session__day__in=all_sessions.values_list('day', flat=True))
                 # Seulement dans les états qui nous intéressent
                 .filter(chosen_as__in=CHOSEN_KEYS)
-                .prefetch_related('session')
+                .prefetch_related('session', 'session__orga')
             )
             for helper_category, helpers in all_helpers:
                 helpers_conflicts = list(potential_conflicts.filter(helper__in=helpers))
