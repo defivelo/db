@@ -27,7 +27,7 @@ from rolepermissions.mixins import HasPermissionsMixin
 from stronghold.views import StrongholdPublicMixin
 
 from apps.challenge.models.session import Session
-from apps.common import DV_SEASON_AUTUMN, DV_SEASON_SPRING
+from apps.common import DV_SEASON_AUTUMN, DV_SEASON_SPRING, DV_STATES
 from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.roles import user_cantons
 from defivelo.views.common import MenuView
@@ -125,9 +125,22 @@ class QualifsCalendar(SeasonSessionsMixin, SeasonExportsMixin, ListView):
     template_name = 'info/qualifs_calendar.html'
     context_object_name = 'sessions'
 
+    def dispatch(self, request, *args, **kwargs):
+        raw_cantons = request.GET.get('cantons', '').split(',')
+        self.cantons = [c for c in DV_STATES if c in raw_cantons]
+        return super(QualifsCalendar, self).dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(QualifsCalendar, self).get_context_data(**kwargs)
-        our_sessions = list(context['sessions'])
+        context['menu_category'] = 'season'
+        context['submenu_category'] = 'qualifs-calendar'
+        our_sessions = context['sessions']
+        if len(self.cantons) > 0:
+            our_sessions = our_sessions.filter(
+                orga__address_canton__in=self.cantons
+            )
+        our_sessions = list(our_sessions)
+
         if len(our_sessions) == 0:
             return context
         context['date_sessions'] = []
@@ -156,9 +169,6 @@ class QualifsCalendar(SeasonSessionsMixin, SeasonExportsMixin, ListView):
                 'sessions': []
             })
             offset = offset + 1
-
-        context['menu_category'] = 'season'
-        context['submenu_category'] = 'qualifs-calendar'
         return context
 
 
