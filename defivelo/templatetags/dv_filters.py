@@ -20,14 +20,13 @@ from __future__ import unicode_literals
 from re import search, sub
 
 from django import template
-from django.template.defaultfilters import date as datefilter
-from django.utils.translation import get_language
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
+from django.template.defaultfilters import date as datefilter
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import get_language, ugettext_lazy as _
 from memoize import memoize
 from rolepermissions.templatetags.permission_tags import can_template_tag
 

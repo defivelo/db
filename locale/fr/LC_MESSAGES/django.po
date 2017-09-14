@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-14 11:33+0200\n"
+"POT-Creation-Date: 2017-09-14 12:17+0200\n"
 "PO-Revision-Date: 2015-10-08 12:11+0100\n"
 "Last-Translator: Didier Raboud <me+defivelo@odyx.org>\n"
 "Language: fr\n"
@@ -15,12 +15,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps/challenge/__init__.py:42 defivelo/templatetags/dv_filters.py:207
+#: apps/challenge/__init__.py:42 defivelo/templatetags/dv_filters.py:210
 msgid "Pas choisi"
 msgstr ""
 
 #: apps/challenge/__init__.py:43 apps/challenge/models/availability.py:112
-#: defivelo/templatetags/dv_filters.py:204
+#: defivelo/templatetags/dv_filters.py:207
 msgid "Choisi"
 msgstr ""
 
@@ -34,7 +34,7 @@ msgid "Moniteur de Secours"
 msgstr ""
 
 #: apps/challenge/__init__.py:46 apps/challenge/models/availability.py:104
-#: apps/user/__init__.py:39 defivelo/templatetags/dv_filters.py:195
+#: apps/user/__init__.py:39 defivelo/templatetags/dv_filters.py:198
 msgid "Moniteur 1"
 msgstr ""
 
@@ -42,14 +42,14 @@ msgstr ""
 #: apps/challenge/models/availability.py:106
 #: apps/challenge/models/qualification.py:105
 #: apps/challenge/templates/challenge/session_detail.html:141
-#: apps/user/__init__.py:40 defivelo/templatetags/dv_filters.py:192
+#: apps/user/__init__.py:40 defivelo/templatetags/dv_filters.py:195
 msgid "Moniteur 2"
 msgstr ""
 
 #. Translators: Moniteur de secours
 #: apps/challenge/fields.py:54 apps/challenge/fields.py:97
 #: apps/challenge/models/availability.py:95
-#: defivelo/templatetags/dv_filters.py:202
+#: defivelo/templatetags/dv_filters.py:205
 msgid "S"
 msgstr ""
 
@@ -126,7 +126,7 @@ msgstr ""
 #: apps/challenge/models/qualification.py:120 apps/user/export.py:110
 #: apps/user/forms.py:104 apps/user/models.py:154
 #: apps/user/templates/auth/user_detail.html:134
-#: apps/user/views/standard.py:198 defivelo/templatetags/dv_filters.py:198
+#: apps/user/views/standard.py:198 defivelo/templatetags/dv_filters.py:201
 msgid "Intervenant"
 msgstr ""
 
@@ -180,19 +180,19 @@ msgstr ""
 
 #: apps/challenge/models/availability.py:62
 #: apps/challenge/models/availability.py:124
-#: defivelo/templatetags/dv_filters.py:169
+#: defivelo/templatetags/dv_filters.py:171
 msgid "Oui"
 msgstr ""
 
 #: apps/challenge/models/availability.py:63
 #: apps/challenge/models/availability.py:121
-#: defivelo/templatetags/dv_filters.py:161
+#: defivelo/templatetags/dv_filters.py:163
 msgid "Si nécessaire"
 msgstr ""
 
 #: apps/challenge/models/availability.py:64
 #: apps/challenge/models/availability.py:117
-#: defivelo/templatetags/dv_filters.py:165
+#: defivelo/templatetags/dv_filters.py:167
 msgid "Non"
 msgstr ""
 
@@ -212,7 +212,7 @@ msgid "Sélectionné pour la session comme"
 msgstr ""
 
 #: apps/challenge/models/availability.py:108
-#: defivelo/templatetags/dv_filters.py:201
+#: defivelo/templatetags/dv_filters.py:204
 msgid "Moniteur de secours"
 msgstr ""
 
