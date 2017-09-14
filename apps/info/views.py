@@ -139,7 +139,7 @@ class QualifsCalendar(SeasonSessionsMixin, SeasonExportsMixin, ListView):
         # Add the form for picking a new helper
         context['form'] = CantonFilterForm()
         our_sessions = context['sessions']
-        if len(self.cantons) > 0:
+        if hasattr(self, 'cantons') and len(self.cantons) > 0:
             our_sessions = our_sessions.filter(
                 orga__address_canton__in=self.cantons
             )
