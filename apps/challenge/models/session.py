@@ -157,7 +157,14 @@ class Session(Address, models.Model):
 
     @cached_property
     def replacement_staff(self):
-        return self.chosen_staff.filter(chosen_as=CHOSEN_AS_REPLACEMENT)
+        qualifs_pks = self.qualifications.values_list('id', flat=True)
+        return (
+            self.chosen_staff
+            .filter(chosen_as=CHOSEN_AS_REPLACEMENT)
+            .exclude(helper__qualifs_mon1__in=qualifs_pks)
+            .exclude(helper__qualifs_mon2__in=qualifs_pks)
+            .exclude(helper__qualifs_actor__in=qualifs_pks)
+        )
 
     @cached_property
     def n_qualifications(self):
