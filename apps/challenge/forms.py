@@ -18,8 +18,8 @@
 from __future__ import unicode_literals
 
 from bootstrap3_datetime.widgets import DateTimePicker
-from dal_select2.widgets import ModelSelect2
 from dal.forward import Const as dal_const
+from dal_select2.widgets import ModelSelect2
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
