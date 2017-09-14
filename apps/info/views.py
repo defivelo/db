@@ -219,7 +219,7 @@ class SeasonExports(SeasonExportsMixin, HasPermissionsMixin,
 
     def get_context_data(self, **kwargs):
         context = super(SeasonExports, self).get_context_data(**kwargs)
-        context['submenu_category'] = 'exports-month'
+        context['submenu_category'] = 'exports-season'
         return context
 
 
