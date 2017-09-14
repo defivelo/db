@@ -157,6 +157,7 @@ class QualifsCalendar(SeasonSessionsMixin, SeasonExportsMixin, ListView):
             })
             offset = offset + 1
 
+        context['menu_category'] = 'season calendar'
         return context
 
 
