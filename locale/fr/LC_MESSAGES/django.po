@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-14 12:17+0200\n"
+"POT-Creation-Date: 2017-09-14 16:58+0200\n"
 "PO-Revision-Date: 2015-10-08 12:11+0100\n"
 "Last-Translator: Didier Raboud <me+defivelo@odyx.org>\n"
 "Language: fr\n"
@@ -15,12 +15,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps/challenge/__init__.py:42 defivelo/templatetags/dv_filters.py:210
+#: apps/challenge/__init__.py:42 defivelo/templatetags/dv_filters.py:208
 msgid "Pas choisi"
 msgstr ""
 
 #: apps/challenge/__init__.py:43 apps/challenge/models/availability.py:112
-#: defivelo/templatetags/dv_filters.py:207
+#: defivelo/templatetags/dv_filters.py:205
 msgid "Choisi"
 msgstr ""
 
@@ -34,128 +34,128 @@ msgid "Moniteur de Secours"
 msgstr ""
 
 #: apps/challenge/__init__.py:46 apps/challenge/models/availability.py:104
-#: apps/user/__init__.py:39 defivelo/templatetags/dv_filters.py:198
+#: apps/user/__init__.py:39 defivelo/templatetags/dv_filters.py:196
 msgid "Moniteur 1"
 msgstr ""
 
-#: apps/challenge/__init__.py:47 apps/challenge/forms.py:194
+#: apps/challenge/__init__.py:47 apps/challenge/forms.py:215
 #: apps/challenge/models/availability.py:106
 #: apps/challenge/models/qualification.py:105
 #: apps/challenge/templates/challenge/session_detail.html:141
-#: apps/user/__init__.py:40 defivelo/templatetags/dv_filters.py:195
+#: apps/user/__init__.py:40 defivelo/templatetags/dv_filters.py:193
 msgid "Moniteur 2"
 msgstr ""
 
 #. Translators: Moniteur de secours
 #: apps/challenge/fields.py:54 apps/challenge/fields.py:97
 #: apps/challenge/models/availability.py:95
-#: defivelo/templatetags/dv_filters.py:205
+#: defivelo/templatetags/dv_filters.py:203
 msgid "S"
 msgstr ""
 
-#: apps/challenge/forms.py:61 apps/challenge/models/season.py:42
+#: apps/challenge/forms.py:63 apps/challenge/models/season.py:42
 msgid "Année"
 msgstr ""
 
-#: apps/challenge/forms.py:66 apps/user/models.py:390 defivelo/roles.py:94
+#: apps/challenge/forms.py:68 apps/user/models.py:390 defivelo/roles.py:94
 msgid "Chargé·e de projet"
 msgstr ""
 
-#: apps/challenge/forms.py:100 apps/challenge/models/session.py:49
+#: apps/challenge/forms.py:121 apps/challenge/models/session.py:49
 #: apps/challenge/templates/challenge/session_detail.html:56
 #: apps/user/models.py:123
 msgid "Date"
 msgstr ""
 
-#: apps/challenge/forms.py:101 apps/challenge/models/session.py:50
+#: apps/challenge/forms.py:122 apps/challenge/models/session.py:50
 msgid "Début"
 msgstr ""
 
-#: apps/challenge/forms.py:102 apps/common/models.py:34 apps/orga/forms.py:44
+#: apps/challenge/forms.py:123 apps/common/models.py:34 apps/orga/forms.py:44
 #: apps/orga/templates/orga/organization_filter.html:63 apps/user/forms.py:74
 #: apps/user/models.py:486
 msgid "Canton"
 msgstr ""
 
-#: apps/challenge/forms.py:106 apps/challenge/models/session.py:82
+#: apps/challenge/forms.py:127 apps/challenge/models/session.py:82
 #: apps/challenge/models/session.py:102
 #: apps/challenge/templates/challenge/session_detail.html:81
 msgid "Pommes"
 msgstr ""
 
-#: apps/challenge/forms.py:110
+#: apps/challenge/forms.py:131
 msgid "Organisation de la livraison de pommes (quantité & logistique)"
 msgstr ""
 
-#: apps/challenge/forms.py:113 apps/challenge/models/session.py:78
+#: apps/challenge/forms.py:134 apps/challenge/models/session.py:78
 msgid "Heure rendez-vous moniteurs"
 msgstr ""
 
-#: apps/challenge/forms.py:115 apps/challenge/models/session.py:66
+#: apps/challenge/forms.py:136 apps/challenge/models/session.py:66
 #: apps/challenge/templates/challenge/session_detail.html:61
 msgid "Moniteur + / Photographe"
 msgstr ""
 
-#: apps/challenge/forms.py:122 apps/challenge/models/session.py:85
+#: apps/challenge/forms.py:143 apps/challenge/models/session.py:85
 msgid "N° de contact vélos"
 msgstr ""
 
-#: apps/challenge/forms.py:130
+#: apps/challenge/forms.py:151
 #, python-brace-format
 msgid "La session doit être dans la saison (entre {begin} et {end})"
 msgstr ""
 
-#: apps/challenge/forms.py:139 apps/challenge/models/session.py:56
+#: apps/challenge/forms.py:160 apps/challenge/models/session.py:56
 #: apps/challenge/templates/challenge/session_detail.html:37
 #: apps/orga/models.py:112
 msgid "Établissement"
 msgstr ""
 
-#: apps/challenge/forms.py:163 apps/challenge/models/qualification.py:72
+#: apps/challenge/forms.py:184 apps/challenge/models/qualification.py:72
 msgid "Natel enseignant"
 msgstr ""
 
-#: apps/challenge/forms.py:203 apps/challenge/models/qualification.py:113
+#: apps/challenge/forms.py:224 apps/challenge/models/qualification.py:113
 #: apps/challenge/templates/challenge/session_detail.html:143
 #: apps/challenge/views/season.py:187
 msgid "Moniteurs 1"
 msgstr ""
 
-#: apps/challenge/forms.py:212 apps/challenge/models/availability.py:98
+#: apps/challenge/forms.py:233 apps/challenge/models/availability.py:98
 #: apps/challenge/models/availability.py:110
 #: apps/challenge/models/qualification.py:120 apps/user/export.py:110
 #: apps/user/forms.py:104 apps/user/models.py:154
 #: apps/user/templates/auth/user_detail.html:134
-#: apps/user/views/standard.py:198 defivelo/templatetags/dv_filters.py:201
+#: apps/user/views/standard.py:198 defivelo/templatetags/dv_filters.py:199
 msgid "Intervenant"
 msgstr ""
 
-#: apps/challenge/forms.py:226
+#: apps/challenge/forms.py:247
 #, python-format
 msgid "Pas plus de %s moniteurs 1 !"
 msgstr ""
 
-#: apps/challenge/forms.py:242
+#: apps/challenge/forms.py:263
 msgid "Il y a des moniteurs à double !"
 msgstr ""
 
-#: apps/challenge/forms.py:255
+#: apps/challenge/forms.py:276
 msgid "L'intervenant n'est pas qualifié pour la rencontre prévue !"
 msgstr ""
 
-#: apps/challenge/forms.py:261
+#: apps/challenge/forms.py:282
 msgid "L'intervenant ne peut pas aussi être moniteur !"
 msgstr ""
 
-#: apps/challenge/forms.py:273
+#: apps/challenge/forms.py:294
 msgid "Il y a trop de vélos prévus !"
 msgstr ""
 
-#: apps/challenge/forms.py:278
+#: apps/challenge/forms.py:299
 msgid "Il y a trop de casques prévus !"
 msgstr ""
 
-#: apps/challenge/forms.py:301
+#: apps/challenge/forms.py:323
 msgid "Disponibilités pour :"
 msgstr ""
 
@@ -180,19 +180,19 @@ msgstr ""
 
 #: apps/challenge/models/availability.py:62
 #: apps/challenge/models/availability.py:124
-#: defivelo/templatetags/dv_filters.py:171
+#: defivelo/templatetags/dv_filters.py:170
 msgid "Oui"
 msgstr ""
 
 #: apps/challenge/models/availability.py:63
 #: apps/challenge/models/availability.py:121
-#: defivelo/templatetags/dv_filters.py:163
+#: defivelo/templatetags/dv_filters.py:162
 msgid "Si nécessaire"
 msgstr ""
 
 #: apps/challenge/models/availability.py:64
 #: apps/challenge/models/availability.py:117
-#: defivelo/templatetags/dv_filters.py:167
+#: defivelo/templatetags/dv_filters.py:166
 msgid "Non"
 msgstr ""
 
@@ -212,7 +212,7 @@ msgid "Sélectionné pour la session comme"
 msgstr ""
 
 #: apps/challenge/models/availability.py:108
-#: defivelo/templatetags/dv_filters.py:204
+#: defivelo/templatetags/dv_filters.py:202
 msgid "Moniteur de secours"
 msgstr ""
 
@@ -300,8 +300,8 @@ msgstr ""
 msgid "Qualifs"
 msgstr ""
 
-#: apps/challenge/models/season.py:46 apps/orga/views.py:82
-#: apps/user/templates/auth/user_filter.html:56
+#: apps/challenge/models/season.py:46 apps/info/forms.py:28
+#: apps/orga/views.py:82 apps/user/templates/auth/user_filter.html:56
 #: apps/user/views/standard.py:183
 msgid "Cantons"
 msgstr ""
@@ -379,7 +379,7 @@ msgid "Horaire"
 msgstr ""
 
 #: apps/challenge/models/session.py:106
-#: apps/challenge/templates/challenge/session_form.html:48
+#: apps/challenge/templates/challenge/session_form.html:45
 msgid "Emplacement"
 msgstr ""
 
@@ -434,7 +434,7 @@ msgstr ""
 #: apps/challenge/templates/challenge/season_availability_update.html:32
 #: apps/challenge/templates/challenge/season_form.html:22
 #: apps/challenge/templates/challenge/season_staff_update.html:32
-#: apps/challenge/templates/challenge/session_form.html:64
+#: apps/challenge/templates/challenge/session_form.html:61
 #: apps/dv_article/templates/article/article_form.html:22
 #: apps/orga/templates/orga/organization_form.html:39
 msgid "Enregistrer"
@@ -445,8 +445,8 @@ msgstr ""
 #: apps/challenge/templates/challenge/season_availability_update.html:36
 #: apps/challenge/templates/challenge/season_form.html:24
 #: apps/challenge/templates/challenge/season_form.html:26
-#: apps/challenge/templates/challenge/session_form.html:66
-#: apps/challenge/templates/challenge/session_form.html:68
+#: apps/challenge/templates/challenge/session_form.html:63
+#: apps/challenge/templates/challenge/session_form.html:65
 #: apps/dv_article/templates/article/article_form.html:23
 #: apps/orga/templates/orga/organization_form.html:41
 #: apps/orga/templates/orga/organization_form.html:43
@@ -458,7 +458,7 @@ msgstr ""
 msgid "Annuler"
 msgstr ""
 
-#: apps/challenge/templates/challenge/season_availability.html:17
+#: apps/challenge/templates/challenge/season_availability.html:12
 #: apps/challenge/templates/challenge/season_list.html:52
 #: apps/challenge/templates/challenge/session_detail.html:115
 #: apps/challenge/templates/challenge/session_list_links.html:5
@@ -466,18 +466,18 @@ msgstr ""
 msgid "Planning"
 msgstr ""
 
-#: apps/challenge/templates/challenge/season_availability.html:40
+#: apps/challenge/templates/challenge/season_availability.html:35
 msgid "Retour à la saison"
 msgstr ""
 
-#: apps/challenge/templates/challenge/season_availability.html:50
+#: apps/challenge/templates/challenge/season_availability.html:45
 #: apps/challenge/templates/challenge/season_availability_update.html:9
 #: apps/challenge/templates/challenge/session_availability.html:5
 #: apps/challenge/templates/challenge/session_detail.html:95
 msgid "Disponibilités"
 msgstr ""
 
-#: apps/challenge/templates/challenge/season_availability.html:54
+#: apps/challenge/templates/challenge/season_availability.html:49
 msgid "Attribuer les moniteurs"
 msgstr ""
 
@@ -665,7 +665,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: apps/challenge/templates/challenge/session_detail.html:78
-#: apps/challenge/templates/challenge/session_form.html:54
+#: apps/challenge/templates/challenge/session_form.html:51
 msgid "Logistique"
 msgstr ""
 
@@ -719,12 +719,12 @@ msgid "Créer une Qualif'"
 msgstr ""
 
 #: apps/challenge/templates/challenge/session_form.html:4
-#: apps/challenge/templates/challenge/session_form.html:44
+#: apps/challenge/templates/challenge/session_form.html:41
 msgid "Édition de la session"
 msgstr ""
 
 #: apps/challenge/templates/challenge/session_form.html:4
-#: apps/challenge/templates/challenge/session_form.html:44
+#: apps/challenge/templates/challenge/session_form.html:41
 msgid "Nouvelle session"
 msgstr ""
 
@@ -1011,7 +1011,28 @@ msgstr ""
 msgid "Calendrier de la saison %(season)s %(year)s"
 msgstr ""
 
-#: apps/info/templates/info/qualifs_calendar.html:53
+#: apps/info/templates/info/qualifs_calendar.html:20
+#: apps/orga/templates/orga/organization_filter.html:13
+#: apps/user/templates/auth/user_filter.html:14
+msgid "Fermer"
+msgstr ""
+
+#: apps/info/templates/info/qualifs_calendar.html:21
+msgid "Filtrer le calendrier"
+msgstr ""
+
+#: apps/info/templates/info/qualifs_calendar.html:30
+#: apps/orga/templates/orga/organization_filter.html:22
+#: apps/user/templates/auth/user_filter.html:23
+msgid "Reset"
+msgstr ""
+
+#: apps/info/templates/info/qualifs_calendar.html:31
+#: apps/info/templates/info/qualifs_calendar.html:47
+msgid "Filtrer"
+msgstr ""
+
+#: apps/info/templates/info/qualifs_calendar.html:89
 msgid "Aucune Qualif n'est planifiée pour l'instant!"
 msgstr ""
 
@@ -1116,18 +1137,8 @@ msgstr ""
 msgid "Retour à la liste des établissements"
 msgstr ""
 
-#: apps/orga/templates/orga/organization_filter.html:13
-#: apps/user/templates/auth/user_filter.html:14
-msgid "Fermer"
-msgstr ""
-
 #: apps/orga/templates/orga/organization_filter.html:14
 msgid "Filtrer la liste des établissements"
-msgstr ""
-
-#: apps/orga/templates/orga/organization_filter.html:22
-#: apps/user/templates/auth/user_filter.html:23
-msgid "Reset"
 msgstr ""
 
 #: apps/orga/templates/orga/organization_filter.html:23
