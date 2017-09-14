@@ -346,7 +346,7 @@ def canton_abbr(canton, abbr=True, long=True, fix_special=False):
     try:
         return cantons_abbr([canton], abbr, long, fix_special)[0]
     except IndexError:
-        return ''
+        return canton
 
 
 @register.filter
@@ -359,7 +359,7 @@ def canton_abbr_short(canton, abbr=True, fix_special=False):
             fix_special=fix_special
         )[0]
     except IndexError:
-        return ''
+        return canton
 
 
 @register.filter

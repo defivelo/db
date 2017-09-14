@@ -279,13 +279,16 @@ class SalariesExport(object):
         dataset = Dataset()
         # Cases en haut à gauche
         session_cols = ['' for i in range(2)]
-        dataset.append_col(session_cols + [u('Nom')])
-        dataset.append_col(session_cols + [u('Adresse')])
-        dataset.append_col(session_cols + [u('NPA')])
-        dataset.append_col(session_cols + [u('Ville')])
-        dataset.append_col(session_cols + [u('N° AVS')])
-        dataset.append_col(session_cols + [u('IBAN')])
-        dataset.append_col(session_cols + [u('Canton d\'affiliation')])
+        def bolden(s):
+            return mark_safe('<b>%s</b>' % s) if html else s
+
+        dataset.append_col(session_cols + [bolden(u('Nom'))])
+        dataset.append_col(session_cols + [bolden(u('Adresse'))])
+        dataset.append_col(session_cols + [bolden(u('NPA'))])
+        dataset.append_col(session_cols + [bolden(u('Ville'))])
+        dataset.append_col(session_cols + [bolden(u('N° AVS'))])
+        dataset.append_col(session_cols + [bolden(u('IBAN'))])
+        dataset.append_col(session_cols + [bolden(u('Canton d\'affiliation'))])
 
         for session in self.object_list:
             orga = session.orga.ifabbr if html else session.orga.name
@@ -302,8 +305,8 @@ class SalariesExport(object):
                         content=orga))
             dataset.append_col([
                 link if link else orga,
-                datefilter(session.day, 'j.m'),
-                datefilter(session.begin, settings.TIME_FORMAT)
+                bolden(datefilter(session.day, 'j.m')),
+                bolden(datefilter(session.begin, settings.TIME_FORMAT))
             ])
         sessions_pks = self.object_list.values_list('id', flat=True)
         everyone = get_user_model().objects
