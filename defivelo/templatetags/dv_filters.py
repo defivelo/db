@@ -226,11 +226,12 @@ def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=
                 ),
                 conflict_warning=(
                     (
-                        '<a class="text-danger" href="{session_url}">{glyph}</a>'.format(
-                            session_url=reverse(
+                        '<a class="text-danger" href="{season_url}#sess{sessionpk}">{glyph}</a>'.format(
+                            season_url=reverse(
                                 'season-availabilities',
                                 kwargs={'pk': conflict.session.season.pk}
                             ),
+                            sessionpk=conflict.session.pk,
                             glyph=STDGLYPHICON.format(icon='alert', title=conflict.session)
                         )
                     ) if conflict else ''
