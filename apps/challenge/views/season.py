@@ -247,13 +247,17 @@ class SeasonAvailabilityMixin(SeasonMixin):
             all_wishes = dict(self.object.work_wishes.values_list('helper_id', 'amount'))
             potential_conflicts = (
                 HelperSessionAvailability.objects
+                # Ne boucle pas
+                .exclude(session__id__in=all_sessions)
                 # Seulement des sessions concernées
                 .filter(session__day__in=all_sessions.values_list('day', flat=True))
-                .exclude(session__id__in=all_sessions)
                 # Seulement dans les états qui nous intéressent
                 .filter(chosen_as__in=CHOSEN_KEYS)
+                .prefetch_related('session')
             )
             for helper_category, helpers in all_helpers:
+                helpers_conflicts = list(potential_conflicts.filter(helper__in=helpers))
+
                 for helper in helpers:
                     helper_availability = {
                         a.session_id: a for a in all_hsas
@@ -262,9 +266,6 @@ class SeasonAvailabilityMixin(SeasonMixin):
                     # Fill in the wishes
                     initials[SEASON_WORKWISH_FIELDKEY.format(hpk=helper.pk)] = \
                         all_wishes[helper.pk] if helper.pk in all_wishes else 0
-
-                    # Trouve les disponibilités en conflit potentiel
-                    potential_conflicts_for = potential_conflicts.filter(helper=helper)
 
                     for session in all_sessions:
                         fieldkey = AVAILABILITY_FIELDKEY.format(
@@ -290,7 +291,12 @@ class SeasonAvailabilityMixin(SeasonMixin):
                             initials[staffkey] = ''
                             initials[choicekey] = ''
 
-                        initials[conflictkey] = potential_conflicts_for.filter(session__day=session.day)
+                        # Trouve les disponibilités en conflit
+                        initials[conflictkey] = [
+                            hc.session
+                            for hc in helpers_conflicts
+                            if hc.helper_id == helper.pk and hc.session.day == session.day
+                        ]
             return initials
 
     def get_context_data(self, **kwargs):

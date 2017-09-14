@@ -178,7 +178,9 @@ def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=
 
                 conflictkey = CONFLICT_FIELDKEY.format(hpk=user.pk,
                                                        spk=thissesskey)
-                conflict = struct[conflictkey].first() if conflictkey in struct else False
+                conflicts = struct[conflictkey] if conflictkey in struct else []
+                if len(conflicts) > 0:
+                    conflict = conflicts.pop()
 
                 # Si le choix des moniteurs est connu, remplace le label et
                 # la version verbeuse par l'état du choix
