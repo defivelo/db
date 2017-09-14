@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 
 from bootstrap3_datetime.widgets import DateTimePicker
 from dal_select2.widgets import ModelSelect2
+from dal.forward import Const as dal_const
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -315,6 +316,7 @@ class QualificationForm(forms.ModelForm):
 
 class SeasonNewHelperAvailabilityForm(Select2Mixin, forms.Form):
     def __init__(self, *args, **kwargs):
+        cantons = kwargs.pop('cantons', [])
         super(SeasonNewHelperAvailabilityForm, self).__init__(*args, **kwargs)
         self.fields['helper'] = \
             forms.ModelChoiceField(
@@ -324,7 +326,10 @@ class SeasonNewHelperAvailabilityForm(Select2Mixin, forms.Form):
                     Q(profile__actor_for__isnull=False)
                 ).exclude(profile__status=USERSTATUS_DELETED)
                 .distinct(),
-                widget=ModelSelect2(url='user-PersonsRelevantForSessions-ac')
+                widget=ModelSelect2(
+                    url='user-PersonsRelevantForSessions-ac',
+                    forward=[dal_const(cantons, 'cantons'),]
+                )
             )
 
 

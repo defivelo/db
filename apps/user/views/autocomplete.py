@@ -24,6 +24,7 @@ from django.db.models import Q
 from six import get_unbound_function
 
 from apps.challenge import MAX_MONO1_PER_QUALI
+from apps.common import MULTISELECTFIELD_REGEXP
 from defivelo.roles import has_permission
 
 from .. import FORMATION_KEYS, FORMATION_M2
@@ -64,10 +65,19 @@ class AllPersons(PersonAutocomplete):
 class PersonsRelevantForSessions(PersonAutocomplete):
     def get_queryset(self):
         qs = super(PersonsRelevantForSessions, self).get_queryset()
-        return qs.filter(
-                Q(profile__formation__in=FORMATION_KEYS) |
-                Q(profile__actor_for__isnull=False)
-            ).distinct()
+        qs = qs.filter(
+            Q(profile__formation__in=FORMATION_KEYS) |
+            Q(profile__actor_for__isnull=False)
+        )
+        # Filtre par les cantons s'ils existent
+        cantons = self.forwarded.get('cantons', [])
+        if len(cantons) > 0:
+            cantons_regexp = MULTISELECTFIELD_REGEXP % "|".join([v for v in cantons if v])
+            qs = qs.filter(
+                Q(profile__activity_cantons__regex=cantons_regexp) |
+                Q(profile__affiliation_canton__in=cantons)
+            )
+        return qs.distinct()
 
 
 class Helpers(PersonAutocomplete):

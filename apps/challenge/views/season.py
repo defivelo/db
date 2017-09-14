@@ -566,7 +566,7 @@ class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
         context = \
             super(SeasonAvailabilityView, self).get_context_data(**kwargs)
         # Add the form for picking a new helper
-        context['form'] = SeasonNewHelperAvailabilityForm()
+        context['form'] = SeasonNewHelperAvailabilityForm(cantons=self.season.cantons)
         hsas = self.current_availabilities()
         if hsas:
             # Fill in the helpers with the ones we currently have
