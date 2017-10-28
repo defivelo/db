@@ -54,7 +54,7 @@ class QualiMixin(SessionMixin):
         try:
             form_kwargs['session'] = \
                 Session.objects.get(pk=self.get_session_pk())
-        except:
+        except Exception:
             pass
         return form_kwargs
 
@@ -64,11 +64,11 @@ class QualiMixin(SessionMixin):
         context['menu_category'] += ' qualification'
         try:
             context['session'] = Session.objects.get(pk=self.get_session_pk())
-        except:
+        except Exception:
             pass
         try:
             context['season'] = self.season
-        except:
+        except Exception:
             pass
         return context
 

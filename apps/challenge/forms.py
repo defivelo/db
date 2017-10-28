@@ -115,7 +115,7 @@ class SessionForm(Select2Mixin, forms.ModelForm):
                 self.season.begin.strftime('%Y-%m-%d')
             self.fields['day'].widget.options['maxDate'] = \
                 self.season.end.strftime('%Y-%m-%d')
-        except:
+        except Exception:
             pass
 
     day = SwissDateField(label=_('Date'))

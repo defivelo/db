@@ -66,7 +66,7 @@ class PaginatorMixin(object):
         querydict = self.request.GET.copy()
         try:
             del querydict['page']
-        except:
+        except Exception:
             pass
         context['filter_querystring'] = querydict.urlencode()
         return context

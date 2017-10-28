@@ -286,7 +286,7 @@ class SeasonAvailabilityMixin(SeasonMixin):
                             if not initials[staffkey]:
                                 initials[staffkey] = hsa.chosen_as
                                 initials[choicekey] = False
-                        except:
+                        except Exception:
                             initials[fieldkey] = ''
                             initials[staffkey] = ''
                             initials[choicekey] = ''
@@ -746,7 +746,7 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView,
                             quali.leader = helper
                             try:
                                 quali.helpers.remove(helper)
-                            except:
+                            except Exception:
                                 pass
                         elif (
                             helper.profile.formation is not None and

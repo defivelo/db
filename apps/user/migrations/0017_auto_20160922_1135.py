@@ -8,7 +8,7 @@ def takefirstcanton(apps, schema_editor):
     # if we directly import it, it'll be the wrong version
     try:
         UserProfile = apps.get_model("user", "UserProfile")
-    except:
+    except Exception:
         return
     db_alias = schema_editor.connection.alias
     for profile in UserProfile.objects.using(db_alias).all():
