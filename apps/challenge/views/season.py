@@ -646,11 +646,18 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
                     workwishkey = SEASON_WORKWISH_FIELDKEY.format(hpk=helper.pk)
                     if workwishkey in form.cleaned_data:
                         amount = form.cleaned_data[workwishkey]
-                        (hww, created) = HelperSeasonWorkWish.objects.get_or_create(
-                            season=self.season,
-                            helper=helper,
-                            defaults={'amount': amount}
-                        )
+                        try:
+                            (hww, created) = HelperSeasonWorkWish.objects.get_or_create(
+                                season=self.season,
+                                helper=helper,
+                                defaults={'amount': amount}
+                            )
+                        except HelperSeasonWorkWish.MultipleObjectsReturned:
+                            # Too many of these, for some reason. Take the latest.
+                            hww = HelperSeasonWorkWish.objects.filter(
+                                season=self.season,
+                                helper=helper).order_by('-id')[0]
+                            created = False
                         if not created:
                             hww.amount = amount
                             hww.save()
