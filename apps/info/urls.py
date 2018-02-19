@@ -21,7 +21,7 @@ from django.conf.urls import include, url
 from django.views.decorators.cache import never_cache
 
 from .views import (
-    ExpensesExportView, ExpensesView, LogisticsExportView, LogisticsView, MonthExports, NextQualifs,
+    ExpensesExportView, ExpensesView, JSONNextQualifs, LogisticsExportView, LogisticsView, MonthExports, NextQualifs,
     OrgaInvoicesExportView, OrgaInvoicesView, QualifsCalendar, SalariesExportView, SalariesView, SeasonExports,
     SeasonStatsExportView, SeasonStatsView,
 )
@@ -30,6 +30,9 @@ urlpatterns = [
     url(r'^qualifs/$',
         never_cache(NextQualifs.as_view()),
         name='public-nextqualifs'),
+    url(r'^qualifs.json$',
+        never_cache(JSONNextQualifs.as_view()),
+        name='public-json-nextqualifs'),
     url(r'^(?:(?P<year>[0-9]{4})_(?P<dv_season>[0-9]+)/)?',
         include([
             url(r'^$', never_cache(SeasonExports.as_view()), name='season-exports'),

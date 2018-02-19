@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 from datetime import date, timedelta
 
 from django.core.urlresolvers import resolve
+from django.http import JsonResponse
 from django.views.generic.base import TemplateView
 from django.views.generic.dates import MonthArchiveView
 from django.views.generic.list import ListView
@@ -38,20 +39,40 @@ from .exports import (
 from .forms import CantonFilterForm
 
 
-class PublicView(StrongholdPublicMixin):
-    pass
-
-
-class NextQualifs(PublicView, PaginatorMixin, ListView):
-    template_name = 'info/next_qualifs.html'
-    context_object_name = 'sessions'
-    paginate_by = 8
+class SessionsPublicView(StrongholdPublicMixin):
     queryset = (
         Session.objects
         .filter(day__gte=date.today())
         .order_by('day', 'orga')
         .prefetch_related('orga')
     )
+
+
+class NextQualifs(SessionsPublicView, PaginatorMixin, ListView):
+    template_name = 'info/next_qualifs.html'
+    paginate_by = 8
+    context_object_name = 'sessions'
+
+
+class JSONNextQualifs(SessionsPublicView, TemplateView):
+    def render_to_response(self, context, **response_kwargs):
+        sessions = []
+        for session in self.queryset.all():
+            session_representation = {
+                'canton': session.orga.address_canton,
+                'date': session.day,
+                'begin': session.begin,
+                'orga': {
+                    'name': session.orga.name,
+                    'abbr': session.orga.abbr
+                },
+                'city': session.city,
+            }
+            sessions.append(session_representation)
+        return JsonResponse(
+            {'sessions': sessions},
+            **response_kwargs
+        )
 
 
 class MonthExportsMixin(HasPermissionsMixin, MenuView, MonthArchiveView):
