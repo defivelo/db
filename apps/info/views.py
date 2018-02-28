@@ -21,6 +21,8 @@ from datetime import date, timedelta
 
 from django.core.urlresolvers import resolve
 from django.http import JsonResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.generic.base import TemplateView
 from django.views.generic.dates import MonthArchiveView
 from django.views.generic.list import ListView
@@ -46,6 +48,10 @@ class SessionsPublicView(StrongholdPublicMixin):
         .order_by('day', 'orga')
         .prefetch_related('orga')
     )
+
+    @method_decorator(xframe_options_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super(SessionsPublicView, self).dispatch(*args, **kwargs)
 
 
 class NextQualifs(SessionsPublicView, PaginatorMixin, ListView):
