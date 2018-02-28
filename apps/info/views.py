@@ -27,6 +27,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic.dates import MonthArchiveView
 from django.views.generic.list import ListView
 from rolepermissions.mixins import HasPermissionsMixin
+from stronghold.decorators import public
 from stronghold.views import StrongholdPublicMixin
 
 from apps.challenge.models.session import Session
@@ -49,6 +50,7 @@ class SessionsPublicView(StrongholdPublicMixin):
         .prefetch_related('orga')
     )
 
+    @method_decorator(public)
     @method_decorator(xframe_options_exempt)
     def dispatch(self, *args, **kwargs):
         return super(SessionsPublicView, self).dispatch(*args, **kwargs)
