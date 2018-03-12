@@ -30,7 +30,7 @@
             <span class="dvstate-round pull-left dvstate-bg-{{ session.orga.address_canton|lower }}">{{ session.orga.address_canton|canton_abbr_short }}</span>
             <div class="pull-left card-content">
                 <h6 class="date_big">{{ session.day|date:'j M' }}</h6>
-                <p>{{ session.begin }}<br />{{ session.orga.ifabbr }}<br />{{session.city}} ({{ session.orga.address_canton|canton_abbr_short }})</p>
+                <p>{% if session.begin %}{{ session.begin }}{% endif %}<br />{{ session.orga.ifabbr }}<br />{{session.city}} ({{ session.orga.address_canton|canton_abbr_short }})</p>
             </div>
         </a>
     </div>
