@@ -503,6 +503,9 @@ class SeasonPlanningExportView(ExportMixin, SeasonAvailabilityMixin,
         )
         firstcol += [user.get_full_name() for user in qs]
         dataset.append_col(firstcol)
+        # Ajoute le canton d'affiliation comme deuxième colonne
+        user_cantons_col = [''] * 6 + [user.profile.affiliation_canton for user in qs]
+        dataset.append_col(user_cantons_col)
         for session in self.season.sessions_with_qualifs:
             session_place = session.place
             if not session_place:
