@@ -95,6 +95,10 @@ class UserResource(resources.ModelResource):
                                              attribute='profile__tax_jurisdiction')
     profile__social_security = fields.Field(
         column_name=_('N° AVS'), attribute='profile__social_security')
+    profile__marital_status = fields.Field(
+        column_name=_('État civil'),
+        attribute='profile',
+        widget=ObjectMethodWidget(method='marital_status_full'))
     profile__pedagogical_experience = fields.Field(
         column_name=_('Expérience pédagogique'),
         attribute='profile__pedagogical_experience')
