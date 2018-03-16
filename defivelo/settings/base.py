@@ -69,6 +69,7 @@ UPSTREAM_APPS = (
     'compressor',
     'stronghold',
     'localflavor',
+    'phonenumber_field',
     'parler',
     'multiselectfield',
     'django_countries',
@@ -169,6 +170,8 @@ LANGUAGES = (
 )
 
 COUNTRIES_FIRST = ['CH', ]
+
+PHONENUMBER_DEFAULT_REGION = 'CH'
 
 PARLER_LANGUAGES = {
     SITE_ID: (

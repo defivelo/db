@@ -296,6 +296,7 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                 initial = {
                     'day': (self.season.begin).strftime(SWISS_DATE_INPUT_FORMAT),
                     'begin': '09:00',
+                    'bikes_phone': ''
                     }
 
                 # 200 because we're back on the page, because orga' empty

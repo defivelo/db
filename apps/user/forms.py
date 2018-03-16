@@ -20,14 +20,14 @@ from __future__ import unicode_literals
 from django import forms
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
-from localflavor.ch.forms import CHPhoneNumberField, CHSocialSecurityNumberField, CHStateSelect, CHZipCodeField
+from localflavor.ch.forms import CHSocialSecurityNumberField, CHStateSelect, CHZipCodeField
 from localflavor.generic import forms as localforms
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from multiselectfield.forms.fields import MultiSelectFormField
 
 from apps.challenge.models import QualificationActivity
 from apps.common import DV_LANGUAGES, DV_LANGUAGES_WITH_DEFAULT, DV_STATE_CHOICES, DV_STATE_CHOICES_WITH_DEFAULT
-from apps.common.forms import BS3CountriesField, SwissDateField
+from apps.common.forms import BS3CountriesField, CHPhoneNumberField, SwissDateField
 from defivelo.roles import DV_AVAILABLE_ROLES
 
 from . import STATE_CHOICES_WITH_DEFAULT
