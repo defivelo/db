@@ -86,6 +86,9 @@ def tel_int(tel):
 def tel_link(tel):
     if not tel:
         return ''
+    if tel[0:3] == '+41' and len(tel) == 12:
+        # Convert to swiss local number
+        return '0{} {} {} {}'.format(tel[3:5], tel[5:8], tel[8:10], tel[10:12])
     return tel
     return mark_safe(
         '<a href="tel:{tel_int}">{tel}</a>'
