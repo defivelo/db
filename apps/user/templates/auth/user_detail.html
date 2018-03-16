@@ -116,6 +116,10 @@
                             <dt>{% trans "N° AVS" %}</dt>
                                 <dd><tt>{{ userprofile.profile.social_security }}</tt></dd>
                         {% endif %}
+                        {% if userprofile.profile.marital_status %}
+                            <dt>{% trans "État civil" %}</dt>
+                                <dd>{{ userprofile.profile.marital_status_full }}</dd>
+                        {% endif %}
                     </dl>
                 </div>
                 <div role="tabpane" class="tab-pane" id="defi">

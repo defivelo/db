@@ -68,6 +68,22 @@ USERSTATUS_CHOICES = (
 
 USERSTATUS_CHOICES_NORMAL = tuple([us for us in USERSTATUS_CHOICES if us[0] < 90])
 
+MARITALSTATUS_UNDEF = 0
+MARITALSTATUS_SINGLE = 10
+MARITALSTATUS_MARRIED = 20
+MARITALSTATUS_DIVORCED = 30
+MARITALSTATUS_WIDOW = 40
+MARITALSTATUS_PACS = 50
+
+MARITALSTATUS_CHOICES = (
+    (MARITALSTATUS_UNDEF, '---------'),
+    (MARITALSTATUS_SINGLE, _('Célibataire')),
+    (MARITALSTATUS_MARRIED, _('Marié·e')),
+    (MARITALSTATUS_DIVORCED, _('Divorcé·e')),
+    (MARITALSTATUS_WIDOW, _('Veu·f·ve')),
+    (MARITALSTATUS_PACS, _('En partenariat enregistré')),
+)
+
 BAGSTATUS_NONE = 0
 BAGSTATUS_LOAN = 10
 BAGSTATUS_PAID = 20
@@ -85,6 +101,7 @@ PERSONAL_FIELDS = ['language', 'languages_challenges', 'natel', 'birthdate',
                    'address_city', 'address_canton',
                    'nationality', 'work_permit', 'tax_jurisdiction',
                    'iban', 'social_security',
+                   'marital_status',
                    'status', 'activity_cantons',
                    ]
 
@@ -155,6 +172,10 @@ class UserProfile(Address, models.Model):
                                        related_name='actor_for',
                                        limit_choices_to={'category': 'C'},
                                        blank=True)
+    marital_status = models.PositiveSmallIntegerField(
+        _("État civil"),
+        choices=MARITALSTATUS_CHOICES,
+        default=MARITALSTATUS_UNDEF)
     status = models.PositiveSmallIntegerField(
         _("Statut"),
         choices=USERSTATUS_CHOICES,
@@ -269,6 +290,12 @@ class UserProfile(Address, models.Model):
     def status_full(self):
         if self.status:
             return dict(USERSTATUS_CHOICES)[self.status]
+        return ''
+
+    @cached_property
+    def marital_status_full(self):
+        if self.marital_status:
+            return dict(MARITALSTATUS_CHOICES)[self.marital_status]
         return ''
 
     def status_icon(self):

@@ -31,7 +31,7 @@ from apps.common.forms import BS3CountriesField, CHPhoneNumberField, SwissDateFi
 from defivelo.roles import DV_AVAILABLE_ROLES
 
 from . import STATE_CHOICES_WITH_DEFAULT
-from .models import BAGSTATUS_CHOICES, FORMATION_CHOICES, USERSTATUS_CHOICES_NORMAL
+from .models import BAGSTATUS_CHOICES, FORMATION_CHOICES, MARITALSTATUS_CHOICES, USERSTATUS_CHOICES_NORMAL
 
 
 class UserProfileForm(forms.ModelForm):
@@ -111,6 +111,9 @@ class UserProfileForm(forms.ModelForm):
     status = forms.ChoiceField(label=_('Statut'),
                                choices=USERSTATUS_CHOICES_NORMAL,
                                required=False)
+    marital_status = forms.ChoiceField(label=_('État civil'),
+                                       choices=MARITALSTATUS_CHOICES,
+                                       required=False)
     pedagogical_experience = forms.CharField(label=_('Expérience pédagogique'),
                                              required=False)
     firstmed_course = forms.BooleanField(label=_('Cours samaritain suivi'),
