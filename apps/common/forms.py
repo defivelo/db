@@ -25,6 +25,8 @@ from django_countries import countries
 from django_countries.fields import LazyTypedChoiceField
 from django_countries.widgets import CountrySelectWidget
 from localflavor.generic.forms import DEFAULT_DATE_INPUT_FORMATS, DateField
+from phonenumber_field.formfields import PhoneNumberField
+from phonenumber_field.widgets import PhoneNumberInternationalFallbackWidget
 
 SWISS_DATE_INPUT_FORMAT = '%d.%m.%Y'
 SWISS_DATE_DISPLAY_FORMAT = 'DD.MM.YYYY'
@@ -58,6 +60,16 @@ class SwissTimeField(TimeField):
                                   icon_attrs={'class': 'glyphicon glyphicon-time'},
                                   options={"format": "HH:mm",
                                            "stepping": 15}),
+            *args, **kwargs)
+
+
+class CHPhoneNumberField(PhoneNumberField):
+    """
+    A PhoneNumberField that uses the national fallback widget
+    """
+    def __init__(self, *args, **kwargs):
+        super(CHPhoneNumberField, self).__init__(
+            widget=PhoneNumberInternationalFallbackWidget,
             *args, **kwargs)
 
 

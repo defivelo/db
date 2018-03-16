@@ -28,9 +28,9 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.template.defaultfilters import date
 from django.utils.translation import get_language, ugettext_lazy as _
-from localflavor.ch.forms import CHPhoneNumberField, CHStateSelect
+from localflavor.ch.forms import CHStateSelect
 
-from apps.common.forms import SwissDateField, SwissTimeField, UserAutoComplete
+from apps.common.forms import CHPhoneNumberField, SwissDateField, SwissTimeField, UserAutoComplete
 from apps.user import FORMATION_KEYS, FORMATION_M2, STATE_CHOICES_WITH_DEFAULT
 from apps.user.models import USERSTATUS_DELETED
 
