@@ -176,8 +176,9 @@ class QualificationFormQuick(forms.ModelForm):
         widgets = {
             'session': forms.HiddenInput,
             'name': forms.HiddenInput,
+            'class_teacher_natel': forms.HiddenInput,
         }
-        fields = ['session', 'name']
+        fields = ['session', 'name', 'class_teacher_natel']
 
 
 class QualificationForm(forms.ModelForm):
