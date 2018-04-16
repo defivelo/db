@@ -7,7 +7,7 @@ django-compressor==2.2
 libsass==0.14.1
 django-stronghold==0.3.0
 django-allauth==0.35.0
-django-localflavor==2.0
+-e git+https://github.com/django/django-localflavor@d23320486862d993070de51ef92e31b8f4cc61a3#egg=django-localflavor==2.0+ean0
 django-phonenumber-field==2.0.0
 # django-bootstrap3-datetimepicker-2==2.5.0
 -e git+https://github.com/defivelo/django-bootstrap3-datetimepicker@ab60a3281ba847832d300dc780b5a07379103ed4#egg=django-bootstrap3-datetimepicker-2==2.5.0+dv0
