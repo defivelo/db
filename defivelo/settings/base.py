@@ -270,6 +270,7 @@ DEFAULT_FROM_EMAIL = \
 
 LOGIN_REDIRECT_URL = '/'
 
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 2048 # Up from '1000'
 
 VCS_VERSION = get_env_variable('VCS_VERSION', '0')
 VCS_COMMIT = get_env_variable('VCS_COMMIT', '0')
