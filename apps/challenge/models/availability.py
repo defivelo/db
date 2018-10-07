@@ -23,6 +23,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+from simple_history.models import HistoricalRecords
 
 from apps.common import STDGLYPHICON
 from apps.user import FORMATION_M1, FORMATION_M2, formation_short
@@ -48,6 +49,7 @@ class HelperSeasonWorkWish(models.Model):
                                on_delete=models.CASCADE)
     amount = models.PositiveSmallIntegerField(_("Quantité d'engagements souhaités"),
                                               default=0)
+    history = HistoricalRecords()
 
     def __str__(self):
         return _('{season}: {helper} aimerait travailler {amount} fois').format(
@@ -77,6 +79,7 @@ class HelperSessionAvailability(models.Model):
     chosen_as = models.PositiveSmallIntegerField(
         _("Sélectionné pour la session comme"),
         choices=CHOICE_CHOICES, default=CHOSEN_AS_NOT)
+    history = HistoricalRecords()
 
     @cached_property
     def chosen(self):

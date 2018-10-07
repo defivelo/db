@@ -80,6 +80,7 @@ UPSTREAM_APPS = (
     'taggit',
     'article',
     'rolepermissions',
+    'simple_history',
     'memoize',
 )
 
@@ -102,6 +103,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'stronghold.middleware.LoginRequiredMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 ROOT_URLCONF = 'defivelo.urls'

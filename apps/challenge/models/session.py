@@ -27,6 +27,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+from simple_history.models import HistoricalRecords
 
 from apps.common import DV_SEASON_AUTUMN, DV_SEASON_LAST_SPRING_MONTH, DV_SEASON_SPRING
 from apps.common.models import Address
@@ -85,6 +86,7 @@ class Session(Address, models.Model):
     bikes_phone = models.CharField(_('N° de contact vélos'),
                                    max_length=13, blank=True)
     comments = models.TextField(_('Remarques'), blank=True)
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = _('Session')

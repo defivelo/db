@@ -27,6 +27,7 @@ from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from multiselectfield import MultiSelectField
+from simple_history.models import HistoricalRecords
 
 from apps.common import (
     DV_SEASON_AUTUMN, DV_SEASON_CHOICES, DV_SEASON_LAST_SPRING_MONTH, DV_SEASON_SPRING, DV_SEASON_STATE_ARCHIVED,
@@ -53,6 +54,7 @@ class Season(models.Model):
                                )
     state = models.PositiveSmallIntegerField(
         _('État'), choices=DV_SEASON_STATES, default=DV_SEASON_STATE_PLANNING)
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = _('Saison')

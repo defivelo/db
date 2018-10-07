@@ -24,6 +24,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as u, ugettext_lazy as _
 from parler.models import TranslatableModel, TranslatedFields
+from simple_history.models import HistoricalRecords
 
 from apps.user import FORMATION_KEYS, FORMATION_M2
 
@@ -49,6 +50,7 @@ class QualificationActivity(TranslatableModel):
     )
     category = models.CharField(_("Catégorie"), max_length=1,
                                 choices=CATEGORY_CHOICES, blank=True)
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = _('Poste')
@@ -125,6 +127,7 @@ class Qualification(models.Model):
                               blank=True, null=True,
                               on_delete=models.SET_NULL)
     comments = models.TextField(_('Remarques'), blank=True)
+    history = HistoricalRecords()
 
     @property
     def errors(self):

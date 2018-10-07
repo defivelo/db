@@ -19,13 +19,9 @@ from django.conf import settings
 from django.contrib import admin
 from django.templatetags.static import static
 from parler.admin import TranslatableAdmin
+from simple_history.admin import SimpleHistoryAdmin
 
 from .models import HelperSessionAvailability, Qualification, QualificationActivity, Season, Session
-
-admin.site.register(Season)
-admin.site.register(Session)
-admin.site.register(Qualification)
-admin.site.register(HelperSessionAvailability)
 
 
 class QualificationActivityAdmin(TranslatableAdmin):
@@ -45,4 +41,24 @@ class QualificationActivityAdmin(TranslatableAdmin):
     missing_languages.allow_tags = True
 
 
+class SeasonAdmin(SimpleHistoryAdmin):
+    pass
+
+
+class SessionAdmin(SimpleHistoryAdmin):
+    pass
+
+
+class QualificationAdmin(SimpleHistoryAdmin):
+    pass
+
+
+class HelperSessionAvailabilityAdmin(SimpleHistoryAdmin):
+    pass
+
+
 admin.site.register(QualificationActivity, QualificationActivityAdmin)
+admin.site.register(Season, SeasonAdmin)
+admin.site.register(Session, SessionAdmin)
+admin.site.register(Qualification, QualificationAdmin)
+admin.site.register(HelperSessionAvailability, HelperSessionAvailabilityAdmin)
