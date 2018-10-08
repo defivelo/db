@@ -154,23 +154,13 @@ class Qualification(models.Model):
 
     def save(self):
         sentry_message(
-            'Qualification.save() : {quali}{mon2}{mon1}'
+            'Qualification.save() : {quali}{mon2}'
             .format(
                 quali=unicode(self),
                 mon2=' - Mon2: {leader} ({id})'.format(
                     id=self.leader_id,
                     leader=self.leader.get_full_name()
-                ) if self.leader else '',
-                mon1=(
-                    ' - Mon 1: ' + ', '.join(
-                    [
-                        '({name} ({id})'.format(
-                            id=mon1.id,
-                            name=mon1.get_full_name()
-                        )
-                        for mon1 in self.helpers.all()
-                    ])
-                ) if self.helpers else ''
+                ) if self.leader else ''
             )
         )
         return super(Qualification, self).save()
