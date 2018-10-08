@@ -17,8 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-import logging
-
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
@@ -26,6 +24,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as u, ugettext_lazy as _
 from parler.models import TranslatableModel, TranslatedFields
+from sentry_sdk import capture_message as sentry_message
 from simple_history.models import HistoricalRecords
 
 from apps.user import FORMATION_KEYS, FORMATION_M2
@@ -42,9 +41,6 @@ CATEGORY_CHOICES = (
     ('B', CATEGORY_CHOICE_B),
     ('C', CATEGORY_CHOICE_C),
 )
-
-
-logger = logging.getLogger(__name__)
 
 
 @python_2_unicode_compatible
@@ -157,7 +153,7 @@ class Qualification(models.Model):
                 )
 
     def save(self):
-        logger.info(
+        sentry_message(
             'Qualification.save() : {quali}{mon2}{mon1}'
             .format(
                 quali=unicode(self),
