@@ -152,7 +152,7 @@ class Qualification(models.Model):
                     '</span>' % e for e in errors])
                 )
 
-    def save(self):
+    def save(self, *args, **kwargs):
         sentry_message(
             'Qualification.save() : {quali}{mon2}'
             .format(
@@ -163,7 +163,7 @@ class Qualification(models.Model):
                 ) if self.leader else ''
             )
         )
-        return super(Qualification, self).save()
+        return super(Qualification, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = _("Qualif'")
