@@ -25,3 +25,4 @@ django-tinymce==2.7.0
 django-memoize==2.1.0
 django-countries==5.2
 django-simple-history==2.4.0
+sentry-sdk==0.3.9

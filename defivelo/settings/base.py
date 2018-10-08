@@ -289,6 +289,18 @@ def defivelo_user_display(u):
 ACCOUNT_USER_DISPLAY = defivelo_user_display
 ACCOUNT_ADAPTER = 'defivelo.accounts.NoSignupAccountAdapter'
 
+SENTRY_DSN = get_env_variable('SENTRY_DSN', '')
+
+if SENTRY_DSN:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration()]
+    )
+
+
 ROLEPERMISSIONS_MODULE = 'defivelo.roles'
 
 # Email sender settings
