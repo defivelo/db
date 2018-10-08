@@ -156,7 +156,7 @@ class Qualification(models.Model):
         sentry_message(
             'Qualification.save() : {quali}{mon2}'
             .format(
-                quali=unicode(self),
+                quali=self,
                 mon2=' - Mon2: {leader} ({id})'.format(
                     id=self.leader_id,
                     leader=self.leader.get_full_name()
