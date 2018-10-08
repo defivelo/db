@@ -17,6 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+import logging
+
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
@@ -40,6 +42,9 @@ CATEGORY_CHOICES = (
     ('B', CATEGORY_CHOICE_B),
     ('C', CATEGORY_CHOICE_C),
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 @python_2_unicode_compatible
@@ -150,6 +155,29 @@ class Qualification(models.Model):
                     ' %s'
                     '</span>' % e for e in errors])
                 )
+
+    def save(self):
+        logger.info(
+            'Qualification.save() : {quali}{mon2}{mon1}'
+            .format(
+                quali=unicode(self),
+                mon2=' - Mon2: {leader} ({id})'.format(
+                    leader_id=self.leader_id,
+                    leader=self.leader.get_full_name()
+                ) if self.leader else '',
+                mon1=(
+                    ' - Mon 1: ' + ', '.join(
+                    [
+                        '({name} ({id})'.format(
+                            id=mon1.id,
+                            name=mon1.get_full_name()
+                        )
+                        for mon1 in self.helpers.all()
+                    ])
+                ) if self.helpers else ''
+            )
+        )
+        return super(Qualification, self).save()
 
     class Meta:
         verbose_name = _("Qualif'")
