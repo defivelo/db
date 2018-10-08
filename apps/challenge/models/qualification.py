@@ -162,7 +162,7 @@ class Qualification(models.Model):
             .format(
                 quali=unicode(self),
                 mon2=' - Mon2: {leader} ({id})'.format(
-                    leader_id=self.leader_id,
+                    id=self.leader_id,
                     leader=self.leader.get_full_name()
                 ) if self.leader else '',
                 mon1=(
