@@ -33,12 +33,12 @@ ENVIRONMENTS = {
         'hosts': ['wpy10809@onhp-python1.iron.bsa.oriented.ch:29992'],
         'pid': '/run/uwsgi/app/staging.intranet.defi-velo.ch/pid',
         'settings': {
-            'ALLOWED_HOSTS': '\n'.join(['defivelo.test.odyx.org']),
+            'ALLOWED_HOSTS': '\n'.join(['staging.intranet.defi-velo.ch', 'defivelo.test.odyx.org']),
             'MEDIA_URL': '/media/',
             'STATIC_URL': '/static/',
             'MEDIA_ROOT': '/var/www/intranet.defi-velo.ch/staging/media/',
             'STATIC_ROOT': '/var/www/intranet.defi-velo.ch/staging/static/',
-            'SITE_DOMAIN': 'defivelo.test.odyx.org',
+            'SITE_DOMAIN': 'staging.intranet.defi-velo.ch',
         }
     }
 }
@@ -136,6 +136,16 @@ def collect_static():
         managepy('collectstatic --noinput')
 
 
+def compile_messages():
+        managepy('compilemessages -l fr -l de -l en -l it')
+
+
+def document_git():
+    with cd(os.path.join(get_project_root(), 'envdir')):
+        put(StringIO(unicode(local('git rev-parse HEAD', capture=True))), 'VCS_COMMIT')
+        put(StringIO(unicode(local('git describe --tags  HEAD', capture=True))), 'VCS_VERSION')
+
+
 def restart_process():
     """
     Restart the WSGI process by touching the wsgi.py file.
@@ -216,8 +226,9 @@ def bootstrap():
     set_setting('SECRET_KEY', value=generate_secret_key())
 
     execute(install_requirements)
-    execute(compile_assets)
     execute(collect_static)
+    execute(compile_messages)
+    execute(document_git)
     execute(migrate_database)
 
     execute(restart_process)
@@ -231,24 +242,13 @@ def deploy():
     dump_db(get_backups_root())
 
     execute(install_requirements)
-    execute(compile_assets)
     execute(collect_static)
+    execute(compile_messages)
+    execute(document_git)
     execute(migrate_database)
 
     execute(restart_process)
     execute(clean_old_database_backups, nb_backups_to_keep=10)
-
-
-@task
-def compile_assets():
-    local('npm install')
-    local('npm run build')
-    local(
-        "rsync -e 'ssh -p {port}' -r --exclude *.map --exclude *.swp static/ "
-        "{user}@{host}:{path}".format(host=env.host,
-                                      user=env.user,
-                                      port=env.port,
-                                      path=os.path.join(get_project_root(), 'static')))
 
 
 def dump_db(destination):
