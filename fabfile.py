@@ -26,6 +26,7 @@ ENVIRONMENTS = {
             'MEDIA_ROOT': '/var/www/intranet.defi-velo.ch/prod/media/',
             'STATIC_ROOT': '/var/www/intranet.defi-velo.ch/prod/static/',
             'SITE_DOMAIN': 'intranet.defi-velo.ch',
+            'VIRTUAL_ENV': '/var/www/intranet.defi-velo.ch/prod/venv',
         }
     },
     'staging': {
@@ -39,6 +40,7 @@ ENVIRONMENTS = {
             'MEDIA_ROOT': '/var/www/intranet.defi-velo.ch/staging/media/',
             'STATIC_ROOT': '/var/www/intranet.defi-velo.ch/staging/static/',
             'SITE_DOMAIN': 'staging.intranet.defi-velo.ch',
+            'VIRTUAL_ENV': '/var/www/intranet.defi-velo.ch/staging/venv',
         }
     }
 }
