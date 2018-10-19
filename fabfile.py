@@ -19,6 +19,7 @@ ENVIRONMENTS = {
         'root': '/var/www/intranet.defi-velo.ch/prod/',
         'hosts': ['wpy10809@onhp-python1.iron.bsa.oriented.ch:29992'],
         'pid': '/run/uwsgi/app/intranet.defi-velo.ch/pid',
+        'ini': '/etc/uwsgi/apps-enabled/intranet.defi-velo.ch.ini',
         'settings': {
             'ALLOWED_HOSTS': '\n'.join(['intranet.defi-velo.ch']),
             'MEDIA_URL': '/media/',
@@ -33,6 +34,7 @@ ENVIRONMENTS = {
         'root': '/var/www/intranet.defi-velo.ch/staging/',
         'hosts': ['wpy10809@onhp-python1.iron.bsa.oriented.ch:29992'],
         'pid': '/run/uwsgi/app/staging.intranet.defi-velo.ch/pid',
+        'ini': '/etc/uwsgi/apps-enabled/staging.intranet.defi-velo.ch.ini',
         'settings': {
             'ALLOWED_HOSTS': '\n'.join(['staging.intranet.defi-velo.ch', 'defivelo.test.odyx.org']),
             'MEDIA_URL': '/media/',
@@ -152,7 +154,8 @@ def restart_process():
     """
     Restart the WSGI process by touching the wsgi.py file.
     """
-    run('uwsgi --reload %s' % env.pid)
+    run('uwsgi --stop %s' % env.pid)
+    run('uwsgi --ini /usr/share/uwsgi/conf/empty.ini --ini %s' % env.ini)
 
 
 def generate_secret_key():
