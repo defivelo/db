@@ -416,7 +416,7 @@ class StateManagerUserTest(ProfileTestCase):
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200, url)
             # Check that we only find ourselves
-            entries = re.findall('"id": "(\d+)"', str(response.content))
+            entries = re.findall(r'"id": "(\d+)"', str(response.content))
             self.assertEqual(entries, [str(self.myuser.pk)])
 
 
