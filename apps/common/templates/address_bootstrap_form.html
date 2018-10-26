@@ -8,7 +8,7 @@
     {% bootstrap_label form.address_no.label label_class='col-md-3 hidden-md hidden-lg control-label' %}
     {% bootstrap_field form.address_no     size='small' field_class='col-md-3' form_group_class='none' show_label=False %}
 </div>
-{% if form.address_additional %}
+{% if has_additional and form.address_additional %}
     <div class="form-group form-group-sm">
         {% bootstrap_label form.address_additional.label label_class='col-md-3 control-label' %}
         {% bootstrap_field form.address_additional size='small' field_class='col-md-9' form_group_class='none' show_label=False  %}

@@ -40,7 +40,7 @@
                 {% bootstrap_field form.last_name layout='horizontal' size='small' %}
                 {% bootstrap_field form.language layout='horizontal' size='small' %}
                 {% bootstrap_field form.languages_challenges layout='horizontal' size='small' %}
-                {% include "address_bootstrap_form.html" %}
+                {% include "address_bootstrap_form.html" with has_additional=False %}
             </div>
             <div role="tabpanel" class="tab-pane" id="contacts">
                 {% bootstrap_field form.natel layout='horizontal' size='small' %}

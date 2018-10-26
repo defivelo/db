@@ -47,7 +47,7 @@ $( "#id_place" ).change( updateHelpersPlace );
         {% bootstrap_field form.day layout='horizontal' size='small' %}
         {% bootstrap_field form.begin layout='horizontal' size='small' %}
         {% bootstrap_field form.place layout='horizontal' size='small' %}
-        {% include "address_bootstrap_form.html" %}
+        {% include "address_bootstrap_form.html" with has_additional=True %}
         <h3>{% trans "Logistique" %}</h3>
         {% bootstrap_field form.superleader layout='horizontal' size='small' %}
         {% bootstrap_field form.fallback_plan layout='horizontal' size='small' %}
