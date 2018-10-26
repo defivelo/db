@@ -271,7 +271,7 @@ def dump_db(destination):
 
     outfile = os.path.join(destination, datetime.now().strftime('%Y-%m-%d_%H%M%S.sql.gz'))
 
-    with shell_env(PGPASSWORD=db_credentials_dict['PASSWORD'].replace('$', '\$')):
+    with shell_env(PGPASSWORD=db_credentials_dict['PASSWORD'].replace('$', r'\$')):
         run('pg_dump -O -x -h {host} -U {user} {db}|gzip > {outfile}'.format(
             host=db_credentials_dict['HOST'],
             user=db_credentials_dict['USER'],
