@@ -750,29 +750,6 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView,
                         quali.helpers.remove(helper)
                     if non_helper == quali.actor:
                         quali.actor = None
-                if n_qualifs == 1:
-                    for helper in session_helpers.values():
-                        if (
-                            helper.profile.formation == FORMATION_M2 and
-                            quali.leader is None
-                        ):
-                            quali.leader = helper
-                            try:
-                                quali.helpers.remove(helper)
-                            except Exception:
-                                pass
-                        elif (
-                            helper.profile.formation is not None and
-                            quali.helpers.count() < MAX_MONO1_PER_QUALI
-                        ):
-                            quali.helpers.add(helper)
-                            if quali.leader == helper:
-                                quali.leader = None
-                        elif (
-                            helper.profile.actor_for is not None and
-                            quali.actor is None
-                        ):
-                            quali.actor = helper
                 quali.save()
         return HttpResponseRedirect(
             reverse_lazy('season-availabilities',
