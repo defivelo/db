@@ -46,7 +46,7 @@ from defivelo.views import MenuView
 
 from .. import (
     AVAILABILITY_FIELDKEY, CHOICE_FIELDKEY, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_NOT,
-    CHOSEN_AS_REPLACEMENT, CHOSEN_KEYS, CONFLICT_FIELDKEY, MAX_MONO1_PER_QUALI, SEASON_WORKWISH_FIELDKEY,
+    CHOSEN_AS_REPLACEMENT, CHOSEN_KEYS, CONFLICT_FIELDKEY, SEASON_WORKWISH_FIELDKEY,
     STAFF_FIELDKEY,
 )
 from ..forms import SeasonAvailabilityForm, SeasonForm, SeasonNewHelperAvailabilityForm, SeasonStaffChoiceForm
@@ -740,7 +740,6 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView,
 
             # Do a session-wide check across all helpers picked for that
             # session
-            n_qualifs = session.qualifications.count()
             for quali in session.qualifications.all():
                 for non_helper in session_non_helpers.values():
                     # Drop those not in the session anymore
