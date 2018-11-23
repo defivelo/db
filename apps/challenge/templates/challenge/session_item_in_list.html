@@ -6,6 +6,8 @@
             <span class="glyphicon glyphicon-warning-sign"></span>
             {% if session.qualifications.count == 0 %}
                 {% trans "Aucune Qualif'" %}
+            {% elif session.has_availability_incoherences %}
+                {% trans "Qualif' incohérente" %}
             {% else %}
                 {% trans "Incomplet" %}
             {% endif %}

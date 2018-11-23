@@ -21,6 +21,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as u, ugettext_lazy as _
 from parler.models import TranslatableModel, TranslatedFields
@@ -130,7 +131,7 @@ class Qualification(models.Model):
     comments = models.TextField(_('Remarques'), blank=True)
     history = HistoricalRecords()
 
-    @property
+    @cached_property
     def has_availability_incoherences(self):
         # Check les intervenants
         if (

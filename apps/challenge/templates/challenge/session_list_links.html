@@ -4,6 +4,10 @@
     <a class="btn btn-default" href="{% url 'season-update' season.pk %}"><span class="glyphicon glyphicon-pencil"></span> {% trans "Éditer la saison" %}</a>
     <a class="btn btn-primary" href="{% url 'season-availabilities' season.pk %}"><span class="glyphicon glyphicon-th"></span> {% trans "Planning" %}</a>
     
+    {% if season.has_availability_incoherences and season.manager_can_crud %}
+        <a class="btn btn-warning" href="{% url 'season-errorslist' season.pk %}" title="{% trans "Sessions avec Qualif' incohérente" %}"><span class="glyphicon glyphicon-warning-sign"></span></a>
+    {% endif %}
+
     <div class="btn-group" role="group" aria-label="exports">
         {% include 'export_buttons.html' with exporturl='season-export' exportargs=season.pk filter_querystring=filter_querystring only %}
     </div>

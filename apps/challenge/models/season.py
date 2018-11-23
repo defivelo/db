@@ -125,6 +125,13 @@ class Season(models.Model):
         return dict(DV_SEASON_CHOICES)[self.season]
 
     @property
+    def has_availability_incoherences(self):
+        for session in self.sessions_with_qualifs:
+            if session.has_availability_incoherences:
+                return True
+        return False
+
+    @property
     def sessions(self):
         from .session import Session
         return Session.objects.filter(
