@@ -723,14 +723,17 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView,
                     fieldkey = STAFF_FIELDKEY.format(hpk=helper.pk,
                                                      spk=session.pk)
 
-                    chosen_as = form.cleaned_data[fieldkey]
-                    if chosen_as:
+                    try:
+                        chosen_as = int(form.cleaned_data[fieldkey])
+
                         HelperSessionAvailability.objects.filter(
                                 session=session,
                                 helper=helper
                             ).update(chosen_as=chosen_as)
+                    except ValueError:
+                        chosen_as = None
 
-                    if form.cleaned_data[fieldkey]:
+                    if chosen_as != CHOSEN_AS_NOT:
                         session_helpers[helper.pk] = helper
                     else:
                         session_non_helpers[helper.pk] = helper
