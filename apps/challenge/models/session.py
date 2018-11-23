@@ -93,7 +93,6 @@ class Session(Address, models.Model):
         verbose_name_plural = _('Sessions')
         ordering = ['day', 'begin', 'orga__name']
 
-
     @cached_property
     def has_availability_incoherences(self):
         for quali in self.qualifications.all():
