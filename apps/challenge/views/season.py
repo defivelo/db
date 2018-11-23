@@ -46,8 +46,7 @@ from defivelo.views import MenuView
 
 from .. import (
     AVAILABILITY_FIELDKEY, CHOICE_FIELDKEY, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_NOT,
-    CHOSEN_AS_REPLACEMENT, CHOSEN_KEYS, CONFLICT_FIELDKEY, SEASON_WORKWISH_FIELDKEY,
-    STAFF_FIELDKEY,
+    CHOSEN_AS_REPLACEMENT, CHOSEN_KEYS, CONFLICT_FIELDKEY, SEASON_WORKWISH_FIELDKEY, STAFF_FIELDKEY,
 )
 from ..forms import SeasonAvailabilityForm, SeasonForm, SeasonNewHelperAvailabilityForm, SeasonStaffChoiceForm
 from ..models import HelperSessionAvailability, Qualification, Season
