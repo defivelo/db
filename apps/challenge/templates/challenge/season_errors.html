@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n bootstrap3 dv_filters %}
+{% block head_title %}{{ season.desc }}{% endblock %}
+
+{% block content %}
+    {% include "challenge/season_header.html" with season=season only %}
+    <h4>{% trans "Toutes les qualifs avec des erreurs" %}</h4>
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <td>{% trans "Raison" %}</td>
+                <td>{% trans "Session" %}</td>
+                <td>{% trans "Qualif" %}</td>
+            </tr>
+        </thead>
+    {% for quali in qualifs %}
+        <tr>
+            <td><a href="{% url 'session-detail' seasonpk=season.pk pk=quali.session.pk %}">{{ quali.session }}</a></td>
+            <td><a href="{% url 'quali-update' seasonpk=season.pk sessionpk=quali.session.pk pk=quali.pk %}">{{ quali.name }}</a></td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock %}

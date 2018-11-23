@@ -50,7 +50,7 @@ from .. import (
     STAFF_FIELDKEY,
 )
 from ..forms import SeasonAvailabilityForm, SeasonForm, SeasonNewHelperAvailabilityForm, SeasonStaffChoiceForm
-from ..models import HelperSessionAvailability, Season
+from ..models import HelperSessionAvailability, Season, Qualification
 from ..models.availability import HelperSeasonWorkWish
 from ..models.qualification import CATEGORY_CHOICE_A, CATEGORY_CHOICE_B, CATEGORY_CHOICE_C
 from .mixins import CantonSeasonFormMixin
@@ -802,5 +802,48 @@ class SeasonActorListView(ActorsList, HasPermissionsMixin, SeasonMixin):
         return (
             super(SeasonActorListView, self).get_queryset()
             .filter(qualifs_actor__session__in=self.season.sessions_with_qualifs)
+            .distinct()
+        )
+
+
+class SeasonErrorsListView(HasPermissionsMixin, SeasonMixin, ListView):
+    required_permission = 'challenge_season_crud'
+    model = Qualification
+    page_title = _('Erreurs dans les qualifs de la saison')
+    template_name = 'challenge/season_errors.html'
+    context_object_name = 'qualifs'
+
+    def get_context_data(self, **kwargs):
+        context = super(SeasonErrorsListView, self).get_context_data(**kwargs)
+        # Add our submenu_category context
+        context['submenu_category'] = 'season-errorslist'
+        return context
+
+    def get_queryset(self):
+        wrong_qualifs = []
+        for session in self.season.sessions_with_qualifs.all():
+            
+            for quali in session.qualifications.all():
+                
+                # Check les intervenants
+                if (
+                    quali.actor and
+                    not session.availability_statuses.filter(helper=quali.actor, chosen_as=CHOSEN_AS_ACTOR).exists()
+                ):
+                    wrong_qualifs.append(quali.pk)
+                # Check les moniteurs 1
+                if (
+                    quali.leader and
+                    not session.availability_statuses.filter(helper=quali.leader, chosen_as=CHOSEN_AS_LEADER).exists()
+                ):
+                    wrong_qualifs.append(quali.pk)
+                    
+                # Check les moniteurs 2
+                for helper in quali.helpers.all():
+                    if not session.availability_statuses.filter(helper=helper, chosen_as=CHOSEN_AS_HELPER).exists():
+                        wrong_qualifs.append(quali.pk)
+        return (
+            super(SeasonErrorsListView, self).get_queryset()
+            .filter(pk__in=wrong_qualifs)
             .distinct()
         )

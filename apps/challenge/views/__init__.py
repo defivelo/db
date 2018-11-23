@@ -19,7 +19,7 @@ from .quali import QualiCreateView, QualiDeleteView, QualiUpdateView # noqa
 from .season import ( # noqa
     SeasonActorListView, SeasonCreateView, SeasonDeleteView, SeasonDetailView, # noqa
     SeasonExportView, SeasonPlanningExportView, SeasonHelperListView, SeasonListView, # noqa
-    SeasonStaffChoiceUpdateView, SeasonUpdateView, # noqa
+    SeasonStaffChoiceUpdateView, SeasonUpdateView, SeasonErrorsListView, # noqa
     SeasonAvailabilityUpdateView, SeasonAvailabilityView # noqa
     )  # noqa
 from .session import ( # noqa
