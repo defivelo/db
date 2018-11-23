@@ -151,6 +151,10 @@ class Qualification(models.Model):
         return False
 
     def fix_availability_incoherences(self):
+        # many-to-many won't work without self.id.
+        if not self.id:
+            return
+
         # Check les intervenants
         if (
             self.actor and
