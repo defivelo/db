@@ -50,7 +50,7 @@ from .. import (
     STAFF_FIELDKEY,
 )
 from ..forms import SeasonAvailabilityForm, SeasonForm, SeasonNewHelperAvailabilityForm, SeasonStaffChoiceForm
-from ..models import HelperSessionAvailability, Season, Qualification
+from ..models import HelperSessionAvailability, Qualification, Season
 from ..models.availability import HelperSeasonWorkWish
 from ..models.qualification import CATEGORY_CHOICE_A, CATEGORY_CHOICE_B, CATEGORY_CHOICE_C
 from .mixins import CantonSeasonFormMixin
@@ -822,26 +822,9 @@ class SeasonErrorsListView(HasPermissionsMixin, SeasonMixin, ListView):
     def get_queryset(self):
         wrong_qualifs = []
         for session in self.season.sessions_with_qualifs.all():
-            
             for quali in session.qualifications.all():
-                
-                # Check les intervenants
-                if (
-                    quali.actor and
-                    not session.availability_statuses.filter(helper=quali.actor, chosen_as=CHOSEN_AS_ACTOR).exists()
-                ):
+                if quali.has_availability_incoherences:
                     wrong_qualifs.append(quali.pk)
-                # Check les moniteurs 1
-                if (
-                    quali.leader and
-                    not session.availability_statuses.filter(helper=quali.leader, chosen_as=CHOSEN_AS_LEADER).exists()
-                ):
-                    wrong_qualifs.append(quali.pk)
-                    
-                # Check les moniteurs 2
-                for helper in quali.helpers.all():
-                    if not session.availability_statuses.filter(helper=helper, chosen_as=CHOSEN_AS_HELPER).exists():
-                        wrong_qualifs.append(quali.pk)
         return (
             super(SeasonErrorsListView, self).get_queryset()
             .filter(pk__in=wrong_qualifs)

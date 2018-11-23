@@ -24,12 +24,12 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as u, ugettext_lazy as _
 from parler.models import TranslatableModel, TranslatedFields
-from sentry_sdk import capture_message as sentry_message
+from sentry_sdk import capture_message as sentry_message, configure_scope as sentry_scope
 from simple_history.models import HistoricalRecords
 
 from apps.user import FORMATION_KEYS, FORMATION_M2
 
-from .. import MAX_MONO1_PER_QUALI
+from .. import CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, MAX_MONO1_PER_QUALI
 from .session import Session
 
 CATEGORY_CHOICE_A = u('Agilité')
@@ -131,6 +131,44 @@ class Qualification(models.Model):
     history = HistoricalRecords()
 
     @property
+    def has_availability_incoherences(self):
+        # Check les intervenants
+        if (
+            self.actor and
+            not self.session.availability_statuses.filter(helper=self.actor, chosen_as=CHOSEN_AS_ACTOR).exists()
+        ):
+            return True
+        # Check les moniteurs 2
+        if (
+            self.leader and
+            not self.session.availability_statuses.filter(helper=self.leader, chosen_as=CHOSEN_AS_LEADER).exists()
+        ):
+            return True
+        # Check les moniteurs 1
+        for helper in self.helpers.all():
+            if not self.session.availability_statuses.filter(helper=helper, chosen_as=CHOSEN_AS_HELPER).exists():
+                return True
+        return False
+
+    def fix_availability_incoherences(self):
+        # Check les intervenants
+        if (
+            self.actor and
+            not self.session.availability_statuses.filter(helper=self.actor, chosen_as=CHOSEN_AS_ACTOR).exists()
+        ):
+            self.actor = None
+        # Check les moniteurs 2
+        if (
+            self.leader and
+            not self.session.availability_statuses.filter(helper=self.leader, chosen_as=CHOSEN_AS_LEADER).exists()
+        ):
+            self.leader = None
+        # Check les moniteurs 1
+        for helper in self.helpers.all():
+            if not self.session.availability_statuses.filter(helper=helper, chosen_as=CHOSEN_AS_HELPER).exists():
+                self.helpers.remove(helper)
+
+    @property
     def errors(self):
         errors = []
         if not self.class_teacher_fullname or not self.class_teacher_natel:
@@ -143,6 +181,8 @@ class Qualification(models.Model):
             errors.append(u("Intervenant"))
         if not self.activity_A or not self.activity_B or not self.activity_C:
             errors.append(u('Postes'))
+        if self.has_availability_incoherences:
+            errors.append(u('Incohérences de dispos'))
         if errors:
             return mark_safe(
                 '<br />'.join([
@@ -153,6 +193,14 @@ class Qualification(models.Model):
                 )
 
     def save(self, *args, **kwargs):
+        # Forcibly fix availability incoherences
+        self.fix_availability_incoherences()
+        with sentry_scope() as scope:
+            scope.level = 'info'
+            scope.fingerprint = ['Qualification.save()']
+            scope.set_tag('Qualification', self)
+            scope.set_tag('Qualification.id', self.id)
+
         sentry_message(
             'Qualification.save() : {quali}{mon2}'
             .format(
