@@ -154,8 +154,7 @@ def restart_process():
     """
     Restart the WSGI process by touching the wsgi.py file.
     """
-    run('uwsgi --stop %s' % env.pid)
-    run('uwsgi --ini /usr/share/uwsgi/conf/empty.ini --ini %s' % env.ini)
+    run('uwsgi --stop %s; uwsgi --ini /usr/share/uwsgi/conf/empty.ini --ini %s' % (env.pid, env.ini))
 
 
 def generate_secret_key():
