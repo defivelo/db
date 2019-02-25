@@ -9,6 +9,7 @@ django-stronghold==0.3.0
 django-allauth==0.38.0
 -e git+https://github.com/django/django-localflavor@d23320486862d993070de51ef92e31b8f4cc61a3#egg=django-localflavor==2.0+ean0
 django-phonenumber-field==2.2.0
+phonenumbers==8.10.6
 # django-bootstrap3-datetimepicker-2==2.5.0
 -e git+https://github.com/defivelo/django-bootstrap3-datetimepicker@ab60a3281ba847832d300dc780b5a07379103ed4#egg=django-bootstrap3-datetimepicker-2==2.5.0+dv0
 django-autocomplete-light==3.3.2
