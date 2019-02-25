@@ -137,11 +137,11 @@ def migrate_database():
 
 
 def collect_static():
-        managepy('collectstatic --noinput')
+    managepy('collectstatic --noinput')
 
 
 def compile_messages():
-        managepy('compilemessages -l fr -l de -l en -l it')
+    managepy('compilemessages -l fr -l de -l en -l it')
 
 
 def document_git():
