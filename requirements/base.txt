@@ -12,7 +12,7 @@ django-phonenumber-field==2.2.0
 phonenumbers==8.10.6
 # django-bootstrap3-datetimepicker-2==2.5.0
 -e git+https://github.com/defivelo/django-bootstrap3-datetimepicker@ab60a3281ba847832d300dc780b5a07379103ed4#egg=django-bootstrap3-datetimepicker-2==2.5.0+dv0
-django-autocomplete-light==3.3.2
+django-autocomplete-light==3.2.10
 django-parler==1.9.2
 django-multiselectfield==0.1.8
 django-filter==1.1.0
