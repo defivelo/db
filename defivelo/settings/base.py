@@ -168,6 +168,7 @@ COMPRESS_PRECOMPILERS = (
                           ),
          'bin', 'sassc') + ' {infile} {outfile}'),
 )
+COMPRESS_OFFLINE = True
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases

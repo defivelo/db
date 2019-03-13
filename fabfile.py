@@ -136,6 +136,10 @@ def migrate_database():
     return managepy('migrate')
 
 
+def compress():
+    managepy('compress --force')
+
+
 def collect_static():
     managepy('collectstatic --noinput')
 
@@ -232,6 +236,7 @@ def bootstrap():
     execute(install_requirements)
     execute(collect_static)
     execute(compile_messages)
+    execute(compress)
     execute(document_git)
     execute(migrate_database)
 
@@ -250,6 +255,8 @@ def deploy():
     execute(compile_messages)
     execute(document_git)
     execute(migrate_database)
+
+    execute(compress)
 
     execute(restart_process)
     execute(clean_old_database_backups, nb_backups_to_keep=10)
