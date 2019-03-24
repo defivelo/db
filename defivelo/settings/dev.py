@@ -30,7 +30,7 @@ INSTALLED_APPS += (  # NOQA
 
 DEBUG_TOOLBAR_CONFIG = {"INTERCEPT_REDIRECTS": False}
 
-INTERNAL_IPS = ('127.0.0.1',)
+INTERNAL_IPS = ('127.0.0.1','10.0.3.1',)
 MIDDLEWARE += [  # NOQA
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
