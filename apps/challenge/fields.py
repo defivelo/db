@@ -40,10 +40,14 @@ class BSChoiceRadioSelect(forms.RadioSelect):
 
     def get_context(self, name, value, attrs):
         context = super(BSChoiceRadioSelect, self).get_context(name, value, attrs)
+        # Avoid journal messages
+        context['widget']['forbid_absence'] = None
         # User has a status in the session, forbid change
         disable_all = self.user_assignment is not None
         for optgroup in context['widget']['optgroups']:
             (group, options, index) = optgroup
+            # Avoid journal messages
+            options[0]['glyphicon'] = None
             if options[0]['value'] == CHOSEN_AS_LEADER:
                 options[0]['text'] = formation_short(FORMATION_M2)
                 options[0]['class'] = 'success'
