@@ -29,6 +29,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.db.models import Case, Count, F, IntegerField, Q, When
 from django.http import HttpResponseRedirect
 from django.template.defaultfilters import date, time
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext as u, ugettext_lazy as _
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
@@ -201,6 +202,7 @@ class SeasonAvailabilityMixin(SeasonMixin):
     def current_availabilities_present(self):
         return self.current_availabilities().exclude(availability='n')
 
+    @cached_property
     def available_helpers(self):
         # Only take available people
         # Fill in the helpers with the ones we currently have
@@ -696,20 +698,20 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView,
             super(SeasonStaffChoiceUpdateView, self)
             .get_initial(
                 all_hsas=None,
-                all_helpers=self.available_helpers()
+                all_helpers=self.available_helpers
             )
         )
 
     def get_form_kwargs(self):
         form_kwargs = \
             super(SeasonStaffChoiceUpdateView, self).get_form_kwargs()
-        form_kwargs['available_helpers'] = self.available_helpers()
+        form_kwargs['available_helpers'] = self.available_helpers
         return form_kwargs
 
     def get_context_data(self, **kwargs):
         context = \
             super(SeasonStaffChoiceUpdateView, self).get_context_data(**kwargs)
-        context['available_helpers'] = self.available_helpers()
+        context['available_helpers'] = self.available_helpers
         return context
 
     def form_valid(self, form):
@@ -717,7 +719,7 @@ class SeasonStaffChoiceUpdateView(SeasonAvailabilityMixin, SeasonUpdateView,
         for session in self.object.sessions_with_qualifs:
             session_helpers = {}  # Those picked for the season
             session_non_helpers = {}  # Those not picked for the season
-            for helper_category, helpers in self.available_helpers():
+            for helper_category, helpers in self.available_helpers:
                 for helper in helpers:
                     fieldkey = STAFF_FIELDKEY.format(hpk=helper.pk,
                                                      spk=session.pk)
