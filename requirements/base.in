@@ -1,0 +1,29 @@
+dj-database-url
+Django
+pytz
+django-bootstrap3
+psycopg2
+django-compressor
+libsass
+django-stronghold
+django-allauth
+-e git+https://github.com/django/django-localflavor@d23320486862d993070de51ef92e31b8f4cc61a3#egg=django-localflavor==2.0+ean0
+django-phonenumber-field
+phonenumbers
+# django-bootstrap3-datetimepicker-2
+-e git+https://github.com/defivelo/django-bootstrap3-datetimepicker@ab60a3281ba847832d300dc780b5a07379103ed4#egg=django-bootstrap3-datetimepicker-2==2.5.0+dv0
+django-autocomplete-light
+django-parler
+django-multiselectfield
+django-filter
+django-import-export
+django-agpl
+tablib
+simple-article
+django-role-permissions
+django-tinymce
+django-memoize
+django-countries
+django-simple-history
+sentry-sdk
+six

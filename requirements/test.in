@@ -1,0 +1,11 @@
+-r base.in
+astroid
+django-jenkins
+flake8
+logilab-common
+pep8
+pyflakes
+pylint
+factory_boy
+django-test-without-migrations
+ipdb

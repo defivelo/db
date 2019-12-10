@@ -29,7 +29,6 @@ from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django_filters import CharFilter, FilterSet, ModelMultipleChoiceFilter, MultipleChoiceFilter
 from django_filters.views import FilterView
-from filters.views import FilterMixin
 from rolepermissions.mixins import HasPermissionsMixin
 
 from apps.challenge.models import QualificationActivity
@@ -216,8 +215,7 @@ class UserProfileFilterSet(FilterSet):
                   ]
 
 
-class UserList(HasPermissionsMixin, ProfileMixin, PaginatorMixin,
-               FilterMixin, FilterView):
+class UserList(HasPermissionsMixin, ProfileMixin, PaginatorMixin, FilterView):
     required_permission = 'user_view_list'
     filterset_class = UserProfileFilterSet
     context_object_name = 'users'

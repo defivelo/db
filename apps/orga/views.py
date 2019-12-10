@@ -29,7 +29,6 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django_filters import CharFilter, FilterSet, MultipleChoiceFilter
 from django_filters.views import FilterView
-from filters.views import FilterMixin
 from rolepermissions.mixins import HasPermissionsMixin
 
 from apps.common import DV_STATE_CHOICES_WITH_DEFAULT
@@ -127,8 +126,7 @@ class OrganizationMixin(HasPermissionsMixin, MenuView):
         return context
 
 
-class OrganizationsListView(OrganizationMixin, PaginatorMixin,
-                            FilterMixin, FilterView):
+class OrganizationsListView(OrganizationMixin, PaginatorMixin, FilterView):
     filterset_class = OrganizationFilterSet
     context_object_name = 'organizations'
 
