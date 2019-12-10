@@ -3,3 +3,9 @@ envdir/*
 !envdir/local/.gitkeep
 !envdir/tests/.gitkeep
 *.sqlite
+/static_files
+
+/.coverage
+/.tox
+/.vagrant/
+/virtualization/playbook.retry
