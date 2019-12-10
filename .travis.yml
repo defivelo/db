@@ -1,6 +1,6 @@
 language: python
 addons:
-  postgresql: "9.4"
+  postgresql: "11"
 before_script:
   - psql -c 'create database defivelotest;' -U postgres
 install:
@@ -8,6 +8,5 @@ install:
 script:
   - tox
 env:
-  - TOXENV=py34-coverage
-  - TOXENV=py27
+  - TOXENV=py37-coverage
   - TOXENV=flake8

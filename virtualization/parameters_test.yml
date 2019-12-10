@@ -1,0 +1,6 @@
+---
+box_name: "drifter/buster64-base"
+box_url: "https://vagrantbox-public.liip.ch/drifter-buster64-base.json"
+pip_requirements: "requirements/dev.txt"
+python_version: 3
+playbook: "virtualization/playbook_test.yml"
