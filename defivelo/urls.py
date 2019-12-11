@@ -28,27 +28,26 @@ from .views.common import HomeView, LicenseView
 admin.autodiscover()
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^i18n/', include('django.conf.urls.i18n')),
-    url(r'^accounts/', include('allauth.urls')),
-    url(r'^license/', LicenseView.as_view(), name='license'),
-    url(r'^agpl-', include('django_agpl.urls')),
-    url(r'^article/', include('apps.dv_article.urls')),
-    url(r'^tinymce/', include('tinymce.urls')),
+    url(r"^admin/", admin.site.urls),
+    url(r"^i18n/", include("django.conf.urls.i18n")),
+    url(r"^accounts/", include("allauth.urls")),
+    url(r"^license/", LicenseView.as_view(), name="license"),
+    url(r"^agpl-", include("django_agpl.urls")),
+    url(r"^article/", include("apps.dv_article.urls")),
+    url(r"^tinymce/", include("tinymce.urls")),
 ]
 
 urlpatterns += i18n_patterns(
-    url(r'^$', HomeView.as_view(), name='home'),
-    url(r'^season/', include('apps.challenge.urls')),
-    url(r'^orga/', include('apps.orga.urls')),
-    url(r'^user/', include('apps.user.urls')),
-    url(r'^info/', include('apps.info.urls')),
+    url(r"^$", HomeView.as_view(), name="home"),
+    url(r"^season/", include("apps.challenge.urls")),
+    url(r"^orga/", include("apps.orga.urls")),
+    url(r"^user/", include("apps.user.urls")),
+    url(r"^info/", include("apps.info.urls")),
 )
 
 if settings.DEBUG:
     import debug_toolbar
-    urlpatterns = [
-        url(r'^__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns
 
-admin.site.site_header = _('Intranet DÉFI VÉLO')
+    urlpatterns = [url(r"^__debug__/", include(debug_toolbar.urls)),] + urlpatterns
+
+admin.site.site_header = _("Intranet DÉFI VÉLO")

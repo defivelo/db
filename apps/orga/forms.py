@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+
 from localflavor.ch.forms import CHStateSelect, CHZipCodeField
 
 from apps.common.forms import CHPhoneNumberField
@@ -30,25 +31,23 @@ from .models import Organization
 
 class OrganizationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        cantons = kwargs.pop('cantons', None)
+        cantons = kwargs.pop("cantons", None)
         super(OrganizationForm, self).__init__(**kwargs)
         if cantons:
             # Only permit edition within the allowed cantons
-            choices = self.fields['address_canton'].choices
-            choices = (
-                (k, v) for (k, v)
-                in choices
-                if k in cantons
-            )
-            self.fields['address_canton'].choices = choices
+            choices = self.fields["address_canton"].choices
+            choices = ((k, v) for (k, v) in choices if k in cantons)
+            self.fields["address_canton"].choices = choices
 
-    address_canton = forms.ChoiceField(label=_('Canton'),
-                                       widget=CHStateSelect,
-                                       choices=STATE_CHOICES_WITH_DEFAULT,
-                                       required=False)
-    address_zip = CHZipCodeField(label=_('NPA'), max_length=4, required=False)
-    coordinator_phone = CHPhoneNumberField(label=_('Téléphone'), required=False)
-    coordinator_natel = CHPhoneNumberField(label=_('Natel'), required=False)
+    address_canton = forms.ChoiceField(
+        label=_("Canton"),
+        widget=CHStateSelect,
+        choices=STATE_CHOICES_WITH_DEFAULT,
+        required=False,
+    )
+    address_zip = CHZipCodeField(label=_("NPA"), max_length=4, required=False)
+    coordinator_phone = CHPhoneNumberField(label=_("Téléphone"), required=False)
+    coordinator_natel = CHPhoneNumberField(label=_("Natel"), required=False)
 
     class Meta:
         model = Organization

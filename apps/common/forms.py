@@ -17,10 +17,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from bootstrap3_datetime.widgets import DateTimePicker
-from dal_select2.widgets import ModelSelect2
 from django.forms import ModelChoiceField, TimeField
 from django.template.loader import render_to_string
+
+from bootstrap3_datetime.widgets import DateTimePicker
+from dal_select2.widgets import ModelSelect2
 from django_countries import countries
 from django_countries.fields import LazyTypedChoiceField
 from django_countries.widgets import CountrySelectWidget
@@ -28,62 +29,73 @@ from localflavor.generic.forms import DEFAULT_DATE_INPUT_FORMATS, DateField
 from phonenumber_field.formfields import PhoneNumberField
 from phonenumber_field.widgets import PhoneNumberInternationalFallbackWidget
 
-SWISS_DATE_INPUT_FORMAT = '%d.%m.%Y'
-SWISS_DATE_DISPLAY_FORMAT = 'DD.MM.YYYY'
+SWISS_DATE_INPUT_FORMAT = "%d.%m.%Y"
+SWISS_DATE_DISPLAY_FORMAT = "DD.MM.YYYY"
 
-SWISS_DATE_INPUT_FORMATS = \
-    DEFAULT_DATE_INPUT_FORMATS + (SWISS_DATE_INPUT_FORMAT, )
+SWISS_DATE_INPUT_FORMATS = DEFAULT_DATE_INPUT_FORMATS + (SWISS_DATE_INPUT_FORMAT,)
 
 
 class SwissDateField(DateField):
     """
     A date input field which uses the bootstrap widget for pickin a Date
     """
+
     def __init__(self, input_formats=None, *args, **kwargs):
         input_formats = input_formats or SWISS_DATE_INPUT_FORMATS
         super(DateField, self).__init__(
             input_formats=input_formats,
             widget=DateTimePicker(
-                {'placeholder': SWISS_DATE_DISPLAY_FORMAT},
-                options={
-                    "format": SWISS_DATE_DISPLAY_FORMAT}),
-            *args, **kwargs)
+                {"placeholder": SWISS_DATE_DISPLAY_FORMAT},
+                options={"format": SWISS_DATE_DISPLAY_FORMAT},
+            ),
+            *args,
+            **kwargs,
+        )
 
 
 class SwissTimeField(TimeField):
     """
     A date input field which uses the bootstrap widget for pickin a Date
     """
+
     def __init__(self, *args, **kwargs):
         super(TimeField, self).__init__(
-            widget=DateTimePicker({'placeholder': 'HH:mm'},
-                                  icon_attrs={'class': 'glyphicon glyphicon-time'},
-                                  options={"format": "HH:mm",
-                                           "stepping": 15}),
-            *args, **kwargs)
+            widget=DateTimePicker(
+                {"placeholder": "HH:mm"},
+                icon_attrs={"class": "glyphicon glyphicon-time"},
+                options={"format": "HH:mm", "stepping": 15},
+            ),
+            *args,
+            **kwargs,
+        )
 
 
 class CHPhoneNumberField(PhoneNumberField):
     """
     A PhoneNumberField that uses the national fallback widget
     """
+
     def __init__(self, *args, **kwargs):
         super(CHPhoneNumberField, self).__init__(
-            widget=PhoneNumberInternationalFallbackWidget,
-            *args, **kwargs)
+            widget=PhoneNumberInternationalFallbackWidget, *args, **kwargs
+        )
 
 
 class BS3CountriesField(LazyTypedChoiceField):
     """
     A Bootstrap3 Countries selection Field
     """
+
     def __init__(self, *args, **kwargs):
         super(BS3CountriesField, self).__init__(
             widget=CountrySelectWidget(
-                layout=render_to_string('country_select_widget.html')
+                layout=render_to_string("country_select_widget.html")
             ),
-            choices=countries, initial='CH',
-            *args, **kwargs)
+            choices=countries,
+            initial="CH",
+            *args,
+            **kwargs,
+        )
 
 
 class UserAutoComplete(ModelChoiceField):
@@ -91,11 +103,12 @@ class UserAutoComplete(ModelChoiceField):
     A User input field which uses the Autocmplete URL and has the good
     default widget
     """
+
     def __init__(self, *args, **kwargs):
-        url = kwargs.pop('url', False)
+        url = kwargs.pop("url", False)
         super(UserAutoComplete, self).__init__(
-            widget=ModelSelect2(url=url),
-            *args, **kwargs)
+            widget=ModelSelect2(url=url), *args, **kwargs
+        )
 
     def label_from_instance(self, obj):
         return obj.get_full_name()

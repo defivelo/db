@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 from django.http import HttpResponse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+
 from import_export.formats import base_formats
 
 
@@ -29,7 +30,7 @@ class ExportMixin(object):
 
     def render_to_response(self, context, **response_kwargs):
         resolvermatch = self.request.resolver_match
-        formattxt = resolvermatch.kwargs.get('format', 'csv')
+        formattxt = resolvermatch.kwargs.get("format", "csv")
         # Instantiate the format object from base_formats in import_export
         try:
             format = getattr(base_formats, formattxt.upper())()
@@ -41,18 +42,18 @@ class ExportMixin(object):
         except AttributeError:
             dataset = self.get_dataset()
 
-        filename = (
-            _('DV-{exportfilename}-{YMD_date}.{extension}').format(
-                exportfilename=self.export_filename,
-                YMD_date=timezone.now().strftime('%Y%m%d'),
-                extension=format.get_extension()
-            )
+        filename = _("DV-{exportfilename}-{YMD_date}.{extension}").format(
+            exportfilename=self.export_filename,
+            YMD_date=timezone.now().strftime("%Y%m%d"),
+            extension=format.get_extension(),
         )
 
-        response = HttpResponse(getattr(dataset, formattxt),
-                                format.get_content_type() + ';charset=utf-8')
-        response['Content-Disposition'] = 'attachment; filename="{f}"'.format(
-            f=filename)
+        response = HttpResponse(
+            getattr(dataset, formattxt), format.get_content_type() + ";charset=utf-8"
+        )
+        response["Content-Disposition"] = 'attachment; filename="{f}"'.format(
+            f=filename
+        )
         return response
 
 
@@ -65,8 +66,8 @@ class PaginatorMixin(object):
         # Re-create the filtered querystring from GET, drop page off it
         querydict = self.request.GET.copy()
         try:
-            del querydict['page']
+            del querydict["page"]
         except Exception:
             pass
-        context['filter_querystring'] = querydict.urlencode()
+        context["filter_querystring"] = querydict.urlencode()
         return context

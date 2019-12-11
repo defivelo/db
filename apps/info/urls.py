@@ -21,50 +21,100 @@ from django.conf.urls import include, url
 from django.views.decorators.cache import never_cache
 
 from .views import (
-    ExpensesExportView, ExpensesView, JSONNextQualifs, LogisticsExportView, LogisticsView, MonthExports, NextQualifs,
-    OrgaInvoicesExportView, OrgaInvoicesView, QualifsCalendar, SalariesExportView, SalariesView, SeasonExports,
-    SeasonStatsExportView, SeasonStatsView,
+    ExpensesExportView,
+    ExpensesView,
+    JSONNextQualifs,
+    LogisticsExportView,
+    LogisticsView,
+    MonthExports,
+    NextQualifs,
+    OrgaInvoicesExportView,
+    OrgaInvoicesView,
+    QualifsCalendar,
+    SalariesExportView,
+    SalariesView,
+    SeasonExports,
+    SeasonStatsExportView,
+    SeasonStatsView,
 )
 
 urlpatterns = [
-    url(r'^qualifs/$',
-        never_cache(NextQualifs.as_view()),
-        name='public-nextqualifs'),
-    url(r'^qualifs.json$',
+    url(r"^qualifs/$", never_cache(NextQualifs.as_view()), name="public-nextqualifs"),
+    url(
+        r"^qualifs.json$",
         never_cache(JSONNextQualifs.as_view()),
-        name='public-json-nextqualifs'),
-    url(r'^(?:(?P<year>[0-9]{4})_(?P<dv_season>[0-9]+)/)?',
-        include([
-            url(r'^$', never_cache(SeasonExports.as_view()), name='season-exports'),
-            url(r'^calendar/$', never_cache(QualifsCalendar.as_view()), name='qualifs-calendar'),
-            # Statistiques de Saison
-            url(r'^stats/$',
-                never_cache(SeasonStatsView.as_view()), name='season-stats'),
-            url(r'^stats-(?P<format>[a-z]+)$',
-                never_cache(SeasonStatsExportView.as_view()), name='season-stats-export'),
-            # Facturation établissements
-            url(r'^orgas/$',
-                never_cache(OrgaInvoicesView.as_view()), name='orga-invoices'),
-            url(r'^orgas-(?P<format>[a-z]+)$',
-                never_cache(OrgaInvoicesExportView.as_view()), name='orga-invoices-export'),
-            # Planification Logistique
-            url(r'^logistics/$',
-                never_cache(LogisticsView.as_view()), name='logistics'),
-            url(r'^logistics-(?P<format>[a-z]+)$',
-                never_cache(LogisticsExportView.as_view()), name='logistics-export'),
-        ])),
-    url(r'^m/(?:(?P<year>[0-9]{4})-(?P<month>[0-9]+)/)?',
-        include([
-            url(r'^$', never_cache(MonthExports.as_view()), name='month-exports'),
-            # Salaires
-            url(r'^salaries/$',
-                never_cache(SalariesView.as_view()), name='salaries'),
-            url(r'^salaries-(?P<format>[a-z]+)$',
-                never_cache(SalariesExportView.as_view()), name='salaries-export'),
-            # Défraiements
-            url(r'^expenses/$',
-                never_cache(ExpensesView.as_view()), name='expenses'),
-            url(r'^expenses-(?P<format>[a-z]+)$',
-                never_cache(ExpensesExportView.as_view()), name='expenses-export'),
-        ]))
+        name="public-json-nextqualifs",
+    ),
+    url(
+        r"^(?:(?P<year>[0-9]{4})_(?P<dv_season>[0-9]+)/)?",
+        include(
+            [
+                url(r"^$", never_cache(SeasonExports.as_view()), name="season-exports"),
+                url(
+                    r"^calendar/$",
+                    never_cache(QualifsCalendar.as_view()),
+                    name="qualifs-calendar",
+                ),
+                # Statistiques de Saison
+                url(
+                    r"^stats/$",
+                    never_cache(SeasonStatsView.as_view()),
+                    name="season-stats",
+                ),
+                url(
+                    r"^stats-(?P<format>[a-z]+)$",
+                    never_cache(SeasonStatsExportView.as_view()),
+                    name="season-stats-export",
+                ),
+                # Facturation établissements
+                url(
+                    r"^orgas/$",
+                    never_cache(OrgaInvoicesView.as_view()),
+                    name="orga-invoices",
+                ),
+                url(
+                    r"^orgas-(?P<format>[a-z]+)$",
+                    never_cache(OrgaInvoicesExportView.as_view()),
+                    name="orga-invoices-export",
+                ),
+                # Planification Logistique
+                url(
+                    r"^logistics/$",
+                    never_cache(LogisticsView.as_view()),
+                    name="logistics",
+                ),
+                url(
+                    r"^logistics-(?P<format>[a-z]+)$",
+                    never_cache(LogisticsExportView.as_view()),
+                    name="logistics-export",
+                ),
+            ]
+        ),
+    ),
+    url(
+        r"^m/(?:(?P<year>[0-9]{4})-(?P<month>[0-9]+)/)?",
+        include(
+            [
+                url(r"^$", never_cache(MonthExports.as_view()), name="month-exports"),
+                # Salaires
+                url(
+                    r"^salaries/$", never_cache(SalariesView.as_view()), name="salaries"
+                ),
+                url(
+                    r"^salaries-(?P<format>[a-z]+)$",
+                    never_cache(SalariesExportView.as_view()),
+                    name="salaries-export",
+                ),
+                # Défraiements
+                url(
+                    r"^expenses/$", never_cache(ExpensesView.as_view()), name="expenses"
+                ),
+                url(
+                    r"^expenses-(?P<format>[a-z]+)$",
+                    never_cache(ExpensesExportView.as_view()),
+                    name="expenses-export",
+                ),
+            ]
+        ),
+    ),
 ]

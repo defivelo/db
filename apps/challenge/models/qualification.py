@@ -23,9 +23,12 @@ from django.db.models import Q
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as u, ugettext_lazy as _
+from django.utils.translation import ugettext as u
+from django.utils.translation import ugettext_lazy as _
+
 from parler.models import TranslatableModel, TranslatedFields
-from sentry_sdk import capture_message as sentry_message, configure_scope as sentry_scope
+from sentry_sdk import capture_message as sentry_message
+from sentry_sdk import configure_scope as sentry_scope
 from simple_history.models import HistoricalRecords
 
 from apps.user import FORMATION_KEYS, FORMATION_M2
@@ -33,31 +36,30 @@ from apps.user import FORMATION_KEYS, FORMATION_M2
 from .. import CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, MAX_MONO1_PER_QUALI
 from .session import Session
 
-CATEGORY_CHOICE_A = u('Agilité')
-CATEGORY_CHOICE_B = u('Mécanique')
-CATEGORY_CHOICE_C = u('Rencontre')
+CATEGORY_CHOICE_A = u("Agilité")
+CATEGORY_CHOICE_B = u("Mécanique")
+CATEGORY_CHOICE_C = u("Rencontre")
 
 CATEGORY_CHOICES = (
-    ('A', CATEGORY_CHOICE_A),
-    ('B', CATEGORY_CHOICE_B),
-    ('C', CATEGORY_CHOICE_C),
+    ("A", CATEGORY_CHOICE_A),
+    ("B", CATEGORY_CHOICE_B),
+    ("C", CATEGORY_CHOICE_C),
 )
 
 
 @python_2_unicode_compatible
 class QualificationActivity(TranslatableModel):
 
-    translations = TranslatedFields(
-        name=models.CharField(_('Nom'), max_length=255)
+    translations = TranslatedFields(name=models.CharField(_("Nom"), max_length=255))
+    category = models.CharField(
+        _("Catégorie"), max_length=1, choices=CATEGORY_CHOICES, blank=True
     )
-    category = models.CharField(_("Catégorie"), max_length=1,
-                                choices=CATEGORY_CHOICES, blank=True)
     history = HistoricalRecords()
 
     class Meta:
-        verbose_name = _('Poste')
-        verbose_name_plural = _('Postes')
-        ordering = ['category', 'pk']
+        verbose_name = _("Poste")
+        verbose_name_plural = _("Postes")
+        ordering = ["category", "pk"]
 
     def __str__(self):
         return self.name
@@ -67,87 +69,103 @@ class QualificationActivity(TranslatableModel):
 class Qualification(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     # TODO: Replace with automated or classes objects
-    name = models.CharField(_('Nom de la classe'), max_length=255)
-    session = models.ForeignKey(Session,
-                                related_name='qualifications',
-                                on_delete=models.CASCADE)
-    class_teacher_fullname = models.CharField(_('Enseignant'), max_length=512,
-                                              blank=True)
-    class_teacher_natel = models.CharField(_('Natel enseignant'),
-                                           max_length=13, blank=True)
+    name = models.CharField(_("Nom de la classe"), max_length=255)
+    session = models.ForeignKey(
+        Session, related_name="qualifications", on_delete=models.CASCADE
+    )
+    class_teacher_fullname = models.CharField(
+        _("Enseignant"), max_length=512, blank=True
+    )
+    class_teacher_natel = models.CharField(
+        _("Natel enseignant"), max_length=13, blank=True
+    )
     n_participants = models.PositiveSmallIntegerField(
-        _('Nombre de participants'),
-        blank=True, null=True)
+        _("Nombre de participants"), blank=True, null=True
+    )
     n_bikes = models.PositiveSmallIntegerField(
-        _('Nombre de vélos'),
-        blank=True, null=True)
+        _("Nombre de vélos"), blank=True, null=True
+    )
     n_helmets = models.PositiveSmallIntegerField(
-        _('Nombre de casques'),
-        blank=True, null=True)
-    activity_A = models.ForeignKey(QualificationActivity,
-                                   limit_choices_to={'category': 'A'},
-                                   verbose_name=CATEGORY_CHOICE_A,
-                                   related_name='qualifs_A',
-                                   blank=True, null=True,
-                                   on_delete=models.SET_NULL
-                                   )
-    activity_B = models.ForeignKey(QualificationActivity,
-                                   limit_choices_to={'category': 'B'},
-                                   verbose_name=CATEGORY_CHOICE_B,
-                                   related_name='qualifs_B',
-                                   blank=True, null=True,
-                                   on_delete=models.SET_NULL
-                                   )
-    activity_C = models.ForeignKey(QualificationActivity,
-                                   limit_choices_to={'category': 'C'},
-                                   verbose_name=CATEGORY_CHOICE_C,
-                                   related_name='qualifs_C',
-                                   blank=True, null=True,
-                                   on_delete=models.SET_NULL
-                                   )
-    leader = models.ForeignKey(settings.AUTH_USER_MODEL,
-                               verbose_name=_('Moniteur 2'),
-                               related_name='qualifs_mon2',
-                               limit_choices_to=Q(
-                                   profile__formation=FORMATION_M2
-                                   ),
-                               blank=True, null=True,
-                               on_delete=models.SET_NULL)
-    helpers = models.ManyToManyField(settings.AUTH_USER_MODEL,
-                                     verbose_name=_('Moniteurs 1'),
-                                     related_name='qualifs_mon1',
-                                     limit_choices_to=Q(
-                                         profile__formation__in=FORMATION_KEYS
-                                         ),
-                                     blank=True)
-    actor = models.ForeignKey(settings.AUTH_USER_MODEL,
-                              verbose_name=_('Intervenant'),
-                              related_name='qualifs_actor',
-                              limit_choices_to={
-                                  'profile__actor_for__isnull': False
-                              },
-                              blank=True, null=True,
-                              on_delete=models.SET_NULL)
-    comments = models.TextField(_('Remarques'), blank=True)
+        _("Nombre de casques"), blank=True, null=True
+    )
+    activity_A = models.ForeignKey(
+        QualificationActivity,
+        limit_choices_to={"category": "A"},
+        verbose_name=CATEGORY_CHOICE_A,
+        related_name="qualifs_A",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
+    activity_B = models.ForeignKey(
+        QualificationActivity,
+        limit_choices_to={"category": "B"},
+        verbose_name=CATEGORY_CHOICE_B,
+        related_name="qualifs_B",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
+    activity_C = models.ForeignKey(
+        QualificationActivity,
+        limit_choices_to={"category": "C"},
+        verbose_name=CATEGORY_CHOICE_C,
+        related_name="qualifs_C",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
+    leader = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_("Moniteur 2"),
+        related_name="qualifs_mon2",
+        limit_choices_to=Q(profile__formation=FORMATION_M2),
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
+    helpers = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_("Moniteurs 1"),
+        related_name="qualifs_mon1",
+        limit_choices_to=Q(profile__formation__in=FORMATION_KEYS),
+        blank=True,
+    )
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_("Intervenant"),
+        related_name="qualifs_actor",
+        limit_choices_to={"profile__actor_for__isnull": False},
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
+    comments = models.TextField(_("Remarques"), blank=True)
     history = HistoricalRecords()
 
     @cached_property
     def has_availability_incoherences(self):
         # Check les intervenants
         if (
-            self.actor and
-            not self.session.availability_statuses.filter(helper=self.actor, chosen_as=CHOSEN_AS_ACTOR).exists()
+            self.actor
+            and not self.session.availability_statuses.filter(
+                helper=self.actor, chosen_as=CHOSEN_AS_ACTOR
+            ).exists()
         ):
             return True
         # Check les moniteurs 2
         if (
-            self.leader and
-            not self.session.availability_statuses.filter(helper=self.leader, chosen_as=CHOSEN_AS_LEADER).exists()
+            self.leader
+            and not self.session.availability_statuses.filter(
+                helper=self.leader, chosen_as=CHOSEN_AS_LEADER
+            ).exists()
         ):
             return True
         # Check les moniteurs 1
         for helper in self.helpers.all():
-            if not self.session.availability_statuses.filter(helper=helper, chosen_as=CHOSEN_AS_HELPER).exists():
+            if not self.session.availability_statuses.filter(
+                helper=helper, chosen_as=CHOSEN_AS_HELPER
+            ).exists():
                 return True
         return False
 
@@ -158,19 +176,25 @@ class Qualification(models.Model):
 
         # Check les intervenants
         if (
-            self.actor and
-            not self.session.availability_statuses.filter(helper=self.actor, chosen_as=CHOSEN_AS_ACTOR).exists()
+            self.actor
+            and not self.session.availability_statuses.filter(
+                helper=self.actor, chosen_as=CHOSEN_AS_ACTOR
+            ).exists()
         ):
             self.actor = None
         # Check les moniteurs 2
         if (
-            self.leader and
-            not self.session.availability_statuses.filter(helper=self.leader, chosen_as=CHOSEN_AS_LEADER).exists()
+            self.leader
+            and not self.session.availability_statuses.filter(
+                helper=self.leader, chosen_as=CHOSEN_AS_LEADER
+            ).exists()
         ):
             self.leader = None
         # Check les moniteurs 1
         for helper in self.helpers.all():
-            if not self.session.availability_statuses.filter(helper=helper, chosen_as=CHOSEN_AS_HELPER).exists():
+            if not self.session.availability_statuses.filter(
+                helper=helper, chosen_as=CHOSEN_AS_HELPER
+            ).exists():
                 self.helpers.remove(helper)
 
     @property
@@ -185,46 +209,47 @@ class Qualification(models.Model):
         if not self.actor:
             errors.append(u("Intervenant"))
         if not self.activity_A or not self.activity_B or not self.activity_C:
-            errors.append(u('Postes'))
+            errors.append(u("Postes"))
         if self.has_availability_incoherences:
-            errors.append(u('Incohérences de dispos'))
+            errors.append(u("Incohérences de dispos"))
         if errors:
             return mark_safe(
-                '<br />'.join([
-                    '<span class="btn-warning btn-xs disabled">'
-                    '  <span class="glyphicon glyphicon-warning-sign"></span>'
-                    ' %s'
-                    '</span>' % e for e in errors])
+                "<br />".join(
+                    [
+                        '<span class="btn-warning btn-xs disabled">'
+                        '  <span class="glyphicon glyphicon-warning-sign"></span>'
+                        " %s"
+                        "</span>" % e
+                        for e in errors
+                    ]
                 )
+            )
 
     def save(self, *args, **kwargs):
         # Forcibly fix availability incoherences
         self.fix_availability_incoherences()
         with sentry_scope() as scope:
-            scope.level = 'info'
-            scope.fingerprint = ['Qualification.save()']
-            scope.set_tag('Qualification', self)
-            scope.set_tag('Qualification.id', self.id)
+            scope.level = "info"
+            scope.fingerprint = ["Qualification.save()"]
+            scope.set_tag("Qualification", self)
+            scope.set_tag("Qualification.id", self.id)
 
         sentry_message(
-            'Qualification.save() : {quali}{mon2}'
-            .format(
+            "Qualification.save() : {quali}{mon2}".format(
                 quali=self,
-                mon2=' - Mon2: {leader} ({id})'.format(
-                    id=self.leader_id,
-                    leader=self.leader.get_full_name()
-                ) if self.leader else ''
+                mon2=" - Mon2: {leader} ({id})".format(
+                    id=self.leader_id, leader=self.leader.get_full_name()
+                )
+                if self.leader
+                else "",
             )
         )
         return super(Qualification, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = _("Qualif'")
-        verbose_name_plural = _('Qualifs')
-        ordering = ['session', 'created_on', 'name']
+        verbose_name_plural = _("Qualifs")
+        ordering = ["session", "created_on", "name"]
 
     def __str__(self):
-        return '{name} ({session})'.format(
-            name=self.name,
-            session=self.session
-            )
+        return "{name} ({session})".format(name=self.name, session=self.session)

@@ -17,10 +17,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from allauth.account.models import EmailAddress
 from django.contrib.auth import get_user_model
 from django.test import Client
 from django.utils.translation import activate
+
+from allauth.account.models import EmailAddress
 from faker import Faker
 from rolepermissions.roles import assign_role
 
@@ -46,15 +47,16 @@ class AuthClient(Client):
             password=self.PASSWORD,
             email=self.EMAIL,
             first_name=fake.first_name(),
-            last_name=fake.last_name()
+            last_name=fake.last_name(),
         )
         UserProfile.objects.get_or_create(user=self.user)
         # Create his trusted Email
-        EmailAddress.objects.create(user=self.user, email=self.EMAIL,
-                                    verified=True, primary=True)
+        EmailAddress.objects.create(
+            user=self.user, email=self.EMAIL, verified=True, primary=True
+        )
         self.login(email=self.EMAIL, password=self.PASSWORD)
 
-        self.language = 'fr'
+        self.language = "fr"
         activate(self.language)
 
         if self.role:
@@ -62,19 +64,16 @@ class AuthClient(Client):
 
 
 class StateManagerAuthClient(AuthClient):
-    role = 'state_manager'
+    role = "state_manager"
 
     def __init__(self):
         super(StateManagerAuthClient, self).__init__()
         # Make hir manager for one state
-        UserManagedState.objects.get_or_create(
-            user=self.user,
-            canton=DV_STATES[0]
-        )
+        UserManagedState.objects.get_or_create(user=self.user, canton=DV_STATES[0])
 
 
 class PowerUserAuthClient(AuthClient):
-    role = 'power_user'
+    role = "power_user"
 
 
 class SuperUserAuthClient(AuthClient):

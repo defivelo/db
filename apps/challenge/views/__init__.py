@@ -15,14 +15,28 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from .quali import QualiCreateView, QualiDeleteView, QualiUpdateView # noqa
-from .season import ( # noqa
-    SeasonActorListView, SeasonCreateView, SeasonDeleteView, SeasonDetailView, # noqa
-    SeasonExportView, SeasonPlanningExportView, SeasonHelperListView, SeasonListView, # noqa
-    SeasonStaffChoiceUpdateView, SeasonUpdateView, SeasonErrorsListView, # noqa
-    SeasonAvailabilityUpdateView, SeasonAvailabilityView # noqa
-    )  # noqa
-from .session import ( # noqa
-    SessionCreateView, SessionDeleteView, SessionDetailView, SessionExportView,  # noqa
-    SessionsListView, SessionStaffChoiceView, SessionUpdateView, # noqa
-    ) # noqa
+from .quali import QualiCreateView, QualiDeleteView, QualiUpdateView
+from .season import (
+    SeasonActorListView,
+    SeasonAvailabilityUpdateView,
+    SeasonAvailabilityView,
+    SeasonCreateView,
+    SeasonDeleteView,
+    SeasonDetailView,
+    SeasonErrorsListView,
+    SeasonExportView,
+    SeasonHelperListView,
+    SeasonListView,
+    SeasonPlanningExportView,
+    SeasonStaffChoiceUpdateView,
+    SeasonUpdateView,
+)
+from .session import (
+    SessionCreateView,
+    SessionDeleteView,
+    SessionDetailView,
+    SessionExportView,
+    SessionsListView,
+    SessionStaffChoiceView,
+    SessionUpdateView,
+)

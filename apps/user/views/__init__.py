@@ -15,9 +15,15 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from .mixins import ProfileMixin  # noqa
-from .standard import ActorsList, HelpersList # noqa
-from .credentials import ResendUserCredentials, SendUserCredentials, UserAssignRole # noqa
-from .standard import UserCreate, UserDetail, UserList, UserListExport, UserUpdate # noqa
-
-from .autocomplete import * # noqa
+from .autocomplete import *
+from .credentials import ResendUserCredentials, SendUserCredentials, UserAssignRole
+from .mixins import ProfileMixin
+from .standard import (
+    ActorsList,
+    HelpersList,
+    UserCreate,
+    UserDetail,
+    UserList,
+    UserListExport,
+    UserUpdate,
+)

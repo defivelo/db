@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from .season import Season  # noqa
-from .session import Session  # noqa
-from .qualification import QualificationActivity, Qualification  # noqa
-from .availability import HelperSessionAvailability  # noqa
+from .availability import HelperSessionAvailability
+from .qualification import Qualification, QualificationActivity
+from .season import Season
+from .session import Session

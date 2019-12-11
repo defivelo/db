@@ -17,16 +17,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from article.models import Article
 from django import forms
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
+from article.models import Article
+
 
 class ArticleForm(forms.ModelForm):
-    published = forms.BooleanField(label=_('Publié'),
-                                   initial=True,
-                                   required=False)
+    published = forms.BooleanField(label=_("Publié"), initial=True, required=False)
 
     def save(self, commit=True):
         instance = super(ArticleForm, self).save(commit=False)
@@ -38,4 +37,4 @@ class ArticleForm(forms.ModelForm):
 
     class Meta:
         model = Article
-        fields = ['title', 'body', 'published']
+        fields = ["title", "body", "published"]

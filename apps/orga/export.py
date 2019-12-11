@@ -18,6 +18,7 @@
 from __future__ import unicode_literals
 
 from django.utils.translation import ugettext_lazy as _
+
 from import_export import fields, resources
 
 from defivelo.templatetags.dv_filters import canton_abbr
@@ -25,37 +26,37 @@ from defivelo.templatetags.dv_filters import canton_abbr
 from . import ORGA_FIELDS
 from .models import Organization
 
-EXPORT_FIELDS = ['id', 'created_on'] + ORGA_FIELDS
+EXPORT_FIELDS = ["id", "created_on"] + ORGA_FIELDS
 
 
 class OrganizationResource(resources.ModelResource):
-    abbr = fields.Field(column_name=_('Abréviation'), attribute='abbr')
-    name = fields.Field(column_name=_('Nom'), attribute='name')
-    address_street = fields.Field(column_name=_('Rue'),
-                                  attribute='address_street')
-    address_no = fields.Field(column_name=_('N°'),
-                              attribute='address_no')
-    address_additional = fields.Field(column_name=_("Complément d'adresse"),
-                                      attribute='address_additional')
-    address_zip = fields.Field(column_name=_('NPA'),
-                               attribute='address_zip')
-    address_city = fields.Field(column_name=_('Ville'),
-                                attribute='address_city')
-    address_canton = fields.Field(column_name=_('Canton d\'affiliation'),
-                                  attribute='address_canton')
-    website = fields.Field(column_name=_('Site web'),
-                           attribute='website')
-    coordinator_fullname = fields.Field(column_name=_('Coordinateur'),
-                                        attribute='coordinator_fullname')
-    coordinator_phone = fields.Field(column_name=_('Téléphone'),
-                                     attribute='coordinator_phone')
-    coordinator_natel = fields.Field(column_name=_('Natel'),
-                                     attribute='coordinator_natel')
-    coordinator_email = fields.Field(column_name=_('Email'),
-                                     attribute='coordinator_email')
-    status = fields.Field(column_name=_("Statut"), attribute='status_full')
-    comments = fields.Field(column_name=_('Remarques'),
-                            attribute='comments')
+    abbr = fields.Field(column_name=_("Abréviation"), attribute="abbr")
+    name = fields.Field(column_name=_("Nom"), attribute="name")
+    address_street = fields.Field(column_name=_("Rue"), attribute="address_street")
+    address_no = fields.Field(column_name=_("N°"), attribute="address_no")
+    address_additional = fields.Field(
+        column_name=_("Complément d'adresse"), attribute="address_additional"
+    )
+    address_zip = fields.Field(column_name=_("NPA"), attribute="address_zip")
+    address_city = fields.Field(column_name=_("Ville"), attribute="address_city")
+    address_canton = fields.Field(
+        column_name=_("Canton d'affiliation"), attribute="address_canton"
+    )
+    website = fields.Field(column_name=_("Site web"), attribute="website")
+    coordinator_fullname = fields.Field(
+        column_name=_("Coordinateur"), attribute="coordinator_fullname"
+    )
+    coordinator_phone = fields.Field(
+        column_name=_("Téléphone"), attribute="coordinator_phone"
+    )
+    coordinator_natel = fields.Field(
+        column_name=_("Natel"), attribute="coordinator_natel"
+    )
+    coordinator_email = fields.Field(
+        column_name=_("Email"), attribute="coordinator_email"
+    )
+    status = fields.Field(column_name=_("Statut"), attribute="status_full")
+    comments = fields.Field(column_name=_("Remarques"), attribute="comments")
 
     class Meta:
         model = Organization
@@ -64,6 +65,5 @@ class OrganizationResource(resources.ModelResource):
 
     def dehydrate_address_canton(self, field):
         return canton_abbr(
-            field.address_canton,
-            abbr=False, long=True, fix_special=True
+            field.address_canton, abbr=False, long=True, fix_special=True
         )

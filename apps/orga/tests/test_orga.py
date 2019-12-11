@@ -23,7 +23,12 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 from apps.common import DV_STATES
-from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient, SuperUserAuthClient
+from defivelo.tests.utils import (
+    AuthClient,
+    PowerUserAuthClient,
+    StateManagerAuthClient,
+    SuperUserAuthClient,
+)
 
 from ..models import Organization
 from .factories import OrganizationFactory
@@ -41,35 +46,36 @@ class OrgaBasicTest(TestCase):
         self.orga.save()
 
     def test_access_to_orga_list(self):
-        response = self.client.get(reverse('organization-list'))
+        response = self.client.get(reverse("organization-list"))
         if self.expect_templates:
-            self.assertTemplateUsed(response, 'orga/organization_filter.html')
+            self.assertTemplateUsed(response, "orga/organization_filter.html")
         self.assertEqual(response.status_code, self.expected_code)
 
-        response = self.client.get(reverse(
-            'organization-list-export',
-            kwargs={'format': 'csv'}))
+        response = self.client.get(
+            reverse("organization-list-export", kwargs={"format": "csv"})
+        )
         self.assertEqual(response.status_code, self.expected_code)
 
     def test_access_to_orga_detail(self):
         # Issue a GET request.
-        response = self.client.get(reverse('organization-detail',
-                                           kwargs={'pk': self.orga.pk}))
+        response = self.client.get(
+            reverse("organization-detail", kwargs={"pk": self.orga.pk})
+        )
 
         if self.expect_templates:
-            self.assertTemplateUsed(response, 'orga/organization_detail.html')
+            self.assertTemplateUsed(response, "orga/organization_detail.html")
         self.assertEqual(response.status_code, self.expected_code)
 
     def test_access_to_orga_edit(self):
-        url = reverse('organization-update', kwargs={'pk': self.orga.pk})
+        url = reverse("organization-update", kwargs={"pk": self.orga.pk})
         response = self.client.get(url)
 
         if self.expect_templates:
-            self.assertTemplateUsed(response, 'orga/organization_form.html')
+            self.assertTemplateUsed(response, "orga/organization_form.html")
         self.assertEqual(response.status_code, self.expected_code)
 
     def test_autocompletes(self):
-        url = reverse('organization-autocomplete')
+        url = reverse("organization-autocomplete")
         response = self.client.get(url)
         self.assertEqual(response.status_code, self.expected_code, url)
 
@@ -83,26 +89,26 @@ class OrgaPowerUserTest(OrgaBasicTest):
         self.expect_templates = True
 
     def test_access_to_orga_edit(self):
-        url = reverse('organization-update', kwargs={'pk': self.orga.pk})
+        url = reverse("organization-update", kwargs={"pk": self.orga.pk})
         super(OrgaPowerUserTest, self).test_access_to_orga_edit()
 
-        self.orga.address_canton = 'VD'
+        self.orga.address_canton = "VD"
         self.orga.save()
 
         initial = self.orga.__dict__.copy()
-        del(initial['id'])
-        del(initial['created_on'])
-        del(initial['address_ptr_id'])
-        del(initial['_state'])
+        del initial["id"]
+        del initial["created_on"]
+        del initial["address_ptr_id"]
+        del initial["_state"]
 
         # Test some update, that must go through
-        initial['address_canton'] = 'JU'
+        initial["address_canton"] = "JU"
 
         response = self.client.post(url, initial)
         self.assertEqual(response.status_code, self.expected_save_code, url)
 
         neworga = Organization.objects.get(pk=self.orga.id)
-        self.assertEqual(neworga.address_canton, 'JU')
+        self.assertEqual(neworga.address_canton, "JU")
 
 
 class SuperUserTest(OrgaBasicTest):
@@ -112,17 +118,14 @@ class SuperUserTest(OrgaBasicTest):
         self.expected_code = 200
         self.expected_save_code = 403
         self.expect_templates = True
-        self.orgas = [
-            OrganizationFactory(address_canton=c)
-            for c in DV_STATES]
+        self.orgas = [OrganizationFactory(address_canton=c) for c in DV_STATES]
 
     def test_autocompletes(self):
-        url = reverse('organization-autocomplete')
+        url = reverse("organization-autocomplete")
         response = self.client.get(url)
         self.assertEqual(response.status_code, self.expected_code, url)
         # Check that we only find our orga
-        entries = [int(d) for d in
-                   re.findall(r'"id": "(\d+)"', str(response.content))]
+        entries = [int(d) for d in re.findall(r'"id": "(\d+)"', str(response.content))]
         entries.sort()
         allentries = [self.orga.pk] + [o.pk for o in self.orgas]
         if re.search('"pagination": {"more": true}', str(response.content)):
@@ -131,9 +134,9 @@ class SuperUserTest(OrgaBasicTest):
             self.assertEqual(entries, allentries)
 
     def test_accented_search(self):
-        self.orga.abbr = 'ÉCCG'
+        self.orga.abbr = "ÉCCG"
         self.orga.save()
-        response = self.client.get("%s?%s" % (reverse('organization-list'), "q=eccg"))
+        response = self.client.get("%s?%s" % (reverse("organization-list"), "q=eccg"))
         self.assertContains(response, "ÉCCG")
 
 
@@ -147,45 +150,46 @@ class OrgaStateManagerUserTest(TestCase):
         self.myorga.save()
 
         OTHERSTATES = [c for c in DV_STATES if c != mycanton]
-        self.foreignorga = OrganizationFactory(
-            address_canton=OTHERSTATES[0])
+        self.foreignorga = OrganizationFactory(address_canton=OTHERSTATES[0])
         self.foreignorga.save()
 
     def test_access_to_orga_list(self):
-        response = self.client.get(reverse('organization-list'))
-        self.assertTemplateUsed(response, 'orga/organization_filter.html')
+        response = self.client.get(reverse("organization-list"))
+        self.assertTemplateUsed(response, "orga/organization_filter.html")
         self.assertEqual(response.status_code, self.expected_code)
 
-        response = self.client.get(reverse(
-            'organization-list-export',
-            kwargs={'format': 'csv'}))
+        response = self.client.get(
+            reverse("organization-list-export", kwargs={"format": "csv"})
+        )
         self.assertEqual(response.status_code, self.expected_code)
 
     def test_access_to_orga_detail(self):
-        response = self.client.get(reverse('organization-detail',
-                                           kwargs={'pk': self.myorga.pk}))
-        self.assertTemplateUsed(response, 'orga/organization_detail.html')
+        response = self.client.get(
+            reverse("organization-detail", kwargs={"pk": self.myorga.pk})
+        )
+        self.assertTemplateUsed(response, "orga/organization_detail.html")
         self.assertEqual(response.status_code, self.expected_code)
 
         # The other orga cannot be accessed
-        response = self.client.get(reverse('organization-detail',
-                                           kwargs={'pk': self.foreignorga.pk}))
+        response = self.client.get(
+            reverse("organization-detail", kwargs={"pk": self.foreignorga.pk})
+        )
         self.assertEqual(response.status_code, 404)
 
     def test_access_to_orga_edit(self):
-        url = reverse('organization-update', kwargs={'pk': self.myorga.pk})
+        url = reverse("organization-update", kwargs={"pk": self.myorga.pk})
         response = self.client.get(url)
-        self.assertTemplateUsed(response, 'orga/organization_form.html')
+        self.assertTemplateUsed(response, "orga/organization_form.html")
         self.assertEqual(response.status_code, self.expected_code)
 
         # Our orga cannot be edited away from my cantons
         initial = self.myorga.__dict__.copy()
-        del(initial['id'])
-        del(initial['created_on'])
-        del(initial['address_ptr_id'])
-        del(initial['_state'])
+        del initial["id"]
+        del initial["created_on"]
+        del initial["address_ptr_id"]
+        del initial["_state"]
 
-        initial['address_no'] = self.myorga.address_no + 1
+        initial["address_no"] = self.myorga.address_no + 1
 
         response = self.client.post(url, initial)
         # Code 302 because update succeeded
@@ -195,7 +199,7 @@ class OrgaStateManagerUserTest(TestCase):
         self.assertEqual(neworga.address_no, str(self.myorga.address_no + 1))
 
         # Test some update, that must go through
-        initial['address_canton'] = self.foreignorga.address_canton
+        initial["address_canton"] = self.foreignorga.address_canton
 
         response = self.client.post(url, initial)
         # Code 200 because update failed
@@ -205,12 +209,13 @@ class OrgaStateManagerUserTest(TestCase):
         self.assertEqual(neworga.address_canton, self.myorga.address_canton)
 
         # The other orga cannot be accessed
-        response = self.client.get(reverse('organization-update',
-                                           kwargs={'pk': self.foreignorga.pk}))
+        response = self.client.get(
+            reverse("organization-update", kwargs={"pk": self.foreignorga.pk})
+        )
         self.assertEqual(response.status_code, 404)
 
     def test_autocompletes(self):
-        url = reverse('organization-autocomplete')
+        url = reverse("organization-autocomplete")
         response = self.client.get(url)
         self.assertEqual(response.status_code, self.expected_code, url)
         # Check that we only find our orga

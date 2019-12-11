@@ -17,8 +17,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from localflavor.ch.ch_states import STATE_CHOICES
 from django.utils.translation import ugettext_lazy as _
+
+from localflavor.ch.ch_states import STATE_CHOICES
 
 STDGLYPHICON = (
     '<span class="glyphicon glyphicon-{icon}" aria-hidden="true"'
@@ -26,78 +27,82 @@ STDGLYPHICON = (
 )
 
 # Cantons où DÉFI VÉLO est actif
-DV_STATES = ['VD', 'VS', 'FR', 'NE', 'GE', 'JU',
-             'BS', 'SG', 'ZH', 'BE', 'LU', 'AR',
-             'WS',  # Haut-Valais
-             ]
+DV_STATES = [
+    "VD",
+    "VS",
+    "FR",
+    "NE",
+    "GE",
+    "JU",
+    "BS",
+    "SG",
+    "ZH",
+    "BE",
+    "LU",
+    "AR",
+    "WS",  # Haut-Valais
+]
 
 # "faux" cantons pour DÉFI VÉLO
 DV_ADDITIONAL_STATES = [
-    ('WS', _('Haut-Valais')),
+    ("WS", _("Haut-Valais")),
 ]
 
-DV_STATES_LONGER_ABBREVIATIONS = {
-    'WS': 'VS-OW'
-}
+DV_STATES_LONGER_ABBREVIATIONS = {"WS": "VS-OW"}
 
-DV_STATES_REAL_FALLBACKS = {
-    'WS': 'VS'
-}
+DV_STATES_REAL_FALLBACKS = {"WS": "VS"}
 
 DV_STATE_COLORS = {
-    None: '#000',
+    None: "#000",
     # Dans le même ordre que la charte graphique
-    'VD': '#64B984',
-    'NE': '#EF7F5E',
-    'FR': '#97669E',
-    'GE': '#FECC01',
-    'JU': '#E84653',
-    'BE': '#5EC5F2',
-    'VS': '#EF86A1',
-    'BS': '#5DBDB2',
-    'UR': '#206FB7',
-    'SZ': '#E84C0F',
-    'OW': '#00595F',
-    'NW': '#663265',
-    'LU': '#9DC762',
-    'AI': '#1D1D1B',
-    'AR': '#F7AE1A',
-    'SH': '#A4D1A6',
-    'BL': '#FEED40',
-    'TG': '#363777',
-    'SO': '#C61650',
-    'ZG': '#00837E',
-    'TI': '#B0CB22',
-    'GL': '#8075B4',
-    'AG': '#8075B4',
-    'GR': '#E7206A',
-    'SG': '#608A9B',
-    'ZH': '#7ABEE4',
+    "VD": "#64B984",
+    "NE": "#EF7F5E",
+    "FR": "#97669E",
+    "GE": "#FECC01",
+    "JU": "#E84653",
+    "BE": "#5EC5F2",
+    "VS": "#EF86A1",
+    "BS": "#5DBDB2",
+    "UR": "#206FB7",
+    "SZ": "#E84C0F",
+    "OW": "#00595F",
+    "NW": "#663265",
+    "LU": "#9DC762",
+    "AI": "#1D1D1B",
+    "AR": "#F7AE1A",
+    "SH": "#A4D1A6",
+    "BL": "#FEED40",
+    "TG": "#363777",
+    "SO": "#C61650",
+    "ZG": "#00837E",
+    "TI": "#B0CB22",
+    "GL": "#8075B4",
+    "AG": "#8075B4",
+    "GR": "#E7206A",
+    "SG": "#608A9B",
+    "ZH": "#7ABEE4",
     # Spéciale
-    'WS': '#EF86A1',
+    "WS": "#EF86A1",
 }
 
-DV_STATE_CHOICES = [c for c in STATE_CHOICES if c[0] in DV_STATES] + \
-    DV_ADDITIONAL_STATES
+DV_STATE_CHOICES = [
+    c for c in STATE_CHOICES if c[0] in DV_STATES
+] + DV_ADDITIONAL_STATES
 
 DV_STATE_CHOICES_WITH_DEFAULT = tuple(
-    list((('', '---------',),)) +
-    list(DV_STATE_CHOICES)
+    list((("", "---------",),)) + list(DV_STATE_CHOICES)
 )
 
 MULTISELECTFIELD_REGEXP = "(^|,)%s(,|$)"
 
 DV_LANGUAGES = LANGUAGES = (
-    ('fr', _('French')),
-    ('de', _('German')),
-    ('it', _('Italian')),
-    ('en', _('English')),
+    ("fr", _("French")),
+    ("de", _("German")),
+    ("it", _("Italian")),
+    ("en", _("English")),
 )
 
-DV_LANGUAGES_WITH_DEFAULT = tuple(
-    list((('', '---------',),)) +
-    list(DV_LANGUAGES)
-)
+DV_LANGUAGES_WITH_DEFAULT = tuple(list((("", "---------",),)) + list(DV_LANGUAGES))
 
 DV_SEASON_SPRING = 1
 # DV_SEASON_SUMMER = 2
@@ -105,8 +110,8 @@ DV_SEASON_AUTUMN = 3
 # DV_SEASON_WINTER = 4
 
 DV_SEASON_CHOICES = (
-    (DV_SEASON_SPRING, _('Printemps')),
-    (DV_SEASON_AUTUMN, _('Automne')),
+    (DV_SEASON_SPRING, _("Printemps")),
+    (DV_SEASON_AUTUMN, _("Automne")),
 )
 
 # Dernier mois des saisons de Printemps
@@ -120,9 +125,9 @@ DV_SEASON_STATE_FINISHED = 4  # RW for SM, R-- for helpers
 DV_SEASON_STATE_ARCHIVED = 5  # R- for SM, R-- for helpers
 
 DV_SEASON_STATES = (
-    (DV_SEASON_STATE_PLANNING, _('Planification (invisible)')),
-    (DV_SEASON_STATE_OPEN, _('Annoncée (rentrée des disponibilités)')),
-    (DV_SEASON_STATE_RUNNING, _('En cours (corrections que par chargé·e·s de projet)')),
-    (DV_SEASON_STATE_FINISHED, _('Terminée')),
-    (DV_SEASON_STATE_ARCHIVED, _('Archivée')),
+    (DV_SEASON_STATE_PLANNING, _("Planification (invisible)")),
+    (DV_SEASON_STATE_OPEN, _("Annoncée (rentrée des disponibilités)")),
+    (DV_SEASON_STATE_RUNNING, _("En cours (corrections que par chargé·e·s de projet)")),
+    (DV_SEASON_STATE_FINISHED, _("Terminée")),
+    (DV_SEASON_STATE_ARCHIVED, _("Archivée")),
 )

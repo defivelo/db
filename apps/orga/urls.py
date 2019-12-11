@@ -21,22 +21,35 @@ from django.conf.urls import url
 from django.views.decorators.cache import never_cache
 
 from .views import (
-    OrganizationAutocomplete, OrganizationCreateView, OrganizationDetailView, OrganizationListExport,
-    OrganizationsListView, OrganizationUpdateView,
+    OrganizationAutocomplete,
+    OrganizationCreateView,
+    OrganizationDetailView,
+    OrganizationListExport,
+    OrganizationsListView,
+    OrganizationUpdateView,
 )
 
 urlpatterns = [
-    url(r'^$', never_cache(OrganizationsListView.as_view()),
-        name="organization-list"),
-    url(r'^(?P<void>)?(?P<format>[a-z]+)export/$',
+    url(r"^$", never_cache(OrganizationsListView.as_view()), name="organization-list"),
+    url(
+        r"^(?P<void>)?(?P<format>[a-z]+)export/$",
         never_cache(OrganizationListExport.as_view()),
-        name="organization-list-export"),
-    url(r'^new/$', OrganizationCreateView.as_view(),
-        name="organization-create"),
-    url(r'^(?P<pk>[0-9]+)/$', never_cache(OrganizationDetailView.as_view()),
-        name="organization-detail"),
-    url(r'^(?P<pk>[0-9]+)/update/$', OrganizationUpdateView.as_view(),
-        name="organization-update"),
-    url(r'^autocomplete/$', OrganizationAutocomplete.as_view(),
-        name='organization-autocomplete'),
+        name="organization-list-export",
+    ),
+    url(r"^new/$", OrganizationCreateView.as_view(), name="organization-create"),
+    url(
+        r"^(?P<pk>[0-9]+)/$",
+        never_cache(OrganizationDetailView.as_view()),
+        name="organization-detail",
+    ),
+    url(
+        r"^(?P<pk>[0-9]+)/update/$",
+        OrganizationUpdateView.as_view(),
+        name="organization-update",
+    ),
+    url(
+        r"^autocomplete/$",
+        OrganizationAutocomplete.as_view(),
+        name="organization-autocomplete",
+    ),
 ]

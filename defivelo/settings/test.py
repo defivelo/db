@@ -17,10 +17,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from . import get_env_variable
-from .base import *  # noqa
+from .base import *
 
 COMPRESS_ENABLED = True
 COMPRESS_OFFLINE = False
 
-SECRET_KEY = 'notsosecret'
-NEVERCACHE_KEY = 'notsosecret'
+SECRET_KEY = "notsosecret"
+NEVERCACHE_KEY = "notsosecret"

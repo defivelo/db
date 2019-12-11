@@ -22,25 +22,25 @@ from django.core.urlresolvers import reverse
 from django.forms import Form as DjangoEmptyForm
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.edit import FormView
+
 from rolepermissions.mixins import HasPermissionsMixin
 
 from .mixins import ProfileMixin
 
 
 class UserDelete(ProfileMixin, HasPermissionsMixin, FormView):
-    template_name = 'delete/user_delete.html'
-    success_message = _('Utilisateur supprimé')
+    template_name = "delete/user_delete.html"
+    success_message = _("Utilisateur supprimé")
     form_class = DjangoEmptyForm
-    required_permission = 'user_deletions'
+    required_permission = "user_deletions"
     cantons = False
 
     def get_context_data(self, **kwargs):
         context = super(UserDelete, self).get_context_data(**kwargs)
         # Add our menu_category context
-        context['userprofile'] = self.get_object()
-        context['current_site'] = Site.objects.get_current()
-        context['login_uri'] = \
-            self.request.build_absolute_uri(reverse('account_login'))
+        context["userprofile"] = self.get_object()
+        context["current_site"] = Site.objects.get_current()
+        context["login_uri"] = self.request.build_absolute_uri(reverse("account_login"))
         return context
 
     def form_valid(self, form):
