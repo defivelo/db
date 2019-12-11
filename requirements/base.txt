@@ -9,7 +9,6 @@
 babel==2.7.0              # via django-phonenumber-field
 certifi==2019.11.28       # via requests, sentry-sdk
 chardet==3.0.4            # via requests
-click==7.0                # via pip-tools
 defusedxml==0.6.0         # via odfpy, python3-openid
 diff-match-patch==20181111  # via django-import-export
 dj-database-url==0.5.0
@@ -44,7 +43,6 @@ odfpy==1.4.0              # via tablib
 openpyxl==3.0.2           # via tablib
 phonenumbers==8.10.6
 pillow==6.2.1             # via simple-article
-pip-tools==4.3.0
 psycopg2==2.7.7
 python3-openid==3.1.0     # via django-allauth
 pytz==2018.5

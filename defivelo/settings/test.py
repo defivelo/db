@@ -15,12 +15,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 from . import get_env_variable
 from .base import *  # noqa
 
-DEBUG = bool(get_env_variable('DEBUG', True))
-TEMPLATES[0]['OPTIONS']['debug'] = DEBUG  # NOQA
+COMPRESS_ENABLED = True
+COMPRESS_OFFLINE = False
+
 SECRET_KEY = 'notsosecret'
 NEVERCACHE_KEY = 'notsosecret'
-
-INSTALLED_APPS = (('test_without_migrations', ) + INSTALLED_APPS)  # NOQA

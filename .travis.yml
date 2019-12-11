@@ -4,9 +4,8 @@ addons:
 before_script:
   - psql -c 'create database defivelotest;' -U postgres
 install:
-  - pip install tox 
+  - pip install tox
 script:
   - tox
 env:
-  - TOXENV=py37-coverage
-  - TOXENV=flake8
+  - TOXENV=python

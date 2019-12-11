@@ -1,11 +1,10 @@
 -r base.in
-astroid
-django-jenkins
+pytest
+pytest-django
+pytest-cov
+black
 flake8
-logilab-common
-pep8
-pyflakes
-pylint
+flake8-black
+flake8-isort
 factory_boy
-django-test-without-migrations
 ipdb
