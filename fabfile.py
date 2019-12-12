@@ -32,7 +32,7 @@ ENVIRONMENTS = {
     },
     'staging': {
         'root': '/var/www/intranet.defi-velo.ch/staging/',
-        'hosts': ['wpy10809@onhp-python1.iron.bsa.oriented.ch:29992'],
+        'hosts': ['wpy10809@onhp-python3.iron.bsa.oriented.ch:29992'],
         'pid': '/run/uwsgi/app/staging.intranet.defi-velo.ch/pid',
         'ini': '/etc/uwsgi/apps-enabled/staging.intranet.defi-velo.ch.ini',
         'settings': {
@@ -150,8 +150,8 @@ def compile_messages():
 
 def document_git():
     with cd(os.path.join(get_project_root(), 'envdir')):
-        put(StringIO(unicode(local('git rev-parse HEAD', capture=True))), 'VCS_COMMIT')
-        put(StringIO(unicode(local('git describe --tags  HEAD', capture=True))), 'VCS_VERSION')
+        put(StringIO(local('git rev-parse HEAD', capture=True)), 'VCS_COMMIT')
+        put(StringIO(local('git describe --tags  HEAD', capture=True)), 'VCS_VERSION')
 
 
 def restart_process():
@@ -201,7 +201,7 @@ def set_setting(setting_key, value=None, description=None):
         value = prompt("Please provide value for setting %s: " % setting_key)
 
     with cd(os.path.join(get_project_root(), 'envdir')):
-        put(StringIO(unicode(value.encode('utf-8'))), setting_key)
+        put(StringIO(value), setting_key)
 
 
 @task
