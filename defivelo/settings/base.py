@@ -91,7 +91,7 @@ PROJECT_APPS = tuple(
     ]
 )
 
-INSTALLED_APPS = UPSTREAM_APPS + PROJECT_APPS + ("defivelo",)
+INSTALLED_APPS = PROJECT_APPS + UPSTREAM_APPS + ("defivelo",)
 
 MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",

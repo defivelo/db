@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 
 from django import forms
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from localflavor.ch.forms import (
@@ -168,6 +169,18 @@ class UserProfileForm(forms.ModelForm):
             "last_name",
             "email",
         ]
+
+    def clean_email(self):
+        # Ideally, this should get checked by the User model
+        email = self.cleaned_data["email"]
+        existing_users = self._meta.model.objects.filter(email=email)
+        if self.instance and self.instance.pk is not None:
+            existing_users = existing_users.exclude(pk=self.instance.pk)
+        if existing_users.exists():
+            raise ValidationError(
+                _("Un utilisateur avec cette adresse e-mail existe déjà.")
+            )
+        return email
 
 
 class UserAssignRoleForm(forms.Form):
