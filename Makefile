@@ -16,7 +16,7 @@ upgrade-requirements: ## Upgrade and compile requirements with pip-compile --upg
 	done
 
 .PHONY: sync-requirements
-sync-requirements:
+sync-requirements: ## Install development python dependencies and clean dangling dependencies from environment
 	pip-sync $(REQUIREMENTS_DIR)/dev.txt
 
 .PHONY: translations

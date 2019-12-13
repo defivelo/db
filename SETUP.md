@@ -6,27 +6,20 @@
 
 ## Installer les outils
 
-- virtualenvwrapper (pour mkvirtualenv)
+- vagrant: https://liip-drifter.readthedocs.io/en/latest/requirements.html#install-requirements
 
-## Créer un environnement virtuel et installer les dépendances du projet
+## Créer un environnement virtuel et s'y connecter
 
 ```
 cd DB-DefiVelo
-mkvirtualenv -a . -r requirements/dev.txt DefiVelo
-```
-
-## Installer les dépendances du projet et initialiser la DB
-
-```
-pip install -r requirements/dev.txt
-echo "sqlite:///defivelo.sqlite" > envdir/local/DATABASE_URL
-./manage.py migrate
+vagrant up
+vagrant ssh
 ```
 
 ## Créer un utilisateur super-administrateur
 
 ```
-./manage.py createsuperadmin
+./manage.py createsuperuser
 ```
 
 ## Lancer le serveur Web de test
@@ -34,3 +27,9 @@ echo "sqlite:///defivelo.sqlite" > envdir/local/DATABASE_URL
 ```
 ./manage.py runserver_plus
 ```
+
+## Autre
+
+Les autres tâches sont décrites dans le `Makefile` à la racine du projet.
+Lancer `make help` dans l'environnement virtuel pour les lister,
+et `make ma_tache` pour les exécuter.
