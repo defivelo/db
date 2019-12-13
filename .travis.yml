@@ -2,7 +2,7 @@ language: python
 addons:
   postgresql: "11"
 before_script:
-  - psql -c 'create database defivelotest;' -U postgres
+  - psql -c 'create database test_defivelo;' -U postgres
 install:
   - pip install tox
 script:
