@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='session',
             name='timeslot',
-            field=models.ForeignKey(to='challenge.SessionTimeSlot', blank=True, null=True, related_name='sessions'),
+            field=models.ForeignKey(to='challenge.SessionTimeSlot', blank=True, null=True, related_name='sessions', on_delete=models.CASCADE),
         ),
     ]

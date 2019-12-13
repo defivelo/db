@@ -25,10 +25,10 @@ from functools import reduce
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse_lazy
 from django.db.models import Case, Count, F, IntegerField, Q, When
 from django.http import HttpResponseRedirect
 from django.template.defaultfilters import date, time
+from django.urls import reverse_lazy
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _

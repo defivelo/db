@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(serialize=False, primary_key=True, verbose_name='ID', auto_created=True)),
                 ('language_code', models.CharField(max_length=15, verbose_name='Language', db_index=True)),
                 ('name', models.CharField(max_length=255, verbose_name='Nom')),
-                ('master', models.ForeignKey(to='challenge.SessionActivity', editable=False, related_name='translations', null=True)),
+                ('master', models.ForeignKey(to='challenge.SessionActivity', editable=False, related_name='translations', null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'challenge_sessionactivity_translation',
@@ -42,17 +42,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='qualification',
             name='activity_A',
-            field=models.ForeignKey(to='challenge.SessionActivity', related_name='sessions_A', blank=True, null=True, verbose_name='Vélo dans la rue'),
+            field=models.ForeignKey(to='challenge.SessionActivity', related_name='sessions_A', blank=True, null=True, verbose_name='Vélo dans la rue', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='qualification',
             name='activity_B',
-            field=models.ForeignKey(to='challenge.SessionActivity', related_name='sessions_B', blank=True, null=True, verbose_name='Mécanique'),
+            field=models.ForeignKey(to='challenge.SessionActivity', related_name='sessions_B', blank=True, null=True, verbose_name='Mécanique', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='qualification',
             name='activity_C',
-            field=models.ForeignKey(to='challenge.SessionActivity', related_name='sessions_C', blank=True, null=True, verbose_name='Rencontre'),
+            field=models.ForeignKey(to='challenge.SessionActivity', related_name='sessions_C', blank=True, null=True, verbose_name='Rencontre', on_delete=models.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='sessionactivitytranslation',

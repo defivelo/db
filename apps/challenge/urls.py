@@ -18,7 +18,7 @@
 from __future__ import unicode_literals
 
 from django.conf.urls import url
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from django.views.generic.base import RedirectView

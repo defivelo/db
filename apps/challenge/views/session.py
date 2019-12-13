@@ -19,8 +19,8 @@ from __future__ import unicode_literals
 
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import FieldError, PermissionDenied
-from django.core.urlresolvers import reverse_lazy
 from django.template.defaultfilters import date, time
+from django.urls import reverse_lazy
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _

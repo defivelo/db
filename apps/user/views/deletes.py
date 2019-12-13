@@ -18,8 +18,8 @@
 from __future__ import unicode_literals
 
 from django.contrib.sites.models import Site
-from django.core.urlresolvers import reverse
 from django.forms import Form as DjangoEmptyForm
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.edit import FormView
 

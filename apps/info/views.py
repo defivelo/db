@@ -19,8 +19,8 @@ from __future__ import unicode_literals
 
 from datetime import date, timedelta
 
-from django.core.urlresolvers import resolve
 from django.http import JsonResponse
+from django.urls import resolve
 from django.utils.decorators import method_decorator
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.generic.base import TemplateView

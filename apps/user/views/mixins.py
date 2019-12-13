@@ -23,8 +23,8 @@ from functools import reduce
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse, reverse_lazy
 from django.db.models import Q
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 
 from defivelo.roles import has_permission, user_cantons
@@ -137,7 +137,12 @@ class ProfileMixin(MenuView):
                     newstatus = form.cleaned_data[field]
                     if oldstatus != newstatus:
                         setattr(userprofile, "%s_updatetime" % field, timezone.now())
-                setattr(userprofile, field, form.cleaned_data[field])
+                modelfield = userprofile._meta.get_field(field)
+                if modelfield.many_to_many or modelfield.one_to_many:
+                    related_manager = getattr(userprofile, field)
+                    related_manager.set(form.cleaned_data[field])
+                else:
+                    setattr(userprofile, field, form.cleaned_data[field])
         userprofile.save()
         return ret
 

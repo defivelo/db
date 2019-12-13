@@ -31,16 +31,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='session',
             name='organization',
-            field=models.ForeignKey(blank=True, null=True, related_name='sessions', verbose_name='Établissement', to='orga.Organization'),
+            field=models.ForeignKey(blank=True, null=True, related_name='sessions', verbose_name='Établissement', to='orga.Organization', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='session',
             name='timeslot',
-            field=models.ForeignKey(blank=True, null=True, related_name='sessions', verbose_name='Horaire', to='challenge.SessionTimeSlot'),
+            field=models.ForeignKey(blank=True, null=True, related_name='sessions', verbose_name='Horaire', to='challenge.SessionTimeSlot', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='qualification',
             name='session',
-            field=models.ForeignKey(to='challenge.Session', related_name='qualifications'),
+            field=models.ForeignKey(to='challenge.Session', related_name='qualifications', on_delete=models.CASCADE),
         ),
     ]

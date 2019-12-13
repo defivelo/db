@@ -18,13 +18,13 @@
 from __future__ import unicode_literals
 
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from article.models import Article
 from rolepermissions.mixins import HasPermissionsMixin
 
+from apps.article.models import Article
 from defivelo.views import MenuView
 
 from .forms import ArticleForm

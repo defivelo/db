@@ -75,7 +75,6 @@ UPSTREAM_APPS = (
     "django_agpl",
     "tinymce",
     "taggit",
-    "article",
     "rolepermissions",
     "simple_history",
     "memoize",
@@ -112,11 +111,11 @@ WSGI_APPLICATION = "defivelo.wsgi.application"
 
 LOGGING = {
     "version": 1,
-    "handlers": {"console": {"level": "INFO", "class": "logging.StreamHandler",},},
+    "handlers": {"console": {"level": "INFO", "class": "logging.StreamHandler"}},
     "loggers": {
-        "apps": {"handlers": ["console"], "level": "DEBUG", "propagate": True,},
-        "django": {"handlers": ["console"], "level": "DEBUG", "propagate": True,},
-        "werkzeug": {"handlers": ["console"], "level": "DEBUG", "propagate": True,},
+        "apps": {"handlers": ["console"], "level": "DEBUG", "propagate": True},
+        "django": {"handlers": ["console"], "level": "DEBUG", "propagate": True},
+        "werkzeug": {"handlers": ["console"], "level": "DEBUG", "propagate": True},
     },
 }
 
@@ -303,9 +302,13 @@ if VCS_VERSION == "0":
     import subprocess
 
     try:
-        VCS_VERSION = subprocess.check_output(["git", "describe", "HEAD"])
-        VCS_COMMIT = subprocess.check_output(["git", "rev-parse", "HEAD"])
-    except (IOError, subprocess.CalledProcessError):
+        VCS_VERSION = subprocess.check_output(
+            ["git", "describe", "HEAD"], encoding="utf8"
+        )
+        VCS_COMMIT = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], encoding="utf8"
+        )
+    except (IOError, subprocess.CalledProcessError, UnicodeDecodeError):
         VCS_VERSION = "undefined"
         VCS_COMMIT = "HEAD"
 

@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='qualification',
             name='leader',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, verbose_name='Moniteur 2', null=True, blank=True, related_name='sessions_mon2'),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, verbose_name='Moniteur 2', null=True, blank=True, related_name='sessions_mon2', on_delete=models.CASCADE),
         ),
         migrations.AlterModelTable(
             name='qualificationactivitytranslation',

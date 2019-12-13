@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='qualification',
             name='actor',
-            field=models.ForeignKey(verbose_name='Intervenant', blank=True, null=True, to=settings.AUTH_USER_MODEL, related_name='sessions_actor'),
+            field=models.ForeignKey(verbose_name='Intervenant', blank=True, null=True, to=settings.AUTH_USER_MODEL, related_name='sessions_actor', on_delete=models.CASCADE),
         ),
     ]

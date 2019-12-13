@@ -22,8 +22,8 @@ from re import search, sub
 from django import template
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
 from django.template.defaultfilters import date as datefilter
+from django.urls import reverse
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language

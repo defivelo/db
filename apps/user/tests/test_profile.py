@@ -21,8 +21,8 @@ import re
 
 from django.contrib.auth import get_user_model
 from django.core import mail
-from django.core.urlresolvers import NoReverseMatch, reverse
 from django.test import TestCase
+from django.urls import NoReverseMatch, reverse
 
 from rolepermissions.roles import get_user_roles
 

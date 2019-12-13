@@ -22,9 +22,9 @@ from datetime import date
 from django.utils import timezone
 from django.views.generic.base import TemplateView
 
-from article.models import Article
 from stronghold.views import StrongholdPublicMixin
 
+from apps.article.models import Article
 from apps.common import DV_SEASON_AUTUMN, DV_SEASON_LAST_SPRING_MONTH, DV_SEASON_SPRING
 from defivelo.roles import has_permission
 

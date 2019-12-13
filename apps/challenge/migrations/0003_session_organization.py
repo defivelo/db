@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='session',
             name='organization',
-            field=models.ForeignKey(related_name='sessions', blank=True, null=True, to='orga.Organization'),
+            field=models.ForeignKey(related_name='sessions', blank=True, null=True, to='orga.Organization', on_delete=models.CASCADE),
         ),
     ]

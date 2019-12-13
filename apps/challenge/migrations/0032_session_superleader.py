@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='session',
             name='superleader',
-            field=models.ForeignKey(blank=True, verbose_name='Moniteur +', null=True, related_name='sess_monplus', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(blank=True, verbose_name='Moniteur +', null=True, related_name='sess_monplus', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
     ]

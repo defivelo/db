@@ -20,8 +20,8 @@ from __future__ import unicode_literals
 from datetime import date, timedelta
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.db import models
+from django.urls import reverse
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
@@ -172,7 +172,8 @@ class Season(models.Model):
             self.sessions_with_q = (
                 self.sessions.prefetch_related("availability_statuses")
                 .annotate(models.Count("qualifications"))
-                .filter(qualifications__count__gt=0,)
+                .filter(qualifications__count__gt=0)
+                .order_by("day", "begin", "orga__name")
             )
         return self.sessions_with_q
 

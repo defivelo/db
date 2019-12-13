@@ -17,12 +17,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.urls import reverse
 from django.utils import timezone
 
-from article.models import Article
-
+from apps.article.models import Article
 from defivelo.tests.utils import AuthClient, PowerUserAuthClient
 
 

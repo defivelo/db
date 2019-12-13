@@ -21,7 +21,7 @@ from django import forms
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from article.models import Article
+from apps.article.models import Article
 
 
 class ArticleForm(forms.ModelForm):

@@ -38,6 +38,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='session',
             name='timeslot',
-            field=models.ForeignKey(blank=True, related_name='sessions', to='challenge.SessionTimeSlot'),
+            field=models.ForeignKey(blank=True, related_name='sessions', to='challenge.SessionTimeSlot', on_delete=models.CASCADE),
         ),
     ]

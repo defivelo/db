@@ -33,7 +33,7 @@ urlpatterns = [
     url(r"^accounts/", include("allauth.urls")),
     url(r"^license/", LicenseView.as_view(), name="license"),
     url(r"^agpl-", include("django_agpl.urls")),
-    url(r"^article/", include("apps.dv_article.urls")),
+    url(r"^article/", include("apps.article.urls")),
     url(r"^tinymce/", include("tinymce.urls")),
 ]
 
