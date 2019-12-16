@@ -18,28 +18,28 @@
 from __future__ import unicode_literals
 
 import uuid
-from memoize import memoize
-from localflavor.ch.ch_states import STATE_CHOICES
 
-from django.utils.translation import ugettext as u, ugettext_lazy as _
+from django.utils.translation import ugettext as u
+from django.utils.translation import ugettext_lazy as _
+
+from localflavor.ch.ch_states import STATE_CHOICES
+from memoize import memoize
 
 from apps.common import DV_ADDITIONAL_STATES
 
 STATE_CHOICES_WITH_DEFAULT = tuple(
-    list((('', '---------',),)) +
-    list(STATE_CHOICES) +
-    list(DV_ADDITIONAL_STATES)
+    list((("", "---------",),)) + list(STATE_CHOICES) + list(DV_ADDITIONAL_STATES)
 )
 
-FORMATION_M1 = 'M1'
-FORMATION_M2 = 'M2'
+FORMATION_M1 = "M1"
+FORMATION_M2 = "M2"
 
 FORMATION_CHOICES = (
-    ('', '----------'),
-    (FORMATION_M1, _('Moniteur 1')),
-    (FORMATION_M2, _('Moniteur 2')),
+    ("", "----------"),
+    (FORMATION_M1, _("Moniteur 1")),
+    (FORMATION_M2, _("Moniteur 2")),
 )
-FORMATION_KEYS = [k[0] for k in FORMATION_CHOICES if k[0] != '']
+FORMATION_KEYS = [k[0] for k in FORMATION_CHOICES if k[0] != ""]
 
 
 @memoize()
@@ -47,14 +47,18 @@ def formation_short(formation, real_gettext=False):
     if formation == FORMATION_M1:
         return (
             # Translators: FORMATION_M1 - Moniteur 1
-            u('M1') if real_gettext else _('M1')
+            u("M1")
+            if real_gettext
+            else _("M1")
         )
     elif formation == FORMATION_M2:
         return (
             # Translators: FORMATION_M2 - Moniteur 2
-            u('M2') if real_gettext else _('M2')
+            u("M2")
+            if real_gettext
+            else _("M2")
         )
-    return ''
+    return ""
 
 
 def get_new_username():

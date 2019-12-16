@@ -17,37 +17,34 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from article.models import Article
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+
 from rolepermissions.mixins import HasPermissionsMixin
 
+from apps.article.models import Article
 from defivelo.views import MenuView
 
 from .forms import ArticleForm
 
 
-class ArticleMixin(HasPermissionsMixin,
-                   SuccessMessageMixin, MenuView):
-    required_permission = 'home_article_crud'
+class ArticleMixin(HasPermissionsMixin, SuccessMessageMixin, MenuView):
+    required_permission = "home_article_crud"
     model = Article
-    context_object_name = 'article'
+    context_object_name = "article"
     form_class = ArticleForm
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy("home")
 
 
-class ArticleCreateView(ArticleMixin,
-                        CreateView):
+class ArticleCreateView(ArticleMixin, CreateView):
     success_message = _("Article créé")
 
 
-class ArticleUpdateView(ArticleMixin,
-                        UpdateView):
+class ArticleUpdateView(ArticleMixin, UpdateView):
     success_message = _("Article mis à jour")
 
 
-class ArticleDeleteView(ArticleMixin,
-                        DeleteView):
+class ArticleDeleteView(ArticleMixin, DeleteView):
     pass

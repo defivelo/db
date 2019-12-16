@@ -17,8 +17,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-import factory
 from django.contrib.auth import get_user_model
+
+import factory
 from factory import Faker
 from factory.django import DjangoModelFactory
 
@@ -38,11 +39,11 @@ class UserFactory(DjangoModelFactory):
     class Meta:
         model = get_user_model()
 
-    profile = factory.RelatedFactory(UserProfileFactory, 'user')
+    profile = factory.RelatedFactory(UserProfileFactory, "user")
     username = factory.LazyFunction(get_new_username)
-    first_name = Faker('first_name')
-    last_name = Faker('last_name')
+    first_name = Faker("first_name")
+    last_name = Faker("last_name")
     email = factory.Sequence(lambda n: "user%d@example.com" % n)
     # Normal users can't login, and don't have passwords
-    password = factory.PostGenerationMethodCall('set_unusable_password')
+    password = factory.PostGenerationMethodCall("set_unusable_password")
     is_active = False

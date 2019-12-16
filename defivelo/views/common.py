@@ -19,11 +19,12 @@ from __future__ import unicode_literals
 
 from datetime import date
 
-from article.models import Article
 from django.utils import timezone
 from django.views.generic.base import TemplateView
+
 from stronghold.views import StrongholdPublicMixin
 
+from apps.article.models import Article
 from apps.common import DV_SEASON_AUTUMN, DV_SEASON_LAST_SPRING_MONTH, DV_SEASON_SPRING
 from defivelo.roles import has_permission
 
@@ -40,11 +41,10 @@ class MenuView(object):
         context = super(MenuView, self).get_context_data(**kwargs)
         today = date.today()
 
-        context['current_seasons'] = (
-            self.request.user.profile.get_seasons()
-            .filter(year=today.year, season=self.current_season())
+        context["current_seasons"] = self.request.user.profile.get_seasons().filter(
+            year=today.year, season=self.current_season()
         )
-        context['now'] = timezone.now()
+        context["now"] = timezone.now()
         return context
 
 
@@ -54,11 +54,11 @@ class HomeView(MenuView, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
         articles_qs = Article.objects
-        if not has_permission(self.request.user, 'home_article_crud'):
+        if not has_permission(self.request.user, "home_article_crud"):
             articles_qs = articles_qs.filter(published=True)
-        context['articles'] = articles_qs.order_by('-modified')[:5]
+        context["articles"] = articles_qs.order_by("-modified")[:5]
         # Add our menu_category context
-        context['menu_category'] = 'home'
+        context["menu_category"] = "home"
         return context
 
 

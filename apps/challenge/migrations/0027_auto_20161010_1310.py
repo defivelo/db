@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='season',
             name='leader',
-            field=models.ForeignKey(verbose_name='Chargé de projet', default=3, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(verbose_name='Chargé de projet', default=3, to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=False,
         ),
     ]

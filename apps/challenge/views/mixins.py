@@ -32,31 +32,33 @@ class CantonSeasonFormMixin(object):
     def season(self):
         try:
             seasonpk = int(
-                self.kwargs['seasonpk'] if 'seasonpk' in self.kwargs
-                else self.kwargs['pk']
+                self.kwargs["seasonpk"]
+                if "seasonpk" in self.kwargs
+                else self.kwargs["pk"]
             )
-            season = Season.objects.prefetch_related('leader').get(pk=seasonpk)
+            season = Season.objects.prefetch_related("leader").get(pk=seasonpk)
 
             # Check that the intersection isn't empty
             usercantons = user_cantons(self.request.user)
             if usercantons and not list(
-                    set(usercantons)
-                    .intersection(set(season.cantons))
+                set(usercantons).intersection(set(season.cantons))
             ):
                 # Verify that this state manager can access that canton as mobile
-                if list(
-                    set(
-                        [self.request.user.profile.affiliation_canton] +
-                        self.request.user.profile.activity_cantons
+                if (
+                    list(
+                        set(
+                            [self.request.user.profile.affiliation_canton]
+                            + self.request.user.profile.activity_cantons
+                        ).intersection(set(season.cantons))
                     )
-                    .intersection(set(season.cantons))
-                ) and not self.raise_without_cantons:
+                    and not self.raise_without_cantons
+                ):
                     raise LookupError
                 raise PermissionDenied
         except LookupError:
             # That user doesn't have allowed seasons
             if self.allow_season_fetch:
-                season = Season.objects.prefetch_related('leader').get(pk=seasonpk)
+                season = Season.objects.prefetch_related("leader").get(pk=seasonpk)
             else:
                 season = None
         except KeyError:
@@ -69,7 +71,7 @@ class CantonSeasonFormMixin(object):
 
     def get_form_kwargs(self):
         kwargs = super(CantonSeasonFormMixin, self).get_form_kwargs()
-        kwargs['season'] = self.season
+        kwargs["season"] = self.season
         try:
             cantons = user_cantons(self.request.user)
         except LookupError:
@@ -77,5 +79,5 @@ class CantonSeasonFormMixin(object):
         if self.season and cantons:
             # Check that one canton is in the intersection
             cantons = list(set(cantons).intersection(set(self.season.cantons)))
-        kwargs['cantons'] = cantons
+        kwargs["cantons"] = cantons
         return kwargs

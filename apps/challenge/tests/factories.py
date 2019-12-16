@@ -54,5 +54,5 @@ class QualificationFactory(DjangoModelFactory):
     class Meta:
         model = Qualification
 
-    name = Faker('name')
-    class_teacher_fullname = Faker('name')
+    name = Faker("name")
+    class_teacher_fullname = Faker("name")

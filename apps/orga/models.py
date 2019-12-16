@@ -17,8 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from django.core.urlresolvers import reverse
 from django.db import models
+from django.urls import reverse
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
@@ -32,39 +32,34 @@ ORGASTATUS_ACTIVE = 10
 ORGASTATUS_INACTIVE = 30
 
 ORGASTATUS_CHOICES = (
-    (ORGASTATUS_UNDEF, '---------'),
-    (ORGASTATUS_ACTIVE, _('Actif')),
-    (ORGASTATUS_INACTIVE, _('Inactif')),
+    (ORGASTATUS_UNDEF, "---------"),
+    (ORGASTATUS_ACTIVE, _("Actif")),
+    (ORGASTATUS_INACTIVE, _("Inactif")),
 )
 
 
 @python_2_unicode_compatible
 class Organization(Address, models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
-    abbr = models.CharField(_('Abréviation'), max_length=16, blank=True)
-    name = models.CharField(_('Nom'), max_length=255)
-    website = models.URLField(_('Site web'), blank=True)
-    coordinator_fullname = models.CharField(_('Coordinateur'),
-                                            max_length=512, blank=True)
-    coordinator_phone = models.CharField(_('Téléphone'),
-                                         max_length=13, blank=True)
-    coordinator_natel = models.CharField(_('Natel'),
-                                         max_length=13, blank=True)
-    coordinator_email = models.EmailField(_('Courriel'),
-                                          blank=True)
+    abbr = models.CharField(_("Abréviation"), max_length=16, blank=True)
+    name = models.CharField(_("Nom"), max_length=255)
+    website = models.URLField(_("Site web"), blank=True)
+    coordinator_fullname = models.CharField(
+        _("Coordinateur"), max_length=512, blank=True
+    )
+    coordinator_phone = models.CharField(_("Téléphone"), max_length=13, blank=True)
+    coordinator_natel = models.CharField(_("Natel"), max_length=13, blank=True)
+    coordinator_email = models.EmailField(_("Courriel"), blank=True)
     status = models.PositiveSmallIntegerField(
-        _("Statut"),
-        choices=ORGASTATUS_CHOICES,
-        default=ORGASTATUS_ACTIVE)
-    comments = models.TextField(_('Remarques'), blank=True)
+        _("Statut"), choices=ORGASTATUS_CHOICES, default=ORGASTATUS_ACTIVE
+    )
+    comments = models.TextField(_("Remarques"), blank=True)
 
     @cached_property
     def abbr_verb(self):
         return mark_safe(
-            '<abbr title="{name}">{abbr}</abbr>'.format(
-                name=self.name,
-                abbr=self.abbr)
-            )
+            '<abbr title="{name}">{abbr}</abbr>'.format(name=self.name, abbr=self.abbr)
+        )
 
     @cached_property
     def ifabbr(self):
@@ -74,49 +69,49 @@ class Organization(Address, models.Model):
     def status_full(self):
         if self.status:
             return dict(ORGASTATUS_CHOICES)[self.status]
-        return ''
+        return ""
 
     def status_icon(self):
-        icon = ''
+        icon = ""
         title = self.status_full
         if self.status == ORGASTATUS_ACTIVE:
-            icon = 'star'
+            icon = "star"
         elif self.status == ORGASTATUS_INACTIVE:
-            icon = 'hourglass'
+            icon = "hourglass"
         if icon:
             return mark_safe(STDGLYPHICON.format(icon=icon, title=title))
-        return ''
+        return ""
 
     def status_class(self):
-        css_class = 'default'
+        css_class = "default"
         if self.status == ORGASTATUS_ACTIVE:
-            css_class = 'success'  # Green
+            css_class = "success"  # Green
         elif self.status == ORGASTATUS_INACTIVE:
-            css_class = 'danger'  # Red
+            css_class = "danger"  # Red
         return css_class
 
     @property
     def mailtolink(self):
-        return (
-            '{name} <{email}>'.format(
-                name=self.coordinator_fullname,
-                email=self.coordinator_email)
-            )
+        return "{name} <{email}>".format(
+            name=self.coordinator_fullname, email=self.coordinator_email
+        )
 
     def shortname(self):
         return "{abbr}{city}".format(
             abbr=self.ifabbr,
-            city=' (%s)' % self.address_city if self.address_city else '')
+            city=" (%s)" % self.address_city if self.address_city else "",
+        )
 
     class Meta:
-        verbose_name = _('Établissement')
-        verbose_name_plural = _('Établissements')
-        ordering = ['name']
+        verbose_name = _("Établissement")
+        verbose_name_plural = _("Établissements")
+        ordering = ["name"]
 
     def __str__(self):
         return "{name}{city}".format(
             name=self.name,
-            city=' (%s)' % self.address_city if self.address_city else '')
+            city=" (%s)" % self.address_city if self.address_city else "",
+        )
 
     def get_absolute_url(self):
-        return reverse('organization-detail', args=[self.pk])
+        return reverse("organization-detail", args=[self.pk])

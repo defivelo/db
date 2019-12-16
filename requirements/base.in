@@ -1,0 +1,30 @@
+dj-database-url
+Django>2.2,<3
+pytz
+django-bootstrap3
+psycopg2
+django-compressor
+libsass
+# django-stronghold
+-e git+https://github.com/mgrouchy/django-stronghold#egg=django-stronghold==0.3.0+django21
+django-allauth
+django-localflavor
+django-phonenumber-field
+phonenumbers
+django-bootstrap3-datetimepicker-2
+django-autocomplete-light
+django-parler
+django-multiselectfield
+django-filter
+django-import-export
+django-agpl
+tablib
+django-taggit
+pillow
+django-role-permissions
+django-tinymce
+django-memoize
+django-countries
+django-simple-history
+sentry-sdk
+six

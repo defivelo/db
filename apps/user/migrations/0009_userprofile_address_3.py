@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='userprofile',
             name='address_ptr',
-            field=models.OneToOneField(default=0, auto_created=True, parent_link=True, to='common.Address'),
+            field=models.OneToOneField(default=0, auto_created=True, parent_link=True, to='common.Address', on_delete=models.CASCADE),
             preserve_default=False,
         ),
         migrations.RemoveField(

@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='userprofile',
             name='address_ptr',
-            field=models.ForeignKey(to='common.Address', null=True),
+            field=models.ForeignKey(to='common.Address', null=True, on_delete=models.CASCADE),
         ),
     ]

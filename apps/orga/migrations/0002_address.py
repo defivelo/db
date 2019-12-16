@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='organization',
             name='address_ptr',
-            field=models.ForeignKey(to='common.Address', null=True),
+            field=models.ForeignKey(to='common.Address', null=True, on_delete=models.CASCADE),
         ),
         migrations.RunPython(migrate_addresses),
         migrations.RemoveField(
@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='organization',
             name='address_ptr',
-            field=models.OneToOneField(to='common.Address', auto_created=True, serialize=False, primary_key=True, parent_link=True),
+            field=models.OneToOneField(to='common.Address', auto_created=True, serialize=False, primary_key=True, parent_link=True, on_delete=models.CASCADE),
         ),
         migrations.RemoveField(
             model_name='organization',

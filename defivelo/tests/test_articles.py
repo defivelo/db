@@ -17,11 +17,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from article.models import Article
-from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.urls import reverse
 from django.utils import timezone
 
+from apps.article.models import Article
 from defivelo.tests.utils import AuthClient, PowerUserAuthClient
 
 
@@ -30,21 +30,24 @@ class AuthUserTest(TestCase):
         # Every test needs a client.
         self.client = AuthClient()
         self.article = Article.objects.create(
-            title='TestArticle',
-            body='<h1>Test Body</h1>',
+            title="TestArticle",
+            body="<h1>Test Body</h1>",
             published=True,
-            modified=timezone.now())
+            modified=timezone.now(),
+        )
 
     def test_my_restrictions(self):
-        for symbolicurl in ['article-update',
-                            'article-delete',
-                            ]:
+        for symbolicurl in [
+            "article-update",
+            "article-delete",
+        ]:
             response = self.client.get(
-                reverse(symbolicurl, kwargs={'pk': self.article.pk}))
+                reverse(symbolicurl, kwargs={"pk": self.article.pk})
+            )
             self.assertEqual(response.status_code, 403, symbolicurl)
 
-        response = self.client.get(reverse('article-create'))
-        self.assertEqual(response.status_code, 403, 'Article creation')
+        response = self.client.get(reverse("article-create"))
+        self.assertEqual(response.status_code, 403, "Article creation")
 
 
 class PowerUserTest(TestCase):
@@ -52,26 +55,27 @@ class PowerUserTest(TestCase):
         # Every test needs a client.
         self.client = PowerUserAuthClient()
         self.article = Article.objects.create(
-            title='TestArticle',
-            body='<h1>Test Body</h1>',
+            title="TestArticle",
+            body="<h1>Test Body</h1>",
             published=True,
-            modified=timezone.now())
+            modified=timezone.now(),
+        )
 
     def test_my_accesses(self):
-        for symbolicurl in ['article-update',
-                            'article-delete',
-                            ]:
+        for symbolicurl in [
+            "article-update",
+            "article-delete",
+        ]:
             response = self.client.get(
-                reverse(symbolicurl, kwargs={'pk': self.article.pk}))
+                reverse(symbolicurl, kwargs={"pk": self.article.pk})
+            )
             self.assertEqual(response.status_code, 200, symbolicurl)
 
-        response = self.client.get(reverse('article-create'))
-        self.assertEqual(response.status_code, 200, 'Article creation request')
+        response = self.client.get(reverse("article-create"))
+        self.assertEqual(response.status_code, 200, "Article creation request")
 
-        response = self.client.post(reverse('article-create'),
-                                    {
-                                        'title': 'New article',
-                                        'body': 'New body',
-                                        'published': False
-                                    })
-        self.assertEqual(response.status_code, 302, 'Article creation')
+        response = self.client.post(
+            reverse("article-create"),
+            {"title": "New article", "body": "New body", "published": False},
+        )
+        self.assertEqual(response.status_code, 302, "Article creation")

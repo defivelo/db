@@ -21,22 +21,22 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='qualification',
             name='activity_A',
-            field=models.ForeignKey(null=True, related_name='qualifs_A', to='challenge.QualificationActivity', blank=True, verbose_name='Vélo dans la rue'),
+            field=models.ForeignKey(null=True, related_name='qualifs_A', to='challenge.QualificationActivity', blank=True, verbose_name='Vélo dans la rue', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='qualification',
             name='activity_B',
-            field=models.ForeignKey(null=True, related_name='qualifs_B', to='challenge.QualificationActivity', blank=True, verbose_name='Mécanique'),
+            field=models.ForeignKey(null=True, related_name='qualifs_B', to='challenge.QualificationActivity', blank=True, verbose_name='Mécanique', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='qualification',
             name='activity_C',
-            field=models.ForeignKey(null=True, related_name='qualifs_C', to='challenge.QualificationActivity', blank=True, verbose_name='Rencontre'),
+            field=models.ForeignKey(null=True, related_name='qualifs_C', to='challenge.QualificationActivity', blank=True, verbose_name='Rencontre', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='qualification',
             name='actor',
-            field=models.ForeignKey(null=True, related_name='qualifs_actor', to=settings.AUTH_USER_MODEL, blank=True, verbose_name='Intervenant'),
+            field=models.ForeignKey(null=True, related_name='qualifs_actor', to=settings.AUTH_USER_MODEL, blank=True, verbose_name='Intervenant', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='qualification',
@@ -46,6 +46,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='qualification',
             name='leader',
-            field=models.ForeignKey(null=True, related_name='qualifs_mon2', to=settings.AUTH_USER_MODEL, blank=True, verbose_name='Moniteur 2'),
+            field=models.ForeignKey(null=True, related_name='qualifs_mon2', to=settings.AUTH_USER_MODEL, blank=True, verbose_name='Moniteur 2', on_delete=models.CASCADE),
         ),
     ]

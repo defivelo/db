@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='session',
             name='address_ptr',
-            field=models.OneToOneField(to='common.Address', parent_link=True, auto_created=True, serialize=False, default=1, primary_key=True),
+            field=models.OneToOneField(to='common.Address', parent_link=True, auto_created=True, serialize=False, default=1, primary_key=True, on_delete=models.CASCADE),
             preserve_default=False,
         ),
     ]

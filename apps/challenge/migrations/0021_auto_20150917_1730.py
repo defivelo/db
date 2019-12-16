@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='helpersessionavailability',
             name='session',
-            field=models.ForeignKey(verbose_name='Session', related_name='availability_statuses', to='challenge.Session'),
+            field=models.ForeignKey(verbose_name='Session', related_name='availability_statuses', to='challenge.Session', on_delete=models.CASCADE),
         ),
     ]

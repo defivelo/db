@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='qualification',
             name='activity_A',
-            field=models.ForeignKey(verbose_name='Vélo urbain', to='challenge.QualificationActivity', blank=True, null=True, related_name='qualifs_A'),
+            field=models.ForeignKey(verbose_name='Vélo urbain', to='challenge.QualificationActivity', blank=True, null=True, related_name='qualifs_A', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='qualificationactivity',

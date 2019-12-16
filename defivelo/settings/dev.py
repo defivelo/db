@@ -16,26 +16,29 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from . import get_env_variable
-from .base import *  # NOQA
+from .base import *
 
-DEBUG = bool(get_env_variable('DEBUG', True))
-TEMPLATES[0]['OPTIONS']['debug'] = DEBUG  # NOQA
-SECRET_KEY = 'notsosecret'
-NEVERCACHE_KEY = 'notsosecret'
+DEBUG = bool(get_env_variable("DEBUG", True))
+TEMPLATES[0]["OPTIONS"]["debug"] = DEBUG
+SECRET_KEY = "notsosecret"
+NEVERCACHE_KEY = "notsosecret"
 
-INSTALLED_APPS += (  # NOQA
-    'debug_toolbar',
-    'django_extensions',
+INSTALLED_APPS += (
+    "debug_toolbar",
+    "django_extensions",
 )
 
 DEBUG_TOOLBAR_CONFIG = {"INTERCEPT_REDIRECTS": False}
 
-INTERNAL_IPS = ('127.0.0.1','10.0.3.1',)
-MIDDLEWARE += [  # NOQA
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+INTERNAL_IPS = (
+    "127.0.0.1",
+    "10.0.3.1",
+)
+MIDDLEWARE += [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 # Adapt Stronghold for Debug
-STRONGHOLD_PUBLIC_URLS += [r'^/__debug__/.*$']  # NOQA
+STRONGHOLD_PUBLIC_URLS += [r"^/__debug__/.*$"]
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

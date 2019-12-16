@@ -22,21 +22,37 @@ from re import search, sub
 from django import template
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
 from django.template.defaultfilters import date as datefilter
+from django.urls import reverse
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
-from django.utils.translation import get_language, ugettext_lazy as _
+from django.utils.translation import get_language
+from django.utils.translation import ugettext_lazy as _
+
 from memoize import memoize
 from rolepermissions.templatetags.permission_tags import can_template_tag
 
 from apps.challenge import (
-    AVAILABILITY_FIELDKEY, AVAILABILITY_FIELDKEY_HELPER_PREFIX, CHOICE_FIELDKEY, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER,
-    CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY, CHOSEN_AS_NOT, CHOSEN_AS_REPLACEMENT, CONFLICT_FIELDKEY,
-    SEASON_WORKWISH_FIELDKEY, STAFF_FIELDKEY, STAFF_FIELDKEY_HELPER_PREFIX,
+    AVAILABILITY_FIELDKEY,
+    AVAILABILITY_FIELDKEY_HELPER_PREFIX,
+    CHOICE_FIELDKEY,
+    CHOSEN_AS_ACTOR,
+    CHOSEN_AS_HELPER,
+    CHOSEN_AS_LEADER,
+    CHOSEN_AS_LEGACY,
+    CHOSEN_AS_NOT,
+    CHOSEN_AS_REPLACEMENT,
+    CONFLICT_FIELDKEY,
+    SEASON_WORKWISH_FIELDKEY,
+    STAFF_FIELDKEY,
+    STAFF_FIELDKEY_HELPER_PREFIX,
 )
 from apps.common import (
-    DV_SEASON_CHOICES, DV_STATE_CHOICES, DV_STATE_COLORS, DV_STATES_LONGER_ABBREVIATIONS, DV_STATES_REAL_FALLBACKS,
+    DV_SEASON_CHOICES,
+    DV_STATE_CHOICES,
+    DV_STATE_COLORS,
+    DV_STATES_LONGER_ABBREVIATIONS,
+    DV_STATES_REAL_FALLBACKS,
     STDGLYPHICON,
 )
 from apps.user import FORMATION_M1, FORMATION_M2, formation_short
@@ -70,30 +86,28 @@ def vcs_commit():
 def setlang(request, newlang):
     """ Replace language code in request.path with the new language code
     """
-    return sub('^/(%s)/' % request.LANGUAGE_CODE,
-               '/%s/' % newlang, request.path)
+    return sub("^/(%s)/" % request.LANGUAGE_CODE, "/%s/" % newlang, request.path)
 
 
 @register.filter
 def tel_int(tel):
     if not tel:
-        return ''
+        return ""
     # Delete spaces, drop initial 0, add +41
-    return '+41' + tel.replace(' ', '')[1:]
+    return "+41" + tel.replace(" ", "")[1:]
 
 
 @register.filter
 def tel_link(tel):
     if not tel:
-        return ''
-    if tel[0:3] == '+41' and len(tel) == 12:
+        return ""
+    if tel[0:3] == "+41" and len(tel) == 12:
         # Convert to swiss local number
-        return '0{} {} {} {}'.format(tel[3:5], tel[5:8], tel[8:10], tel[10:12])
+        return "0{} {} {} {}".format(tel[3:5], tel[5:8], tel[8:10], tel[10:12])
     return tel
     return mark_safe(
-        '<a href="tel:{tel_int}">{tel}</a>'
-        .format(tel_int=tel_int(tel), tel=tel)
-        )
+        '<a href="tel:{tel_int}">{tel}</a>'.format(tel_int=tel_int(tel), tel=tel)
+    )
 
 
 @register.filter
@@ -102,15 +116,14 @@ def profile_tag(user):
     Standard user display (currently fullname + small natel)
     """
     if not user:
-        return ''
-    usertag = '<span>'
+        return ""
+    usertag = "<span>"
     usertag += user.get_full_name()
     if user.profile.natel:
-        usertag += (
-            '<br /><small>{tel_link}</small>'
-            .format(tel_link=tel_link(user.profile.natel))
-            )
-    usertag += '</span>'
+        usertag += "<br /><small>{tel_link}</small>".format(
+            tel_link=tel_link(user.profile.natel)
+        )
+    usertag += "</span>"
 
     return mark_safe(usertag)
 
@@ -121,67 +134,66 @@ def useravailsessions(form, user):
     Output cells with form widget for all sessions concerning that user
     """
     if not form or not user:
-        return ''
-    output = ''
+        return ""
+    output = ""
     for key in form.fields:
         if (
-            key == SEASON_WORKWISH_FIELDKEY.format(hpk=user.pk) or
-            AVAILABILITY_FIELDKEY_HELPER_PREFIX.format(hpk=user.pk) in key
+            key == SEASON_WORKWISH_FIELDKEY.format(hpk=user.pk)
+            or AVAILABILITY_FIELDKEY_HELPER_PREFIX.format(hpk=user.pk) in key
         ):
-            output += '<td>{field}</td>'.format(
+            output += "<td>{field}</td>".format(
                 field=form.fields[key].widget.render(
-                    key, form.fields[key].initial, attrs={'id': key})
+                    key, form.fields[key].initial, attrs={"id": key}
                 )
+            )
     return mark_safe(output)
 
 
 @register.filter
-def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=None,
-                               onlyavail=False):
+def useravailsessions_readonly(
+    struct, user, avail_forced_content=None, sesskey=None, onlyavail=False
+):
     """
     Output cells with the state of the availability / choice for all sessions,
     for that user
     """
     if not struct or not user:
-        return ''
-    output = ''
+        return ""
+    output = ""
     for key in struct:
         if AVAILABILITY_FIELDKEY_HELPER_PREFIX.format(hpk=user.pk) in key:
             # If there's a sessionkey specified, skip the ones not
             # corresponding
             if sesskey:
-                if key != AVAILABILITY_FIELDKEY.format(hpk=user.pk,
-                                                       spk=sesskey):
+                if key != AVAILABILITY_FIELDKEY.format(hpk=user.pk, spk=sesskey):
                     continue
             availability = struct[key]
-            avail_verb = ''  # Fulltext
-            avail_label = ''  # Bootstrap glyphicon name
-            avail_class = 'active'  # Bootstrap array cell class
+            avail_verb = ""  # Fulltext
+            avail_label = ""  # Bootstrap glyphicon name
+            avail_class = "active"  # Bootstrap array cell class
             avail_content = avail_forced_content
             conflict = False
             locked = False
-            if availability == 'i':
+            if availability == "i":
                 # If needed
-                avail_verb = _('Si nécessaire')
-                avail_label = 'ok-circle'
-                avail_class = 'warning'
-            elif availability == 'n':
-                avail_verb = _('Non')
-                avail_label = 'remove-sign'
-                avail_class = 'danger'
-            elif availability == 'y':
-                avail_verb = _('Oui')
-                avail_label = 'ok-sign'
-                avail_class = 'success'
+                avail_verb = _("Si nécessaire")
+                avail_label = "ok-circle"
+                avail_class = "warning"
+            elif availability == "n":
+                avail_verb = _("Non")
+                avail_label = "remove-sign"
+                avail_class = "danger"
+            elif availability == "y":
+                avail_verb = _("Oui")
+                avail_label = "ok-sign"
+                avail_class = "success"
 
-            if availability in ['y', 'i']:
-                thissesskey = int(search(r'-s(\d+)', key).group(1))
-                choicekey = CHOICE_FIELDKEY.format(hpk=user.pk,
-                                                   spk=thissesskey)
+            if availability in ["y", "i"]:
+                thissesskey = int(search(r"-s(\d+)", key).group(1))
+                choicekey = CHOICE_FIELDKEY.format(hpk=user.pk, spk=thissesskey)
                 locked = choicekey in struct and struct[choicekey]
 
-                conflictkey = CONFLICT_FIELDKEY.format(hpk=user.pk,
-                                                       spk=thissesskey)
+                conflictkey = CONFLICT_FIELDKEY.format(hpk=user.pk, spk=thissesskey)
                 conflicts = struct[conflictkey] if conflictkey in struct else []
                 if len(conflicts) > 0:
                     conflict = conflicts.pop()
@@ -189,56 +201,63 @@ def useravailsessions_readonly(struct, user, avail_forced_content=None, sesskey=
                 # Si le choix des moniteurs est connu, remplace le label et
                 # la version verbeuse par l'état du choix
                 if not sesskey:
-                    staffkey = STAFF_FIELDKEY.format(hpk=user.pk,
-                                                     spk=thissesskey)
+                    staffkey = STAFF_FIELDKEY.format(hpk=user.pk, spk=thissesskey)
                     if staffkey in struct:
                         if struct[staffkey] == CHOSEN_AS_LEADER:
-                            avail_verb = _('Moniteur 2')
+                            avail_verb = _("Moniteur 2")
                             avail_content = formation_short(FORMATION_M2)
                         elif struct[staffkey] == CHOSEN_AS_HELPER:
-                            avail_verb = _('Moniteur 1')
+                            avail_verb = _("Moniteur 1")
                             avail_content = formation_short(FORMATION_M1)
                         elif struct[staffkey] == CHOSEN_AS_ACTOR:
-                            avail_verb = _('Intervenant')
-                            avail_label = 'sunglasses'
+                            avail_verb = _("Intervenant")
+                            avail_label = "sunglasses"
                         elif struct[staffkey] == CHOSEN_AS_REPLACEMENT:
-                            avail_verb = _('Moniteur de secours')
-                            avail_content = _('S')
+                            avail_verb = _("Moniteur de secours")
+                            avail_content = _("S")
                         elif struct[staffkey] == CHOSEN_AS_LEGACY:
-                            avail_verb = _('Choisi')
-                            avail_label = 'check'
+                            avail_verb = _("Choisi")
+                            avail_label = "check"
                         else:
-                            avail_verb = _('Pas choisi')
-                            avail_label = 'unchecked'
+                            avail_verb = _("Pas choisi")
+                            avail_label = "unchecked"
 
             elif onlyavail:
-                avail_content = ' '
+                avail_content = " "
 
             output += (
                 '<td class="{avail_class}"{avail_verbose}><div class="dvflex">'
-                '<!-- {key} -->{avail_label}{conflict_warning}'
-                '</div></td>'
+                "<!-- {key} -->{avail_label}{conflict_warning}"
+                "</div></td>"
             ).format(
-                avail_class='info' if locked else avail_class,
-                avail_verbose=' title="%s"' % avail_verb if avail_verb else '',
+                avail_class="info" if locked else avail_class,
+                avail_verbose=' title="%s"' % avail_verb if avail_verb else "",
                 avail_label=(
-                    avail_content if avail_content else
-                    (STDGLYPHICON.format(
-                        icon=avail_label,
-                        title=avail_verb if avail_verb else ''
-                    ) if avail_label else '')
+                    avail_content
+                    if avail_content
+                    else (
+                        STDGLYPHICON.format(
+                            icon=avail_label, title=avail_verb if avail_verb else ""
+                        )
+                        if avail_label
+                        else ""
+                    )
                 ),
                 conflict_warning=(
                     (
                         '<a class="text-danger" href="{season_url}#sess{sessionpk}">{glyph}</a>'.format(
                             season_url=reverse(
-                                'season-availabilities',
-                                kwargs={'pk': conflict.session.season.pk}
+                                "season-availabilities",
+                                kwargs={"pk": conflict.session.season.pk},
                             ),
                             sessionpk=conflict.session.pk,
-                            glyph=STDGLYPHICON.format(icon='alert', title=conflict.session)
+                            glyph=STDGLYPHICON.format(
+                                icon="alert", title=conflict.session
+                            ),
                         )
-                    ) if conflict else ''
+                    )
+                    if conflict
+                    else ""
                 ),
                 key=key,
             )
@@ -252,96 +271,102 @@ def userstaffsessions(form, user):
     for that user
     """
     if not form or not user:
-        return ''
-    output = ''
+        return ""
+    output = ""
     for key in form.fields:
         if STAFF_FIELDKEY_HELPER_PREFIX.format(hpk=user.pk) in key:
             # Lookout for the session key in the form field key, and pipe
             # it to the useravailsessions_readonly function
-            sesskey = int(search(r'-s(\d+)', key).group(1))
+            sesskey = int(search(r"-s(\d+)", key).group(1))
             output += useravailsessions_readonly(
                 struct=form.initial,
                 user=user,
                 sesskey=sesskey,
                 onlyavail=True,
                 avail_forced_content=form.fields[key].widget.render(
-                    key, form.fields[key].initial, attrs={'id': key}))
+                    key, form.fields[key].initial, attrs={"id": key}
+                ),
+            )
     return mark_safe(output)
 
 
 @register.filter
 def chosen_staff_for_season(struct, user):
     if not struct or not user:
-        return ''
+        return ""
     accu_in_qualif = 0
     accu_in_sess = 0
     for key in struct:
         if AVAILABILITY_FIELDKEY_HELPER_PREFIX.format(hpk=user.pk) in key:
-            if struct[key] in ['y', 'i']:
-                thissesskey = int(search(r'-s(\d+)', key).group(1))
-                choicekey = CHOICE_FIELDKEY.format(hpk=user.pk,
-                                                   spk=thissesskey)
+            if struct[key] in ["y", "i"]:
+                thissesskey = int(search(r"-s(\d+)", key).group(1))
+                choicekey = CHOICE_FIELDKEY.format(hpk=user.pk, spk=thissesskey)
                 if choicekey in struct and struct[choicekey]:
                     accu_in_qualif += 1
 
-                staffkey = STAFF_FIELDKEY.format(hpk=user.pk,
-                                                 spk=thissesskey)
+                staffkey = STAFF_FIELDKEY.format(hpk=user.pk, spk=thissesskey)
                 if staffkey in struct:
                     if struct[staffkey] != CHOSEN_AS_NOT:
                         accu_in_sess += 1
     #  if accu_in_qualif != accu_in_sess:
-        #  return '%s/%s' % (accu_in_qualif, accu_in_sess)
+    #  return '%s/%s' % (accu_in_qualif, accu_in_sess)
     return accu_in_sess
 
 
 @register.filter
 def work_wish_for_season(struct, user):
     if not struct or not user:
-        return ''
+        return ""
     workwishkey = SEASON_WORKWISH_FIELDKEY.format(hpk=user.pk)
     if workwishkey in struct:
         wish = int(struct[workwishkey])
         if wish > 0:
             return wish
-    return ''
+    return ""
 
 
 @register.filter
 def weeknumber(date):
     if not date:
-        return ''
+        return ""
     # This "solves" the weird week numbers in templates
-    return date.strftime('%W')
+    return date.strftime("%W")
 
 
 @register.filter
 def date_ch_short(date):
     if not date:
-        return ''
+        return ""
     lang = get_language()
-    if lang == 'de':
-        return datefilter(date, 'j. N')
+    if lang == "de":
+        return datefilter(date, "j. N")
     else:
-        return datefilter(date, 'j N')
+        return datefilter(date, "j N")
 
 
 @register.filter
 def cantons_abbr(cantons, abbr=True, long=True, fix_special=False):
-    special_cantons = DV_STATES_LONGER_ABBREVIATIONS if long else DV_STATES_REAL_FALLBACKS
+    special_cantons = (
+        DV_STATES_LONGER_ABBREVIATIONS if long else DV_STATES_REAL_FALLBACKS
+    )
     return [
-                force_text(
-                    c[1] if not fix_special
-                    else special_cantons[c[0]] if c[0] in special_cantons else c[0]
-                ) if not abbr
-                else mark_safe(
-                    '<abbr title="{title}">{abbr}</abbr>'
-                    .format(
-                        abbr=special_cantons[c[0]] if c[0] in special_cantons else c[0],
-                        title=c[1]
-                    )
-                )
-                for c in DV_STATE_CHOICES if c[0] in cantons
-            ]
+        force_text(
+            c[1]
+            if not fix_special
+            else special_cantons[c[0]]
+            if c[0] in special_cantons
+            else c[0]
+        )
+        if not abbr
+        else mark_safe(
+            '<abbr title="{title}">{abbr}</abbr>'.format(
+                abbr=special_cantons[c[0]] if c[0] in special_cantons else c[0],
+                title=c[1],
+            )
+        )
+        for c in DV_STATE_CHOICES
+        if c[0] in cantons
+    ]
 
 
 @register.filter
@@ -355,12 +380,7 @@ def canton_abbr(canton, abbr=True, long=True, fix_special=False):
 @register.filter
 def canton_abbr_short(canton, abbr=True, fix_special=False):
     try:
-        return cantons_abbr(
-            [canton],
-            abbr=abbr,
-            long=False,
-            fix_special=fix_special
-        )[0]
+        return cantons_abbr([canton], abbr=abbr, long=False, fix_special=fix_special)[0]
     except IndexError:
         return canton
 
@@ -378,17 +398,14 @@ def season_verb(season_id):
     try:
         return [s[1] for s in DV_SEASON_CHOICES if s[0] == season_id][0]
     except IndexError:
-        return ''
+        return ""
 
 
 @register.filter
 def anyofusercantons(user, cantons):
     try:
         usercantons = user_cantons(user)
-        return list(
-            set(usercantons)
-            .intersection(set(cantons))
-        )
+        return list(set(usercantons).intersection(set(cantons)))
     except PermissionDenied:
         return
 

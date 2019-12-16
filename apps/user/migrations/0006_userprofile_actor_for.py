@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='userprofile',
             name='actor_for',
-            field=models.ForeignKey(blank=True, related_name='actors', null=True, to='challenge.QualificationActivity'),
+            field=models.ForeignKey(blank=True, related_name='actors', null=True, to='challenge.QualificationActivity', on_delete=models.CASCADE),
         ),
     ]

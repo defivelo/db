@@ -21,6 +21,7 @@ from django.core.exceptions import PermissionDenied
 from django.forms import Form as DjangoEmptyForm
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.edit import FormView
+
 from rolepermissions.mixins import HasPermissionsMixin
 from rolepermissions.roles import get_user_roles
 
@@ -29,42 +30,39 @@ from .mixins import ProfileMixin
 
 
 class UserCredentials(ProfileMixin, FormView):
-    template_name = 'auth/user_send_credentials.html'
+    template_name = "auth/user_send_credentials.html"
     success_message = _("Données de connexion expédiées.")
     form_class = DjangoEmptyForm
     initial_send = True
 
     def get_context_data(self, **kwargs):
         context = super(UserCredentials, self).get_context_data(**kwargs)
-        context['userprofile'] = self.get_object()
-        context['initial_send'] = self.initial_send
+        context["userprofile"] = self.get_object()
+        context["initial_send"] = self.initial_send
         return context
 
     def form_valid(self, form):
         context = self.get_context_data()
-        context['fromuser'] = self.request.user
+        context["fromuser"] = self.request.user
         user = self.get_object()
         user.profile.send_credentials(context, force=(not self.initial_send))
         return super(UserCredentials, self).form_valid(form)
 
 
 class SendUserCredentials(HasPermissionsMixin, UserCredentials):
-    required_permission = 'user_can_send_credentials'
+    required_permission = "user_can_send_credentials"
     cantons = False
 
     def dispatch(self, request, *args, **kwargs):
         # Forbid view if can already login
         if not self.get_object().profile.can_login:
-            return (
-                super(SendUserCredentials, self)
-                .dispatch(request, *args, **kwargs)
-            )
+            return super(SendUserCredentials, self).dispatch(request, *args, **kwargs)
         else:
             raise PermissionDenied
 
 
 class ResendUserCredentials(HasPermissionsMixin, UserCredentials):
-    required_permission = 'user_can_resend_credentials'
+    required_permission = "user_can_resend_credentials"
     success_message = _("Données de connexion ré-expédiées.")
     initial_send = False
     cantons = False
@@ -72,35 +70,29 @@ class ResendUserCredentials(HasPermissionsMixin, UserCredentials):
     def dispatch(self, request, *args, **kwargs):
         # Forbid view if initial login hasn't been sent
         if self.get_object().profile.can_login and not self.initial_send:
-            return (
-                super(ResendUserCredentials, self)
-                .dispatch(request, *args, **kwargs)
-            )
+            return super(ResendUserCredentials, self).dispatch(request, *args, **kwargs)
         else:
             raise PermissionDenied
 
 
 class UserAssignRole(ProfileMixin, HasPermissionsMixin, FormView):
-    template_name = 'roles/assign.html'
-    success_message = _('Rôle assigné à l\'utilisa·teur·trice')
+    template_name = "roles/assign.html"
+    success_message = _("Rôle assigné à l'utilisa·teur·trice")
     form_class = UserAssignRoleForm
-    required_permission = 'user_set_role'
+    required_permission = "user_set_role"
     cantons = False
 
     def dispatch(self, request, *args, **kwargs):
         # Forbid if self
         user = self.get_object()
         if user != self.request.user and user.profile.can_login:
-            return (
-                super(UserAssignRole, self)
-                .dispatch(request, *args, **kwargs)
-            )
+            return super(UserAssignRole, self).dispatch(request, *args, **kwargs)
         else:
             raise PermissionDenied
 
     def get_context_data(self, **kwargs):
         context = super(UserAssignRole, self).get_context_data(**kwargs)
-        context['userprofile'] = self.get_object()
+        context["userprofile"] = self.get_object()
         return context
 
     def get_initial(self):
@@ -108,15 +100,17 @@ class UserAssignRole(ProfileMixin, HasPermissionsMixin, FormView):
         roles = get_user_roles(user)
         initial = {}
         if len(roles) >= 1:
-            initial['role'] = roles[0].get_name()
-        initial['managed_states'] = list(user.managedstates.all().values_list('canton', flat=True))
+            initial["role"] = roles[0].get_name()
+        initial["managed_states"] = list(
+            user.managedstates.all().values_list("canton", flat=True)
+        )
         return initial
 
     def form_valid(self, form):
         user = self.get_object()
-        role = form.cleaned_data['role']
-        managed_states = form.cleaned_data['managed_states']
-        if role != 'state_manager':
+        role = form.cleaned_data["role"]
+        managed_states = form.cleaned_data["managed_states"]
+        if role != "state_manager":
             managed_states = []
         user.profile.set_statemanager_for(managed_states)
         user.profile.set_role(role)

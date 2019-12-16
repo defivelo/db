@@ -29,206 +29,182 @@ import os
 
 import dj_database_url
 
-from . import get_env_variable
 from .. import get_project_root_path
+from . import get_env_variable
 
-gettext = lambda s: s  # NOQA
+gettext = lambda s: s
 
 PROJECT_ROOT = get_project_root_path()
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = get_env_variable('SECRET_KEY', '')
+SECRET_KEY = get_env_variable("SECRET_KEY", "")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(get_env_variable('DEBUG', False))
+DEBUG = bool(get_env_variable("DEBUG", False))
 
-ALLOWED_HOSTS = tuple(get_env_variable('ALLOWED_HOSTS', '').splitlines())
+ALLOWED_HOSTS = tuple(get_env_variable("ALLOWED_HOSTS", "").splitlines())
 
 
 # Application definition
 
 UPSTREAM_APPS = (
-    'bootstrap3',
-    'bootstrap3_datetime',
-    'django.contrib.sites',
-    'django.contrib.postgres',
-
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'dal',
-    'dal_select2',
-
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-
-    'compressor',
-    'stronghold',
-    'localflavor',
-    'phonenumber_field',
-    'parler',
-    'multiselectfield',
-    'django_countries',
-    'django_filters',
-    'import_export',
-    'django_agpl',
-    'tinymce',
-    'taggit',
-    'article',
-    'rolepermissions',
-    'simple_history',
-    'memoize',
+    "bootstrap3",
+    "bootstrap3_datetime",
+    "django.contrib.sites",
+    "django.contrib.postgres",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "dal",
+    "dal_select2",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "compressor",
+    "stronghold",
+    "localflavor",
+    "phonenumber_field",
+    "parler",
+    "multiselectfield",
+    "django_countries",
+    "django_filters",
+    "import_export",
+    "django_agpl",
+    "tinymce",
+    "taggit",
+    "rolepermissions",
+    "simple_history",
+    "memoize",
 )
 
 # Project apps tested by jenkins (everything in apps/)
-APPS_DIR = os.path.join(PROJECT_ROOT, 'apps')
-EXCLUDED_DIRS = ('__pycache__')
-PROJECT_APPS = tuple(['apps.' + aname
-                     for aname in os.listdir(APPS_DIR)
-                     if os.path.isdir(os.path.join(APPS_DIR, aname))
-                     and aname not in EXCLUDED_DIRS])
+APPS_DIR = os.path.join(PROJECT_ROOT, "apps")
+EXCLUDED_DIRS = "__pycache__"
+PROJECT_APPS = tuple(
+    [
+        "apps." + aname
+        for aname in os.listdir(APPS_DIR)
+        if os.path.isdir(os.path.join(APPS_DIR, aname)) and aname not in EXCLUDED_DIRS
+    ]
+)
 
-INSTALLED_APPS = UPSTREAM_APPS + PROJECT_APPS + ('defivelo', )
+INSTALLED_APPS = PROJECT_APPS + UPSTREAM_APPS + ("defivelo",)
 
 MIDDLEWARE = [
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'stronghold.middleware.LoginRequiredMiddleware',
-    'simple_history.middleware.HistoryRequestMiddleware',
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "stronghold.middleware.LoginRequiredMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
-ROOT_URLCONF = 'defivelo.urls'
+ROOT_URLCONF = "defivelo.urls"
 
-WSGI_APPLICATION = 'defivelo.wsgi.application'
+WSGI_APPLICATION = "defivelo.wsgi.application"
 
 LOGGING = {
-    'version': 1,
-    'handlers': {
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-        },
+    "version": 1,
+    "handlers": {"console": {"level": "INFO", "class": "logging.StreamHandler"}},
+    "loggers": {
+        "apps": {"handlers": ["console"], "level": "DEBUG", "propagate": True},
+        "django": {"handlers": ["console"], "level": "DEBUG", "propagate": True},
+        "werkzeug": {"handlers": ["console"], "level": "DEBUG", "propagate": True},
     },
-    'loggers': {
-        'apps': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'django': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'werkzeug': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    }
 }
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(PROJECT_ROOT, 'defivelo/templates')
-        ],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.contrib.auth.context_processors.auth',
-                'django.template.context_processors.debug',
-                'django.template.context_processors.i18n',
-                'django.template.context_processors.media',
-                'django.template.context_processors.request',
-                'django.template.context_processors.static',
-                'django.template.context_processors.tz',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(PROJECT_ROOT, "defivelo/templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.contrib.auth.context_processors.auth",
+                "django.template.context_processors.debug",
+                "django.template.context_processors.i18n",
+                "django.template.context_processors.media",
+                "django.template.context_processors.request",
+                "django.template.context_processors.static",
+                "django.template.context_processors.tz",
+                "django.contrib.messages.context_processors.messages",
             ],
-            'debug': DEBUG
+            "debug": DEBUG,
         },
     },
 ]
 
 COMPRESS_PRECOMPILERS = (
-    ('text/x-scss',
-     os.path.join(
-         get_env_variable('VIRTUAL_ENV',
-                          os.path.join(PROJECT_ROOT, 'venv')
-                          ),
-         'bin', 'sassc') + ' {infile} {outfile}'),
+    (
+        "text/x-scss",
+        os.path.join(
+            get_env_variable("VIRTUAL_ENV", os.path.join(PROJECT_ROOT, "venv")),
+            "bin",
+            "sassc",
+        )
+        + " {infile} {outfile}",
+    ),
 )
 COMPRESS_OFFLINE = True
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-DATABASES = {
-    'default': dj_database_url.parse(get_env_variable('DATABASE_URL'))
-}
+DATABASES = {"default": dj_database_url.parse(get_env_variable("DATABASE_URL"))}
 
 SITE_ID = 1
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 # Internationalization
-LANGUAGE_CODE = 'fr'
-TIME_ZONE = 'Europe/Zurich'
+LANGUAGE_CODE = "fr"
+TIME_ZONE = "Europe/Zurich"
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-DATE_FORMAT = 'j F Y'
-DATE_FORMAT_SHORT = 'j.m'
-DATE_FORMAT_COMPACT = 'j.m.y'
-TIME_FORMAT = r'G\hi'
-TIME_FORMAT_SHORT = 'G:i'
+DATE_FORMAT = "j F Y"
+DATE_FORMAT_SHORT = "j.m"
+DATE_FORMAT_COMPACT = "j.m.y"
+TIME_FORMAT = r"G\hi"
+TIME_FORMAT_SHORT = "G:i"
 
 LANGUAGES = (
-    ('fr', gettext('French')),
-    ('de', gettext('German')),
+    ("fr", gettext("French")),
+    ("de", gettext("German")),
 )
 
-COUNTRIES_FIRST = ['CH', ]
+COUNTRIES_FIRST = [
+    "CH",
+]
 
-PHONENUMBER_DEFAULT_REGION = 'CH'
+PHONENUMBER_DEFAULT_REGION = "CH"
 
-PARLER_LANGUAGES = {
-    SITE_ID: (
-        [{'code': lang[0]} for lang in LANGUAGES]
-    ),
-    'default': {
-    }
-}
+PARLER_LANGUAGES = {SITE_ID: ([{"code": lang[0]} for lang in LANGUAGES]), "default": {}}
 
 # This allows you to put project-wide translations in the "locale" directory of
 # your project
-LOCALE_PATHS = (
-    os.path.join(PROJECT_ROOT, 'locale'),
-)
+LOCALE_PATHS = (os.path.join(PROJECT_ROOT, "locale"),)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
-STATIC_URL = get_env_variable('STATIC_URL', '/static/')
+STATIC_URL = get_env_variable("STATIC_URL", "/static/")
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # This is usually not used in a dev env, hence the default value
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = get_env_variable('STATIC_ROOT',
-                               os.path.join(PROJECT_ROOT, 'static_files'))
+STATIC_ROOT = get_env_variable(
+    "STATIC_ROOT", os.path.join(PROJECT_ROOT, "static_files")
+)
 
 STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT, "defivelo/static"),
@@ -245,41 +221,41 @@ STATICFILES_FINDERS = (
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = get_env_variable('MEDIA_URL', '/media/')
+MEDIA_URL = get_env_variable("MEDIA_URL", "/media/")
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = get_env_variable('MEDIA_ROOT', '/tmp/static/media')
+MEDIA_ROOT = get_env_variable("MEDIA_ROOT", "/tmp/static/media")
 
 # Adapt Stronghold for allauth
 STRONGHOLD_PUBLIC_URLS = [
-    r'^/admin/.*$',   # Administration
-    r'^/accounts/.*$',  # Login
-    r'^/agpl-.*$',  # License
+    r"^/admin/.*$",  # Administration
+    r"^/accounts/.*$",  # Login
+    r"^/agpl-.*$",  # License
 ]
 
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
-    'django.contrib.auth.backends.ModelBackend',
+    "django.contrib.auth.backends.ModelBackend",
     # `allauth` specific authentication methods, such as login by e-mail
-    'allauth.account.auth_backends.AuthenticationBackend',
+    "allauth.account.auth_backends.AuthenticationBackend",
 )
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 
 TINYMCE_DEFAULT_CONFIG = {
-    'theme' : "advanced",
-    'theme_advanced_toolbar_location' : "bottom",
-    'theme_advanced_toolbar_align' : "center",
-    'theme_advanced_statusbar_location' : "none",
-    'theme_advanced_buttons1' : "bold,italic,underline,strikethrough,|,undo,redo,|,link,unlink,|,bullist,numlist,|,cleanup",
-    'theme_advanced_buttons2' : "",
-    'theme_advanced_buttons3' : "",
-    'plugins': "autolink,",
-    'cleanup_on_startup': True,
+    "theme": "advanced",
+    "theme_advanced_toolbar_location": "bottom",
+    "theme_advanced_toolbar_align": "center",
+    "theme_advanced_statusbar_location": "none",
+    "theme_advanced_buttons1": "bold,italic,underline,strikethrough,|,undo,redo,|,link,unlink,|,bullist,numlist,|,cleanup",
+    "theme_advanced_buttons2": "",
+    "theme_advanced_buttons3": "",
+    "plugins": "autolink,",
+    "cleanup_on_startup": True,
 }
 TINYMCE_JS_URL = os.path.join(STATIC_URL, "tiny_mce/tiny_mce.js")
 TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, "tiny_mce")
@@ -288,15 +264,15 @@ TINYMCE_COMPRESSOR = True
 
 def defivelo_user_display(u):
     if u.first_name and u.last_name:
-        return u'{first} {last}'.format(first=u.first_name, last=u.last_name)
+        return "{first} {last}".format(first=u.first_name, last=u.last_name)
     else:
         return u.email
 
 
 ACCOUNT_USER_DISPLAY = defivelo_user_display
-ACCOUNT_ADAPTER = 'defivelo.accounts.NoSignupAccountAdapter'
+ACCOUNT_ADAPTER = "defivelo.accounts.NoSignupAccountAdapter"
 
-SENTRY_DSN = get_env_variable('SENTRY_DSN', '')
+SENTRY_DSN = get_env_variable("SENTRY_DSN", "")
 
 if SENTRY_DSN:
     import sentry_sdk
@@ -305,32 +281,36 @@ if SENTRY_DSN:
     sentry_sdk.init(
         dsn=SENTRY_DSN,
         integrations=[DjangoIntegration()],
-        environment=get_env_variable('SENTRY_ENVIRONMENT', '')
+        environment=get_env_variable("SENTRY_ENVIRONMENT", ""),
     )
 
 
-ROLEPERMISSIONS_MODULE = 'defivelo.roles'
+ROLEPERMISSIONS_MODULE = "defivelo.roles"
 
 # Email sender settings
-SERVER_EMAIL = get_env_variable('SERVER_EMAIL', 'noreply@defi-velo.ch')
-DEFAULT_FROM_EMAIL = \
-    get_env_variable('DEFAULT_FROM_EMAIL', 'noreply@defi-velo.ch')
+SERVER_EMAIL = get_env_variable("SERVER_EMAIL", "noreply@defi-velo.ch")
+DEFAULT_FROM_EMAIL = get_env_variable("DEFAULT_FROM_EMAIL", "noreply@defi-velo.ch")
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = "/"
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 2048  # Up from '1000'
 
-VCS_VERSION = get_env_variable('VCS_VERSION', '0')
-VCS_COMMIT = get_env_variable('VCS_COMMIT', '0')
+VCS_VERSION = get_env_variable("VCS_VERSION", "0")
+VCS_COMMIT = get_env_variable("VCS_COMMIT", "0")
 
-if VCS_VERSION == '0':
+if VCS_VERSION == "0":
     import subprocess
+
     try:
-        VCS_VERSION = subprocess.check_output(["git", "describe", "HEAD"])
-        VCS_COMMIT = subprocess.check_output(["git", "rev-parse", "HEAD"])
-    except (IOError, subprocess.CalledProcessError):
-        VCS_VERSION = 'undefined'
-        VCS_COMMIT = 'HEAD'
+        VCS_VERSION = subprocess.check_output(
+            ["git", "describe", "HEAD"], encoding="utf8"
+        )
+        VCS_COMMIT = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], encoding="utf8"
+        )
+    except (IOError, subprocess.CalledProcessError, UnicodeDecodeError):
+        VCS_VERSION = "undefined"
+        VCS_COMMIT = "HEAD"
 
 try:
     from django_agpl import app_settings as agpl_settings
@@ -339,23 +319,31 @@ try:
     AGPL_ROOT = PROJECT_ROOT
 
     # Prefix of generated filename
-    AGPL_FILENAME_PREFIX = 'defivelo-intranet'
+    AGPL_FILENAME_PREFIX = "defivelo-intranet"
 
     # Directories to exclude from download tree (optional)
-    AGPL_EXCLUDE_DIRS = agpl_settings.EXCLUDE_DIRS + \
-        [r'\.tox$',
-         r'\.kdev4$',
-         r'^__pycache__$',
-         r'\.vagrant$', r'^virtualization',
-         r'^ext',
-         r'^static_files$', r'^venv$',
-         r'^envdir$']
+    AGPL_EXCLUDE_DIRS = agpl_settings.EXCLUDE_DIRS + [
+        r"\.tox$",
+        r"\.kdev4$",
+        r"^__pycache__$",
+        r"\.vagrant$",
+        r"^virtualization",
+        r"^ext",
+        r"^static_files$",
+        r"^venv$",
+        r"^envdir$",
+    ]
 
     # Files to exclude from download tree (optional)
-    AGPL_EXCLUDE_FILES = agpl_settings.EXCLUDE_FILES + \
-        [r'.mo$', r'~$', r'pgdump$', r'pg$', r'kdev4$']
+    AGPL_EXCLUDE_FILES = agpl_settings.EXCLUDE_FILES + [
+        r".mo$",
+        r"~$",
+        r"pgdump$",
+        r"pg$",
+        r"kdev4$",
+    ]
 
     # Prefix to create inside download tree (optional)
-    AGPL_TREE_PREFIX = 'defivelo-intranet'
+    AGPL_TREE_PREFIX = "defivelo-intranet"
 except ImportError:
     pass  # Sorry

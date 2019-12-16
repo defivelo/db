@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('begin', models.DateField(verbose_name='Début')),
                 ('end', models.DateField(verbose_name='Fin')),
                 ('cantons', multiselectfield.db.fields.MultiSelectField(choices=[('AG', 'Aargau'), ('AI', 'Appenzell Innerrhoden'), ('AR', 'Appenzell Ausserrhoden'), ('BS', 'Basel-Stadt'), ('BL', 'Basel-Land'), ('BE', 'Berne'), ('FR', 'Fribourg'), ('GE', 'Geneva'), ('GL', 'Glarus'), ('GR', 'Graubuenden'), ('JU', 'Jura'), ('LU', 'Lucerne'), ('NE', 'Neuchatel'), ('NW', 'Nidwalden'), ('OW', 'Obwalden'), ('SH', 'Schaffhausen'), ('SZ', 'Schwyz'), ('SO', 'Solothurn'), ('SG', 'St. Gallen'), ('TG', 'Thurgau'), ('TI', 'Ticino'), ('UR', 'Uri'), ('VS', 'Valais'), ('VD', 'Vaud'), ('ZG', 'Zug'), ('ZH', 'Zurich')], max_length=77, verbose_name='Cantons')),
-                ('leader', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, verbose_name='Chargé de projet', blank=True)),
+                ('leader', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, verbose_name='Chargé de projet', blank=True, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name_plural': 'Saison',

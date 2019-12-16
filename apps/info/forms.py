@@ -27,4 +27,5 @@ class CantonFilterForm(forms.Form):
     canton = forms.MultipleChoiceField(
         label=_("Cantons"),
         choices=sorted(DV_STATE_CHOICES_WITH_DEFAULT),
-        required=False)
+        required=False,
+    )

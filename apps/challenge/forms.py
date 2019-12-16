@@ -17,9 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from bootstrap3_datetime.widgets import DateTimePicker
-from dal.forward import Const as dal_const
-from dal_select2.widgets import ModelSelect2
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -27,19 +24,42 @@ from django.contrib.staticfiles import finders
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.template.defaultfilters import date
-from django.utils.translation import get_language, ugettext_lazy as _
+from django.utils.translation import get_language
+from django.utils.translation import ugettext_lazy as _
+
+from bootstrap3_datetime.widgets import DateTimePicker
+from dal.forward import Const as dal_const
+from dal_select2.widgets import ModelSelect2
 from localflavor.ch.forms import CHStateSelect
 
-from apps.common.forms import CHPhoneNumberField, SwissDateField, SwissTimeField, UserAutoComplete
+from apps.common.forms import (
+    CHPhoneNumberField,
+    SwissDateField,
+    SwissTimeField,
+    UserAutoComplete,
+)
 from apps.user import FORMATION_KEYS, FORMATION_M2, STATE_CHOICES_WITH_DEFAULT
 from apps.user.models import USERSTATUS_DELETED
 
 from . import (
-    AVAILABILITY_FIELDKEY, CHOICE_CHOICES, CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, CHOSEN_AS_LEGACY,
-    CHOSEN_AS_NOT, CHOSEN_AS_REPLACEMENT, MAX_MONO1_PER_QUALI, SEASON_WORKWISH_FIELDKEY, STAFF_FIELDKEY,
+    AVAILABILITY_FIELDKEY,
+    CHOICE_CHOICES,
+    CHOSEN_AS_ACTOR,
+    CHOSEN_AS_HELPER,
+    CHOSEN_AS_LEADER,
+    CHOSEN_AS_LEGACY,
+    CHOSEN_AS_NOT,
+    CHOSEN_AS_REPLACEMENT,
+    MAX_MONO1_PER_QUALI,
+    SEASON_WORKWISH_FIELDKEY,
+    STAFF_FIELDKEY,
 )
 from .fields import (
-    ActorChoiceField, BSAvailabilityRadioSelect, BSChoiceRadioSelect, HelpersChoiceField, LeaderChoiceField,
+    ActorChoiceField,
+    BSAvailabilityRadioSelect,
+    BSChoiceRadioSelect,
+    HelpersChoiceField,
+    LeaderChoiceField,
 )
 from .models import Qualification, Season, Session
 from .models.availability import HelperSessionAvailability
@@ -47,36 +67,33 @@ from .models.availability import HelperSessionAvailability
 
 class SeasonForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        cantons = kwargs.pop('cantons', None)
-        kwargs.pop('season', None)
+        cantons = kwargs.pop("cantons", None)
+        kwargs.pop("season", None)
         super(SeasonForm, self).__init__(**kwargs)
         if cantons:
             # Only permit edition within the allowed cantons
-            choices = self.fields['cantons'].choices
-            choices = (
-                (k, v) for (k, v)
-                in choices
-                if k in cantons
-            )
-            self.fields['cantons'].choices = choices
+            choices = self.fields["cantons"].choices
+            choices = ((k, v) for (k, v) in choices if k in cantons)
+            self.fields["cantons"].choices = choices
 
-    year = forms.IntegerField(label=_('Année'),
-                              widget=DateTimePicker(
-                                {'placeholder': 'YYYY'},
-                                options={
-                                    "format": 'YYYY'}))
-    leader = LeaderChoiceField(label=_('Chargé·e de projet'),
-                               queryset=(
-                                   get_user_model().objects
-                                   .exclude(profile__status=USERSTATUS_DELETED)
-                                   .filter(managedstates__isnull=False)
-                                   .distinct()
-                                ),
-                               required=True)
+    year = forms.IntegerField(
+        label=_("Année"),
+        widget=DateTimePicker({"placeholder": "YYYY"}, options={"format": "YYYY"}),
+    )
+    leader = LeaderChoiceField(
+        label=_("Chargé·e de projet"),
+        queryset=(
+            get_user_model()
+            .objects.exclude(profile__status=USERSTATUS_DELETED)
+            .filter(managedstates__isnull=False)
+            .distinct()
+        ),
+        required=True,
+    )
 
     class Meta:
         model = Season
-        fields = ['year', 'season', 'cantons', 'state', 'leader']
+        fields = ["year", "season", "cantons", "state", "leader"]
 
 
 class Select2Mixin(object):
@@ -86,10 +103,13 @@ class Select2Mixin(object):
         medias = super(Select2Mixin, self).media
         new_js_order = []
         for path in medias._js:
-            if path == 'autocomplete_light/select2.js':
+            if path == "autocomplete_light/select2.js":
                 # The translation has to appear _before_ autocomplete_light instantiates
                 # select2
-                trad = 'autocomplete_light/vendor/select2/dist/js/i18n/%s.js' % get_language()
+                trad = (
+                    "autocomplete_light/vendor/select2/dist/js/i18n/%s.js"
+                    % get_language()
+                )
                 # Try getting it with the static finder
                 if finders.find(trad):
                     new_js_order.append(trad)
@@ -100,95 +120,112 @@ class Select2Mixin(object):
 
 class SessionForm(Select2Mixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        kwargs.pop('cantons', None)
-        self.season = kwargs.pop('season', None)
+        kwargs.pop("cantons", None)
+        self.season = kwargs.pop("season", None)
         super(SessionForm, self).__init__(**kwargs)
         if self.season.cantons:
             # Only permit orgas within the allowed cantons
-            qs = (
-                self.fields['orga'].queryset
-                .filter(address_canton__in=self.season.cantons)
+            qs = self.fields["orga"].queryset.filter(
+                address_canton__in=self.season.cantons
             )
-            self.fields['orga'].queryset = qs
+            self.fields["orga"].queryset = qs
         try:
-            self.fields['day'].widget.options['minDate'] = \
-                self.season.begin.strftime('%Y-%m-%d')
-            self.fields['day'].widget.options['maxDate'] = \
-                self.season.end.strftime('%Y-%m-%d')
+            self.fields["day"].widget.options["minDate"] = self.season.begin.strftime(
+                "%Y-%m-%d"
+            )
+            self.fields["day"].widget.options["maxDate"] = self.season.end.strftime(
+                "%Y-%m-%d"
+            )
         except Exception:
             pass
 
-    day = SwissDateField(label=_('Date'))
-    begin = SwissTimeField(label=_('Début'), required=False)
-    address_canton = forms.ChoiceField(label=_('Canton'),
-                                       widget=CHStateSelect,
-                                       choices=STATE_CHOICES_WITH_DEFAULT,
-                                       required=False)
-    apples = forms.CharField(label=_('Pommes'),
-                             required=False,
-                             widget=forms.TextInput(
-                                 {'placeholder': _(
-                                     'Organisation de la livraison de pommes '
-                                     '(quantité & logistique)'
-                                     )}))
-    helpers_time = SwissTimeField(label=_('Heure rendez-vous moniteurs'),
-                                  required=False)
-    superleader = UserAutoComplete(label=_('Moniteur + / Photographe'),
-                                   queryset=(
-                                       get_user_model().objects
-                                       .exclude(profile__status=USERSTATUS_DELETED)
-                                   ),
-                                   url='user-AllPersons-ac',
-                                   required=False)
-    bikes_phone = CHPhoneNumberField(label=_('N° de contact vélos'),
-                                     required=False)
+    day = SwissDateField(label=_("Date"))
+    begin = SwissTimeField(label=_("Début"), required=False)
+    address_canton = forms.ChoiceField(
+        label=_("Canton"),
+        widget=CHStateSelect,
+        choices=STATE_CHOICES_WITH_DEFAULT,
+        required=False,
+    )
+    apples = forms.CharField(
+        label=_("Pommes"),
+        required=False,
+        widget=forms.TextInput(
+            {
+                "placeholder": _(
+                    "Organisation de la livraison de pommes " "(quantité & logistique)"
+                )
+            }
+        ),
+    )
+    helpers_time = SwissTimeField(
+        label=_("Heure rendez-vous moniteurs"), required=False
+    )
+    superleader = UserAutoComplete(
+        label=_("Moniteur + / Photographe"),
+        queryset=(get_user_model().objects.exclude(profile__status=USERSTATUS_DELETED)),
+        url="user-AllPersons-ac",
+        required=False,
+    )
+    bikes_phone = CHPhoneNumberField(label=_("N° de contact vélos"), required=False)
 
     def clean_day(self):
-        day = self.cleaned_data['day']
+        day = self.cleaned_data["day"]
         if self.season.begin <= day <= self.season.end:
             return day
         raise forms.ValidationError(
-            _('La session doit être dans la saison'
-              ' (entre {begin} et {end})').format(
-                  begin=date(self.season.begin, settings.DATE_FORMAT),
-                  end=date(self.season.end, settings.DATE_FORMAT),
-                  ))
+            _("La session doit être dans la saison" " (entre {begin} et {end})").format(
+                begin=date(self.season.begin, settings.DATE_FORMAT),
+                end=date(self.season.end, settings.DATE_FORMAT),
+            )
+        )
 
     class Meta:
         model = Session
         labels = {
-            'orga': _('Établissement'),
+            "orga": _("Établissement"),
         }
-        fields = ['orga', 'day', 'begin', 'fallback_plan',
-                  'place',
-                  'address_street', 'address_no', 'address_zip',
-                  'address_city', 'address_canton',
-                  'superleader',
-                  'apples',
-                  'helpers_time', 'helpers_place',
-                  'bikes_concept', 'bikes_phone',
-                  'comments']
+        fields = [
+            "orga",
+            "day",
+            "begin",
+            "fallback_plan",
+            "place",
+            "address_street",
+            "address_no",
+            "address_zip",
+            "address_city",
+            "address_canton",
+            "superleader",
+            "apples",
+            "helpers_time",
+            "helpers_place",
+            "bikes_concept",
+            "bikes_phone",
+            "comments",
+        ]
 
 
 class QualificationFormQuick(forms.ModelForm):
     class Meta:
         model = Qualification
         widgets = {
-            'session': forms.HiddenInput,
-            'name': forms.HiddenInput,
-            'class_teacher_natel': forms.HiddenInput,
+            "session": forms.HiddenInput,
+            "name": forms.HiddenInput,
+            "class_teacher_natel": forms.HiddenInput,
         }
-        fields = ['session', 'name', 'class_teacher_natel']
+        fields = ["session", "name", "class_teacher_natel"]
 
 
 class QualificationForm(forms.ModelForm):
-    class_teacher_natel = CHPhoneNumberField(label=_('Natel enseignant'),
-                                             required=False)
+    class_teacher_natel = CHPhoneNumberField(
+        label=_("Natel enseignant"), required=False
+    )
 
     def __init__(self, *args, **kwargs):
-        session = kwargs.pop('session')
-        kwargs.pop('season', None)
-        kwargs.pop('cantons', None)
+        session = kwargs.pop("session")
+        kwargs.pop("season", None)
+        kwargs.pop("cantons", None)
         super(QualificationForm, self).__init__(*args, **kwargs)
         other_qualifs = session.qualifications.exclude(pk=self.instance.pk)
         # Construct chosen_as dict of arrays
@@ -204,37 +241,31 @@ class QualificationForm(forms.ModelForm):
         helpers = legacys + replacements + chosens.get(CHOSEN_AS_HELPER, [])
         actors = legacys + replacements + chosens.get(CHOSEN_AS_ACTOR, [])
 
-        available_staff = (
-            get_user_model().objects
-            .exclude(
-                Q(qualifs_mon2__in=other_qualifs) |
-                Q(qualifs_mon1__in=other_qualifs) |
-                Q(qualifs_actor__in=other_qualifs)
-            )
+        available_staff = get_user_model().objects.exclude(
+            Q(qualifs_mon2__in=other_qualifs)
+            | Q(qualifs_mon1__in=other_qualifs)
+            | Q(qualifs_actor__in=other_qualifs)
         )
-        self.fields['leader'] = LeaderChoiceField(
-            label=_('Moniteur 2'),
+        self.fields["leader"] = LeaderChoiceField(
+            label=_("Moniteur 2"),
             queryset=available_staff.filter(
-                pk__in=leaders,
-                profile__formation=FORMATION_M2,
+                pk__in=leaders, profile__formation=FORMATION_M2,
             ),
             required=False,
             session=session,
         )
-        self.fields['helpers'] = HelpersChoiceField(
-            label=_('Moniteurs 1'),
+        self.fields["helpers"] = HelpersChoiceField(
+            label=_("Moniteurs 1"),
             queryset=available_staff.filter(
-                pk__in=helpers,
-                profile__formation__in=FORMATION_KEYS
+                pk__in=helpers, profile__formation__in=FORMATION_KEYS
             ),
             required=False,
             session=session,
         )
-        self.fields['actor'] = ActorChoiceField(
-            label=_('Intervenant'),
+        self.fields["actor"] = ActorChoiceField(
+            label=_("Intervenant"),
             queryset=available_staff.filter(
-                pk__in=actors,
-                profile__actor_for__isnull=False
+                pk__in=actors, profile__actor_for__isnull=False
             ),
             required=False,
             session=session,
@@ -242,14 +273,14 @@ class QualificationForm(forms.ModelForm):
 
     def clean_helpers(self):
         # Check that we don't have too many moniteurs 1
-        helpers = self.cleaned_data.get('helpers')
+        helpers = self.cleaned_data.get("helpers")
         if helpers and helpers.count() > MAX_MONO1_PER_QUALI:
             raise ValidationError(
-                _('Pas plus de %s moniteurs 1 !') % MAX_MONO1_PER_QUALI
+                _("Pas plus de %s moniteurs 1 !") % MAX_MONO1_PER_QUALI
             )
         # Check that all moniteurs are unique
         all_leaders_pk = []
-        leader = self.cleaned_data.get('leader')
+        leader = self.cleaned_data.get("leader")
         if leader:
             all_leaders_pk.append(leader.pk)
         if helpers:
@@ -257,89 +288,101 @@ class QualificationForm(forms.ModelForm):
                 all_leaders_pk.append(helper.pk)
         # Check unicity
         seen_pk = set()
-        if len([
-            x for x in all_leaders_pk
-            if x not in seen_pk and not seen_pk.add(x)
-        ]) < len(all_leaders_pk):
-            raise ValidationError(_('Il y a des moniteurs à double !'),
-                                  code='double-helpers'
-                                  )
+        if len(
+            [x for x in all_leaders_pk if x not in seen_pk and not seen_pk.add(x)]
+        ) < len(all_leaders_pk):
+            raise ValidationError(
+                _("Il y a des moniteurs à double !"), code="double-helpers"
+            )
         return helpers
 
     def clean_actor(self):
         # Check that the picked actor corresponds to the activity_C
-        actor = self.cleaned_data.get('actor')
-        activity_C = self.cleaned_data.get('activity_C')
+        actor = self.cleaned_data.get("actor")
+        activity_C = self.cleaned_data.get("activity_C")
         if actor:
             if activity_C:
                 if not actor.profile.actor_for.filter(id=activity_C.id).exists():
                     raise ValidationError(
-                        _("L'intervenant n'est pas qualifié pour la rencontre "
-                            "prévue !"),
-                        code='unqualified-actor')
-            helpers = self.cleaned_data.get('helpers')
+                        _(
+                            "L'intervenant n'est pas qualifié pour la rencontre "
+                            "prévue !"
+                        ),
+                        code="unqualified-actor",
+                    )
+            helpers = self.cleaned_data.get("helpers")
             if helpers and helpers.filter(id=actor.id).exists():
                 raise ValidationError(
                     _("L'intervenant ne peut pas aussi être moniteur !"),
-                    code='helper-actor')
+                    code="helper-actor",
+                )
         return actor
 
     def clean(self):
         # Check that there are <= helmets or bikes than participants
-        n_participants = self.cleaned_data.get('n_participants')
+        n_participants = self.cleaned_data.get("n_participants")
         if not n_participants:
             n_participants = 0
-        n_bikes = self.cleaned_data.get('n_bikes')
+        n_bikes = self.cleaned_data.get("n_bikes")
         if n_bikes and int(n_bikes) > int(n_participants):
             raise ValidationError(
-                _("Il y a trop de vélos prévus !"),
-                code='too-many-bikes')
-        n_helmets = self.cleaned_data.get('n_helmets')
+                _("Il y a trop de vélos prévus !"), code="too-many-bikes"
+            )
+        n_helmets = self.cleaned_data.get("n_helmets")
         if n_helmets and int(n_helmets) > int(n_participants):
             raise ValidationError(
-                _("Il y a trop de casques prévus !"),
-                code='too-many-helmets')
+                _("Il y a trop de casques prévus !"), code="too-many-helmets"
+            )
 
         return self.cleaned_data
 
     class Meta:
         model = Qualification
-        widgets = {
-            'session': forms.HiddenInput
-        }
-        fields = ['session', 'name',
-                  'class_teacher_fullname', 'class_teacher_natel',
-                  'n_participants', 'n_bikes', 'n_helmets',
-                  'leader', 'helpers',
-                  'activity_A', 'activity_B', 'activity_C', 'actor',
-                  'comments']
+        widgets = {"session": forms.HiddenInput}
+        fields = [
+            "session",
+            "name",
+            "class_teacher_fullname",
+            "class_teacher_natel",
+            "n_participants",
+            "n_bikes",
+            "n_helmets",
+            "leader",
+            "helpers",
+            "activity_A",
+            "activity_B",
+            "activity_C",
+            "actor",
+            "comments",
+        ]
 
 
 class SeasonNewHelperAvailabilityForm(Select2Mixin, forms.Form):
     def __init__(self, *args, **kwargs):
-        cantons = kwargs.pop('cantons', [])
+        cantons = kwargs.pop("cantons", [])
         super(SeasonNewHelperAvailabilityForm, self).__init__(*args, **kwargs)
-        self.fields['helper'] = \
-            forms.ModelChoiceField(
-                label=_('Disponibilités pour :'),
-                queryset=get_user_model().objects.filter(
-                    Q(profile__formation__in=FORMATION_KEYS) |
-                    Q(profile__actor_for__isnull=False)
-                ).exclude(profile__status=USERSTATUS_DELETED)
-                .distinct(),
-                widget=ModelSelect2(
-                    url='user-PersonsRelevantForSessions-ac',
-                    forward=[dal_const(cantons, 'cantons'), ]
-                )
+        self.fields["helper"] = forms.ModelChoiceField(
+            label=_("Disponibilités pour :"),
+            queryset=get_user_model()
+            .objects.filter(
+                Q(profile__formation__in=FORMATION_KEYS)
+                | Q(profile__actor_for__isnull=False)
             )
+            .exclude(profile__status=USERSTATUS_DELETED)
+            .distinct(),
+            widget=ModelSelect2(
+                url="user-PersonsRelevantForSessions-ac",
+                forward=[dal_const(cantons, "cantons"),],
+            ),
+        )
 
 
 class SeasonAvailabilityForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        self.season = kwargs.pop('instance')
-        self.potential_helpers = kwargs.pop('potential_helpers')
-        kwargs.pop('season', None)
-        kwargs.pop('cantons', None)
+        self.season = kwargs.pop("instance")
+        self.potential_helpers = kwargs.pop("potential_helpers")
+        kwargs.pop("season", None)
+        kwargs.pop("cantons", None)
         super(SeasonAvailabilityForm, self).__init__(*args, **kwargs)
 
         if self.potential_helpers:
@@ -355,23 +398,26 @@ class SeasonAvailabilityForm(forms.Form):
                     )
 
                     for session in self.season.sessions_with_qualifs:
-                        availkey = AVAILABILITY_FIELDKEY.format(hpk=helper.pk,
-                                                                spk=session.pk)
-                        staffkey = STAFF_FIELDKEY.format(hpk=helper.pk,
-                                                         spk=session.pk)
+                        availkey = AVAILABILITY_FIELDKEY.format(
+                            hpk=helper.pk, spk=session.pk
+                        )
+                        staffkey = STAFF_FIELDKEY.format(hpk=helper.pk, spk=session.pk)
                         try:
                             fieldinit = self.initial[availkey]
                         except KeyError:
-                            fieldinit = ''
+                            fieldinit = ""
                         try:
                             forbid_absence = self.initial[staffkey]
                         except KeyError:
                             forbid_absence = False
                         # Trick to pass the 'chosen' information through
                         self.fields[availkey] = forms.ChoiceField(
-                            choices=HelperSessionAvailability.AVAILABILITY_CHOICES,  # NOQA
-                            widget=BSAvailabilityRadioSelect(forbid_absence=forbid_absence),
-                            required=False, initial=fieldinit
+                            choices=HelperSessionAvailability.AVAILABILITY_CHOICES,
+                            widget=BSAvailabilityRadioSelect(
+                                forbid_absence=forbid_absence
+                            ),
+                            required=False,
+                            initial=fieldinit,
                         )
 
     def save(self):
@@ -380,20 +426,18 @@ class SeasonAvailabilityForm(forms.Form):
 
 class SeasonStaffChoiceForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        self.season = kwargs.pop('instance')
-        self.available_helpers = kwargs.pop('available_helpers')
-        kwargs.pop('season', None)
-        kwargs.pop('cantons', None)
+        self.season = kwargs.pop("instance")
+        self.available_helpers = kwargs.pop("available_helpers")
+        kwargs.pop("season", None)
+        kwargs.pop("cantons", None)
         super(SeasonStaffChoiceForm, self).__init__(*args, **kwargs)
 
         if self.available_helpers:
             for helper_category, helpers in self.available_helpers:
                 for helper in helpers:
                     for session in self.season.sessions_with_qualifs:
-                        AVAILABILITY_FIELDKEY.format(
-                            hpk=helper.pk, spk=session.pk)
-                        staffkey = STAFF_FIELDKEY.format(hpk=helper.pk,
-                                                         spk=session.pk)
+                        AVAILABILITY_FIELDKEY.format(hpk=helper.pk, spk=session.pk)
+                        staffkey = STAFF_FIELDKEY.format(hpk=helper.pk, spk=session.pk)
                         try:
                             fieldinit = self.initial[staffkey]
                         except KeyError:
@@ -407,13 +451,17 @@ class SeasonStaffChoiceForm(forms.Form):
                         if helper.profile.formation == FORMATION_M2:
                             available_choices.append(CHOSEN_AS_LEADER)
                         self.fields[staffkey] = forms.ChoiceField(
-                            choices=[c for c in list(CHOICE_CHOICES) if c[0] in available_choices],
+                            choices=[
+                                c
+                                for c in list(CHOICE_CHOICES)
+                                if c[0] in available_choices
+                            ],
                             widget=BSChoiceRadioSelect(
-                                attrs={'horizontal': True,
-                                       'class': 'btn-group-xs'},
-                                user_assignment=session.user_assignment(helper)
+                                attrs={"horizontal": True, "class": "btn-group-xs"},
+                                user_assignment=session.user_assignment(helper),
                             ),
-                            required=False, initial=fieldinit
+                            required=False,
+                            initial=fieldinit,
                         )
 
     def save(self):

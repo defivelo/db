@@ -22,10 +22,11 @@ from django.conf.urls import url
 from .views import ArticleCreateView, ArticleDeleteView, ArticleUpdateView
 
 urlpatterns = [
-    url(r'^new/$', ArticleCreateView.as_view(),
-        name="article-create"),
-    url(r'^(?P<pk>[0-9]+)/update/$', ArticleUpdateView.as_view(),
-        name="article-update"),
-    url(r'^(?P<pk>[0-9]+)/delete/$', ArticleDeleteView.as_view(),
-        name="article-delete"),
+    url(r"^new/$", ArticleCreateView.as_view(), name="article-create"),
+    url(
+        r"^(?P<pk>[0-9]+)/update/$", ArticleUpdateView.as_view(), name="article-update"
+    ),
+    url(
+        r"^(?P<pk>[0-9]+)/delete/$", ArticleDeleteView.as_view(), name="article-delete"
+    ),
 ]
