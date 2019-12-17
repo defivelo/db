@@ -1,4 +1,5 @@
 import functools
+import inspect
 import os
 import random
 import subprocess
@@ -12,41 +13,42 @@ from fabric.connection import Connection
 from invoke import Exit
 from invoke.exceptions import UnexpectedExit
 
-
 ENVIRONMENTS = {
-    'prod': {
-        'root': '/var/www/intranet.defi-velo.ch/prod/',
-        'host': 'wpy10809@onhp-python1.iron.bsa.oriented.ch:29992',
-        'pid': '/run/uwsgi/app/intranet.defi-velo.ch/pid',
-        'ini': '/etc/uwsgi/apps-enabled/intranet.defi-velo.ch.ini',
-        'settings': {
-            'ALLOWED_HOSTS': '\n'.join(['intranet.defi-velo.ch']),
-            'MEDIA_URL': '/media/',
-            'STATIC_URL': '/static/',
-            'MEDIA_ROOT': '/var/www/intranet.defi-velo.ch/prod/media/',
-            'STATIC_ROOT': '/var/www/intranet.defi-velo.ch/prod/static/',
-            'SITE_DOMAIN': 'intranet.defi-velo.ch',
-            'VIRTUAL_ENV': '/var/www/intranet.defi-velo.ch/prod/venv',
-        }
+    "prod": {
+        "root": "/var/www/intranet.defi-velo.ch/prod/",
+        "host": "wpy10809@onhp-python1.iron.bsa.oriented.ch:29992",
+        "pid": "/run/uwsgi/app/intranet.defi-velo.ch/pid",
+        "ini": "/etc/uwsgi/apps-enabled/intranet.defi-velo.ch.ini",
+        "settings": {
+            "ALLOWED_HOSTS": "\n".join(["intranet.defi-velo.ch"]),
+            "MEDIA_URL": "/media/",
+            "STATIC_URL": "/static/",
+            "MEDIA_ROOT": "/var/www/intranet.defi-velo.ch/prod/media/",
+            "STATIC_ROOT": "/var/www/intranet.defi-velo.ch/prod/static/",
+            "SITE_DOMAIN": "intranet.defi-velo.ch",
+            "VIRTUAL_ENV": "/var/www/intranet.defi-velo.ch/prod/venv",
+        },
     },
-    'staging': {
-        'root': '/var/www/intranet.defi-velo.ch/staging/',
-        'host': 'wpy10809@onhp-python1.iron.bsa.oriented.ch:29992',
-        'pid': '/run/uwsgi/app/staging.intranet.defi-velo.ch/pid',
-        'ini': '/etc/uwsgi/apps-enabled/staging.intranet.defi-velo.ch.ini',
-        'settings': {
-            'ALLOWED_HOSTS': '\n'.join(['staging.intranet.defi-velo.ch', 'defivelo.test.odyx.org']),
-            'MEDIA_URL': '/media/',
-            'STATIC_URL': '/static/',
-            'MEDIA_ROOT': '/var/www/intranet.defi-velo.ch/staging/media/',
-            'STATIC_ROOT': '/var/www/intranet.defi-velo.ch/staging/static/',
-            'SITE_DOMAIN': 'staging.intranet.defi-velo.ch',
-            'VIRTUAL_ENV': '/var/www/intranet.defi-velo.ch/staging/venv',
-        }
-    }
+    "staging": {
+        "root": "/var/www/intranet.defi-velo.ch/staging/",
+        "host": "wpy10809@onhp-python3.iron.bsa.oriented.ch:29992",
+        "pid": "/run/uwsgi/app/staging.intranet.defi-velo.ch/pid",
+        "ini": "/etc/uwsgi/apps-enabled/staging.intranet.defi-velo.ch.ini",
+        "settings": {
+            "ALLOWED_HOSTS": "\n".join(
+                ["staging.intranet.defi-velo.ch", "defivelo.test.odyx.org"]
+            ),
+            "MEDIA_URL": "/media/",
+            "STATIC_URL": "/static/",
+            "MEDIA_ROOT": "/var/www/intranet.defi-velo.ch/staging/media/",
+            "STATIC_ROOT": "/var/www/intranet.defi-velo.ch/staging/static/",
+            "SITE_DOMAIN": "staging.intranet.defi-velo.ch",
+            "VIRTUAL_ENV": "/var/www/intranet.defi-velo.ch/staging/venv",
+        },
+    },
 }
 
-project_name = 'defivelo'
+project_name = "defivelo"
 
 
 def remote(task_func):
@@ -61,6 +63,7 @@ def remote(task_func):
             raise RuntimeError("Trying to run a remote task with no environment loaded")
         return task_func(ctx, *args, **kwargs)
 
+    call_task_with_connection.__signature__ = inspect.signature(task_func)
     return call_task_with_connection
 
 
@@ -235,7 +238,7 @@ class CustomConnection(Connection):
         Return the list of the files in the given directory, omitting . and ...
         """
         with self.cd(path):
-            files = self.run("for i in *; do echo $i; done").stdout.strip()
+            files = self.run("for i in *; do echo $i; done", hide=True).stdout.strip()
             files_list = files.replace("\r", "").split("\n")
 
         return files_list
@@ -328,21 +331,17 @@ def import_db(c, dump_file=None):
 @remote
 def deploy(c):
     """
-    Deploy the project for the first time. This will create the directory
-    structure, push the project and set the basic settings.
-
-    This task needs to be called alongside an environment task, eg. ``fab prod
-    bootstrap``.
+    Execute all deployment steps
     """
     c.conn.create_structure()
     push_code_update(c, "HEAD")
     sync_settings(c)
     c.conn.dump_db(c.conn.backups_root)
     install_requirements(c)
-    compile_assets(c)
     dj_collect_static(c)
+    django_compress(c)
     dj_migrate_database(c)
-    reload_uwsgi(c)
+    restart_uwsgi(c)
     c.conn.clean_old_database_backups(nb_backups_to_keep=10)
 
 
@@ -395,6 +394,15 @@ def push_code_update(c, git_ref):
         c.conn.git("branch -d FABHEAD", hide=True)
         c.conn.git("submodule update --init", hide=True)
 
+        vcs_commit = subprocess.run(
+            ["git", "rev-parse", git_ref], stdout=subprocess.PIPE
+        ).stdout.decode()
+        vcs_version = subprocess.run(
+            ["git", "describe", "--tags", git_ref], stdout=subprocess.PIPE
+        ).stdout.decode()
+        c.conn.set_setting("VCS_COMMIT", vcs_commit)
+        c.conn.set_setting("VCS_VERSION", vcs_version)
+
 
 @task
 @remote
@@ -438,7 +446,9 @@ def sync_settings(c):
         c.conn.set_setting(setting, force=False)
 
     c.conn.set_setting(
-        "DJANGO_SETTINGS_MODULE", value="%s.config.settings.base" % project_name, force=False
+        "DJANGO_SETTINGS_MODULE",
+        value="%s.config.settings.base" % project_name,
+        force=False,
     )
     c.conn.set_setting("SECRET_KEY", value=generate_secret_key(), force=False)
 
@@ -463,40 +473,27 @@ def dj_migrate_database(c):
 
 @task
 @remote
-def reload_uwsgi(c):
+def restart_uwsgi(c):
     """
-    Django: Migrate the database
+    Restart uWSGI processes
     """
-    c.conn.run_in_project_root(
-        "touch %s"
-        % os.path.join(c.conn.project_root, project_name, "config", "wsgi.py")
-    )
+    c.conn.run(f"uwsgi --ini '{c.conn.config.ini}'")
 
 
 @task
 @remote
-def compile_assets(c):
-    subprocess.run(["npm", "install"])
-    subprocess.run(["npm", "run", "build"])
+def django_compress(c):
+    """
+    Minify assets with django-compressor
+    """
+    c.conn.manage_py("compress --force")
 
-    subprocess.run(
-        [
-            "rsync",
-            "-r",
-            "-e",
-            "ssh -p {port}".format(port=c.conn.port),
-            "--exclude",
-            "*.map",
-            "--exclude",
-            "*.swp",
-            "static/dist/",
-            "{user}@{host}:{path}".format(
-                host=c.conn.host,
-                user=c.conn.user,
-                path=os.path.join(c.conn.site_root, "static"),
-            ),
-        ]
-    )
+
+@task
+@remote
+def compile_messages(c):
+    c.conn.manage_py("compilemessages -l fr -l de -l en -l it")
+
 
 # Environment handling stuff
 ############################
