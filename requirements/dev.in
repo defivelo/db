@@ -6,5 +6,5 @@ django-extensions
 Werkzeug
 
 # Deployment requirements
-Fabric3
-gitric
+fabric
+dulwich
