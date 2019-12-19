@@ -12,7 +12,7 @@ defusedxml==0.6.0         # via odfpy, python3-openid
 diff-match-patch==20181111  # via django-import-export
 dj-database-url==0.5.0
 django-agpl==4.0.0
-django-allauth==0.40.0
+django-allauth==0.41.0
 django-appconf==1.0.3     # via django-compressor
 django-autocomplete-light==3.5.0
 django-bootstrap3-datetimepicker-2==2.8.2
@@ -24,14 +24,14 @@ django-filter==2.2.0
 django-import-export==2.0
 django-localflavor==2.2
 django-memoize==2.2.1
-django-multiselectfield==0.1.10
+django-multiselectfield==0.1.11
 django-parler==2.0
 django-phonenumber-field==4.0.0
 django-role-permissions==2.2.1
 django-simple-history==2.8.0
 django-taggit==1.2.0
 django-tinymce==2.8.0
-django==2.2.8
+django==2.2.9
 et-xmlfile==1.0.1         # via openpyxl
 idna==2.8                 # via requests
 jdcal==1.4.1              # via openpyxl
