@@ -20,11 +20,9 @@ from __future__ import unicode_literals
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.staticfiles import finders
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.template.defaultfilters import date
-from django.utils.translation import get_language
 from django.utils.translation import ugettext_lazy as _
 
 from bootstrap3_datetime.widgets import DateTimePicker
