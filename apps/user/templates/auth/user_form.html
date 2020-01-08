@@ -110,15 +110,13 @@
 {{ form.media.js }}
 <script type="text/javascript">
 $(function () {
-    {% trans "Vers le calculateur d'IBAN" as toiban %}
-    {% trans 'https://www.postfinance.ch/fr/particuliers/assistance/outils-calculateurs/calculateur-iban.html' as toibanlink %}
     $("#id_iban + span.input-group-addon").attr('data-toggle', 'tooltip')
                                       .attr('data-placement', 'right')
-                                      .attr('title', '{{ toiban|escapejs }}')
+                                      .attr('title', window.defivelo.ibanTooltipTitle)
                                       .tooltip()
                                       .css('cursor', 'pointer')
                                       .click(function() {
-                                         window.open("{{ toibanlink|escapejs }}");
+                                         window.open(window.defivelo.ibanTooltipLink);
                                       });
 })
 
@@ -151,4 +149,15 @@ dvLanguagesCannotBeMain();
 noWorkPermitForSwiss();
 </script>
 {% include 'snippets/datetimepicker_js.html' %}
+{% endblock %}
+
+{% block body_end %}
+  <script>
+    window.defivelo = window.defivelo || {};
+
+    {% trans "Vers le calculateur d'IBAN" as toiban %}
+    window.defivelo.ibanTooltipTitle = '{{ toiban|escapejs }}';
+    {% trans 'https://www.postfinance.ch/fr/particuliers/assistance/outils-calculateurs/calculateur-iban.html' as toibanlink %}
+    window.defivelo.ibanTooltipLink = '{{ toibanlink|escapejs }}';
+  </script>
 {% endblock %}
