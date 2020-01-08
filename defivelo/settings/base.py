@@ -151,7 +151,8 @@ COMPRESS_PRECOMPILERS = (
         + " {infile} {outfile}",
     ),
 )
-COMPRESS_OFFLINE = True
+# Allow online compression because we are not able to pre-compress some dynamic assets
+COMPRESS_OFFLINE = False
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases

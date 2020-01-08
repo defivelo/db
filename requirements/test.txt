@@ -4,6 +4,7 @@
 #
 #    pip-compile requirements/test.in
 #
+-e git+https://github.com/yourlabs/django-autocomplete-light@e46300d6085510#egg=django-autocomplete-light==3.5.0+jqfix
 -e git+https://github.com/mgrouchy/django-stronghold#egg=django-stronghold==0.3.0+django21
 appdirs==1.4.3            # via black
 attrs==19.3.0             # via black, pytest
@@ -21,10 +22,9 @@ dj-database-url==0.5.0
 django-agpl==4.0.0
 django-allauth==0.41.0
 django-appconf==1.0.3     # via django-compressor
-django-autocomplete-light==3.5.0
 django-bootstrap3-datetimepicker-2==2.8.2
 django-bootstrap3==12.0.1
-django-compressor==2.3
+django-compressor==2.4
 django-countries==5.5
 django-discover-runner==1.0  # via django-role-permissions
 django-filter==2.2.0

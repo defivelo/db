@@ -12,6 +12,8 @@ django-localflavor
 django-phonenumber-field
 phonenumbers
 django-bootstrap3-datetimepicker-2
+# django-autocomplete-light
+-e git+https://github.com/yourlabs/django-autocomplete-light@e46300d6085510#egg=django-autocomplete-light==3.5.0+jqfix
 django-autocomplete-light
 django-parler
 django-multiselectfield

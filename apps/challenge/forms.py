@@ -96,29 +96,7 @@ class SeasonForm(forms.ModelForm):
         fields = ["year", "season", "cantons", "state", "leader"]
 
 
-class Select2Mixin(object):
-    # Ajoute la traduction du JS pour Select2
-    @property
-    def media(self):
-        medias = super(Select2Mixin, self).media
-        new_js_order = []
-        for path in medias._js:
-            if path == "autocomplete_light/select2.js":
-                # The translation has to appear _before_ autocomplete_light instantiates
-                # select2
-                trad = (
-                    "autocomplete_light/vendor/select2/dist/js/i18n/%s.js"
-                    % get_language()
-                )
-                # Try getting it with the static finder
-                if finders.find(trad):
-                    new_js_order.append(trad)
-            new_js_order.append(path)
-        medias._js = new_js_order
-        return medias
-
-
-class SessionForm(Select2Mixin, forms.ModelForm):
+class SessionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         kwargs.pop("cantons", None)
         self.season = kwargs.pop("season", None)
@@ -357,7 +335,7 @@ class QualificationForm(forms.ModelForm):
         ]
 
 
-class SeasonNewHelperAvailabilityForm(Select2Mixin, forms.Form):
+class SeasonNewHelperAvailabilityForm(forms.Form):
     def __init__(self, *args, **kwargs):
         cantons = kwargs.pop("cantons", [])
         super(SeasonNewHelperAvailabilityForm, self).__init__(*args, **kwargs)
