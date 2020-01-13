@@ -1,6 +1,9 @@
 language: python
-addons:
-  postgresql: "11"
+python:
+  - "3.7" # Current prod
+  - "3.8"
+services:
+  - postgresql
 before_script:
   - psql -c 'create database test_defivelo;' -U postgres
 install:
