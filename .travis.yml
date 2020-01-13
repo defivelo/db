@@ -1,4 +1,7 @@
 language: python
+python:
+  - "3.7" # Current prod
+  - "3.8"
 services:
   - postgresql
 before_script:
