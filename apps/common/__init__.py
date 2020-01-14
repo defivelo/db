@@ -41,6 +41,10 @@ DV_STATES = [
     "LU",
     "AR",
     "WS",  # Haut-Valais
+    "SO",
+    "AG",
+    "BL",
+    "GR",
 ]
 
 # "faux" cantons pour DÉFI VÉLO
