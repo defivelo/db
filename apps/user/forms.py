@@ -106,6 +106,9 @@ class UserProfileForm(forms.ModelForm):
         max_length=511,
         required=False,
     )
+    bank_name = forms.CharField(
+        label=_("Nom de la banque"), max_length=511, required=False,
+    )
     iban = localforms.IBANFormField(
         label=_("Coordonnées bancaires (IBAN)"),
         include_countries=IBAN_SEPA_COUNTRIES,

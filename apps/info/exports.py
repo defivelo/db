@@ -304,6 +304,7 @@ class SalariesExport(object):
         dataset.append_col(session_cols + [bolden(u("NPA"))])
         dataset.append_col(session_cols + [bolden(u("Ville"))])
         dataset.append_col(session_cols + [bolden(u("N° AVS"))])
+        dataset.append_col(session_cols + [bolden(u("Nom de la banque"))])
         dataset.append_col(session_cols + [bolden(u("IBAN"))])
         dataset.append_col(session_cols + [bolden(u("Canton d'affiliation"))])
 
@@ -366,6 +367,7 @@ class SalariesExport(object):
                     if html
                     else user.profile.social_security
                 ),
+                user.profile.bank_name,
                 (
                     (user.profile.iban[:5] + "…" if len(user.profile.iban) > 0 else "")
                     if html

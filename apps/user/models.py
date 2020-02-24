@@ -115,6 +115,7 @@ PERSONAL_FIELDS = [
     "nationality",
     "work_permit",
     "tax_jurisdiction",
+    "bank_name",
     "iban",
     "social_security",
     "marital_status",
@@ -170,6 +171,7 @@ class UserProfile(Address, models.Model):
     tax_jurisdiction = models.CharField(
         _("Lieu d'imposition (si pas en Suisse)"), max_length=511, blank=True
     )
+    bank_name = models.CharField(_("Nom de la banque"), max_length=511, blank=True)
     iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)
     social_security = models.CharField(max_length=16, blank=True)
     natel = models.CharField(max_length=13, blank=True)

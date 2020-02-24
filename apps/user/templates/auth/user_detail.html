@@ -108,6 +108,10 @@
                             <dt>{% trans "Lieu d'imposition" %}</dt>
                                 <dd>{{ userprofile.profile.tax_jurisdiction }}</dd>
                         {% endif %}
+                        {% if userprofile.profile.bank_name %}
+                            <dt>{% trans "Nom de la banque" %}</dt>
+                                <dd>{{ userprofile.profile.bank_name }}</dd>
+                        {% endif %}
                         {% if userprofile.profile.iban %}
                             <dt>{% trans "N° IBAN" %}</dt>
                                 <dd><tt>{{ userprofile.profile.iban_nice }}</tt></dd>
