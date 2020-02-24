@@ -165,6 +165,7 @@ class AuthUserTest(ProfileTestCase):
             "fr",
         ]
         initial["status"] = USERSTATUS_INACTIVE
+        initial["bank_name"] = "Banque Alternative Suisse, succursale de Lausanne"
 
         # And some that mustn't
         initial["formation"] = FORMATION_M2
@@ -183,6 +184,9 @@ class AuthUserTest(ProfileTestCase):
         self.assertEqual(me.profile.language, "de")
         self.assertEqual(me.profile.languages_challenges, ["fr",])
         self.assertEqual(me.profile.status, USERSTATUS_INACTIVE)
+        self.assertEqual(
+            me.profile.bank_name, "Banque Alternative Suisse, succursale de Lausanne"
+        )
 
         # Not updated
         self.assertEqual(me.profile.formation, FORMATION_M1)
