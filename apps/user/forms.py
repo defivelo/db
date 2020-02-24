@@ -75,6 +75,9 @@ class UserProfileForm(forms.ModelForm):
             self.fields["affiliation_canton"].required = affiliation_canton_required
             self.fields["affiliation_canton"].choices = choices
 
+    cresus_employee_number = forms.CharField(
+        label=_("Numéro d'employé Crésus"), max_length=63, required=False,
+    )
     language = forms.ChoiceField(
         label=_("Langue"), choices=DV_LANGUAGES_WITH_DEFAULT, required=False
     )

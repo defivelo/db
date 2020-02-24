@@ -124,6 +124,7 @@ PERSONAL_FIELDS = [
 ]
 
 DV_PUBLIC_FIELDS = [
+    "cresus_employee_number",
     "formation",
     "formation_firstdate",
     "formation_lastdate",
@@ -156,6 +157,9 @@ class UserProfile(Address, models.Model):
         related_name="profile",
         primary_key=True,
         on_delete=models.CASCADE,
+    )
+    cresus_employee_number = models.CharField(
+        _("Numéro d'employé Crésus"), max_length=63, blank=True
     )
     language = models.CharField(
         _("Langue"), max_length=7, choices=DV_LANGUAGES_WITH_DEFAULT, blank=True

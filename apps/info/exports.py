@@ -300,6 +300,7 @@ class SalariesExport(object):
             return mark_safe("<b>%s</b>" % s) if html else s
 
         dataset.append_col(session_cols + [bolden(u("Nom"))])
+        dataset.append_col(session_cols + [bolden(u("N° d'employé Crésus"))])
         dataset.append_col(session_cols + [bolden(u("Adresse"))])
         dataset.append_col(session_cols + [bolden(u("NPA"))])
         dataset.append_col(session_cols + [bolden(u("Ville"))])
@@ -352,9 +353,12 @@ class SalariesExport(object):
             fullname = user.get_full_name()
             url = reverse("user-detail", kwargs={"pk": user.pk})
             row = [
-                mark_safe(linktxt.format(url=url, content=fullname))
-                if html
-                else fullname,
+                (
+                    mark_safe(linktxt.format(url=url, content=fullname))
+                    if html
+                    else fullname
+                ),
+                user.profile.cresus_employee_number,
                 "%s %s" % (user.profile.address_street, user.profile.address_no),
                 user.profile.address_zip,
                 user.profile.address_city,

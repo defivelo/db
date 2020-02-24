@@ -60,6 +60,10 @@
             <div>
                 <div role="tabpane" class="tab-pane active adr" id="addr">
                     <dl class="dl-horizontal">
+                        {% if userprofile.profile.cresus_employee_number %}
+                            <dt>{% trans "N° d'employé Crésus" %}</dt>
+                                <dd><tt>{{ userprofile.profile.cresus_employee_number }}</tt></dd>
+                        {% endif %}
                         <dt>{% trans "Nom" %}</dt>
                             <dd>{{ userprofile.get_full_name }}</dd>
                         <dt>{% trans "Adresse" %}</dt>

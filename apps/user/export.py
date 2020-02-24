@@ -162,6 +162,10 @@ class UserResource(resources.ModelResource):
         attribute="profile__activity_cantons",
         widget=MultipleSelectWidget(),
     )
+    profile__cresus_employee_number = fields.Field(
+        column_name=_("Numéro d'employé Crésus"),
+        attribute="profile__cresus_employee_number",
+    )
     profile__bank_name = fields.Field(
         column_name=_("Nom de la banque"), attribute="profile__bank_name",
     )
