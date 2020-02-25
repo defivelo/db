@@ -2,7 +2,7 @@ dj-database-url
 Django>2.2,<3
 pytz
 django-bootstrap3
-psycopg2
+psycopg2-binary
 django-compressor
 libsass
 # django-stronghold
