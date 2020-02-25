@@ -422,6 +422,9 @@ def push_code_update(c, git_ref):
     with c.conn.cd(c.conn.project_root):
         c.conn.git("checkout -f -B master FABHEAD", hide=True)
         c.conn.git("branch -d FABHEAD", hide=True)
+        # Force using an absolute URL for locale submodule since the relative one would fail
+        # (this uses a deploy key generated on the server)
+        c.conn.git("config submodule.locale.url git@gitlab.liip.ch:swing/defivelo/intranet-i18n.git", hide=True)
         c.conn.git("submodule update --init", hide=True)
 
         vcs_commit = subprocess.run(
