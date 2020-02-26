@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load dv_filters %}
+{% block head_title %}{% blocktrans with year=year %}Configurations cantonales pour {{ year }}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+    <h1>{% blocktrans with year=year %}Configurations cantonales pour {{ year }}{% endblocktrans %}</h1>
+
+    <nav>
+        <ul class="pager">
+            <li class="previous btn-xs">
+                <a href="{% url 'annualstatesettings-list' year=year|add:"-1" %}">
+                    <span aria-hidden="true">&larr;</span> {{ year|add:"-1" }}
+                </a>
+            </li>
+            {% if year|add:0 != now.year|add:0 %}
+                <li class="btn-xs"><a href="{% url 'annualstatesettings-list' year=now.year %}">{% trans "Année courante" %}</a>
+                </li>
+            {% endif %}
+            <li class="next btn-xs">
+                <a href="{% url 'annualstatesettings-list' year=year|add:"1" %}">
+                    {{ year|add:"1" }} <span aria-hidden="true">&rarr;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    
+    {% for setting in settings %}
+        {% if forloop.first %}<table class="table">
+        <tr>
+            <th>{% trans "Canton" %}</th>
+            <th>{% trans "Coût par vélo" %}</th>
+            <th>{% trans "Coût par participant" %}</th>
+        </tr>
+        {% endif %}
+        <tr>
+            <td>{{ setting.canton }}</td>
+            <td>{{ setting.cost_per_bike }}</td>
+            <td>{{ setting.cost_per_participant }}</td>
+        </tr>
+        {% if forloop.last %}</table>{% endif %}
+    {% endfor %}
+{% endblock %}

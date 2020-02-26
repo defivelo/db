@@ -2,6 +2,7 @@
 #
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
 # Copyright (C) 2016 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2020 Didier Raboud <didier.raboud@liip.ch>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -40,3 +41,4 @@ from .session import (
     SessionStaffChoiceView,
     SessionUpdateView,
 )
+from .settings import AnnualStateSettingsListView

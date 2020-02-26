@@ -19,8 +19,13 @@
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.test import TestCase
+from django.urls import reverse
+from django.utils import timezone
 
 from apps.challenge.models import AnnualStateSetting
+from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient
+
+from .test_seasons import SeasonTestCaseMixin
 
 
 class SettingTestCase(TestCase):
@@ -44,3 +49,59 @@ class SettingTestCase(TestCase):
             expected_message="duplicate key value violates unique constraint",
         ):
             s1.save()
+
+
+class AuthUserTest(SeasonTestCaseMixin):
+    def setUp(self):
+        self.client = AuthClient()
+        super().setUp()
+
+    def test_settings_list_access(self):
+        url = reverse("annualstatesettings-list")
+        response = self.client.get(url)
+        self.assertRedirects(
+            response,
+            reverse("annualstatesettings-list", kwargs={"year": timezone.now().year}),
+            target_status_code=403,
+        )
+
+        url = reverse("annualstatesettings-list", kwargs={"year": 2019})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403, url)
+
+
+class StateManagerUserTest(SeasonTestCaseMixin):
+    def setUp(self):
+        self.client = StateManagerAuthClient()
+        super().setUp()
+
+    def test_settings_list_access(self):
+        url = reverse("annualstatesettings-list")
+        response = self.client.get(url)
+        self.assertRedirects(
+            response,
+            reverse("annualstatesettings-list", kwargs={"year": timezone.now().year}),
+            target_status_code=403,
+        )
+
+        url = reverse("annualstatesettings-list", kwargs={"year": 2019})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403, url)
+
+
+class PowerUserTest(SeasonTestCaseMixin):
+    def setUp(self):
+        self.client = PowerUserAuthClient()
+        super().setUp()
+
+    def test_settings_list_access(self):
+        url = reverse("annualstatesettings-list")
+        response = self.client.get(url)
+        self.assertRedirects(
+            response,
+            reverse("annualstatesettings-list", kwargs={"year": timezone.now().year}),
+        )
+
+        url = reverse("annualstatesettings-list", kwargs={"year": 2019})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200, url)
