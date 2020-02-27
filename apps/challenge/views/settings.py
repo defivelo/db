@@ -18,12 +18,17 @@
 
 import datetime
 
+from django.contrib.messages.views import SuccessMessageMixin
+from django.urls import reverse_lazy
+from django.utils.translation import ugettext_lazy as _
 from django.views.generic import ListView
+from django.views.generic.edit import CreateView, UpdateView
 
 from rolepermissions.mixins import HasPermissionsMixin
 
 from defivelo.views import MenuView
 
+from ..forms import AnnualStateSettingForm
 from ..models import AnnualStateSetting
 
 
@@ -41,3 +46,29 @@ class AnnualStateSettingsListView(MenuView, HasPermissionsMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["year"] = self.year
         return context
+
+
+class AnnualStateSettingMixin(HasPermissionsMixin, SuccessMessageMixin, MenuView):
+    required_permission = "settings_crud"
+    model = AnnualStateSetting
+    context_object_name = "setting"
+    form_class = AnnualStateSettingForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["year"] = self.kwargs["year"]
+        return context
+
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs["year"] = self.kwargs["year"]
+        return form_kwargs
+
+    def get_success_url(self):
+        return reverse_lazy(
+            "annualstatesettings-list", kwargs={"year": self.kwargs["year"]}
+        )
+
+
+class AnnualStateSettingCreateView(AnnualStateSettingMixin, CreateView):
+    success_message = _("Configuration cantonale par année créée")

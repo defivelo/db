@@ -80,6 +80,15 @@ class SettingsViewsTestCase(SeasonTestCaseMixin):
             "annualstatesettings-list",
             kwargs={"year": fuzzy.FuzzyInteger(1999, 2050).fuzz()},
         )
+        self.create_initial = {
+            "year": fuzzy.FuzzyInteger(1999, 2050).fuzz(),
+            "canton": fuzzy.FuzzyChoice(DV_STATES).fuzz(),
+            "cost_per_bike": fuzzy.FuzzyInteger(0, 100).fuzz(),
+            "cost_per_participant": fuzzy.FuzzyInteger(0, 100).fuzz(),
+        }
+        self.url_create = reverse(
+            "annualstatesetting-create", kwargs={"year": self.create_initial["year"]},
+        )
 
 
 class AuthUserTest(SettingsViewsTestCase):
@@ -96,6 +105,9 @@ class AuthUserTest(SettingsViewsTestCase):
         )
         self.assertEqual(
             self.client.get(self.url_yearly).status_code, 403, self.url_yearly
+        )
+        self.assertEqual(
+            self.client.get(self.url_create).status_code, 403, self.url_yearly
         )
 
 
@@ -114,6 +126,9 @@ class StateManagerUserTest(SettingsViewsTestCase):
         self.assertEqual(
             self.client.get(self.url_yearly).status_code, 403, self.url_yearly
         )
+        self.assertEqual(
+            self.client.get(self.url_create).status_code, 403, self.url_yearly
+        )
 
 
 class PowerUserTest(SettingsViewsTestCase):
@@ -130,4 +145,17 @@ class PowerUserTest(SettingsViewsTestCase):
         )
         self.assertEqual(
             self.client.get(self.url_yearly).status_code, 200, self.url_yearly
+        )
+        self.assertEqual(
+            self.client.get(self.url_create).status_code, 200, self.url_yearly
+        )
+
+        # Ensure we return on the page that corresponds to our year
+        self.assertRedirects(
+            self.client.post(self.url_create, self.create_initial),
+            reverse(
+                "annualstatesettings-list",
+                kwargs={"year": self.create_initial["year"]},
+            ),
+            target_status_code=200,
         )

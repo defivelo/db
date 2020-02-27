@@ -30,6 +30,7 @@ from dal.forward import Const as dal_const
 from dal_select2.widgets import ModelSelect2
 from localflavor.ch.forms import CHStateSelect
 
+from apps.common import DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.forms import (
     CHPhoneNumberField,
     SwissDateField,
@@ -59,7 +60,7 @@ from .fields import (
     HelpersChoiceField,
     LeaderChoiceField,
 )
-from .models import Qualification, Season, Session
+from .models import AnnualStateSetting, Qualification, Season, Session
 from .models.availability import HelperSessionAvailability
 
 
@@ -442,3 +443,27 @@ class SeasonStaffChoiceForm(forms.Form):
 
     def save(self):
         pass
+
+
+class AnnualStateSettingForm(forms.ModelForm):
+
+    year = forms.IntegerField(
+        label=_("Année"),
+        widget=DateTimePicker({"placeholder": "YYYY"}, options={"format": "YYYY"}),
+        required=True,
+    )
+    canton = forms.ChoiceField(
+        label=_("Canton"),
+        widget=CHStateSelect,
+        choices=DV_STATE_CHOICES_WITH_DEFAULT,
+        required=True,
+    )
+
+    class Meta:
+        model = AnnualStateSetting
+        fields = ["year", "canton", "cost_per_bike", "cost_per_participant"]
+
+    def __init__(self, *args, **kwargs):
+        year = kwargs.pop("year")
+        super().__init__(*args, **kwargs)
+        self.initial["year"] = year

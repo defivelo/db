@@ -41,4 +41,4 @@ from .session import (
     SessionStaffChoiceView,
     SessionUpdateView,
 )
-from .settings import AnnualStateSettingsListView
+from .settings import AnnualStateSettingCreateView, AnnualStateSettingsListView

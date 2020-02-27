@@ -35,10 +35,16 @@
         </tr>
         {% endif %}
         <tr>
-            <td>{{ setting.canton }}</td>
+            <td>{{ setting.canton|canton_abbr }}</td>
             <td>{{ setting.cost_per_bike }}</td>
             <td>{{ setting.cost_per_participant }}</td>
         </tr>
         {% if forloop.last %}</table>{% endif %}
     {% endfor %}
+
+    {% if user|can:'settings_crud' %}
+        <div>
+            <a class="btn btn-primary pull-right" href="{% url 'annualstatesetting-create' year=year %}">{% trans "Créer une nouvelle configuration" %}</a>
+        </div>
+    {% endif %}
 {% endblock %}

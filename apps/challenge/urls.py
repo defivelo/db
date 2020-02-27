@@ -24,6 +24,7 @@ from django.views.decorators.cache import never_cache
 from django.views.generic.base import RedirectView
 
 from .views import (
+    AnnualStateSettingCreateView,
     AnnualStateSettingsListView,
     QualiCreateView,
     QualiDeleteView,
@@ -66,6 +67,11 @@ urlpatterns = [
         r"^settings/y(?P<year>[0-9]{4})/$",
         never_cache(AnnualStateSettingsListView.as_view()),
         name="annualstatesettings-list",
+    ),
+    url(
+        r"^settings/y(?P<year>[0-9]{4})/new/$",
+        never_cache(AnnualStateSettingCreateView.as_view()),
+        name="annualstatesetting-create",
     ),
     # Seasons
     url(
