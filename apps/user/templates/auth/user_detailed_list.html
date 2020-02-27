@@ -18,16 +18,16 @@
         </tr>
     </thead>
     <tbody>
-    {% for user in users %}
+    {% for profile in users %}
         <tr>
             <td class="small">
-                {{ user.profile.formation_icon|safe }}
-                {{ user.profile.actor_icon|default:"" }}
+                {{ profile.formation_icon|safe }}
+                {{ profile.actor_icon|default:"" }}
             </td>
-            <td>{{ user.first_name }}</td>
-            <td>{{ user.last_name }}</td>
-            <td>{% if user.profile.natel %}{{ user.profile.natel|tel_link }}{% endif %}</td>
-            <td>{% if user.email %}<a href="mailto:{{ user.profile.mailtolink|urlencode }}">{{ user.email }}</a>{% endif %}</td>
+            <td>{{ profile.user.first_name }}</td>
+            <td>{{ profile.user.last_name }}</td>
+            <td>{% if profile.natel %}{{ user.profile.natel|tel_link }}{% endif %}</td>
+            <td>{% if profile.user.email %}<a href="mailto:{{ profile.mailtolink|urlencode }}">{{ profile.user.email }}</a>{% endif %}</td>
         </tr>
     {% endfor %}
     </tbody>

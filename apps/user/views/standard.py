@@ -241,9 +241,7 @@ class HelpersList(UserDetailedList):
 
     def get_queryset(self):
         return (
-            super(HelpersList, self)
-            .get_queryset()
-            .filter(profile__formation__in=FORMATION_KEYS)
+            super(HelpersList, self).get_queryset().filter(formation__in=FORMATION_KEYS)
         )
 
 
@@ -251,8 +249,5 @@ class ActorsList(UserDetailedList):
     page_title = _("Liste des intervenants")
 
     def get_queryset(self):
-        return (
-            super(ActorsList, self)
-            .get_queryset()
-            .exclude(profile__actor_for__isnull=True)
-        )
+        return super(ActorsList, self).get_queryset().exclude(_actor_for__isnull=True)
+

@@ -42,7 +42,7 @@ from tablib import Dataset
 from apps.common import DV_STATES, MULTISELECTFIELD_REGEXP
 from apps.common.views import ExportMixin
 from apps.user import FORMATION_KEYS, FORMATION_M1, FORMATION_M2, formation_short
-from apps.user.models import USERSTATUS_DELETED
+from apps.user.models import USERSTATUS_DELETED, UserProfile
 from apps.user.views import ActorsList, HelpersList
 from defivelo.roles import has_permission, user_cantons
 from defivelo.views import MenuView
@@ -111,7 +111,7 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
 
         qs = super(SeasonMixin, self).get_queryset()
 
-        if self.model == get_user_model():
+        if self.model == UserProfile:
             try:
                 usercantons = user_cantons(self.request.user)
             except LookupError:
@@ -170,14 +170,14 @@ class SeasonAvailabilityMixin(SeasonMixin):
 
     def potential_helpers_qs(self, qs=None):
         if not qs:
-            qs = get_user_model().objects.exclude(profile__status=USERSTATUS_DELETED)
+            qs = UserProfile.objects.exclude(status=USERSTATUS_DELETED)
             if self.season:
                 seasoncantons = self.season.cantons
                 # S'il y au moins un canton en commun
                 cantons_regexp = MULTISELECTFIELD_REGEXP % "|".join(seasoncantons)
-                cantons_filter = [
-                    Q(profile__activity_cantons__regex=cantons_regexp)
-                ] + [Q(profile__affiliation_canton__in=seasoncantons)]
+                cantons_filter = [Q(activity_cantons__regex=cantons_regexp)] + [
+                    Q(affiliation_canton__in=seasoncantons)
+                ]
                 qs = qs.filter(reduce(operator.or_, cantons_filter))
 
             # Pick the one helper from the command line if it makes sense
@@ -192,13 +192,11 @@ class SeasonAvailabilityMixin(SeasonMixin):
         qs = self.potential_helpers_qs(qs)
         all_helpers = qs.order_by("first_name", "last_name")
         return (
-            (_("Moniteurs 2"), all_helpers.filter(profile__formation=FORMATION_M2)),
-            (_("Moniteurs 1"), all_helpers.filter(profile__formation=FORMATION_M1)),
+            (_("Moniteurs 2"), all_helpers.filter(formation=FORMATION_M2)),
+            (_("Moniteurs 1"), all_helpers.filter(formation=FORMATION_M1)),
             (
                 _("Intervenants"),
-                all_helpers.filter(profile__formation="").exclude(
-                    profile__actor_for__isnull=True,
-                ),
+                all_helpers.filter(pformation="").exclude(actor_for__isnull=True,),
             ),
         )
 
@@ -219,9 +217,7 @@ class SeasonAvailabilityMixin(SeasonMixin):
         helpers_pks = self.current_availabilities_present().values_list(
             "helper_id", flat=True
         )
-        return self.potential_helpers(
-            qs=get_user_model().objects.filter(pk__in=helpers_pks)
-        )
+        return self.potential_helpers(qs=UserProfile.objects.filter(pk__in=helpers_pks))
 
     def dispatch(self, request, *args, **kwargs):
         if (
@@ -515,16 +511,16 @@ class SeasonPlanningExportView(
             u("Nombre de qualifs"),
         ]
         # Trouve toutes les personnes qui sont présentes dans cette saison
-        qs = get_user_model().objects
+        qs = UserProfile.objects
         user_filter = [
             # Ceux qui ont répondu (quoi que ce soit)
             Q(availabilities__session__in=self.season.sessions_with_qualifs),
             # Moniteurs +
             Q(sess_monplus__in=self.season.sessions_with_qualifs),
             # Moniteurs 2
-            Q(qualifs_mon2__session__in=self.season.sessions_with_qualifs),
+            Q(user__qualifs_mon2__session__in=self.season.sessions_with_qualifs),
             # Moniteurs 1
-            Q(qualifs_mon1__session__in=self.season.sessions_with_qualifs),
+            Q(user__qualifs_mon1__session__in=self.season.sessions_with_qualifs),
             # Intervenants
             Q(qualifs_actor__session__in=self.season.sessions_with_qualifs),
         ]
@@ -609,7 +605,7 @@ class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
                 "helper_id", flat=True
             )
             potential_helpers = self.potential_helpers(
-                qs=get_user_model().objects.filter(pk__in=helpers_pks)
+                qs=UserProfile.objects.filter(pk__in=helpers_pks)
             )
 
             context["potential_helpers"] = potential_helpers
@@ -791,7 +787,7 @@ class SeasonDeleteView(
 
 
 class SeasonHelperListView(HelpersList, HasPermissionsMixin, SeasonMixin):
-    model = get_user_model()
+    model = UserProfile
     page_title = _("Moniteurs de la saison")
 
     def get_context_data(self, **kwargs):
@@ -805,15 +801,15 @@ class SeasonHelperListView(HelpersList, HasPermissionsMixin, SeasonMixin):
             super(SeasonHelperListView, self)
             .get_queryset()
             .filter(
-                Q(qualifs_mon2__session__in=self.season.sessions_with_qualifs)
-                | Q(qualifs_mon1__session__in=self.season.sessions_with_qualifs),
+                Q(user__qualifs_mon2__session__in=self.season.sessions_with_qualifs)
+                | Q(user__qualifs_mon1__session__in=self.season.sessions_with_qualifs),
             )
             .distinct()
         )
 
 
 class SeasonActorListView(ActorsList, HasPermissionsMixin, SeasonMixin):
-    model = get_user_model()
+    model = UserProfile
     page_title = _("Intervenants de la saison")
 
     def get_context_data(self, **kwargs):
