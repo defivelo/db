@@ -29,6 +29,10 @@ from .test_seasons import SeasonTestCaseMixin
 
 
 class SettingTestCase(TestCase):
+    def setUp(self):
+        self.year = fuzzy.FuzzyInteger(1999, 2050).fuzz()
+        self.canton = fuzzy.FuzzyChoice(DV_STATES).fuzz()
+
     def test_settings_no_negative_costs(self):
         s0 = AnnualStateSetting(year=2020, canton="VD", cost_per_bike=-12)
         with self.assertRaises(expected_exception=ValidationError):
@@ -51,57 +55,65 @@ class SettingTestCase(TestCase):
             s1.save()
 
 
-class AuthUserTest(SeasonTestCaseMixin):
+class SettingsViewsTestCase(SeasonTestCaseMixin):
+    def setUp(self):
+        """
+        Prepare the URLs
+        """
+        super().setUp()
+        self.url_redirects = reverse("annualstatesettings-list")
+        self.url_redirects_to = reverse(
+            "annualstatesettings-list", kwargs={"year": timezone.now().year}
+        )
+        self.url_yearly = reverse("annualstatesettings-list", kwargs={"year": 2019})
+
+
+class AuthUserTest(SettingsViewsTestCase):
     def setUp(self):
         self.client = AuthClient()
         super().setUp()
 
     def test_settings_list_access(self):
-        url = reverse("annualstatesettings-list")
-        response = self.client.get(url)
+        # Authorized user without rights gets a redirect, but a forbidden
         self.assertRedirects(
-            response,
-            reverse("annualstatesettings-list", kwargs={"year": timezone.now().year}),
+            self.client.get(self.url_redirects),
+            self.url_redirects_to,
             target_status_code=403,
         )
+        self.assertEqual(
+            self.client.get(self.url_yearly).status_code, 403, self.url_yearly
+        )
 
-        url = reverse("annualstatesettings-list", kwargs={"year": 2019})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 403, url)
 
-
-class StateManagerUserTest(SeasonTestCaseMixin):
+class StateManagerUserTest(SettingsViewsTestCase):
     def setUp(self):
         self.client = StateManagerAuthClient()
         super().setUp()
 
     def test_settings_list_access(self):
-        url = reverse("annualstatesettings-list")
-        response = self.client.get(url)
+        # StateManager user gets a redirect, but a forbidden
         self.assertRedirects(
-            response,
-            reverse("annualstatesettings-list", kwargs={"year": timezone.now().year}),
+            self.client.get(self.url_redirects),
+            self.url_redirects_to,
             target_status_code=403,
         )
+        self.assertEqual(
+            self.client.get(self.url_yearly).status_code, 403, self.url_yearly
+        )
 
-        url = reverse("annualstatesettings-list", kwargs={"year": 2019})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 403, url)
 
-
-class PowerUserTest(SeasonTestCaseMixin):
+class PowerUserTest(SettingsViewsTestCase):
     def setUp(self):
         self.client = PowerUserAuthClient()
         super().setUp()
 
     def test_settings_list_access(self):
-        url = reverse("annualstatesettings-list")
-        response = self.client.get(url)
+        # PowerUser user gets a redirect, and a 200 OK
         self.assertRedirects(
-            response,
-            reverse("annualstatesettings-list", kwargs={"year": timezone.now().year}),
+            self.client.get(self.url_redirects),
+            self.url_redirects_to,
+            target_status_code=200,
         )
-
-        url = reverse("annualstatesettings-list", kwargs={"year": 2019})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200, url)
+        self.assertEqual(
+            self.client.get(self.url_yearly).status_code, 200, self.url_yearly
+        )
