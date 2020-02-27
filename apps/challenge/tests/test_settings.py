@@ -28,6 +28,7 @@ from apps.challenge.models import AnnualStateSetting
 from apps.common import DV_STATES
 from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient
 
+from .factories import AnnualStateSettingFactory
 from .test_seasons import SeasonTestCaseMixin
 
 
@@ -90,6 +91,15 @@ class SettingsViewsTestCase(SeasonTestCaseMixin):
             "annualstatesetting-create", kwargs={"year": self.create_initial["year"]},
         )
 
+        self.setting = AnnualStateSettingFactory()
+        self.setting.save()
+
+        self.url_update = reverse(
+            "annualstatesetting-update",
+            kwargs={"year": self.setting.year, "pk": self.setting.pk},
+        )
+        self.restricted_urls = [self.url_yearly, self.url_create, self.url_update]
+
 
 class AuthUserTest(SettingsViewsTestCase):
     def setUp(self):
@@ -103,12 +113,8 @@ class AuthUserTest(SettingsViewsTestCase):
             self.url_redirects_to,
             target_status_code=403,
         )
-        self.assertEqual(
-            self.client.get(self.url_yearly).status_code, 403, self.url_yearly
-        )
-        self.assertEqual(
-            self.client.get(self.url_create).status_code, 403, self.url_yearly
-        )
+        for url in self.restricted_urls:
+            self.assertEqual(self.client.get(url).status_code, 403, url)
 
 
 class StateManagerUserTest(SettingsViewsTestCase):
@@ -123,12 +129,8 @@ class StateManagerUserTest(SettingsViewsTestCase):
             self.url_redirects_to,
             target_status_code=403,
         )
-        self.assertEqual(
-            self.client.get(self.url_yearly).status_code, 403, self.url_yearly
-        )
-        self.assertEqual(
-            self.client.get(self.url_create).status_code, 403, self.url_yearly
-        )
+        for url in self.restricted_urls:
+            self.assertEqual(self.client.get(url).status_code, 403, url)
 
 
 class PowerUserTest(SettingsViewsTestCase):
@@ -143,19 +145,24 @@ class PowerUserTest(SettingsViewsTestCase):
             self.url_redirects_to,
             target_status_code=200,
         )
-        self.assertEqual(
-            self.client.get(self.url_yearly).status_code, 200, self.url_yearly
-        )
-        self.assertEqual(
-            self.client.get(self.url_create).status_code, 200, self.url_yearly
-        )
+        # The restricted urls are allowed to power user
+        for url in self.restricted_urls:
+            self.assertEqual(self.client.get(url).status_code, 200, url)
 
-        # Ensure we return on the page that corresponds to our year
+        # On create, ensure we return on the page that corresponds to our year
+        initial = self.create_initial
+        initial["year"] = 1968
         self.assertRedirects(
             self.client.post(self.url_create, self.create_initial),
-            reverse(
-                "annualstatesettings-list",
-                kwargs={"year": self.create_initial["year"]},
-            ),
+            reverse("annualstatesettings-list", kwargs={"year": 1968},),
+            target_status_code=200,
+        )
+        initial = self.setting.__dict__
+        initial["year"] = 1968
+
+        # On update, ensure we return on the page that corresponds to our new year
+        self.assertRedirects(
+            self.client.post(self.url_update, initial),
+            reverse("annualstatesettings-list", kwargs={"year": 1968},),
             target_status_code=200,
         )

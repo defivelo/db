@@ -26,6 +26,7 @@ from django.views.generic.base import RedirectView
 from .views import (
     AnnualStateSettingCreateView,
     AnnualStateSettingsListView,
+    AnnualStateSettingUpdateView,
     QualiCreateView,
     QualiDeleteView,
     QualiUpdateView,
@@ -72,6 +73,11 @@ urlpatterns = [
         r"^settings/y(?P<year>[0-9]{4})/new/$",
         never_cache(AnnualStateSettingCreateView.as_view()),
         name="annualstatesetting-create",
+    ),
+    url(
+        r"^settings/y(?P<year>[0-9]{4})/(?P<pk>[0-9]+)/$",
+        never_cache(AnnualStateSettingUpdateView.as_view()),
+        name="annualstatesetting-update",
     ),
     # Seasons
     url(

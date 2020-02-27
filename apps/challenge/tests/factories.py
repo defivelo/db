@@ -27,7 +27,7 @@ from apps.common import DV_SEASON_CHOICES, DV_SEASON_STATE_OPEN, DV_STATES
 from apps.orga.tests.factories import OrganizationFactory
 from apps.user.tests.factories import UserFactory
 
-from ..models import Qualification, Season, Session
+from ..models import AnnualStateSetting, Qualification, Season, Session
 
 
 class SeasonFactory(DjangoModelFactory):
@@ -56,3 +56,11 @@ class QualificationFactory(DjangoModelFactory):
 
     name = Faker("name")
     class_teacher_fullname = Faker("name")
+
+
+class AnnualStateSettingFactory(DjangoModelFactory):
+    class Meta:
+        model = AnnualStateSetting
+
+    year = fuzzy.FuzzyInteger(1999, 2050)
+    canton = fuzzy.FuzzyChoice(DV_STATES)

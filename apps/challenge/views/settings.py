@@ -66,9 +66,13 @@ class AnnualStateSettingMixin(HasPermissionsMixin, SuccessMessageMixin, MenuView
 
     def get_success_url(self):
         return reverse_lazy(
-            "annualstatesettings-list", kwargs={"year": self.kwargs["year"]}
+            "annualstatesettings-list", kwargs={"year": self.object.year}
         )
 
 
 class AnnualStateSettingCreateView(AnnualStateSettingMixin, CreateView):
     success_message = _("Configuration cantonale par année créée")
+
+
+class AnnualStateSettingUpdateView(AnnualStateSettingMixin, UpdateView):
+    success_message = _("Configuration cantonale par année mise à jour")

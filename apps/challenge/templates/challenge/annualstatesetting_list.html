@@ -32,12 +32,18 @@
             <th>{% trans "Canton" %}</th>
             <th>{% trans "Coût par vélo" %}</th>
             <th>{% trans "Coût par participant" %}</th>
+            <th></th>
         </tr>
         {% endif %}
         <tr>
             <td>{{ setting.canton|canton_abbr }}</td>
             <td>{{ setting.cost_per_bike }}</td>
             <td>{{ setting.cost_per_participant }}</td>
+            <td>
+                {% if user|can:'settings_crud' %}
+                    <a class="btn btn-xs btn-primary" href="{% url 'annualstatesetting-update' year=year pk=setting.pk %}" title="{% trans "Éditer" %}"><span class="glyphicon glyphicon-pencil"></span></a>
+                {% endif %}
+            </td>
         </tr>
         {% if forloop.last %}</table>{% endif %}
     {% endfor %}
