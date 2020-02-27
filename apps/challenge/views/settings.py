@@ -32,11 +32,20 @@ from ..forms import AnnualStateSettingForm
 from ..models import AnnualStateSetting
 
 
-class AnnualStateSettingsListView(MenuView, HasPermissionsMixin, ListView):
+class SettingsMixin(HasPermissionsMixin):
     model = AnnualStateSetting
+    required_permission = "settings_crud"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add our menu_category context
+        context["menu_category"] = "settings"
+        return context
+
+
+class AnnualStateSettingsListView(SettingsMixin, MenuView, ListView):
     context_object_name = "settings"
     ordering = ["canton"]
-    required_permission = "settings_crud"
 
     def get_queryset(self):
         self.year = self.kwargs.pop("year", datetime.date.today().year)
@@ -48,9 +57,7 @@ class AnnualStateSettingsListView(MenuView, HasPermissionsMixin, ListView):
         return context
 
 
-class AnnualStateSettingMixin(HasPermissionsMixin, SuccessMessageMixin, MenuView):
-    required_permission = "settings_crud"
-    model = AnnualStateSetting
+class AnnualStateSettingMixin(SettingsMixin, SuccessMessageMixin, MenuView):
     context_object_name = "setting"
     form_class = AnnualStateSettingForm
 
