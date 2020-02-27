@@ -25,7 +25,7 @@ from import_export import fields, resources, widgets
 
 from defivelo.templatetags.dv_filters import canton_abbr, cantons_abbr
 
-from .models import STD_PROFILE_FIELDS
+from .models import STD_PROFILE_FIELDS, UserProfile
 
 
 class MultipleSelectWidget(widgets.Widget):
@@ -56,153 +56,132 @@ class ObjectMethodWidget(widgets.Widget):
 
 
 ALL_PROFILE_FIELDS = tuple(
-    ["first_name", "last_name", "email"]
-    + [
-        "profile__%s" % field
-        for field in STD_PROFILE_FIELDS
-        if field not in ["firstmed_course_comm"]
-    ]
+    ["user__%s" % f for f in ["first_name", "last_name", "email"]]
+    + [f for f in STD_PROFILE_FIELDS if f not in ["firstmed_course_comm"]]
 )
 
 
 class UserResource(resources.ModelResource):
-    first_name = fields.Field(column_name=_("Prénom"), attribute="first_name")
-    last_name = fields.Field(column_name=_("Nom"), attribute="last_name")
-    profile__language = fields.Field(
-        column_name=_("Langue"), attribute="profile__language"
+    user__first_name = fields.Field(
+        column_name=_("Prénom"), attribute="user__first_name"
     )
-    profile__languages_challenges = fields.Field(
+    user__last_name = fields.Field(column_name=_("Nom"), attribute="user__last_name")
+    user__email = fields.Field(column_name=_("Courriel"), attribute="user__email")
+    language = fields.Field(column_name=_("Langue"), attribute="language")
+    languages_challenges = fields.Field(
         column_name=_("Prêt à animer en"),
-        attribute="profile__languages_challenges",
+        attribute="languages_challenges",
         widget=MultipleSelectWidget(),
     )
     email = fields.Field(column_name=_("Email"), attribute="email")
-    profile__natel = fields.Field(column_name=_("Natel"), attribute="profile__natel")
-    profile__address_street = fields.Field(
-        column_name=_("Rue"), attribute="profile__address_street"
+    natel = fields.Field(column_name=_("Natel"), attribute="natel")
+    address_street = fields.Field(column_name=_("Rue"), attribute="address_street")
+    address_no = fields.Field(column_name=_("N°"), attribute="address_no")
+    address_zip = fields.Field(column_name=_("NPA"), attribute="address_zip")
+    address_city = fields.Field(column_name=_("Ville"), attribute="address_city")
+    address_canton = fields.Field(
+        column_name=_("Canton de domicile"), attribute="address_canton"
     )
-    profile__address_no = fields.Field(
-        column_name=_("N°"), attribute="profile__address_no"
-    )
-    profile__address_zip = fields.Field(
-        column_name=_("NPA"), attribute="profile__address_zip"
-    )
-    profile__address_city = fields.Field(
-        column_name=_("Ville"), attribute="profile__address_city"
-    )
-    profile__address_canton = fields.Field(
-        column_name=_("Canton de domicile"), attribute="profile__address_canton"
-    )
-    profile__birthdate = fields.Field(
+    birthdate = fields.Field(
         column_name=_("Date de naissance"),
-        attribute="profile__birthdate",
+        attribute="birthdate",
         widget=widgets.DateWidget(format="%d.%m.%Y"),
     )
-    profile__nationality = fields.Field(
-        column_name=_("Nationalité"), attribute="profile__nationality"
+    nationality = fields.Field(column_name=_("Nationalité"), attribute="nationality")
+    work_permit = fields.Field(
+        column_name=_("Permis de travail"), attribute="work_permit"
     )
-    profile__work_permit = fields.Field(
-        column_name=_("Permis de travail"), attribute="profile__work_permit"
+    tax_jurisdiction = fields.Field(
+        column_name=_("Lieu d'imposition"), attribute="tax_jurisdiction"
     )
-    profile__tax_jurisdiction = fields.Field(
-        column_name=_("Lieu d'imposition"), attribute="profile__tax_jurisdiction"
-    )
-    profile__social_security = fields.Field(
-        column_name=_("N° AVS"), attribute="profile__social_security"
-    )
-    profile__marital_status = fields.Field(
+    social_security = fields.Field(column_name=_("N° AVS"), attribute="social_security")
+    marital_status = fields.Field(
         column_name=_("État civil"),
         attribute="profile",
         widget=ObjectMethodWidget(method="marital_status_full"),
     )
-    profile__pedagogical_experience = fields.Field(
-        column_name=_("Expérience pédagogique"),
-        attribute="profile__pedagogical_experience",
+    pedagogical_experience = fields.Field(
+        column_name=_("Expérience pédagogique"), attribute="pedagogical_experience",
     )
-    profile__comments = fields.Field(
-        column_name=_("Commentaires"), attribute="profile__comments"
-    )
+    comments = fields.Field(column_name=_("Commentaires"), attribute="comments")
     # From there, specific widgets
-    profile__firstmed_course = fields.Field(
+    firstmed_course = fields.Field(
         column_name=_("Cours samaritains"), attribute="profile", widget=FirstMedWidget()
     )
-    profile__actor_for = fields.Field(
+    actor_for = fields.Field(
         column_name=_("Intervenant"),
         attribute="profile",
         widget=ObjectMethodWidget(method="actor_inline"),
     )
-    profile__status = fields.Field(
+    status = fields.Field(
         column_name=_("Statut"),
         attribute="profile",
         widget=ObjectMethodWidget(method="status_full"),
     )
-    profile__bagstatus = fields.Field(
+    bagstatus = fields.Field(
         column_name=_("Sac Défi Vélo"),
         attribute="profile",
         widget=ObjectMethodWidget(method="bagstatus_full"),
     )
-    profile__formation = fields.Field(
+    formation = fields.Field(
         column_name=_("Formation"),
         attribute="profile",
         widget=ObjectMethodWidget(method="formation_full"),
     )
-    profile__formation_firstdate = fields.Field(
+    formation_firstdate = fields.Field(
         column_name=_("Date de la première formation"),
-        attribute="profile__formation_firstdate",
+        attribute="formation_firstdate",
         widget=widgets.DateWidget(format="%d.%m.%Y"),
     )
-    profile__formation_lastdate = fields.Field(
+    formation_lastdate = fields.Field(
         column_name=_("Date de la dernière formation"),
-        attribute="profile__formation_lastdate",
+        attribute="formation_lastdate",
         widget=widgets.DateWidget(format="%d.%m.%Y"),
     )
-    profile__affiliation_canton = fields.Field(column_name=_("Canton d'affiliation"))
-    profile__activity_cantons = fields.Field(
+    affiliation_canton = fields.Field(column_name=_("Canton d'affiliation"))
+    activity_cantons = fields.Field(
         column_name=_("Défi Vélo Mobile"),
-        attribute="profile__activity_cantons",
+        attribute="activity_cantons",
         widget=MultipleSelectWidget(),
     )
-    profile__cresus_employee_number = fields.Field(
-        column_name=_("Numéro d'employé Crésus"),
-        attribute="profile__cresus_employee_number",
+    cresus_employee_number = fields.Field(
+        column_name=_("Numéro d'employé Crésus"), attribute="cresus_employee_number",
     )
-    profile__bank_name = fields.Field(
-        column_name=_("Nom de la banque"), attribute="profile__bank_name",
-    )
-    profile__iban = fields.Field(
+    bank_name = fields.Field(column_name=_("Nom de la banque"), attribute="bank_name",)
+    iban = fields.Field(
         column_name=_("IBAN"),
         attribute="profile",
         widget=ObjectMethodWidget(method="iban_nice"),
     )
-    profile__access_level = fields.Field(
+    access_level = fields.Field(
         column_name=_("Niveau d'accès"),
         attribute="profile",
         widget=ObjectMethodWidget(method="access_level_text"),
     )
-    profile__managed_cantons = fields.Field(
+    managed_cantons = fields.Field(
         column_name=_("Cantons gérés"),
         attribute="profile",
         widget=ObjectMethodWidget(method="managed_cantons"),
     )
 
     class Meta:
-        model = get_user_model()
+        model = UserProfile
         fields = ALL_PROFILE_FIELDS
         export_order = ALL_PROFILE_FIELDS
 
-    def dehydrate_profile__address_canton(self, field):
+    def dehydrate_address_canton(self, field):
         return canton_abbr(
-            field.profile.address_canton, abbr=False, long=True, fix_special=True
+            field.address_canton, abbr=False, long=True, fix_special=True
         )
 
-    def dehydrate_profile__affiliation_canton(self, field):
+    def dehydrate_affiliation_canton(self, field):
         return canton_abbr(
-            field.profile.affiliation_canton, abbr=False, long=True, fix_special=True
+            field.affiliation_canton, abbr=False, long=True, fix_special=True
         )
 
-    def dehydrate_profile__activity_cantons(self, field):
+    def dehydrate__activity_cantons(self, field):
         return ", ".join(
             cantons_abbr(
-                field.profile.activity_cantons, abbr=False, long=True, fix_special=True
+                field.activity_cantons, abbr=False, long=True, fix_special=True
             )
         )
