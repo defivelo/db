@@ -63,6 +63,10 @@ class UserForm(forms.ModelForm):
 
 
 class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = STD_PROFILE_FIELDS
+
     def __init__(self, *args, **kwargs):
         allow_email = kwargs.pop("allow_email", False)
         # Whether to permit no-affiliation-canton creation
@@ -70,6 +74,7 @@ class UserProfileForm(forms.ModelForm):
         cantons = kwargs.pop("cantons", None)
         super(UserProfileForm, self).__init__(*args, **kwargs)
 
+        # Import the fields from default UserForm
         self.fields.update(UserForm().fields)
 
         if not allow_email and "email" in self.fields:
@@ -90,10 +95,6 @@ class UserProfileForm(forms.ModelForm):
             self.fields["affiliation_canton"].required = affiliation_canton_required
             self.fields["affiliation_canton"].choices = choices
 
-    class Meta:
-        model = UserProfile
-        fields = STD_PROFILE_FIELDS
-
     def clean_email(self):
         # Ideally, this should get checked by the User model
         email = self.cleaned_data["email"]
@@ -105,6 +106,9 @@ class UserProfileForm(forms.ModelForm):
                 _("Un utilisateur avec cette adresse e-mail existe déjà.")
             )
         return email
+
+    def save(self, **kwargs):
+        return super(UserProfileForm, self).save(**kwargs)
 
 
 class UserAssignRoleForm(forms.Form):

@@ -29,13 +29,13 @@ from apps.common import MULTISELECTFIELD_REGEXP
 from defivelo.roles import has_permission
 
 from .. import FORMATION_KEYS, FORMATION_M2
-from ..models import USERSTATUS_DELETED
+from ..models import USERSTATUS_DELETED, UserProfile
 from .mixins import ProfileMixin
 from .standard import UserProfileFilterSet
 
 
 class PersonAutocomplete(ProfileMixin, Select2QuerySetView):
-    model = get_user_model()
+    model = UserProfile
     required_permission = "user_view_list"
     choices = None
     widget_attrs = {
@@ -44,10 +44,10 @@ class PersonAutocomplete(ProfileMixin, Select2QuerySetView):
 
     def get_result_label(self, choice):
         return "{name}{ifcanton}".format(
-            name=choice.get_full_name(),
+            name=choice.user.get_full_name(),
             ifcanton=(
-                (" (%s)" % choice.profile.affiliation_canton)
-                if choice.profile and choice.profile.affiliation_canton
+                (" (%s)" % choice.affiliation_canton)
+                if choice and choice.affiliation_canton
                 else ""
             ),
         )
@@ -59,7 +59,7 @@ class PersonAutocomplete(ProfileMixin, Select2QuerySetView):
             del self.q
             qs = super(PersonAutocomplete, self).get_queryset()
             # Only non-deleted
-            qs = qs.exclude(profile__status=USERSTATUS_DELETED)
+            qs = qs.exclude(status=USERSTATUS_DELETED)
             if q:
                 filter_wide = get_unbound_function(UserProfileFilterSet.filter_wide)
                 qs = filter_wide(qs, "", q)
@@ -75,10 +75,7 @@ class AllPersons(PersonAutocomplete):
 class PersonsRelevantForSessions(PersonAutocomplete):
     def get_queryset(self):
         qs = super(PersonsRelevantForSessions, self).get_queryset()
-        qs = qs.filter(
-            Q(profile__formation__in=FORMATION_KEYS)
-            | Q(profile__actor_for__isnull=False)
-        )
+        qs = qs.filter(Q(formation__in=FORMATION_KEYS) | Q(actor_for__isnull=False))
         # Filtre par les cantons s'ils existent
         cantons = self.forwarded.get("cantons", [])
         if len(cantons) > 0:
@@ -86,8 +83,8 @@ class PersonsRelevantForSessions(PersonAutocomplete):
                 [v for v in cantons if v]
             )
             qs = qs.filter(
-                Q(profile__activity_cantons__regex=cantons_regexp)
-                | Q(profile__affiliation_canton__in=cantons)
+                Q(activity_cantons__regex=cantons_regexp)
+                | Q(affiliation_canton__in=cantons)
             )
         return qs.distinct()
 
@@ -99,21 +96,21 @@ class Helpers(PersonAutocomplete):
 
     def get_queryset(self):
         qs = super(Helpers, self).get_queryset()
-        return qs.filter(profile__formation__in=FORMATION_KEYS)
+        return qs.filter(formation__in=FORMATION_KEYS)
 
     def get_result_label(self, choice):
         return "{name} {icon}".format(
-            name=choice.get_full_name(), icon=choice.profile.formation_icon()
+            name=choice.get_full_name(), icon=choice.formation_icon()
         )
 
 
 class Leaders(PersonAutocomplete):
     def get_queryset(self):
         qs = super(Leaders, self).get_queryset()
-        return qs.filter(profile__formation=FORMATION_M2)
+        return qs.filter(formation=FORMATION_M2)
 
 
 class Actors(PersonAutocomplete):
     def get_queryset(self):
         qs = super(Actors, self).get_queryset()
-        return qs.exclude(profile__actor_for__isnull=True).distinct()
+        return qs.exclude(actor_for__isnull=True).distinct()

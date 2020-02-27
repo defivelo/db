@@ -91,7 +91,7 @@ class UserCreate(HasPermissionsMixin, ProfileMixin, SuccessMessageMixin, CreateV
 
     def get_success_url(self):
         try:
-            return reverse_lazy("user-detail", kwargs={"pk": self.object.pk})
+            return reverse_lazy("user-detail", kwargs={"pk": self.object.user.pk})
         except Exception:
             return reverse_lazy("user-list")
 

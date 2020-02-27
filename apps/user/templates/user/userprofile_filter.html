@@ -82,15 +82,15 @@
             <td>
                 {% if not profile.deleted %}
                     {% if request.user == profile.user or request.user|can:"user_edit_other" and request.user|inusercantons:profile.affiliation_canton %}
-                    <a class="btn btn-primary btn-xs" href="{% url 'user-update' pk=user.pk %}">
+                    <a class="btn btn-primary btn-xs" href="{% url 'user-update' pk=profile.user.pk %}">
                         <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="{% trans "Éditer" %}"></span>
                     </a>
                     {% endif %}
                     {% if profile.can_login %}
                         <span class="btn btn-disabled btn-xs">{{ profile.access_level_icon }}</span>
                     {% else %}
-                        {% if request.user|can:"user_can_send_credentials" and request.user.pk != user.pk %}
-                        <a class="btn btn-default btn-xs" href="{% url 'user-sendcredentials' pk=user.pk %}">
+                        {% if request.user|can:"user_can_send_credentials" and request.user.pk != profile.user.pk %}
+                        <a class="btn btn-default btn-xs" href="{% url 'user-sendcredentials' pk=profile.user.pk %}">
                             <span class="glyphicon glyphicon-envelope" aria-hidden="true" title="{% trans "Envoyer les données de connexion" %}"></span>
                         </a>
                         {% endif %}

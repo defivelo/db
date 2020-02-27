@@ -69,7 +69,7 @@ class ProfileMixin(MenuView):
         try:
             qs = super(ProfileMixin, self).get_queryset()
         except AttributeError:
-            qs = get_user_model().objects
+            qs = UserProfile.objects
 
         qs = qs.prefetch_related(
             "user__groups", "user", "actor_for", "actor_for__translations",
@@ -90,7 +90,7 @@ class ProfileMixin(MenuView):
         return qs
 
     def get_success_url(self):
-        updatepk = self.get_object().pk
+        updatepk = self.get_object().user.pk
         if updatepk == self.request.user.pk:
             return reverse_lazy("profile-detail")
         return reverse_lazy("user-detail", kwargs={"pk": updatepk})
@@ -109,14 +109,19 @@ class ProfileMixin(MenuView):
         return form
 
     def form_valid(self, form):
-        ret = super(ProfileMixin, self).form_valid(form)
-        """
-        Write the non-model fields
-        """
         try:
-            user = self.object
-        except AttributeError:
-            user = self.get_object()
+            user = form.instance.user
+        except (UserProfile.user.RelatedObjectDoesNotExist, AttributeError):
+            user = get_user_model()()
+
+        for f in ["first_name", "last_name", "email"]:
+            try:
+                setattr(user, f, form.cleaned_data["first_name"])
+            except KeyError:
+                pass
+        user.save()
+
+        form.cleaned_data["user"] = user
 
         update_profile_fields = PERSONAL_FIELDS
         # if the edit user has access, extend the update_profile_fields
@@ -140,8 +145,8 @@ class ProfileMixin(MenuView):
                     related_manager.set(form.cleaned_data[field])
                 else:
                     setattr(userprofile, field, form.cleaned_data[field])
-        userprofile.save()
-        return ret
+
+        return super(ProfileMixin, self).form_valid(form)
 
     def get_form_kwargs(self):
         kwargs = super(ProfileMixin, self).get_form_kwargs()
@@ -167,10 +172,10 @@ class UserSelfAccessMixin(object):
         except LookupError:
             usercantons = False
 
-        user = self.get_object()
+        profile = self.get_object()
         if (
             # Soit c'est moi
-            request.user.pk == user.pk
+            request.user.pk == profile.user.pk
             or
             # Soit j'ai le droit sur tous les cantons
             has_permission(request.user, "cantons_all")
@@ -180,15 +185,13 @@ class UserSelfAccessMixin(object):
                 usercantons
                 and (
                     # Il est dans mes cantons d'affiliation
-                    user.profile.affiliation_canton in usercantons
+                    profile.affiliation_canton in usercantons
                     or (
                         # Je ne fais que le consulter et il est dans mes
                         # cantons d'activité
                         not edit
-                        and user.profile.activity_cantons
-                        and len(
-                            set(user.profile.activity_cantons).intersection(usercantons)
-                        )
+                        and profile.activity_cantons
+                        and len(set(profile.activity_cantons).intersection(usercantons))
                         != 0
                     )
                 )

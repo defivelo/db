@@ -44,6 +44,7 @@ class UserDelete(ProfileMixin, HasPermissionsMixin, FormView):
         return context
 
     def form_valid(self, form):
-        user = self.get_object()
-        user.profile.delete()
-        return super(UserDelete, self).form_valid(form)
+        user = self.get_object().user
+        ret = super(UserDelete, self).form_valid(form)
+        user.delete()
+        return ret
