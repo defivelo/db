@@ -22,7 +22,10 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
+from factory import fuzzy
+
 from apps.challenge.models import AnnualStateSetting
+from apps.common import DV_STATES
 from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient
 
 from .test_seasons import SeasonTestCaseMixin
@@ -34,18 +37,26 @@ class SettingTestCase(TestCase):
         self.canton = fuzzy.FuzzyChoice(DV_STATES).fuzz()
 
     def test_settings_no_negative_costs(self):
-        s0 = AnnualStateSetting(year=2020, canton="VD", cost_per_bike=-12)
+        s0 = AnnualStateSetting(
+            year=self.year,
+            canton=self.canton,
+            cost_per_bike=fuzzy.FuzzyInteger(-100, -1).fuzz(),
+        )
         with self.assertRaises(expected_exception=ValidationError):
             s0.full_clean()
 
-        s1 = AnnualStateSetting(year=2020, canton="VD", cost_per_participant=-12)
+        s1 = AnnualStateSetting(
+            year=self.year,
+            canton=self.canton,
+            cost_per_participant=fuzzy.FuzzyInteger(-100, -1).fuzz(),
+        )
         with self.assertRaises(expected_exception=ValidationError):
             s1.full_clean()
 
     def test_settings_unique_together(self):
-        s0 = AnnualStateSetting(year=2020, canton="VD")
+        s0 = AnnualStateSetting(year=self.year, canton=self.canton)
         s0.save()
-        s1 = AnnualStateSetting(year=2020, canton="VD")
+        s1 = AnnualStateSetting(year=self.year, canton=self.canton)
         with self.assertRaises(expected_exception=ValidationError):
             s1.full_clean()
         with self.assertRaisesMessage(
@@ -65,7 +76,10 @@ class SettingsViewsTestCase(SeasonTestCaseMixin):
         self.url_redirects_to = reverse(
             "annualstatesettings-list", kwargs={"year": timezone.now().year}
         )
-        self.url_yearly = reverse("annualstatesettings-list", kwargs={"year": 2019})
+        self.url_yearly = reverse(
+            "annualstatesettings-list",
+            kwargs={"year": fuzzy.FuzzyInteger(1999, 2050).fuzz()},
+        )
 
 
 class AuthUserTest(SettingsViewsTestCase):
