@@ -46,8 +46,20 @@ from .models import (
     BAGSTATUS_CHOICES,
     FORMATION_CHOICES,
     MARITALSTATUS_CHOICES,
+    STD_PROFILE_FIELDS,
     USERSTATUS_CHOICES_NORMAL,
+    UserProfile,
 )
+
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = get_user_model()
+        fields = (
+            "first_name",
+            "last_name",
+            "email",
+        )
 
 
 class UserProfileForm(forms.ModelForm):
@@ -58,8 +70,11 @@ class UserProfileForm(forms.ModelForm):
         cantons = kwargs.pop("cantons", None)
         super(UserProfileForm, self).__init__(*args, **kwargs)
 
+        self.fields.update(UserForm().fields)
+
         if not allow_email and "email" in self.fields:
             del self.fields["email"]
+
         for field in "first_name", "last_name", "email":
             if field in self.fields:
                 self.fields[field].required = True
@@ -75,111 +90,14 @@ class UserProfileForm(forms.ModelForm):
             self.fields["affiliation_canton"].required = affiliation_canton_required
             self.fields["affiliation_canton"].choices = choices
 
-    cresus_employee_number = forms.CharField(
-        label=_("Numéro d'employé Crésus"), max_length=63, required=False,
-    )
-    language = forms.ChoiceField(
-        label=_("Langue"), choices=DV_LANGUAGES_WITH_DEFAULT, required=False
-    )
-    languages_challenges = MultiSelectFormField(
-        label=_("Prêt à animer en"), choices=DV_LANGUAGES, required=False
-    )
-    address_street = forms.CharField(label=_("Rue"), max_length=255, required=False)
-    address_no = forms.CharField(label=_("N°"), max_length=8, required=False)
-    address_zip = CHZipCodeField(label=_("NPA"), max_length=4, required=False)
-    address_city = forms.CharField(label=_("Ville"), max_length=64, required=False)
-    address_canton = forms.ChoiceField(
-        label=_("Canton"),
-        widget=CHStateSelect,
-        choices=STATE_CHOICES_WITH_DEFAULT,
-        required=False,
-    )
-    birthdate = SwissDateField(label=_("Date de naissance"), required=False)
-    natel = CHPhoneNumberField(label=_("Natel"), required=False)
-    nationality = BS3CountriesField(label=_("Nationalité"))
-    work_permit = forms.CharField(
-        label=_("Permis de travail"),
-        widget=forms.TextInput(attrs={"placeholder": ("… si pas suisse")}),
-        max_length=255,
-        required=False,
-    )
-    tax_jurisdiction = forms.CharField(
-        label=_("Lieu d'imposition"),
-        widget=forms.TextInput(attrs={"placeholder": ("… si pas en Suisse")}),
-        max_length=511,
-        required=False,
-    )
-    bank_name = forms.CharField(
-        label=_("Nom de la banque"), max_length=511, required=False,
-    )
-    iban = localforms.IBANFormField(
-        label=_("Coordonnées bancaires (IBAN)"),
-        include_countries=IBAN_SEPA_COUNTRIES,
-        required=False,
-    )
-    social_security = CHSocialSecurityNumberField(
-        label=_("N° AVS"), max_length=16, required=False
-    )
-    formation = forms.ChoiceField(
-        label=_("Formation"), choices=FORMATION_CHOICES, required=False
-    )
-    formation_firstdate = SwissDateField(
-        label=_("Date de la première formation"), required=False
-    )
-    formation_lastdate = SwissDateField(
-        label=_("Date de la dernière formation"), required=False
-    )
-    actor_for = forms.ModelMultipleChoiceField(
-        label=_("Intervenant"),
-        queryset=(
-            QualificationActivity.objects.filter(category="C").prefetch_related(
-                "translations"
-            )
-        ),
-        required=False,
-    )
-    status = forms.ChoiceField(
-        label=_("Statut"), choices=USERSTATUS_CHOICES_NORMAL, required=False
-    )
-    marital_status = forms.ChoiceField(
-        label=_("État civil"), choices=MARITALSTATUS_CHOICES, required=False
-    )
-    pedagogical_experience = forms.CharField(
-        label=_("Expérience pédagogique"), required=False
-    )
-    firstmed_course = forms.BooleanField(
-        label=_("Cours samaritain suivi"), required=False
-    )
-    firstmed_course_comm = forms.CharField(
-        label=_("Cours samaritain suivi?"), required=False
-    )
-    bagstatus = forms.ChoiceField(
-        label=_("Sac Défi Vélo"), choices=BAGSTATUS_CHOICES, required=False
-    )
-    comments = forms.CharField(
-        label=_("Remarques"), widget=forms.Textarea, required=False
-    )
-    affiliation_canton = forms.ChoiceField(
-        label=_("Canton d'affiliation"),
-        choices=sorted(DV_STATE_CHOICES_WITH_DEFAULT),
-        required=False,
-    )
-    activity_cantons = MultiSelectFormField(
-        label=_("Défi Vélo Mobile"), choices=sorted(DV_STATE_CHOICES), required=False
-    )
-
     class Meta:
-        model = get_user_model()
-        fields = [
-            "first_name",
-            "last_name",
-            "email",
-        ]
+        model = UserProfile
+        fields = STD_PROFILE_FIELDS
 
     def clean_email(self):
         # Ideally, this should get checked by the User model
         email = self.cleaned_data["email"]
-        existing_users = self._meta.model.objects.filter(email=email)
+        existing_users = self._meta.model.objects.filter(user__email=email)
         if self.instance and self.instance.pk is not None:
             existing_users = existing_users.exclude(pk=self.instance.pk)
         if existing_users.exists():

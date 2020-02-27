@@ -43,8 +43,8 @@ from ..models import (
 
 class ProfileMixin(MenuView):
     cantons = True
-    model = get_user_model()
-    context_object_name = "userprofile"
+    model = UserProfile
+    context_object_name = "profile"
     form_class = UserProfileForm
     profile_fields = STD_PROFILE_FIELDS
 
@@ -72,11 +72,8 @@ class ProfileMixin(MenuView):
             qs = get_user_model().objects
 
         qs = qs.prefetch_related(
-            "groups",
-            "profile",
-            "profile__actor_for",
-            "profile__actor_for__translations",
-        ).order_by("first_name", "last_name")
+            "user__groups", "user", "actor_for", "actor_for__translations",
+        ).order_by("user__first_name", "user__last_name")
         try:
             usercantons = user_cantons(self.request.user)
         except LookupError:
@@ -86,8 +83,8 @@ class ProfileMixin(MenuView):
             cantons_regexp = MULTISELECTFIELD_REGEXP % "|".join(
                 [v for v in usercantons if v]
             )
-            allcantons_filter = [Q(profile__activity_cantons__regex=cantons_regexp)] + [
-                Q(profile__affiliation_canton__in=usercantons)
+            allcantons_filter = [Q(activity_cantons__regex=cantons_regexp)] + [
+                Q(affiliation_canton__in=usercantons)
             ]
             qs = qs.filter(reduce(operator.or_, allcantons_filter))
         return qs

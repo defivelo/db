@@ -53,6 +53,7 @@ from ..models import (
     USERSTATUS_ACTIVE,
     USERSTATUS_CHOICES,
     USERSTATUS_RESERVE,
+    UserProfile,
 )
 from .mixins import ProfileMixin, UserSelfAccessMixin
 
@@ -68,12 +69,11 @@ class UserUpdate(UserSelfAccessMixin, ProfileMixin, SuccessMessageMixin, UpdateV
         """
         Pre-fill the form with the non-model fields
         """
-        user = self.get_object()
-        if hasattr(user, "profile"):
+        userprofile = self.get_object()
+        if hasattr(userprofile, "user"):
             struct = {}
-            for field in self.profile_fields:
-                struct[field] = getattr(user.profile, field)
-            struct["actor_for"] = user.profile.actor_for.all()
+            for field in ["email", "first_name", "last_name"]:
+                struct[field] = getattr(userprofile.user, field)
             return struct
 
     def dispatch(self, request, *args, **kwargs):
@@ -110,11 +110,11 @@ class UserProfileFilterSet(FilterSet):
         super(UserProfileFilterSet, self).__init__(data, *args, **kwargs)
         if cantons:
             if len(cantons) > 1:
-                choices = self.filters["profile__activity_cantons"].extra["choices"]
+                choices = self.filters["activity_cantons"].extra["choices"]
                 choices = ((k, v) for (k, v) in choices if k in cantons or not k)
-                self.filters["profile__activity_cantons"].extra["choices"] = choices
+                self.filters["activity_cantons"].extra["choices"] = choices
             elif len(cantons) == 1:
-                del self.filters["profile__activity_cantons"]
+                del self.filters["activity_cantons"]
 
     def filter_multi_nonempty(queryset, name, values):
         if values:
@@ -129,8 +129,8 @@ class UserProfileFilterSet(FilterSet):
             cantons_regexp = MULTISELECTFIELD_REGEXP % "|".join(
                 [v for v in values if v]
             )
-            allcantons_filter = [Q(profile__activity_cantons__regex=cantons_regexp)] + [
-                Q(profile__affiliation_canton=v) for v in values if v
+            allcantons_filter = [Q(activity_cantons__regex=cantons_regexp)] + [
+                Q(affiliation_canton=v) for v in values if v
             ]
             return queryset.filter(reduce(operator.or_, allcantons_filter))
         return queryset
@@ -139,8 +139,8 @@ class UserProfileFilterSet(FilterSet):
         if values and any(values):
             # S'il y au moins une langue en commun
             lang_regexp = MULTISELECTFIELD_REGEXP % "|".join([v for v in values if v])
-            alllangs_filter = [Q(profile__languages_challenges__regex=lang_regexp)] + [
-                Q(profile__language=v) for v in values if v
+            alllangs_filter = [Q(languages_challenges__regex=lang_regexp)] + [
+                Q(language=v) for v in values if v
             ]
             return queryset.filter(reduce(operator.or_, alllangs_filter))
         return queryset
@@ -148,44 +148,44 @@ class UserProfileFilterSet(FilterSet):
     def filter_wide(queryset, name, value):
         if value:
             allfields_filter = [
-                Q(last_name__unaccent__icontains=value),
-                Q(first_name__unaccent__icontains=value),
-                Q(email__icontains=value),
-                Q(profile__natel__icontains=value),
+                Q(user__last_name__unaccent__icontains=value),
+                Q(user__first_name__unaccent__icontains=value),
+                Q(user__email__icontains=value),
+                Q(natel__icontains=value),
             ]
             return queryset.filter(reduce(operator.or_, allfields_filter))
         return queryset
 
-    profile__language = MultipleChoiceFilter(
+    language = MultipleChoiceFilter(
         label=_("Langue"),
         choices=DV_LANGUAGES_WITH_DEFAULT,
         method=filter_multi_nonempty,
     )
 
-    profile__languages_challenges = MultipleChoiceFilter(
+    languages_challenges = MultipleChoiceFilter(
         label=_("Langues d'animation"),
         choices=DV_LANGUAGES_WITH_DEFAULT,
         method=filter_languages,
     )
 
-    profile__affiliation_canton = MultipleChoiceFilter(
+    affiliation_canton = MultipleChoiceFilter(
         label=_("Canton d'affiliation"),
         choices=DV_STATE_CHOICES_WITH_DEFAULT,
         method=filter_multi_nonempty,
     )
 
-    profile__activity_cantons = MultipleChoiceFilter(
+    activity_cantons = MultipleChoiceFilter(
         label=_("Cantons"), choices=DV_STATE_CHOICES_WITH_DEFAULT, method=filter_cantons
     )
-    profile__status = MultipleChoiceFilter(
+    status = MultipleChoiceFilter(
         label=_("Statut"),
         choices=USERSTATUS_CHOICES,
         initial=[USERSTATUS_ACTIVE, USERSTATUS_RESERVE,],
     )
-    profile__formation = MultipleChoiceFilter(
+    formation = MultipleChoiceFilter(
         label=_("Formation"), choices=FORMATION_CHOICES, method=filter_multi_nonempty
     )
-    profile__actor_for = ModelMultipleChoiceFilter(
+    actor_for = ModelMultipleChoiceFilter(
         label=_("Intervenant"),
         queryset=(
             QualificationActivity.objects.filter(category="C").prefetch_related(
@@ -196,19 +196,19 @@ class UserProfileFilterSet(FilterSet):
     q = CharFilter(label=_("Recherche"), method=filter_wide)
 
     class Meta:
-        model = get_user_model()
+        model = UserProfile
         fields = [
-            "profile__status",
-            "profile__formation",
-            "profile__actor_for",
-            "profile__activity_cantons",
+            "status",
+            "formation",
+            "actor_for",
+            "activity_cantons",
         ]
 
 
 class UserList(HasPermissionsMixin, ProfileMixin, PaginatorMixin, FilterView):
     required_permission = "user_view_list"
     filterset_class = UserProfileFilterSet
-    context_object_name = "users"
+    context_object_name = "profiles"
 
     def get_filterset_kwargs(self, filterset_class):
         kwargs = super(UserList, self).get_filterset_kwargs(filterset_class)

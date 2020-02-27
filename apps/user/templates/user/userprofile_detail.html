@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+{% load i18n bootstrap3 static dv_filters %}
+
+{% block bootstrap3_extra_head %}
+    <link rel="stylesheet" href="{% static 'flags/sprite.css' %}" />
+{% endblock %}
+
+{% block head_title %}{{ profile.user.get_full_name }}{% endblock %}
+{% block content %}
+    <div class="panel panel-{{ profile.status_class }} vcard">
+        <div class="panel-heading">
+            <h2 class="panel-title">
+                <a href="{{ profile.user.get_absolute_url }}" class="fn">{{ profile.user.get_full_name }}</a>
+                {% if profile.formation %}
+                    <span class="badge pull-right">{{ profile.formation_full }} {{ profile.formation_icon }}</span>
+                {% endif %}
+                {% if profile.actor %}
+                    <span class="badge pull-right">{{ profile.actor_inline }} {{ profile.actor_icon }}</span>
+                {% endif %}
+                {% if profile.can_login %}
+                    <span class="badge pull-right">{{ profile.access_level_icon }}</span>
+                    {% if request.user|can:"user_can_resend_credentials" %}
+                        <a class="badge pull-right" href="{% url 'user-resendcredentials' pk=profile.user.pk %}" title="{% trans "Réinitialiser les données de connexion" %}">
+                            <span class="glyphicon glyphicon-envelope" aria-hidden="true" title="{% trans "Réinitialiser les données de connexion" %}"></span>
+                        </a>
+                    {% endif %}
+                {% else %}
+                    {% if request.user|can:"user_can_send_credentials" and request.user.pk != profile.user.pk %}
+                        <a class="badge pull-right" href="{% url 'user-sendcredentials' pk=profile.user.pk %}" title="{% trans "Envoyer les données de connexion" %}">
+                            <span class="glyphicon glyphicon-envelope" aria-hidden="true" title="{% trans "Envoyer les données de connexion" %}"></span>
+                        </a>
+                    {% endif %}
+                {% endif %}
+                {% if request.user|can:"user_deletions" and request.user.pk != profile.user.pk and not profile.deleted %}
+                    <a class="badge pull-right" href="{% url 'user-delete' pk=profile.user.pk %}" title="{% trans "Supprimer" %}">
+                        <span class="glyphicon glyphicon-trash" aria-hidden="true" title="{% trans "Supprimer" %}"></span>
+                    </a>
+                {% endif %}
+            </h2>
+        </div>
+
+        <div class="panel-body">
+        {% comment %}
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#addr" aria-controls="coord" role="tab" data-toggle="tab">{% trans "Adresse" %}</a></li>
+                <li role="presentation"><a href="#contacts" aria-controls="contacts" role="tab" data-toggle="tab">{% trans "Contacts" %}</a></li>
+                {% if profile.iban or profile.social_security %}
+                    <li role="presentation"><a href="#administrativia" aria-controls="administrativia" role="tab" data-toggle="tab">{% trans "Administratif" %}</a></li>
+                {% endif %}
+                <li role="presentation"><a href="#defi" aria-controls="defi" role="tab" data-toggle="tab">{% trans "Défi" %}</a></li>
+
+                {% if profile.comments %}
+                    <li role="presentation"><a href="#notes" aria-controls="notes" role="tab" data-toggle="tab">{% trans "Notes" %}</a></li>
+                {% endif %}
+            </ul>
+        {% endcomment %}
+
+            <!-- Tab panes -->
+            <div>
+                <div role="tabpane" class="tab-pane active adr" id="addr">
+                    <dl class="dl-horizontal">
+                        {% if profile.cresus_employee_number %}
+                            <dt>{% trans "N° d'employé Crésus" %}</dt>
+                                <dd><tt>{{ profile.cresus_employee_number }}</tt></dd>
+                        {% endif %}
+                        <dt>{% trans "Nom" %}</dt>
+                            <dd>{{ profile.user.get_full_name }}</dd>
+                        <dt>{% trans "Adresse" %}</dt>
+                            <dd>
+                                <div class="street-address">{{ profile.address_street }} {{ profile.address_no }}</div>
+                                <div>
+                                    <span class="postal-code">{{ profile.address_zip }}</span> <span class="locality">{{ profile.address_city }}</span>
+                                    {% if profile.address_canton %}
+                                    ({{ profile.address_canton }})
+                                    {% endif %}
+                                </div>
+                        </dd>
+                    </dl>
+                </div>
+                <div role="tabpane" class="tab-pane" id="contacts">
+                    <dl class="dl-horizontal">
+                        {% if profile.birthdate %}
+                            <dt>{% trans "Date de naissance" %}</dt>
+                                <dd>{{ profile.birthdate|date }} ({% blocktrans with age=profile.age %}{{ age }} ans{% endblocktrans %})</dd>
+                        {% endif %}
+                        {% if profile.user.email %}
+                            <dt>{% trans "Email" %}</dt>
+                                <dd><a class="email" href="mailto:{{ profile.mailtolink|urlencode }}">{{ profile.user.email }}</a></dd>
+                        {% endif %}
+                        {% if profile.natel %}
+                            <dt>{% trans "Natel" %}</dt>
+                                <dd>{{ profile.natel|tel_link }}</dd>
+                        {% endif %}
+                    </dl>
+                </div>
+                <div role="tabpane" class="tab-pane" id="administrativia">
+                    <dl class="dl-horizontal">
+                        {% if profile.nationality %}
+                            <dt>{% trans "Nationalité" %}</dt>
+                                <dd>
+                                    <span class="{{ profile.nationality.flag_css }}"
+                                        aria-label="{% blocktrans with country_code=profile.nationality.name %}Drapeau de {{ country_code }}{% endblocktrans %}"></span>
+                                    {{ profile.nationality.name }}
+                                </dd>
+                        {% endif %}
+                        {% if profile.work_permit %}
+                            <dt>{% trans "Permis de travail" %}</dt>
+                                <dd>{{ profile.work_permit }}</dd>
+                        {% endif %}
+                        {% if profile.tax_jurisdiction %}
+                            <dt>{% trans "Lieu d'imposition" %}</dt>
+                                <dd>{{ profile.tax_jurisdiction }}</dd>
+                        {% endif %}
+                        {% if profile.bank_name %}
+                            <dt>{% trans "Nom de la banque" %}</dt>
+                                <dd>{{ profile.bank_name }}</dd>
+                        {% endif %}
+                        {% if profile.iban %}
+                            <dt>{% trans "N° IBAN" %}</dt>
+                                <dd><tt>{{ profile.iban_nice }}</tt></dd>
+                        {% endif %}
+                        {% if profile.social_security %}
+                            <dt>{% trans "N° AVS" %}</dt>
+                                <dd><tt>{{ profile.social_security }}</tt></dd>
+                        {% endif %}
+                        {% if profile.marital_status %}
+                            <dt>{% trans "État civil" %}</dt>
+                                <dd>{{ profile.marital_status_full }}</dd>
+                        {% endif %}
+                    </dl>
+                </div>
+                <div role="tabpane" class="tab-pane" id="defi">
+                    <dl class="dl-horizontal">
+                        {% if profile.formation %}
+                            <dt>{% trans "Formation" %}</dt><dd>{{ profile.formation_full }}
+                            {% if profile.formation_firstdate %}
+                            <br/>{% trans "Première formation : " %}{{ profile.formation_firstdate }}
+                            {% endif %}
+                            {% if profile.formation_lastdate %}
+                            <br/>{% trans "Dernière formation : " %}{{ profile.formation_lastdate }}
+                            {% endif %}</dd>
+                        {% endif %}
+                        {% if profile.actor %}
+                            <dt>{% trans "Intervenant" %}</dt><dd>{{ profile.actor_for.all|join:'<br />' }}</dd>
+                        {% endif %}
+                        {% if profile.status > 0 %}
+                        <dt>{% trans "État" %}</dt>
+                            <dd class="text-{{ profile.status_class }}">
+                                    {{ profile.status_icon }}
+                                    {{ profile.status_full }}
+                                    {% if profile.status_updatetime %}
+                                        ({% trans "Dernière mise à jour : " %}{{ profile.status_updatetime }})
+                                    {% endif %}
+                            </dd>
+                        {% endif %}
+                        {% if profile.bagstatus > 0 %}
+                            <dt>{% trans "Sac Défi Vélo" %}</dt>
+                                <dd>
+                                        {{ profile.bagstatus_icon }}
+                                        {{ profile.bagstatus_full }}
+                                        {% if profile.bagstatus_updatetime %}
+                                            ({% trans "Dernière mise à jour: " %}{{ profile.bagstatus_updatetime }})
+                                        {% endif %}
+                                </dd>
+                        {% endif %}
+                        {% if profile.pedagogical_experience %}
+                            <dt>{% trans "Exp. pédagogique" %}</dt><dd>{{ profile.pedagogical_experience }}</dd>
+                        {% endif %}
+                        <dt>{% trans "Cours samaritain" %}</dt><dd><span class="glyphicon glyphicon-{% if profile.firstmed_course %}check{% else %}unchecked{% endif %}"></span> {{ profile.firstmed_course_comm }}</dd>
+                    </dl>
+                </div>
+                    <div role="tabpane" class="tab-pane" id="cantons">
+                        <dl class="dl-horizontal">
+                        {% if profile.affiliation_canton %}
+                            <dt>{% trans "Canton d'affiliation" %}</dt>
+                            <dd>{{ profile.affiliation_canton|canton_abbr:False }}</dd>
+                        {% endif %}
+                        {% if profile.activity_cantons %}
+                            <dt>{% trans "Défi Vélo Mobile" %}</dt>
+                            <dd>{{ profile.activity_cantons|cantons_abbr:False|join:"<br />" }}
+                            </dd>
+                        {% endif %}
+                        {% if profile.can_login %}
+                            <dt>{% trans "Niveau d'accès" %}</dt>
+                            <dd>{{ profile.access_level_icon }} {{ profile.access_level }} </dd>
+                        {% endif %}
+                        {% if profile.managed_cantons %}
+                            <dt>{% trans "Cantons gérés" %}</dt>
+                            <dd>{{ profile.managed_cantons|cantons_abbr:False|join:"<br />" }}</dd>
+                        {% endif %}
+                        </dl>
+                    </div>
+                    <div role="tabpane" class="tab-pane" id="languages">
+                        <dl class="dl-horizontal">
+                        {% if profile.language %}
+                            <dt>{% trans "Langue" %}</dt>
+                            <dd>{{ profile.language_verb }}</dd>
+                        {% endif %}
+                        {% if profile.languages_challenges %}
+                            <dt>{% trans 'Prêt à animer en' %}</dt>
+                            <dd>{{ profile.languages_challenges }}</dd>
+                        {% endif %}
+                        </dl>
+                    </div>
+                {% if request.user|can:'user_crud_dv_private_fields' and profile.comments %}
+                    <div role="tabpane" class="tab-pane panel panel-danger" id="notes">
+                        <div class="panel-heading">{% trans "Remarques privées" %}</div>
+                        <div class="panel-body">
+                        {{ profile.comments }}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% buttons %}
+    <div class="hidden-print">
+        {% if request.user.pk == profile.user.pk or request.user|can:"user_edit_all" or request.user|can:"user_edit_other" and request.user|inusercantons:profile.affiliation_canton %}
+            <a class="btn btn-primary pull-right" href="{% url 'user-update' pk=profile.user.pk %}">
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="{% trans "Éditer" %}"></span>
+                {% trans "Éditer" %}
+            </a>
+        {% endif %}
+        {% if request.user.pk != profile.user.pk and profile.can_login and request.user|can:"user_set_role" %}
+            <a class="btn btn-warning pull-right" href="{% url 'user-assign-role' pk=profile.user.pk %}">
+                <span class="glyphicon glyphicon-lock" aria-hidden="true" title="{% trans "Modifier le niveau d'accès" %}"></span>
+                {% trans "Modifier le niveau d'accès" %}
+            </a>
+        {% endif %}
+        {% if request.user|can:'user_view_list' %}
+            <a class="btn btn-default" href="{% url 'user-list' %}">{% trans "Retour à la liste des utilisateurs" %}</a>
+        {% endif %}
+    {% endbuttons %}
+    {% buttons %}
+        {% if request.user|can:"user_create" %}
+            <br />
+            <a class="btn btn-primary pull-right" href="{% url 'user-create' %}">
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                {% trans "Nouvel utilisateur" %}
+            </a>
+        {% endif %}
+    </div>
+    {% endbuttons %}
+{% endblock %}

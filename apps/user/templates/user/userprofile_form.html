@@ -7,10 +7,10 @@
 {% block head_title %}{% trans "Profil" %}{% endblock %}
 
 {% block content %}
-    <h2>{% if not userprofile %}{% trans "Nouvel utilisateur" %}
-        {% else %}{% user_display userprofile %}
+    <h2>{% if not profile.user %}{% trans "Nouvel utilisateur" %}
+        {% else %}{% user_display profile.user %}
         {% endif %}</h2>
-    {% if not userprofile %}
+    {% if not profile.user %}
     <div class="alert alert-warning row" role="alert">
         <span class="col-xs-9">{% blocktrans %}Est-il certain que ce nouvel utilisateur n'existe pas déjà dans la base de données ?{% endblocktrans %}</span>
         {% include 'user_search_form.html' %}
@@ -99,8 +99,8 @@
         </div>
 
         {% buttons %}
-            <button type="submit" class="btn btn-primary pull-right">{% if userprofile %}{% trans 'Update' %}{% else %}{% trans 'Créer' %}{% endif %}</button>
-            {% if userprofile == request.user %}
+            <button type="submit" class="btn btn-primary pull-right">{% if profile.user %}{% trans 'Update' %}{% else %}{% trans 'Créer' %}{% endif %}</button>
+            {% if profile.user == request.user %}
                 <a class="btn btn-default pull-right" href="{% url 'account_email' %}">{% blocktrans with email=request.user.email %}Changer d'email ({{ email }}){% endblocktrans %}</a>
             {% else %}
                 <a class="btn btn-default" href="{% url 'user-list' %}">{% trans "Annuler" %}</a>
