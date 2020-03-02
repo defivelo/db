@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% block head_title %}{% blocktrans with ref=invoice.ref %}Édition de la facture {{ref}}{% endblocktrans %}{% endblock %}
+
+{% block bootstrap3_extra_head %}
+{{ form.media.css }}
+{% endblock %}
+{% block bootstrap3_extra_script %}
+    {{ form.media.js }}
+    {% include 'snippets/datetimepicker_js.html' %}
+{% endblock %}
+
+{% block content %}
+    <h1>{% blocktrans with ref=invoice.ref %}Édition de la facture {{ref}}{% endblocktrans %}</h1>
+
+    <form method="POST" action="" class="form-horizontal">
+        {% csrf_token %}
+        {% bootstrap_form form layout='horizontal' size='small' %}
+        {% buttons %}
+            <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
+        {% endbuttons %}
+    </form>
+
+{% endblock %}

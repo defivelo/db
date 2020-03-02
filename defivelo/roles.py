@@ -56,6 +56,7 @@ class StateManager(AbstractUserRole):
         "orga_crud": True,
         "challenge_season_crud": True,
         "challenge_session_crud": True,
+        "challenge_invoice_crud": True,
         "challenge_season_see_state_planning": True,
     }
 
@@ -80,6 +81,7 @@ class PowerUser(AbstractUserRole):
         "orga_crud": True,
         "challenge_season_crud": True,
         "challenge_session_crud": True,
+        "challenge_invoice_crud": True,
         "challenge_season_see_state_planning": True,
         "settings_crud": True,
     }

@@ -27,12 +27,16 @@ from .models import Invoice, InvoiceLine
 class CreateInvoiceForm(forms.ModelForm):
     sessions = forms.ModelMultipleChoiceField(queryset=Session.objects.none())
 
+    readonly_fields = ["season", "organization", "ref", "sessions"]
+
     class Meta:
         model = Invoice
         fields = [
+            "ref",
             "title",
-            "organization",
+            "status",
             "season",
+            "organization",
         ]
 
     def __init__(self, organization, season, *args, **kwargs):
@@ -40,8 +44,12 @@ class CreateInvoiceForm(forms.ModelForm):
         self.season = season
 
         super().__init__(*args, **kwargs)
+        sessions = season.sessions.filter(orga=organization)
+        self.fields["sessions"].queryset = sessions
+        self.fields["sessions"].initial = sessions
 
-        self.fields["sessions"].queryset = season.sessions.filter(orga=organization)
+        for f in self.readonly_fields:
+            self.fields[f].disabled = True
 
     @transaction.atomic
     def save(self, commit=True):
@@ -53,4 +61,8 @@ class CreateInvoiceForm(forms.ModelForm):
                 invoice=invoice,
                 nb_participants=session.n_participants,
                 nb_bikes=session.n_bikes,
+                # TODO: replace by site cantonal setting
+                cost_bikes=(session.n_bikes * 9),
+                # TODO: replace by site cantonal setting
+                cost_participants=(session.n_participants * 4),
             )

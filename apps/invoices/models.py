@@ -19,6 +19,7 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 
 from apps.challenge.models import Season, Session
@@ -35,10 +36,21 @@ class Invoice(models.Model):
 
     generated_at = models.DateTimeField(default=timezone.now)
     status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_DRAFT)
-    ref = models.CharField(max_length=20)
-    title = models.CharField(max_length=255)
-    organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
-    season = models.ForeignKey(Season, on_delete=models.PROTECT)
+    ref = models.CharField(_("Référence"), max_length=20, blank=False, unique=True)
+    title = models.CharField(_("Titre"), max_length=255, blank=True)
+    organization = models.ForeignKey(
+        Organization, verbose_name=_("Établissement"), on_delete=models.PROTECT
+    )
+    season = models.ForeignKey(
+        Season, verbose_name=_("Saison"), on_delete=models.PROTECT
+    )
+
+    def __str__(self):
+        return u(f"Facture {self.ref} pour {self.organization} / {self.season}")
+
+    @property
+    def sessions(self):
+        return self.season.sessions.filter(orga=self.organization)
 
 
 class InvoiceLine(models.Model):
@@ -52,3 +64,8 @@ class InvoiceLine(models.Model):
     cost_participants = models.DecimalField(
         max_digits=8, decimal_places=2, validators=[MinValueValidator(0)],
     )
+
+    def __str__(self):
+        return u(
+            f"{self.invoice.ref}: {self.session} - Vélos: {self.nb_bikes} ({self.cost_bikes} CHF) - Participants: {self.nb_participants} ({self.cost_participants} CHF)"
+        )

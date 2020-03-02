@@ -27,6 +27,7 @@ from .views import (
     AnnualStateSettingCreateView,
     AnnualStateSettingsListView,
     AnnualStateSettingUpdateView,
+    InvoiceUpdateView,
     QualiCreateView,
     QualiDeleteView,
     QualiUpdateView,
@@ -138,6 +139,12 @@ urlpatterns = [
         name="season-availabilities-update",
     ),
     url(r"^(?P<pk>[0-9]+)/delete/$", SeasonDeleteView.as_view(), name="season-delete"),
+    # Invoices
+    url(
+        r"^(?P<seasonpk>[0-9]+)/i(?P<orgapk>[0-9]+)/edit$",
+        never_cache(InvoiceUpdateView.as_view()),
+        name="invoice-update",
+    ),
     # Sessions
     url(
         r"^(?P<seasonpk>[0-9]+)/(?P<year>[0-9]{4})/w(?P<week>[0-9]+)/$",
