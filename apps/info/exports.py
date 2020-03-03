@@ -300,10 +300,12 @@ class SalariesExport(object):
             return mark_safe("<b>%s</b>" % s) if html else s
 
         dataset.append_col(session_cols + [bolden(u("Nom"))])
+        dataset.append_col(session_cols + [bolden(u("N° d'employé Crésus"))])
         dataset.append_col(session_cols + [bolden(u("Adresse"))])
         dataset.append_col(session_cols + [bolden(u("NPA"))])
         dataset.append_col(session_cols + [bolden(u("Ville"))])
         dataset.append_col(session_cols + [bolden(u("N° AVS"))])
+        dataset.append_col(session_cols + [bolden(u("Nom de la banque"))])
         dataset.append_col(session_cols + [bolden(u("IBAN"))])
         dataset.append_col(session_cols + [bolden(u("Canton d'affiliation"))])
 
@@ -351,9 +353,12 @@ class SalariesExport(object):
             fullname = user.get_full_name()
             url = reverse("user-detail", kwargs={"pk": user.pk})
             row = [
-                mark_safe(linktxt.format(url=url, content=fullname))
-                if html
-                else fullname,
+                (
+                    mark_safe(linktxt.format(url=url, content=fullname))
+                    if html
+                    else fullname
+                ),
+                user.profile.cresus_employee_number,
                 "%s %s" % (user.profile.address_street, user.profile.address_no),
                 user.profile.address_zip,
                 user.profile.address_city,
@@ -366,6 +371,7 @@ class SalariesExport(object):
                     if html
                     else user.profile.social_security
                 ),
+                user.profile.bank_name,
                 (
                     (user.profile.iban[:5] + "…" if len(user.profile.iban) > 0 else "")
                     if html

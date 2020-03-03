@@ -115,6 +115,7 @@ PERSONAL_FIELDS = [
     "nationality",
     "work_permit",
     "tax_jurisdiction",
+    "bank_name",
     "iban",
     "social_security",
     "marital_status",
@@ -123,6 +124,7 @@ PERSONAL_FIELDS = [
 ]
 
 DV_PUBLIC_FIELDS = [
+    "cresus_employee_number",
     "formation",
     "formation_firstdate",
     "formation_lastdate",
@@ -156,6 +158,9 @@ class UserProfile(Address, models.Model):
         primary_key=True,
         on_delete=models.CASCADE,
     )
+    cresus_employee_number = models.CharField(
+        _("Numéro d'employé Crésus"), max_length=63, blank=True
+    )
     language = models.CharField(
         _("Langue"), max_length=7, choices=DV_LANGUAGES_WITH_DEFAULT, blank=True
     )
@@ -170,6 +175,7 @@ class UserProfile(Address, models.Model):
     tax_jurisdiction = models.CharField(
         _("Lieu d'imposition (si pas en Suisse)"), max_length=511, blank=True
     )
+    bank_name = models.CharField(_("Nom de la banque"), max_length=511, blank=True)
     iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)
     social_security = models.CharField(max_length=16, blank=True)
     natel = models.CharField(max_length=13, blank=True)

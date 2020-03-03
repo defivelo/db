@@ -36,6 +36,9 @@
         <!-- Tab panes -->
         <div{% comment %} class="tab-content"{% endcomment %}>
             <div role="tabpanel" class="tab-pane active" id="addr">
+                {% if form.cresus_employee_number %}
+                    {% bootstrap_field form.cresus_employee_number layout='horizontal' size='small' %}
+                {% endif %}
                 {% bootstrap_field form.first_name layout='horizontal' size='small' %}
                 {% bootstrap_field form.last_name layout='horizontal' size='small' %}
                 {% bootstrap_field form.language layout='horizontal' size='small' %}
@@ -53,6 +56,7 @@
                 {% bootstrap_field form.nationality layout='horizontal' size='small' %}
                 {% bootstrap_field form.work_permit layout='horizontal' size='small' %}
                 {% bootstrap_field form.tax_jurisdiction layout='horizontal' size='small' %}
+                {% bootstrap_field form.bank_name layout='horizontal' size='small' %}
                 {% trans "CCP ?" as ccp %}
                 {% bootstrap_field form.iban layout='horizontal' size='small' addon_after=ccp %}
                 {% bootstrap_field form.social_security layout='horizontal' size='small' %}
