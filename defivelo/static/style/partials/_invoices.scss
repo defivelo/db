@@ -1,28 +1,39 @@
-.invoice-address-from {
-  float: left;
-}
-.invoice-address-to {
-  float: right;
-}
-.invoice-date {
-  clear: both;
-  float: right;
-  margin-top: 3em;
-}
+body.dv-invoice {
+  .invoice-address-from {
+    float: left;
+  }
+  .invoice-address-to {
+    float: right;
+  }
+  .invoice-date {
+    clear: both;
+    float: right;
+    margin-top: 3em;
+    margin-bottom: 4em;
+  }
 
-.invoice-title {
-  clear: both;
-  margin: 4em auto;
-}
+  .invoice-title {
+    clear: both;
+  }
 
-.invoice-bank-details {
-  float: left;
-  margin-top: 4em;
-  margin-right: 3em;
-}
+  .invoice-header-text {
+    padding-bottom: 2em;
+    border-bottom: 1px solid #4fa2ce;
+    margin-bottom: 1em;
+  }
 
-.invoice-footer-closing {
-  clear: both;
-  float: right;
-  text-align: right;
+  .invoice-table {
+    margin: 2em auto !important;
+  }
+
+  .invoice-bank-details {
+    float: left;
+    margin-top: 2em;
+    margin-right: 3em;
+  }
+  .invoice-footer-closing {
+    clear: both;
+    float: right;
+    text-align: right;
+  }
 }

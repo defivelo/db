@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n bootstrap3 dv_filters %}
+{% block body_class %}dv-invoice{% endblock %}
 {% block head_title %}{% blocktrans with ref=invoice.ref %}Facture {{ref}}{% endblocktrans %}{% endblock %}
 
 {% block content %}
@@ -8,43 +9,39 @@
   <strong>{% trans "Coordination DÉFI VÉLO" %}</strong></br>
   {% trans "c/o Label Vert sàrl" %}</br>
   {% trans "Rue Sébeillon 9a" %}</br>
-  {% trans "1004" %} <u>{% trans "Lausanne" %}</u>
+  {% trans "1004" %} {% trans "Lausanne" %}
 </div>
 
 <div class="invoice-address-to">
   <strong>{{ invoice.organization.name }}</strong></br>
   {{ invoice.organization.address_street }} {{ invoice.organization.address_no }}</br>
   {% if invoice.organization.address_additional %}{{ invoice.organization.address_additional }}</br>{% endif %}
-  {{ invoice.organization.address_zip }} <u>{{ invoice.organization.address_city }}</u></br>
+  {{ invoice.organization.address_zip }} {{ invoice.organization.address_city }}</br>
 </div>
 <div class="invoice-date">
   {% trans "Lausanne, le" %} {% now "DATE_FORMAT" %}
 </div>
 
-<h2 class="invoice-title">
-  {{ invoice.ref }}{% if invoice.title %}: {{ invoice.title }}{% endif %}
-</h2>
+<h4 class="invoice-title">{{ invoice.ref }}{% if invoice.title %}: {{ invoice.title }}{% endif %}</h4>
 
 <div class="invoice-header-text">
-  {% blocktrans %}{% endblocktrans %}
+  {% blocktrans with nb_participants=invoice.sum_nb_participants %}{{ nb_participants }} étudiant-e-s de votre établissement vont participer à « DÉFI VÉLO », compétition inter-cantonale pour la promotion du vélo. Par la participation de votre établissement, vous contribuez au succès d’un projet innovant de pgromotion du vélo, de l’activité physique et de la sécurité routière, qui place le plaisir et l’apprentissage par l’action au premier plan. DÉFI VÉLO est largement reconnu pour ces qualités: il est notamment soutenu par Promotion Santé Suisse, le Fonds suisse de sécurité routière et la commune de Sierre{% endblocktrans %}
 </div>
 
 {% if invoice.invoiceline_set %}
-<table class="table">
+<table class="table invoice-table">
     <thead>
         <tr>
-            <th></th>
-            <th>{% trans "Participants" %}</th>
-            <th></th>
-            <th>{% trans "Vélos" %}</th>
-            <th></th>
-            <th>{% trans "Total" %}</th>
+            <th scope="col">{% trans "Sessions" %}</th>
+            <th scope="col" colspan="2">{% trans "Participants" %}</th>
+            <th scope="col" colspan="2">{% trans "Vélos" %}</th>
+            <th scope="col">{% trans "Total" %}</th>
         </tr>
     </thead>
     <tbody>
     {% for line in  invoice.invoiceline_set.all %}
         <tr>
-            <th>{{ line.session.day }} - {{ line.session.begin }}</th>
+            <td class="text-left">{{ line.session.day }} - {{ line.session.begin }}</td>
             <td>{{ line.nb_participants }}</td>
             <td>{{ line.cost_participants }}</td>
             <td>{{ line.nb_bikes }}</td>
@@ -56,12 +53,12 @@
 
     <tfoot>
         <tr>
-            <th></th>
-            <th>{{ invoice.sum_nb_participants }}</th>
+            <td></td>
+            <td>{{ invoice.sum_nb_participants }}</td>
             <th>{{ invoice.sum_cost_participants }}</th>
-            <th>{{ invoice.sum_nb_bikes }}</th>
+            <td>{{ invoice.sum_nb_bikes }}</td>
             <th>{{ invoice.sum_cost_bikes }}</th>
-            <th>{{ invoice.sum_cost }}</th>
+            <th class="invoice-total">{{ invoice.sum_cost }}</th>
         </tr>
     </tfoot>
 </table>
@@ -75,11 +72,11 @@
   {% trans "IBAN" %}: <tt>{% trans "CH41 0079 0016 9412 2759 3" %}</tt></br>
   {% trans "PRO VELO SCHWEIZ" %}</br>
   {% trans "Birkenweg 61" %}</br>
-  {% trans "3001" %} <u>{% trans "Berne" %}</u>
+  {% trans "3001" %} {% trans "Berne" %}
 </div>
 <div class="invoice-bank-details">
   {% trans "Banque Cantonale Bernoise SA" %}</br>
-  {% trans "3000" %} <u>{% trans "Berne" %}</u></br>
+  {% trans "3000" %} {% trans "Berne" %}</br>
   {% trans "CCP" %}: <tt>{% trans "30-106-9 " %}</tt>
 </div>
 

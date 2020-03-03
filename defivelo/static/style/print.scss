@@ -1,3 +1,5 @@
+@import "partials/variables";
+
 // Page settings
 @page {
     size: A4;
@@ -13,6 +15,8 @@ body {
 .container {
     width: auto;
     margin-bottom: 16px;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
 }
 
 .container-fluid {
@@ -64,17 +68,61 @@ a[href]:after {
 }
 
 /* Reduce margins */
-table.table:not(.dvqualifs-calendar) {
-    margin: 0;
-    &>tbody,
-    &>tfoot,
-    &>thead {
-        &>tr {
-            &>td,
-            &>th,{
-                border: 1px solid #ddd;
-                padding: 6px;
-            }
-        }
+table.table:not(.dvqualifs-calendar):not(.invoice-table) {
+  margin: 0;
+  & > tbody,
+  & > tfoot,
+  & > thead {
+    & > tr {
+      & > td,
+      & > th {
+        border: 1px solid $dv-gray;
+        padding: 6px;
+      }
     }
+}
+
+$letter-address-margin-top: (55mm - 10mm); // 55mm from the top
+$letter-address-margin-right: (12mm - 10mm); // 12mm from the right
+$letter-address-margin-left: (100mm - 10mm); // 10cm from the left
+
+$letter-logo-size: 3cm;
+
+// Spécifiquement pour la facture
+body.dv-invoice {
+  header#print-header {
+    line-height: 0;
+    #print-logo {
+      position: absolute;
+      height: $letter-logo-size;
+      float: left;
+    }
+  }
+  .invoice-address-from {
+    margin-left: $letter-logo-size;
+  }
+  .invoice-address-to {
+    // Approximately what makes the address fit in a single-folded A4 sheet towards a window C5 letter
+    margin-top: $letter-address-margin-top;
+    max-width: calc(100% - ($letter-address-margin-left + $letter-address-margin-right));
+    margin-right: $letter-address-margin-right; // 10mm is the standard right page margin
+    font-size: 10pt;
+  }
+  table.table.invoice-table {
+    .invoice-total {
+      border: 2px solid $dv-red;
+    }
+    & > tbody,
+    & > tfoot,
+    & > thead {
+      & > tr {
+        & > td,
+        & > th {
+          border-color: $dv-blue;
+          border-right-width: 1px;
+          border-right-style: solid;
+        }
+      }
+    }
+  }
 }
