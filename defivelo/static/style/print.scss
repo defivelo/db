@@ -2,69 +2,70 @@
 
 // Page settings
 @page {
-    size: A4;
-    // Marges minimum pour A4
-    // margin: 10mm 10mm 15mm 10mm;
+  size: A4;
+  // Marges minimum pour A4
+  // margin: 10mm 10mm 15mm 10mm;
 }
 
 body {
-    padding: 0;
-    margin: 0;
+  padding: 0;
+  margin: 0;
 }
 
 .container {
-    width: auto;
-    margin-bottom: 16px;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+  width: auto;
+  margin-bottom: 16px;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 .container-fluid {
-    padding: 0;
+  padding: 0;
 }
 
 header#print-header {
-    #print-logo {
-        height: 1cm;
-        width: auto;
-    }
+  #print-logo {
+    height: 1cm;
+    width: auto;
+  }
 }
 
 footer#print-footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    margin: 0;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  margin: 0;
 }
 
 h1 {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    font-size: 30px;
-    text-align: center;
-    &>small {
-        // Ajoute un saut de ligne entre les deux
-        &:before {
-            content: ' ';
-            display: block;
-        }
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 30px;
+  text-align: center;
+  & > small {
+    // Ajoute un saut de ligne entre les deux
+    &:before {
+      content: " ";
+      display: block;
     }
+  }
 }
 
 /* No underscores */
-a, a:visited {
-    text-decoration: none;
+a,
+a:visited {
+  text-decoration: none;
 }
 
 /* We want no link hrefs */
 a[href]:after {
-    content: "";
+  content: "";
 }
 /* And no attr afters in the calendar either */
 .dvqualifs-calendar {
-    abbr[title]:after {
-        content: "";
-    }
+  abbr[title]:after {
+    content: "";
+  }
 }
 
 /* Reduce margins */
@@ -80,6 +81,7 @@ table.table:not(.dvqualifs-calendar):not(.invoice-table) {
         padding: 6px;
       }
     }
+  }
 }
 
 $letter-address-margin-top: (55mm - 10mm); // 55mm from the top
