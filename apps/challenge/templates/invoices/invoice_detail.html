@@ -1,15 +1,91 @@
 {% extends "base.html" %}
 {% load i18n bootstrap3 dv_filters %}
-{% block head_title %}{{ season.desc }}{% endblock %}
+{% block head_title %}{% blocktrans with ref=invoice.ref %}Facture {{ref}}{% endblocktrans %}{% endblock %}
 
 {% block content %}
-    <pre>
-Orga: {{ invoice.organization }}
-Title: {{ invoice.title }}
-{{ invoice }}
 
-{% for line in  invoicelines %}
-   {{ line }}
-{% endfor %}
-    </pre>
+<div class="invoice-address-from">
+  <strong>{% trans "Coordination DÉFI VÉLO" %}</strong></br>
+  {% trans "c/o Label Vert sàrl" %}</br>
+  {% trans "Rue Sébeillon 9a" %}</br>
+  {% trans "1004" %} <u>{% trans "Lausanne" %}</u>
+</div>
+
+<div class="invoice-address-to">
+  <strong>{{ invoice.organization.name }}</strong></br>
+  {{ invoice.organization.address_street }} {{ invoice.organization.address_no }}</br>
+  {% if invoice.organization.address_additional %}{{ invoice.organization.address_additional }}</br>{% endif %}
+  {{ invoice.organization.address_zip }} <u>{{ invoice.organization.address_city }}</u></br>
+</div>
+<div class="invoice-date">
+  {% trans "Lausanne, le" %} {% now "DATE_FORMAT" %}
+</div>
+
+<h2 class="invoice-title">
+  {{ invoice.ref }}{% if invoice.title %}: {{ invoice.title }}{% endif %}
+</h2>
+
+<div class="invoice-header-text">
+  {% blocktrans %}{% endblocktrans %}
+</div>
+
+{% if invoice.invoiceline_set %}
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>{% trans "Participants" %}</th>
+            <th></th>
+            <th>{% trans "Vélos" %}</th>
+            <th></th>
+            <th>{% trans "Total" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for line in  invoice.invoiceline_set.all %}
+        <tr>
+            <th>{{ line.session.day }} - {{ line.session.begin }}</th>
+            <td>{{ line.nb_participants }}</td>
+            <td>{{ line.cost_participants }}</td>
+            <td>{{ line.nb_bikes }}</td>
+            <td>{{ line.cost_bikes }}</td>
+            <td>{{ line.cost }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+
+    <tfoot>
+        <tr>
+            <th></th>
+            <th>{{ invoice.sum_nb_participants }}</th>
+            <th>{{ invoice.sum_cost_participants }}</th>
+            <th>{{ invoice.sum_nb_bikes }}</th>
+            <th>{{ invoice.sum_cost_bikes }}</th>
+            <th>{{ invoice.sum_cost }}</th>
+        </tr>
+    </tfoot>
+</table>
+{% endif %}
+
+<div class="invoice-footer-text">
+  {% blocktrans with ref=invoice.ref %}Paiement à 30 jours sur le compte de notre mandataire, avec la mention « DÉFI VÉLO {{ref}} »{% endblocktrans %}
+</div>
+
+<div class="invoice-bank-details">
+  {% trans "IBAN" %}: <tt>{% trans "CH41 0079 0016 9412 2759 3" %}</tt></br>
+  {% trans "PRO VELO SCHWEIZ" %}</br>
+  {% trans "Birkenweg 61" %}</br>
+  {% trans "3001" %} <u>{% trans "Berne" %}</u>
+</div>
+<div class="invoice-bank-details">
+  {% trans "Banque Cantonale Bernoise SA" %}</br>
+  {% trans "3000" %} <u>{% trans "Berne" %}</u></br>
+  {% trans "CCP" %}: <tt>{% trans "30-106-9 " %}</tt>
+</div>
+
+
+<div class="invoice-footer-closing">
+  {% trans "Avec nos remerciements," %}</br></br>
+  {% trans "DÉFI VÉLO" %}
+</div>
 {% endblock %}

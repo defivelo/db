@@ -18,6 +18,7 @@
 
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import F, Sum
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.translation import ugettext as u
@@ -63,6 +64,29 @@ class Invoice(models.Model):
     def sessions(self):
         return self.season.sessions.filter(orga=self.organization)
 
+    def sum_of(self, thing: str):
+        return self.invoiceline_set.aggregate(total=Sum(thing))["total"]
+
+    def sum_of_2(self, thing_1: str, thing_2: str):
+        return self.invoiceline_set.aggregate(total=Sum(F(thing_1) + F(thing_2)))[
+            "total"
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Generate sum_* methods
+        for thing in ["nb_bikes", "nb_participants", "cost_bikes", "cost_participants"]:
+            setattr(self, f"sum_{thing}", self.sum_of(thing=thing))
+        # Generate sum_* methods
+        for prefix in ["nb", "cost"]:
+            setattr(
+                self,
+                f"sum_{prefix}",
+                self.sum_of_2(
+                    thing_1=f"{prefix}_bikes", thing_2=f"{prefix}_participants"
+                ),
+            )
+
 
 class InvoiceLine(models.Model):
     session = models.ForeignKey(Session, on_delete=models.PROTECT)
@@ -80,3 +104,6 @@ class InvoiceLine(models.Model):
         return u(
             f"{self.invoice.ref}: {self.session} - Vélos: {self.nb_bikes} ({self.cost_bikes} CHF) - Participants: {self.nb_participants} ({self.cost_participants} CHF)"
         )
+
+    def cost(self):
+        return self.cost_bikes + self.cost_participants
