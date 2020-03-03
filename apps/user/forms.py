@@ -40,8 +40,7 @@ class UserProfileForm(forms.ModelForm):
         super(UserProfileForm, self).__init__(*args, **kwargs)
 
         # Import all generated fields from UserProfile
-        self.fields.update(modelform_factory(UserProfile, fields="__all__")().fields)
-        del self.fields["user"]
+        self.fields.update(modelform_factory(UserProfile, exclude=("user",))().fields)
 
         if not allow_email and "email" in self.fields:
             del self.fields["email"]
