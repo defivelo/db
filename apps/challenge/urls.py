@@ -29,6 +29,7 @@ from .views import (
     AnnualStateSettingUpdateView,
     InvoiceCreateView,
     InvoiceDetailView,
+    InvoiceUpdateView,
     QualiCreateView,
     QualiDeleteView,
     QualiUpdateView,
@@ -145,6 +146,11 @@ urlpatterns = [
         r"^(?P<seasonpk>[0-9]+)/i(?P<orgapk>[0-9]+)/new$",
         never_cache(InvoiceCreateView.as_view()),
         name="invoice-create",
+    ),
+    url(
+        r"^(?P<seasonpk>[0-9]+)/i(?P<orgapk>[0-9]+)/(?P<invoiceref>.+)/edit$",
+        never_cache(InvoiceUpdateView.as_view()),
+        name="invoice-update",
     ),
     url(
         r"^(?P<seasonpk>[0-9]+)/i(?P<orgapk>[0-9]+)/(?P<invoiceref>.+)$",

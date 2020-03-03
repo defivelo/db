@@ -26,7 +26,7 @@ from apps.challenge.models import Session
 from .models import Invoice, InvoiceLine
 
 
-class CreateInvoiceForm(forms.ModelForm):
+class InvoiceForm(forms.ModelForm):
     sessions = forms.ModelMultipleChoiceField(queryset=Session.objects.all())
 
     class Meta:
@@ -67,18 +67,20 @@ class CreateInvoiceForm(forms.ModelForm):
                     f"L'espace des factures établissements pour l'année {season.year} est épuisé avec l'identifiant {ref}."
                 )
             )
-
+        creating = not self.instance.pk
         invoice = super().save(commit=commit)
 
-        for session in self.cleaned_data["sessions"]:
-            InvoiceLine.objects.create(
-                session=session,
-                invoice=invoice,
-                nb_participants=session.n_participants,
-                nb_bikes=session.n_bikes,
-                # TODO: replace by site cantonal setting
-                cost_bikes=(session.n_bikes * 9),
-                # TODO: replace by site cantonal setting
-                cost_participants=(session.n_participants * 4),
-            )
+        if creating:
+            # So we're in create.
+            for session in self.cleaned_data["sessions"]:
+                InvoiceLine.objects.create(
+                    session=session,
+                    invoice=invoice,
+                    nb_participants=session.n_participants,
+                    nb_bikes=session.n_bikes,
+                    # TODO: replace by site cantonal setting
+                    cost_bikes=(session.n_bikes * 9),
+                    # TODO: replace by site cantonal setting
+                    cost_participants=(session.n_participants * 4),
+                )
         return invoice

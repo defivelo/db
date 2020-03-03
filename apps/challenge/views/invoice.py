@@ -19,11 +19,11 @@
 from django.shortcuts import get_object_or_404
 from django.utils.functional import cached_property
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 
 from rolepermissions.mixins import HasPermissionsMixin
 
-from apps.invoices.forms import CreateInvoiceForm
+from apps.invoices.forms import InvoiceForm
 from apps.invoices.models import Invoice
 from apps.orga.models import Organization
 
@@ -34,6 +34,7 @@ class InvoiceMixin(CantonSeasonFormMixin, HasPermissionsMixin):
     model = Invoice
     required_permission = "challenge_invoice_crud"
     context_object_name = "invoice"
+    form_class = InvoiceForm
 
     @cached_property
     def organization(self):
@@ -60,9 +61,7 @@ class InvoiceMixin(CantonSeasonFormMixin, HasPermissionsMixin):
         context["season"] = self.season
         return context
 
-
-class InvoiceDetailView(InvoiceMixin, DetailView):
-    def get_object(self, create=False):
+    def get_object(self):
         resolvermatch = self.request.resolver_match
         organization_id = int(resolvermatch.kwargs.get("orgapk"))
         invoiceref = resolvermatch.kwargs.get("invoiceref")
@@ -75,5 +74,13 @@ class InvoiceDetailView(InvoiceMixin, DetailView):
         )
 
 
+class InvoiceDetailView(InvoiceMixin, DetailView):
+    pass
+
+
 class InvoiceCreateView(InvoiceMixin, CreateView):
-    form_class = CreateInvoiceForm
+    pass
+
+
+class InvoiceUpdateView(InvoiceMixin, UpdateView):
+    pass

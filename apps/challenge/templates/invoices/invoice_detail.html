@@ -18,6 +18,19 @@
   {% if invoice.organization.address_additional %}{{ invoice.organization.address_additional }}</br>{% endif %}
   {{ invoice.organization.address_zip }} {{ invoice.organization.address_city }}</br>
 </div>
+
+<div class="hidden-print invoice-status">
+    <dl>
+        <dt>{% trans "Statut" %}</dt>
+        <dd>{{ invoice.status_full }}</dd>
+    </dl>
+    {% if user|can:'invoice_crud' %}
+        <div>
+            <a class="btn btn-primary" href="{% url 'invoice-update' seasonpk=invoice.season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">{% trans "Éditer" %}</a>
+        </div>
+    {% endif %}
+</div>
+
 <div class="invoice-date">
   {% trans "Lausanne, le" %} {% now "DATE_FORMAT" %}
 </div>
@@ -39,7 +52,7 @@
         </tr>
     </thead>
     <tbody>
-    {% for line in  invoice.invoiceline_set.all %}
+    {% for line in invoice.invoiceline_set.all %}
         <tr>
             <td class="text-left">{{ line.session.day }} - {{ line.session.begin }}</td>
             <td>{{ line.nb_participants }}</td>
