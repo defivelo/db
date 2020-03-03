@@ -17,7 +17,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django import forms
+from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.utils.translation import ugettext_lazy as _
 
 from apps.challenge.models import Session
 
@@ -25,34 +27,47 @@ from .models import Invoice, InvoiceLine
 
 
 class CreateInvoiceForm(forms.ModelForm):
-    sessions = forms.ModelMultipleChoiceField(queryset=Session.objects.none())
-
-    readonly_fields = ["season", "organization", "ref", "sessions"]
+    sessions = forms.ModelMultipleChoiceField(queryset=Session.objects.all())
 
     class Meta:
         model = Invoice
         fields = [
-            "ref",
             "title",
             "status",
-            "season",
             "organization",
+            "season",
         ]
 
     def __init__(self, organization, season, *args, **kwargs):
-        self.organization = organization
-        self.season = season
-
         super().__init__(*args, **kwargs)
         sessions = season.sessions.filter(orga=organization)
         self.fields["sessions"].queryset = sessions
         self.fields["sessions"].initial = sessions
 
-        for f in self.readonly_fields:
+        for f in ["organization", "season", "sessions"]:
             self.fields[f].disabled = True
+
+        # Circumvent weird bug due to the 'season' object being weird
+        self.fields["season"].to_python = lambda x: x
 
     @transaction.atomic
     def save(self, commit=True):
+        season = self.cleaned_data["season"]
+        for refid in range(100, 999):
+            ref = f"DV{season.year % 100}{refid:03d}"
+            self.instance.ref = ref
+
+            if not Invoice.objects.filter(ref=ref).exists():
+                # If unicity is garanteed, proceed
+                break
+        else:
+            # This should not happen.
+            raise ValidationError(
+                _(
+                    f"L'espace des factures établissements pour l'année {season.year} est épuisé avec l'identifiant {ref}."
+                )
+            )
+
         invoice = super().save(commit=commit)
 
         for session in self.cleaned_data["sessions"]:
@@ -66,3 +81,4 @@ class CreateInvoiceForm(forms.ModelForm):
                 # TODO: replace by site cantonal setting
                 cost_participants=(session.n_participants * 4),
             )
+        return invoice

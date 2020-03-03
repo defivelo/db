@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
-{% block head_title %}{% blocktrans with ref=invoice.ref %}Édition de la facture {{ref}}{% endblocktrans %}{% endblock %}
+{% block head_title %}{% if invoice %}{% blocktrans with ref=invoice.ref %}Édition de la facture {{ref}}{% endblocktrans %}{% else %}{% trans "Création de facture" %}{% endif %}{% endblock %}
 
 {% block bootstrap3_extra_head %}
 {{ form.media.css }}
@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block content %}
-    <h1>{% blocktrans with ref=invoice.ref %}Édition de la facture {{ref}}{% endblocktrans %}</h1>
+    <h1>{% if invoice %}{% blocktrans with ref=invoice.ref %}Édition de la facture {{ref}}{% endblocktrans %}{% else %}{% trans "Création de facture" %}{% endif %}</h1>
 
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}

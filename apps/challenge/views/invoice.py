@@ -16,15 +16,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.core.exceptions import ValidationError
-from django.urls import reverse_lazy
-from django.utils.translation import ugettext_lazy as _
-from django.views.generic.edit import UpdateView
+from django.shortcuts import get_object_or_404
+from django.utils.functional import cached_property
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView
 
 from rolepermissions.mixins import HasPermissionsMixin
 
 from apps.invoices.forms import CreateInvoiceForm
 from apps.invoices.models import Invoice
+from apps.orga.models import Organization
 
 from .mixins import CantonSeasonFormMixin
 
@@ -34,11 +35,22 @@ class InvoiceMixin(CantonSeasonFormMixin, HasPermissionsMixin):
     required_permission = "challenge_invoice_crud"
     context_object_name = "invoice"
 
+    @cached_property
+    def organization(self):
+        orgapk = int(self.kwargs.get("orgapk"))
+        return get_object_or_404(Organization, pk=orgapk)
+
     def get_form_kwargs(self, **kwargs):
         kw = super().get_form_kwargs(**kwargs)
+        # Remove cantons, we don't need them.
         kw.pop("cantons")
-        kw["organization"] = kw["instance"].organization
-        # assert False, kw
+        kw["organization"] = self.organization
+        return kw
+
+    def get_initial(self, **kwargs):
+        kw = super().get_initial(**kwargs)
+        kw["organization"] = self.organization
+        kw["season"] = self.season
         return kw
 
     def get_context_data(self, **kwargs):
@@ -48,40 +60,20 @@ class InvoiceMixin(CantonSeasonFormMixin, HasPermissionsMixin):
         context["season"] = self.season
         return context
 
-    def get_object(self):
+
+class InvoiceDetailView(InvoiceMixin, DetailView):
+    def get_object(self, create=False):
         resolvermatch = self.request.resolver_match
         organization_id = int(resolvermatch.kwargs.get("orgapk"))
+        invoiceref = resolvermatch.kwargs.get("invoiceref")
 
-        Invoice = self.model
-        try:
-            invoice = Invoice.objects.get(
-                season=self.season, organization_id=organization_id
-            )
-        except Invoice.DoesNotExist:
-            invoice = Invoice(season=self.season, organization_id=organization_id)
-            for refid in range(100, 999):
-                invoice.ref = f"DV{self.season.year % 100}{refid:03d}"
-                try:
-                    invoice.validate_unique()
-                    # If unicity is garanteed, proceed
-                    break
-                except ValidationError:
-                    # Try another number
-                    pass
-            else:
-                # This should not happen.
-                raise Exception(
-                    _(
-                        f"Épuisé l'espace des factures établissements pour l'année {self.season.year} avec l'identifiant {invoice.ref}."
-                    )
-                )
-
-            invoice.save()
-        return invoice
-
-    def get_success_url(self):
-        return reverse_lazy("season-detail", kwargs={"pk": self.season.pk})
+        return get_object_or_404(
+            self.model,
+            season=self.season,
+            organization_id=organization_id,
+            ref=invoiceref,
+        )
 
 
-class InvoiceUpdateView(InvoiceMixin, UpdateView):
+class InvoiceCreateView(InvoiceMixin, CreateView):
     form_class = CreateInvoiceForm

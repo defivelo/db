@@ -18,6 +18,7 @@
 
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
@@ -47,6 +48,16 @@ class Invoice(models.Model):
 
     def __str__(self):
         return u(f"Facture {self.ref} pour {self.organization} / {self.season}")
+
+    def get_absolute_url(self):
+        return reverse_lazy(
+            "invoice-detail",
+            kwargs={
+                "seasonpk": self.season.pk,
+                "orgapk": self.organization.pk,
+                "invoiceref": self.ref,
+            },
+        )
 
     @property
     def sessions(self):
