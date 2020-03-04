@@ -17,13 +17,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from django.conf.urls import url
+from django.conf.urls import include, url
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from django.views.generic.base import RedirectView
 
 from .views import (
+    AnnualStateSettingCreateView,
+    AnnualStateSettingsListView,
+    AnnualStateSettingUpdateView,
     QualiCreateView,
     QualiDeleteView,
     QualiUpdateView,
@@ -50,6 +53,29 @@ from .views import (
 )
 
 urlpatterns = [
+    # Settings
+    url(
+        "^settings/y(?P<year>[0-9]{4})/",
+        include(
+            [
+                url(
+                    r"(?P<pk>[0-9]+)/$",
+                    never_cache(AnnualStateSettingUpdateView.as_view()),
+                    name="annualstatesetting-update",
+                ),
+                url(
+                    "new/$",
+                    never_cache(AnnualStateSettingCreateView.as_view()),
+                    name="annualstatesetting-create",
+                ),
+                url(
+                    "$",
+                    never_cache(AnnualStateSettingsListView.as_view()),
+                    name="annualstatesettings-list",
+                ),
+            ]
+        ),
+    ),
     # Seasons
     url(
         r"^$",

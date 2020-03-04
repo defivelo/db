@@ -23,6 +23,7 @@ from parler.admin import TranslatableAdmin
 from simple_history.admin import SimpleHistoryAdmin
 
 from .models import (
+    AnnualStateSetting,
     HelperSessionAvailability,
     Qualification,
     QualificationActivity,
@@ -64,8 +65,13 @@ class HelperSessionAvailabilityAdmin(SimpleHistoryAdmin):
     pass
 
 
+class AnnualStateSettingAdmin(SimpleHistoryAdmin):
+    pass
+
+
 admin.site.register(QualificationActivity, QualificationActivityAdmin)
 admin.site.register(Season, SeasonAdmin)
 admin.site.register(Session, SessionAdmin)
 admin.site.register(Qualification, QualificationAdmin)
 admin.site.register(HelperSessionAvailability, HelperSessionAvailabilityAdmin)
+admin.site.register(AnnualStateSetting, AnnualStateSettingAdmin)

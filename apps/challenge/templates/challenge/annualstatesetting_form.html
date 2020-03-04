@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% block head_title %}{% if setting %}{% trans "Édition de la configuration cantonale annuelle" %}{% else %}{% trans "Nouvelle configuration cantonale annuelle" %}{% endif %}{% endblock %}
+
+{% block bootstrap3_extra_head %}
+    {{ form.media.css }}
+{% endblock %}
+{% block bootstrap3_extra_script %}
+    {{ form.media.js }}
+    {% include 'snippets/datetimepicker_js.html' %}
+{% endblock %}
+
+{% block content %}
+    <h1>{% if setting %}{% trans "Édition de la configuration cantonale annuelle" %}{% else %}{% trans "Nouvelle configuration cantonale annuelle" %}{% endif %}</h1>
+
+    <form method="POST" class="form-horizontal">
+        {% csrf_token %}
+        {% bootstrap_form form layout='horizontal' size='small' %}
+        {% buttons %}
+            <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
+            <a class="btn btn-default" href="{% url 'annualstatesettings-list' year=year %}">{% trans "Annuler" %}</a>
+        {% endbuttons %}
+    </form>
+{% endblock %}

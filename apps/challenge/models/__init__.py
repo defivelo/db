@@ -19,3 +19,4 @@ from .availability import HelperSessionAvailability
 from .qualification import Qualification, QualificationActivity
 from .season import Season
 from .session import Session
+from .settings import AnnualStateSetting
