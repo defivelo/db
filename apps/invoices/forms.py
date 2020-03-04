@@ -21,7 +21,7 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
 
-from apps.challenge.models import Session
+from apps.challenge.models import AnnualStateSetting, Session
 
 from .models import Invoice, InvoiceLine
 
@@ -53,8 +53,8 @@ class InvoiceForm(forms.ModelForm):
     @transaction.atomic
     def save(self, commit=True):
         creating = not self.instance.pk
+        season = self.cleaned_data["season"]
         if creating:
-            season = self.cleaned_data["season"]
             for refid in range(100, 999):
                 ref = f"DV{season.year % 100}{refid:03d}"
                 self.instance.ref = ref
@@ -71,6 +71,15 @@ class InvoiceForm(forms.ModelForm):
                 )
         invoice = super().save(commit=commit)
 
+        try:
+            settings = AnnualStateSetting.objects.get(
+                canton=invoice.organization.address_canton, year=season.year
+            )
+        except AnnualStateSetting.DoesNotExist:
+            settings = AnnualStateSetting()
+            settings.cost_per_bike = 0
+            settings.cost_per_participant = 0
+
         if creating:
             # So we're in create.
             for session in self.cleaned_data["sessions"]:
@@ -79,10 +88,11 @@ class InvoiceForm(forms.ModelForm):
                     invoice=invoice,
                     nb_participants=session.n_participants,
                     nb_bikes=session.n_bikes,
+                    cost_bikes=(session.n_bikes * settings.cost_per_bike),
                     # TODO: replace by site cantonal setting
-                    cost_bikes=(session.n_bikes * 9),
-                    # TODO: replace by site cantonal setting
-                    cost_participants=(session.n_participants * 4),
+                    cost_participants=(
+                        session.n_participants * settings.cost_per_participant
+                    ),
                 )
         elif not invoice.is_locked:
             # We're in update, but still in draft mode
@@ -93,10 +103,10 @@ class InvoiceForm(forms.ModelForm):
                     defaults={
                         "nb_participants": session.n_participants,
                         "nb_bikes": session.n_bikes,
-                        # TODO: replace by site cantonal setting
-                        "cost_bikes": (session.n_bikes * 9),
-                        # TODO: replace by site cantonal setting
-                        "cost_participants": (session.n_participants * 4),
+                        "cost_bikes": (session.n_bikes * settings.cost_per_bike),
+                        "cost_participants": (
+                            session.n_participants * settings.cost_per_participant
+                        ),
                     },
                 )
         return invoice
