@@ -110,21 +110,4 @@ body.dv-invoice {
     margin-right: $letter-address-margin-right; // 10mm is the standard right page margin
     font-size: 10pt;
   }
-  table.table.invoice-table {
-    .invoice-total {
-      border: 2px solid $dv-red;
-    }
-    & > tbody,
-    & > tfoot,
-    & > thead {
-      & > tr {
-        & > td,
-        & > th {
-          border-color: $dv-blue;
-          border-right-width: 1px;
-          border-right-style: solid;
-        }
-      }
-    }
-  }
 }

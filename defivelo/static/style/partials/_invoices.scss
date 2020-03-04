@@ -29,6 +29,21 @@ body.dv-invoice {
 
   .invoice-table {
     margin: 2em auto !important;
+    .invoice-total {
+      border: 2px solid $dv-red;
+    }
+    & > tbody,
+    & > tfoot,
+    & > thead {
+      & > tr {
+        & > td,
+        & > th {
+          border-color: $dv-blue;
+          border-right-width: 1px;
+          border-right-style: solid;
+        }
+      }
+    }
   }
 
   .invoice-bank-details {
