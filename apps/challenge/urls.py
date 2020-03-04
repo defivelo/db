@@ -59,17 +59,17 @@ urlpatterns = [
         include(
             [
                 url(
-                    r"(?P<pk>[0-9]+)/$",
+                    r"^(?P<pk>[0-9]+)/$",
                     never_cache(AnnualStateSettingUpdateView.as_view()),
                     name="annualstatesetting-update",
                 ),
                 url(
-                    "new/$",
+                    "^new/$",
                     never_cache(AnnualStateSettingCreateView.as_view()),
                     name="annualstatesetting-create",
                 ),
                 url(
-                    "$",
+                    "^$",
                     never_cache(AnnualStateSettingsListView.as_view()),
                     name="annualstatesettings-list",
                 ),
