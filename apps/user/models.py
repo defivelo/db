@@ -103,6 +103,7 @@ BAGSTATUS_CHOICES = (
 )
 
 PERSONAL_FIELDS = [
+    "cresus_employee_number",
     "language",
     "languages_challenges",
     "natel",
@@ -124,7 +125,6 @@ PERSONAL_FIELDS = [
 ]
 
 DV_PUBLIC_FIELDS = [
-    "cresus_employee_number",
     "formation",
     "formation_firstdate",
     "formation_lastdate",
