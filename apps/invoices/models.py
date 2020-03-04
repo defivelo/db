@@ -95,6 +95,10 @@ class Invoice(models.Model):
         except KeyError:
             return ""
 
+    @cached_property
+    def is_locked(self):
+        return self.status == self.STATUS_VALIDATED
+
 
 class InvoiceLine(models.Model):
     session = models.ForeignKey(Session, on_delete=models.PROTECT)

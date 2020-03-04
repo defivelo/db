@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.utils.functional import cached_property
 from django.views.generic.detail import DetailView
@@ -26,13 +27,14 @@ from rolepermissions.mixins import HasPermissionsMixin
 from apps.invoices.forms import InvoiceForm
 from apps.invoices.models import Invoice
 from apps.orga.models import Organization
+from defivelo.roles import has_permission
 
 from .mixins import CantonSeasonFormMixin
 
 
 class InvoiceMixin(CantonSeasonFormMixin, HasPermissionsMixin):
     model = Invoice
-    required_permission = "challenge_invoice_crud"
+    required_permission = "challenge_invoice_cru"
     context_object_name = "invoice"
     form_class = InvoiceForm
 
@@ -83,4 +85,15 @@ class InvoiceCreateView(InvoiceMixin, CreateView):
 
 
 class InvoiceUpdateView(InvoiceMixin, UpdateView):
-    pass
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Disallow update when the state is not draft anymore, and the rights are not granted
+        """
+        invoice = self.get_object()
+        if invoice.is_locked:
+            if not has_permission(request.user, "challenge_invoice_reset_to_draft"):
+                raise PermissionDenied
+        else:
+            if not has_permission(request.user, "challenge_invoice_cru"):
+                raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)

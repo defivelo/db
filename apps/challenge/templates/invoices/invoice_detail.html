@@ -24,9 +24,9 @@
         <dt>{% trans "Statut" %}</dt>
         <dd>{{ invoice.status_full }}</dd>
     </dl>
-    {% if user|can:'invoice_crud' %}
+    {% if not invoice.is_locked and user|can:'challenge_invoice_cru' or invoice.is_locked and user|can:'challenge_invoice_reset_to_draft' %}
         <div>
-            <a class="btn btn-primary" href="{% url 'invoice-update' seasonpk=invoice.season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">{% trans "Éditer" %}</a>
+            <a class="btn btn-{% if invoice.is_locked and user|can:'challenge_invoice_reset_to_draft' %}danger{% else %}primary{% endif %}" href="{% url 'invoice-update' seasonpk=invoice.season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">{% trans "Éditer" %}</a>
         </div>
     {% endif %}
 </div>

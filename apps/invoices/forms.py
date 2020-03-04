@@ -84,4 +84,19 @@ class InvoiceForm(forms.ModelForm):
                     # TODO: replace by site cantonal setting
                     cost_participants=(session.n_participants * 4),
                 )
+        elif not invoice.is_locked:
+            # We're in update, but still in draft mode
+            for session in self.cleaned_data["sessions"]:
+                InvoiceLine.objects.update_or_create(
+                    session=session,
+                    invoice=invoice,
+                    defaults={
+                        "nb_participants": session.n_participants,
+                        "nb_bikes": session.n_bikes,
+                        # TODO: replace by site cantonal setting
+                        "cost_bikes": (session.n_bikes * 9),
+                        # TODO: replace by site cantonal setting
+                        "cost_participants": (session.n_participants * 4),
+                    },
+                )
         return invoice

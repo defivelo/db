@@ -56,7 +56,8 @@ class StateManager(AbstractUserRole):
         "orga_crud": True,
         "challenge_season_crud": True,
         "challenge_session_crud": True,
-        "challenge_invoice_crud": True,
+        "challenge_invoice_cru": True,
+        "challenge_invoice_reset_to_draft": False,
         "challenge_season_see_state_planning": True,
     }
 
@@ -79,9 +80,10 @@ class PowerUser(AbstractUserRole):
         "user_mark_inactive": True,
         "home_article_crud": True,
         "orga_crud": True,
-        "challenge_season_crud": True,
+        "challenge_invoice_cru": True,
+        "challenge_invoice_reset_to_draft": True,
         "challenge_session_crud": True,
-        "challenge_invoice_crud": True,
+        "challenge_season_crud": True,
         "challenge_season_see_state_planning": True,
         "settings_crud": True,
     }
