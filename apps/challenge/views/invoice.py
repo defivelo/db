@@ -18,7 +18,7 @@
 
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
-from django.utils.functional import cached_property
+from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 
@@ -30,6 +30,7 @@ from apps.orga.models import Organization
 from defivelo.roles import has_permission
 
 from .mixins import CantonSeasonFormMixin
+from .season import SeasonMixin
 
 
 class InvoiceMixin(CantonSeasonFormMixin, HasPermissionsMixin):
@@ -38,10 +39,18 @@ class InvoiceMixin(CantonSeasonFormMixin, HasPermissionsMixin):
     context_object_name = "invoice"
     form_class = InvoiceForm
 
-    @cached_property
-    def organization(self):
-        orgapk = int(self.kwargs.get("orgapk"))
-        return get_object_or_404(Organization, pk=orgapk)
+    def dispatch(self, request, *args, **kwargs):
+        self.organization = get_object_or_404(
+            Organization, pk=self.kwargs.get("orgapk")
+        )
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .filter(organization=self.organization, season=self.season)
+        )
 
     def get_form_kwargs(self, **kwargs):
         kw = super().get_form_kwargs(**kwargs)
@@ -61,17 +70,17 @@ class InvoiceMixin(CantonSeasonFormMixin, HasPermissionsMixin):
         # Add our menu_category context
         context["menu_category"] = "season"
         context["season"] = self.season
+        context["organization"] = self.organization
         return context
 
     def get_object(self):
         resolvermatch = self.request.resolver_match
-        organization_id = int(resolvermatch.kwargs.get("orgapk"))
         invoiceref = resolvermatch.kwargs.get("invoiceref")
 
         return get_object_or_404(
             self.model,
             season=self.season,
-            organization_id=organization_id,
+            organization=self.organization,
             ref=invoiceref,
         )
 
@@ -84,11 +93,16 @@ class InvoiceCreateView(InvoiceMixin, CreateView):
     pass
 
 
+class InvoiceListView(InvoiceMixin, ListView):
+    context_object_name = "invoices"
+
+
 class InvoiceUpdateView(InvoiceMixin, UpdateView):
     def dispatch(self, request, *args, **kwargs):
         """
         Disallow update when the state is not draft anymore, and the rights are not granted
         """
+        ret = super().dispatch(request, *args, **kwargs)
         invoice = self.get_object()
         if invoice.is_locked:
             if not has_permission(request.user, "challenge_invoice_reset_to_draft"):
@@ -96,4 +110,14 @@ class InvoiceUpdateView(InvoiceMixin, UpdateView):
         else:
             if not has_permission(request.user, "challenge_invoice_cru"):
                 raise PermissionDenied
-        return super().dispatch(request, *args, **kwargs)
+        return ret
+
+
+class SeasonOrgaListView(SeasonMixin, HasPermissionsMixin, ListView):
+    context_object_name = "organizations"
+    required_permission = "challenge_invoice_cru"
+
+    def get_queryset(self):
+        return Organization.objects.filter(
+            sessions__in=self.season.sessions_with_qualifs
+        ).distinct()

@@ -99,6 +99,15 @@ class Invoice(models.Model):
     def is_locked(self):
         return self.status == self.STATUS_VALIDATED
 
+    @cached_property
+    def status_class(self):
+        css_class = "default"
+        if self.status == self.STATUS_DRAFT:
+            css_class = "warning"  # Orange
+        elif self.status == self.STATUS_VALIDATED:
+            css_class = "success"  # Green
+        return css_class
+
 
 class InvoiceLine(models.Model):
     session = models.ForeignKey(Session, on_delete=models.PROTECT)

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load dv_filters %}{% block head_title %}{% blocktrans with season=season.desc orga=organization %}{{season}}: factures pour {{orga}}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+    <h2>{% blocktrans with orga=organization %}{{orga}}: Factures{% endblocktrans %}</h2>
+    
+    {% for invoice in invoices %}
+        {% if forloop.first %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>{% trans "État" %}</th>
+                    <th>{% trans "Référence" %}</th>
+                    <th>{% trans "Titre" %}</th>
+                    <th>{% trans "Montant" %}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+        {% endif %}
+                <tr class="{{ invoice.status_class }}">
+                    <td>{{ invoice.status_full }}</td>
+                    <td>
+                        <a href="{% url 'invoice-detail' seasonpk=season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">
+                            {{ invoice.ref }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'invoice-detail' seasonpk=season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">
+                            {{ invoice.title }}
+                        </a>
+                    </td>
+                    <td>{{ invoice.sum_cost }}</td>
+                    <td>
+                        {% if not invoice.is_locked and user|can:'challenge_invoice_cru' or invoice.is_locked and user|can:'challenge_invoice_reset_to_draft' %}
+                            <a class="btn btn-xs btn-{% if invoice.is_locked and user|can:'challenge_invoice_reset_to_draft' %}danger{% else %}primary{% endif %}" href="{% url 'invoice-update' seasonpk=invoice.season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">
+                                <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="{% trans "Éditer" %}"></span>
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+        {% if forloop.last %}</tbody></table>{% endif %}
+    {% endfor %}
+
+    {% if user|can:'challenge_invoice_cru' %}
+        <div>
+            <a class="btn btn-primary pull-right" href="{% url 'invoice-create' seasonpk=season.pk orgapk=organization.pk %}">{% trans "Nouvelle facture" %}</a>
+        </div>
+    {% endif %}
+{% endblock %}

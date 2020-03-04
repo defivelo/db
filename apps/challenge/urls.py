@@ -29,6 +29,7 @@ from .views import (
     AnnualStateSettingUpdateView,
     InvoiceCreateView,
     InvoiceDetailView,
+    InvoiceListView,
     InvoiceUpdateView,
     QualiCreateView,
     QualiDeleteView,
@@ -43,6 +44,7 @@ from .views import (
     SeasonExportView,
     SeasonHelperListView,
     SeasonListView,
+    SeasonOrgaListView,
     SeasonPlanningExportView,
     SeasonStaffChoiceUpdateView,
     SeasonUpdateView,
@@ -143,23 +145,40 @@ urlpatterns = [
     url(r"^(?P<pk>[0-9]+)/delete/$", SeasonDeleteView.as_view(), name="season-delete"),
     # Invoices
     url(
-        r"^(?P<seasonpk>[0-9]+)/i(?P<orgapk>[0-9]+)/",
+        r"^(?P<seasonpk>[0-9]+)/",
         include(
             [
                 url(
-                    r"^new$",
-                    never_cache(InvoiceCreateView.as_view()),
-                    name="invoice-create",
+                    "invoices/",
+                    never_cache(SeasonOrgaListView.as_view()),
+                    name="invoice-orga-list",
                 ),
                 url(
-                    r"^(?P<invoiceref>.+)/edit$",
-                    never_cache(InvoiceUpdateView.as_view()),
-                    name="invoice-update",
-                ),
-                url(
-                    r"^(?P<invoiceref>.+)$",
-                    never_cache(InvoiceDetailView.as_view()),
-                    name="invoice-detail",
+                    r"i(?P<orgapk>[0-9]+)/",
+                    include(
+                        [
+                            url(
+                                r"^new$",
+                                never_cache(InvoiceCreateView.as_view()),
+                                name="invoice-create",
+                            ),
+                            url(
+                                r"^list$",
+                                never_cache(InvoiceListView.as_view()),
+                                name="invoice-list",
+                            ),
+                            url(
+                                r"^(?P<invoiceref>.+)/edit$",
+                                never_cache(InvoiceUpdateView.as_view()),
+                                name="invoice-update",
+                            ),
+                            url(
+                                r"^(?P<invoiceref>.+)$",
+                                never_cache(InvoiceDetailView.as_view()),
+                                name="invoice-detail",
+                            ),
+                        ]
+                    ),
                 ),
             ]
         ),

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load dv_filters %}{% block head_title %}{% blocktrans with season=season.desc %}Établissements pour la saison {{season}}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+    <h1>{% blocktrans with season=season.desc %}Établissements pour la saison {{season}}{% endblocktrans %}</h1>
+    
+    {% for organization in organizations %}
+        {% if forloop.first %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>{% trans "Établissement" %}</th>
+                    <th>{% trans "Factures" %}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+        {% endif %}
+        <tr class="{% if organization.invoice_set.count == 0 %}warning{% endif %}">
+            <td>
+                <a href="{% url 'invoice-list' seasonpk=season.pk orgapk=organization.pk %}">
+                    {{ organization }}
+                </a>
+            </td>
+            <td>{{ organization.invoice_set.count }}</td>
+            <td>
+                {% if organization.invoice_set.count == 0 %}
+                    <a href="{% url 'invoice-create' seasonpk=season.pk orgapk=organization.pk %}">{% trans "Créer une facture" %}</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% if forloop.last %}</table>{% endif %}
+    {% endfor %}
+{% endblock %}
