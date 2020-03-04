@@ -106,6 +106,8 @@ class ProfileMixin(MenuView):
             disabled_fields += DV_PUBLIC_FIELDS
         if not has_permission(self.request.user, "user_crud_dv_private_fields"):
             disabled_fields += DV_PRIVATE_FIELDS
+        if not has_permission(self.request.user, "user_edit_cresus_employee_number"):
+            disabled_fields += ("cresus_employee_number",)
         for field in form.fields:
             if field in disabled_fields:
                 form.fields[field].disabled = True
@@ -127,6 +129,8 @@ class ProfileMixin(MenuView):
             update_profile_fields += DV_PUBLIC_FIELDS
         if has_permission(self.request.user, "user_crud_dv_private_fields"):
             update_profile_fields += DV_PRIVATE_FIELDS
+        if has_permission(self.request.user, "user_edit_cresus_employee_number"):
+            update_profile_fields += ("cresus_employee_number",)
 
         (userprofile, created) = UserProfile.objects.get_or_create(user=user)
         for field in update_profile_fields:
