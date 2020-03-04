@@ -459,6 +459,16 @@ class StateManagerUserTest(ProfileTestCase):
         )
         self.assertEqual(response.status_code, 403)
 
+    def test_cannot_update_cresus_number(self):
+        url = reverse("user-update", kwargs={"pk": self.myuser.pk})
+        initial = self.getprofileinitial(self.myuser)
+        initial["cresus_employee_number"] = "rich"
+
+        self.client.post(url, initial)
+
+        self.myuser.profile.refresh_from_db()
+        self.assertEqual(self.myuser.profile.cresus_employee_number, "poor")
+
     def test_autocompletes(self):
         for al in ["AllPersons"]:
             url = reverse("user-%s-ac" % al)
