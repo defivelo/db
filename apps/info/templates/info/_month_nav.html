@@ -2,7 +2,7 @@
 <nav class="hidden-print">
     <ul class="pager">
         <li class="previous">
-            <a href="{% if previous_url %} {{ prev_url}} {% else %} {% url nav_url month=previous_month.month year=previous_month.year %}{% endif %}">
+            <a href="{% if previous_url %} {{ previous_url}} {% else %} {% url nav_url month=previous_month.month year=previous_month.year %}{% endif %}">
                 <span aria-hidden="true">←</span> {{ previous_month|date:'F' }} {{ previous_month.year }}
             </a>
         </li>
