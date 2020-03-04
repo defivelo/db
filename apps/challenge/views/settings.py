@@ -34,45 +34,39 @@ class SettingsMixin(HasPermissionsMixin):
     model = AnnualStateSetting
     required_permission = "settings_crud"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Add our menu_category context
-        context["menu_category"] = "settings"
-        return context
-
-
-class AnnualStateSettingsListView(SettingsMixin, MenuView, ListView):
-    context_object_name = "settings"
-    ordering = ["canton"]
+    def dispatch(self, request, *args, **kwargs):
+        self.year = kwargs.pop("year")
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        self.year = self.kwargs.pop("year", datetime.date.today().year)
         return super().get_queryset().filter(year=self.year)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # Add our menu_category context
+        context["menu_category"] = "settings"
         context["year"] = self.year
-        return context
-
-
-class AnnualStateSettingMixin(SettingsMixin, SuccessMessageMixin, MenuView):
-    context_object_name = "setting"
-    form_class = AnnualStateSettingForm
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["year"] = self.kwargs["year"]
         return context
 
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
-        form_kwargs["year"] = self.kwargs["year"]
+        form_kwargs["year"] = self.year
         return form_kwargs
 
     def get_success_url(self):
         return reverse_lazy(
             "annualstatesettings-list", kwargs={"year": self.object.year}
         )
+
+
+class AnnualStateSettingsListView(SettingsMixin, MenuView, ListView):
+    context_object_name = "settings"
+    ordering = ["canton"]
+
+
+class AnnualStateSettingMixin(SettingsMixin, SuccessMessageMixin, MenuView):
+    context_object_name = "setting"
+    form_class = AnnualStateSettingForm
 
 
 class AnnualStateSettingCreateView(AnnualStateSettingMixin, CreateView):
