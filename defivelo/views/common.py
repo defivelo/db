@@ -19,7 +19,6 @@ from __future__ import unicode_literals
 
 from datetime import date
 
-from django.utils import timezone
 from django.views.generic.base import TemplateView
 
 from stronghold.views import StrongholdPublicMixin
@@ -44,7 +43,6 @@ class MenuView(object):
         context["current_seasons"] = self.request.user.profile.get_seasons().filter(
             year=today.year, season=self.current_season()
         )
-        context["now"] = timezone.now()
         return context
 
 
