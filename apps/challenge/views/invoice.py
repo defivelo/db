@@ -16,7 +16,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
@@ -98,19 +97,17 @@ class InvoiceListView(InvoiceMixin, ListView):
 
 
 class InvoiceUpdateView(InvoiceMixin, UpdateView):
-    def dispatch(self, request, *args, **kwargs):
+    def get_form(self, *args, **kwargs):
         """
-        Disallow update when the state is not draft anymore, and the rights are not granted
+        Disallow any field edition if the field is locked
         """
-        ret = super().dispatch(request, *args, **kwargs)
-        invoice = self.get_object()
-        if invoice.is_locked:
-            if not has_permission(request.user, "challenge_invoice_reset_to_draft"):
-                raise PermissionDenied
-        else:
-            if not has_permission(request.user, "challenge_invoice_cru"):
-                raise PermissionDenied
-        return ret
+        form = super().get_form(*args, **kwargs)
+        if self.get_object().is_locked and not has_permission(
+            self.request.user, "challenge_invoice_reset_to_draft"
+        ):
+            for field in form.fields:
+                form.fields[field].disabled = True
+        return form
 
 
 class SeasonOrgaListView(SeasonMixin, HasPermissionsMixin, ListView):

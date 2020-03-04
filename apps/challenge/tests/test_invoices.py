@@ -18,6 +18,7 @@
 
 from django.urls import reverse
 
+from apps.invoices.models import Invoice
 from apps.invoices.tests.factories import InvoiceFactory
 from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient
 
@@ -31,7 +32,9 @@ class InvoiceTestCaseMixin(SeasonTestCaseMixin):
     def setUp(self):
         super().setUp()
         self.invoice = InvoiceFactory(
-            season=self.season, organization=self.canton_orgas[0]
+            season=self.season,
+            organization=self.canton_orgas[0],
+            status=Invoice.STATUS_DRAFT,
         )
         self.invoice.save()
 
@@ -106,6 +109,79 @@ class StateManagerUserTest(InvoiceTestCaseMixin):
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200, url)
 
+    def test_invoice_creation(self):
+        kwargs = {
+            "seasonpk": self.season.pk,
+            "orgapk": self.canton_orgas[0].pk,
+        }
+        url = reverse("invoice-create", kwargs=kwargs,)
+        initial = {"title": "Titolo", "status": Invoice.STATUS_DRAFT}
+
+        response = self.client.post(url, initial)
+        i = Invoice.objects.get(**initial)
+        kwargs.update({"invoiceref": i.ref})
+        self.assertRedirects(
+            response, reverse("invoice-detail", kwargs=kwargs), target_status_code=200,
+        )
+
+    def test_invoice_update(self):
+        """
+        Updating a title is OK
+        """
+        kwargs = {
+            "seasonpk": self.invoice.season.pk,
+            "orgapk": self.invoice.organization.pk,
+            "invoiceref": self.invoice.ref,
+        }
+        url = reverse("invoice-update", kwargs=kwargs)
+        initial = {"title": "Titre du CdP", "status": self.invoice.status}
+
+        self.assertRedirects(
+            self.client.post(url, initial),
+            reverse("invoice-detail", kwargs=kwargs),
+            target_status_code=200,
+        )
+
+        i = Invoice.objects.get(ref=self.invoice.ref)
+        self.assertEqual(i.title, "Titre du CdP", i)
+        self.assertEqual(i.status, Invoice.STATUS_DRAFT, i)
+        self.assertFalse(i.is_locked, i)
+
+        # Maintenant passe la facture en "Validée"
+        initial = {"title": "Titre 2 du CdP", "status": Invoice.STATUS_VALIDATED}
+        self.assertRedirects(
+            self.client.post(url, initial),
+            reverse("invoice-detail", kwargs=kwargs),
+            target_status_code=200,
+        )
+
+        i = Invoice.objects.get(ref=self.invoice.ref)
+        self.assertEqual(i.title, "Titre 2 du CdP", i)
+        self.assertEqual(i.status, Invoice.STATUS_VALIDATED)
+
+        # Lea chargé de projet peut encore l'éditer
+        self.assertEqual(self.client.get(url).status_code, 200, url)
+        # Mais mettre à jour son statut échoue
+        initial = {"title": "Titre 3 du CdP", "status": Invoice.STATUS_DRAFT}
+        # Enfin. Ça marche, mais rien n'a changé
+        self.assertRedirects(
+            self.client.post(url, initial),
+            reverse("invoice-detail", kwargs=kwargs),
+            target_status_code=200,
+        )
+
+        # Iel n'est bien pas mis à jour
+        i = Invoice.objects.get(ref=self.invoice.ref)
+        self.assertEqual(i.title, "Titre 2 du CdP", i)
+        self.assertEqual(i.status, Invoice.STATUS_VALIDATED)
+
+        # Iel peut encore la voir
+        self.assertEqual(
+            self.client.get(reverse("invoice-detail", kwargs=kwargs)).status_code,
+            200,
+            url,
+        )
+
 
 class PowerUserTest(InvoiceTestCaseMixin):
     def setUp(self):
@@ -140,3 +216,76 @@ class PowerUserTest(InvoiceTestCaseMixin):
         )
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200, url)
+
+    def test_invoice_creation(self):
+        kwargs = {
+            "seasonpk": self.season.pk,
+            "orgapk": self.canton_orgas[0].pk,
+        }
+        url = reverse("invoice-create", kwargs=kwargs,)
+        initial = {"title": "Titolo", "status": Invoice.STATUS_DRAFT}
+
+        response = self.client.post(url, initial)
+        i = Invoice.objects.get(**initial)
+        kwargs.update({"invoiceref": i.ref})
+        self.assertRedirects(
+            response, reverse("invoice-detail", kwargs=kwargs), target_status_code=200,
+        )
+
+    def test_invoice_update(self):
+        """
+        Updating a title is OK
+        """
+        kwargs = {
+            "seasonpk": self.invoice.season.pk,
+            "orgapk": self.invoice.organization.pk,
+            "invoiceref": self.invoice.ref,
+        }
+        url = reverse("invoice-update", kwargs=kwargs)
+        initial = {"title": "Titre du Bureau", "status": self.invoice.status}
+
+        self.assertRedirects(
+            self.client.post(url, initial),
+            reverse("invoice-detail", kwargs=kwargs),
+            target_status_code=200,
+        )
+
+        i = Invoice.objects.get(ref=self.invoice.ref)
+        self.assertEqual(i.title, "Titre du Bureau", i)
+        self.assertEqual(i.status, Invoice.STATUS_DRAFT, i)
+        self.assertFalse(i.is_locked, i)
+
+        # Maintenant passe la facture en "Validée"
+        initial = {"title": "Titre 2 du Bureau", "status": Invoice.STATUS_VALIDATED}
+        self.assertRedirects(
+            self.client.post(url, initial),
+            reverse("invoice-detail", kwargs=kwargs),
+            target_status_code=200,
+        )
+
+        i = Invoice.objects.get(ref=self.invoice.ref)
+        self.assertEqual(i.title, "Titre 2 du Bureau", i)
+        self.assertEqual(i.status, Invoice.STATUS_VALIDATED)
+        self.assertTrue(i.is_locked, i)
+
+        # Lea burea peut encore l'éditer
+        self.assertEqual(self.client.get(url).status_code, 200, url)
+        # Et mettre à jour son statut, de retour vers Draft
+        initial = {"title": "Titre 3 du Bureau", "status": Invoice.STATUS_DRAFT}
+        self.assertRedirects(
+            self.client.post(url, initial),
+            reverse("invoice-detail", kwargs=kwargs),
+            target_status_code=200,
+        )
+        # Est bien mis à jour
+        i = Invoice.objects.get(ref=self.invoice.ref)
+        self.assertEqual(i.title, "Titre 3 du Bureau", i)
+        self.assertEqual(i.status, Invoice.STATUS_DRAFT)
+        self.assertFalse(i.is_locked, i)
+
+        # Iel peut encore la voir
+        self.assertEqual(
+            self.client.get(reverse("invoice-detail", kwargs=kwargs)).status_code,
+            200,
+            url,
+        )

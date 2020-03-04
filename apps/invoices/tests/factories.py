@@ -32,3 +32,4 @@ class InvoiceFactory(DjangoModelFactory):
     season = SubFactory(SeasonFactory)
     organization = SubFactory(OrganizationFactory)
     ref = fuzzy.FuzzyText(length=20)
+    status = fuzzy.FuzzyChoice([s[0] for s in Invoice.STATUS_CHOICES])
