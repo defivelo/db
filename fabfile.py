@@ -513,7 +513,7 @@ def restart_uwsgi(c):
     """
     Restart uWSGI processes
     """
-    c.conn.run(f"uwsgi --ini '{c.conn.config.ini}'")
+    c.conn.run(f"uwsgi --reload '{c.conn.config.pid}'")
 
 
 @task
