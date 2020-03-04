@@ -2,13 +2,14 @@ from datetime import date
 
 from django.contrib.auth import get_user_model
 from django.db.models import Count, Q
-from django.urls import resolve
+from django.urls import resolve, reverse
+from django.utils import timezone
 from django.views.generic.dates import MonthArchiveView
 from django.views.generic.edit import FormView
 from rolepermissions.mixins import HasPermissionsMixin
 
 from apps.challenge.models.session import Session
-from apps.salary.forms import TimesheetFormSet
+from apps.salary.forms import ControlTimesheetFormSet, TimesheetFormSet
 from apps.salary.models import Timesheet
 
 
@@ -19,7 +20,6 @@ class MonthlyTimesheets(HasPermissionsMixin, MonthArchiveView, FormView):
     allow_empty = True
     allow_future = True
     template_name = "salary/month_timesheets.html"
-    form_class = TimesheetFormSet
 
     def get_queryset(self):
         return (
@@ -30,6 +30,7 @@ class MonthlyTimesheets(HasPermissionsMixin, MonthArchiveView, FormView):
                     | Q(qualifications__helpers=self.selected_user)
                     | Q(qualifications__leader=self.selected_user)
                 )
+                .filter(day__lte=timezone.now())
                 .annotate(
                     orga_count=Count("orga_id", distinct=True),
                     monitor_count=Count(
@@ -65,18 +66,29 @@ class MonthlyTimesheets(HasPermissionsMixin, MonthArchiveView, FormView):
 
     def get_initial(self):
         initial = [
-            {
+
+        ]
+        for session in self.object_list:
+            timesheet = Timesheet.objects.filter(date=session["day"], user=self.selected_user).first()
+
+            attributes = {
                 "user": self.selected_user,
                 "date": session["day"],
                 "time_monitor": session["monitor_count"] * 4
                 + (0.5 * (session["orga_count"] - 1)),
                 "time_actor": session["intervenant_count"] * 2,
-                "overtime": Timesheet.objects.get(date=session["day"], user=self.selected_user).overtime,
-                "traveltime": Timesheet.objects.get(date=session["day"], user=self.selected_user).traveltime,
+                "overtime": timesheet.overtime if timesheet else 0,
+                "traveltime": timesheet.traveltime if timesheet else 0,
+                "validate": bool(timesheet.validated_at) if timesheet else False,
+                "comments":timesheet.comments if timesheet else "",
             }
-            for session in self.object_list
-        ]
+            initial.append(attributes)
         return initial
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['form_kwargs'] = {"validator": self.request.user}
+        return kwargs
 
     def get_success_url(self):
         return self.request.path
@@ -105,6 +117,27 @@ class MonthlyTimesheets(HasPermissionsMixin, MonthArchiveView, FormView):
 
 
 class MyMonthlyTimesheets(MonthlyTimesheets):
+    form_class = TimesheetFormSet
     def dispatch(self, request, *args, **kwargs):
-        self.selected_user = get_user_model().objects.get(pk=67)
+        self.selected_user = request.user
         return super().dispatch(request, *args, **kwargs)
+
+class UserMonthlyTimesheets(MonthlyTimesheets):
+    form_class = ControlTimesheetFormSet
+    def dispatch(self, request, *args, **kwargs):
+        self.selected_user = get_user_model().objects.get(pk=self.kwargs['pk'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["prev_url"] = reverse(resolve(self.request.path).url_name, kwargs={
+            "month": context["previous_month"].month,
+            "year": context["previous_month"].year,
+            "pk": self.selected_user.id,
+        })
+        context["next_url"] = reverse(resolve(self.request.path).url_name, kwargs={
+            "month": context["next_month"].month,
+            "year": context["next_month"].year,
+            "pk": self.selected_user.id,
+        })
+        return context

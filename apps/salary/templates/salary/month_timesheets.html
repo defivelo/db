@@ -9,8 +9,7 @@
     {% include 'snippets/datetimepicker_js.html' %}
 {% endblock %}
 {% block content %}
-{% include 'info/_month_nav.html' with nav_url=nav_url previous_month=previous_month next_month=next_month only %}
-
+{% include 'info/_month_nav.html' with nav_url=nav_url previous_url=prev_url previous_month=previous_month next_url=next_url next_month=next_month only %}
 
 {% if object_list %}
     <h1>{% blocktrans with year=month.year month=month|date:'F' %}Heure pour {{ month }} {{year}}{% endblocktrans %}</h1>
@@ -36,7 +35,7 @@
       </table>
       {% buttons %}
           <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
-          <a class="btn btn-default" href="{% url 'season-list' %}">{% trans "Annuler" %}</a>
+          <a class="btn btn-default" href="{% url 'home' %}">{% trans "Annuler" %}</a>
       {% endbuttons %}
     </form>
 {% else %}
