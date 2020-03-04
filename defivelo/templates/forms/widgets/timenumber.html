@@ -1,0 +1,50 @@
+<div class="row">
+</div>
+  <table class="table">
+    <tr>
+      {% if not widget.attrs.readonly %}
+      <td width=1>
+        <a href="#" class="btn btn-success btn-xs" data-decrement="{{ widget.attrs.step }}">
+          <span class="glyphicon glyphicon-minus"></span>
+        </a>
+      </td>
+      {% endif %}
+      <td align="center">
+        <span class="result"></span>
+      </td>
+      {% if not widget.attrs.readonly %}
+      <td width=1>
+        <a href="#" class="btn btn-success btn-xs" data-increment="{{ widget.attrs.step }}">
+          <span class="glyphicon glyphicon-plus"></span>
+        </a>
+      </td>
+      {% endif %}
+    </tr>
+  </table>
+<input type="{{ widget.type }}" name="{{ widget.name }}" {% if widget.value != None %}
+  value="{{ widget.value|stringformat:'s' }}" {% endif %}{% include "django/forms/widgets/attrs.html" %}>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function(event) {
+  $("#{{ widget.attrs.id }}").change(function (e) {
+    const value = $(e.target).val();
+    const hours = Math.trunc(value);
+    const minutes = (Math.abs(value) - Math.abs(hours))*60%60;
+    $("#{{ widget.attrs.id }}").prev(".table").find(".result").text((value < 0 ? "-" : "" ) +("0" +
+      Math.abs(hours)).slice(-2) + ":" + ("0"
+    +
+    minutes).slice(-2))
+  }).change();
+  $("#{{ widget.attrs.id }}").prev(".table").find("a[data-decrement]").click(function (e) {
+    e.preventDefault();
+    $("#{{ widget.attrs.id }}")[0].stepDown(1);
+    $("#{{ widget.attrs.id }}").change();
+    return false;
+  });
+  $("#{{ widget.attrs.id }}").prev(".table").find("a[data-increment]").click(function (e) {
+    e.preventDefault();
+    $("#{{ widget.attrs.id }}")[0].stepUp(1);
+    $("#{{ widget.attrs.id }}").change();
+    return false;
+  });
+});
+</script>

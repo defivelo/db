@@ -3,7 +3,6 @@ from django.forms import formset_factory
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from apps.common.forms import SwissTimeInput
 from apps.salary.fields import CheckboxInput, TimeNumberInput
 from apps.salary.models import Timesheet
 
@@ -19,24 +18,29 @@ class TimesheetFormBase(forms.ModelForm):
             "time_actor",
             "overtime",
             "traveltime",
-            "comments"
+            "comments",
         ]
         widgets = {
             "user": forms.HiddenInput(),
             "date": forms.HiddenInput(),
-            "time_monitor": SwissTimeInput(
-                attrs={"readonly": "readonly"}, format="HH:mm"
+            "time_monitor": TimeNumberInput(
+                attrs={"readonly": "readonly", "class": "hide"},
             ),
-            "time_actor": SwissTimeInput(
-                attrs={"readonly": "readonly"}, format="HH:mm"
+            "time_actor": TimeNumberInput(
+                attrs={"readonly": "readonly", "class": "hide"},
             ),
-            "overtime": TimeNumberInput(attrs={"step": 0.25, "min": -10, "max": 10}),
-            "traveltime": TimeNumberInput(attrs={"step": 0.25, "min": 0, "max": 5}),
+            "overtime": TimeNumberInput(
+                attrs={"step": 0.25, "min": -10, "max": 10, "class": "hide"}
+            ),
+            "traveltime": TimeNumberInput(
+                attrs={"step": 0.25, "min": 0, "max": 5, "class": "hide"}
+            ),
         }
 
     def __init__(self, validator, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.validator = validator
+
     def _get_validation_exclusions(self):
         exclude = super()._get_validation_exclusions()
         exclude.append("user")
@@ -58,28 +62,32 @@ class TimesheetFormBase(forms.ModelForm):
         )
         return timesheet
 
+
 class TimesheetForm(TimesheetFormBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.initial.get('validate'):
+        if self.initial.get("validate"):
             for key in self.fields:
-                self.fields[key].widget.attrs['readonly'] = True
+                self.fields[key].widget.attrs["readonly"] = True
+
 
 class ControlTimesheetForm(TimesheetFormBase):
-    validate = forms.BooleanField(label=_("Valider"), required=False, widget=CheckboxInput())
+    validate = forms.BooleanField(
+        label=_("Valider"), required=False, widget=CheckboxInput()
+    )
 
     class Meta(TimesheetForm.Meta):
-        fields = TimesheetForm.Meta.fields + ['validate']
+        fields = TimesheetForm.Meta.fields + ["validate"]
 
     def clean(self):
         cleaned_data = super().clean()
-        if not cleaned_data.get('validate'):
-            cleaned_data['validated_at'] = None
-            cleaned_data['validated_by'] = None
-        elif not self.initial['validate']:
-            cleaned_data['validated_at'] = timezone.now
-            cleaned_data['validated_by'] = self.validator
-        del cleaned_data['validate']
+        if not cleaned_data.get("validate"):
+            cleaned_data["validated_at"] = None
+            cleaned_data["validated_by"] = None
+        elif not self.initial["validate"]:
+            cleaned_data["validated_at"] = timezone.now
+            cleaned_data["validated_by"] = self.validator
+        del cleaned_data["validate"]
         return cleaned_data
 
 

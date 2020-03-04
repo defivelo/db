@@ -20,8 +20,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date', models.DateField(blank=True, null=True, verbose_name='Date')),
-                ('time_monitor', apps.salary.fields.DurationField(blank=True, null=True, verbose_name='Heure moniteur')),
-                ('time_actor', apps.salary.fields.DurationField(blank=True, null=True, verbose_name='Heure intervenant')),
+                ('time_monitor', models.FloatField(blank=True, null=True, verbose_name='Heure moniteur')),
+                ('time_actor', models.FloatField(blank=True, null=True, verbose_name='Heure intervenant')),
                 ('overtime', models.FloatField(default=0, verbose_name='Heure(s) supplémentaire(s)')),
                 ('traveltime', models.FloatField(default=0, verbose_name='Heure(s) de trajet')),
                 ('validated_at', models.DateTimeField(blank=True, null=True)),

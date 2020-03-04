@@ -6,6 +6,7 @@ from django.urls import resolve, reverse
 from django.utils import timezone
 from django.views.generic.dates import MonthArchiveView
 from django.views.generic.edit import FormView
+
 from rolepermissions.mixins import HasPermissionsMixin
 
 from apps.challenge.models.session import Session
@@ -65,11 +66,11 @@ class MonthlyTimesheets(HasPermissionsMixin, MonthArchiveView, FormView):
         return year if year is not None else str(date.today().year)
 
     def get_initial(self):
-        initial = [
-
-        ]
+        initial = []
         for session in self.object_list:
-            timesheet = Timesheet.objects.filter(date=session["day"], user=self.selected_user).first()
+            timesheet = Timesheet.objects.filter(
+                date=session["day"], user=self.selected_user
+            ).first()
 
             attributes = {
                 "user": self.selected_user,
@@ -80,14 +81,14 @@ class MonthlyTimesheets(HasPermissionsMixin, MonthArchiveView, FormView):
                 "overtime": timesheet.overtime if timesheet else 0,
                 "traveltime": timesheet.traveltime if timesheet else 0,
                 "validate": bool(timesheet.validated_at) if timesheet else False,
-                "comments":timesheet.comments if timesheet else "",
+                "comments": timesheet.comments if timesheet else "",
             }
             initial.append(attributes)
         return initial
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['form_kwargs'] = {"validator": self.request.user}
+        kwargs["form_kwargs"] = {"validator": self.request.user}
         return kwargs
 
     def get_success_url(self):
@@ -110,34 +111,42 @@ class MonthlyTimesheets(HasPermissionsMixin, MonthArchiveView, FormView):
             object_list=self.object_list,
             date_list=self.date_list,
             form=form,
-            **extra_context
+            **extra_context,
         )
-
         return self.render_to_response(context)
 
 
 class MyMonthlyTimesheets(MonthlyTimesheets):
     form_class = TimesheetFormSet
+
     def dispatch(self, request, *args, **kwargs):
         self.selected_user = request.user
         return super().dispatch(request, *args, **kwargs)
 
+
 class UserMonthlyTimesheets(MonthlyTimesheets):
     form_class = ControlTimesheetFormSet
+
     def dispatch(self, request, *args, **kwargs):
-        self.selected_user = get_user_model().objects.get(pk=self.kwargs['pk'])
+        self.selected_user = get_user_model().objects.get(pk=self.kwargs["pk"])
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["prev_url"] = reverse(resolve(self.request.path).url_name, kwargs={
-            "month": context["previous_month"].month,
-            "year": context["previous_month"].year,
-            "pk": self.selected_user.id,
-        })
-        context["next_url"] = reverse(resolve(self.request.path).url_name, kwargs={
-            "month": context["next_month"].month,
-            "year": context["next_month"].year,
-            "pk": self.selected_user.id,
-        })
+        context["prev_url"] = reverse(
+            resolve(self.request.path).url_name,
+            kwargs={
+                "month": context["previous_month"].month,
+                "year": context["previous_month"].year,
+                "pk": self.selected_user.id,
+            },
+        )
+        context["next_url"] = reverse(
+            resolve(self.request.path).url_name,
+            kwargs={
+                "month": context["next_month"].month,
+                "year": context["next_month"].year,
+                "pk": self.selected_user.id,
+            },
+        )
         return context
