@@ -378,6 +378,7 @@ def deploy(c):
     dj_collect_static(c)
     django_compress(c)
     dj_migrate_database(c)
+    compile_messages(c)
     restart_uwsgi(c)
     c.conn.clean_old_database_backups(nb_backups_to_keep=10)
 
