@@ -17,17 +17,18 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+from bootstrap3_datetime.widgets import DateTimePicker
 from django.forms import ModelChoiceField, TimeField
 from django.template.loader import render_to_string
-
-from bootstrap3_datetime.widgets import DateTimePicker
-from dal_select2.widgets import ModelSelect2
+from django.utils import datetime_safe, formats
 from django_countries import countries
 from django_countries.fields import LazyTypedChoiceField
 from django_countries.widgets import CountrySelectWidget
 from localflavor.generic.forms import DEFAULT_DATE_INPUT_FORMATS, DateField
 from phonenumber_field.formfields import PhoneNumberField
 from phonenumber_field.widgets import PhoneNumberInternationalFallbackWidget
+
+from dal_select2.widgets import ModelSelect2
 
 SWISS_DATE_INPUT_FORMAT = "%d.%m.%Y"
 SWISS_DATE_DISPLAY_FORMAT = "DD.MM.YYYY"
@@ -52,6 +53,18 @@ class SwissDateField(DateField):
             **kwargs,
         )
 
+class SwissTimeInput(DateTimePicker):
+    format = "HH:mm"
+
+    def __init__(self, attrs={}, *args, **kwargs):
+        attrs['placeholder'] = "HH:mm"
+        super().__init__(
+                attrs,
+                icon_attrs={"class": "glyphicon glyphicon-time"},
+                options={"format": "HH:mm", "stepping": 15},
+                *args, **kwargs
+            )
+
 
 class SwissTimeField(TimeField):
     """
@@ -60,11 +73,7 @@ class SwissTimeField(TimeField):
 
     def __init__(self, *args, **kwargs):
         super(TimeField, self).__init__(
-            widget=DateTimePicker(
-                {"placeholder": "HH:mm"},
-                icon_attrs={"class": "glyphicon glyphicon-time"},
-                options={"format": "HH:mm", "stepping": 15},
-            ),
+            widget=SwissTimeInput,
             *args,
             **kwargs,
         )

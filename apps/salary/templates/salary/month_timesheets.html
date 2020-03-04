@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load i18n dv_filters bootstrap3 %}
+
+{% block head_title %}{% blocktrans with year=month.year month=month|date:'F' %}Heures du {{ month }} {{year}}{% endblocktrans %}{% endblock %}
+{% block container-class %}{% if dataset %}container-fluid{% else %}{{ block.super }}{% endif %}{% endblock %}
+
+{% block bootstrap3_extra_script %}
+    {{ formset.media.js }}
+    {% include 'snippets/datetimepicker_js.html' %}
+{% endblock %}
+{% block content %}
+{% include 'info/_month_nav.html' with nav_url=nav_url previous_month=previous_month next_month=next_month only %}
+
+
+{% if object_list %}
+    <h1>{% blocktrans with year=month.year month=month|date:'F' %}Heure pour {{ month }} {{year}}{% endblocktrans %}</h1>
+    <form method="post">
+      {% csrf_token %}
+      {{ formset.management_form }}
+      <table>
+        <thead>
+          <tr>
+            {% for form in formset.forms %}
+            <th>{{ form.date.value }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+
+        <tr>
+        {% for form in formset.forms %}
+          <td>
+            {% bootstrap_form form layout="inline"  size='small' %}
+          </td>
+        {% endfor %}
+        </tr>
+      </table>
+      {% buttons %}
+          <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
+          <a class="btn btn-default" href="{% url 'season-list' %}">{% trans "Annuler" %}</a>
+      {% endbuttons %}
+    </form>
+{% else %}
+  nothing
+{% endif %}
+{% endblock %}
