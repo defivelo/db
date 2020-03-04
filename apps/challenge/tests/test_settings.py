@@ -20,7 +20,6 @@ from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
-from django.utils import timezone
 
 from factory import fuzzy
 
@@ -73,10 +72,6 @@ class SettingsViewsTestCase(SeasonTestCaseMixin):
         Prepare the URLs
         """
         super().setUp()
-        self.url_redirects = reverse("annualstatesettings-list")
-        self.url_redirects_to = reverse(
-            "annualstatesettings-list", kwargs={"year": timezone.now().year}
-        )
         self.url_yearly = reverse(
             "annualstatesettings-list",
             kwargs={"year": fuzzy.FuzzyInteger(1999, 2050).fuzz()},
@@ -107,12 +102,6 @@ class AuthUserTest(SettingsViewsTestCase):
         super().setUp()
 
     def test_settings_list_access(self):
-        # Authorized user without rights gets a redirect, but a forbidden
-        self.assertRedirects(
-            self.client.get(self.url_redirects),
-            self.url_redirects_to,
-            target_status_code=403,
-        )
         for url in self.restricted_urls:
             self.assertEqual(self.client.get(url).status_code, 403, url)
 
@@ -123,12 +112,6 @@ class StateManagerUserTest(SettingsViewsTestCase):
         super().setUp()
 
     def test_settings_list_access(self):
-        # StateManager user gets a redirect, but a forbidden
-        self.assertRedirects(
-            self.client.get(self.url_redirects),
-            self.url_redirects_to,
-            target_status_code=403,
-        )
         for url in self.restricted_urls:
             self.assertEqual(self.client.get(url).status_code, 403, url)
 
@@ -139,12 +122,6 @@ class PowerUserTest(SettingsViewsTestCase):
         super().setUp()
 
     def test_settings_list_access(self):
-        # PowerUser user gets a redirect, and a 200 OK
-        self.assertRedirects(
-            self.client.get(self.url_redirects),
-            self.url_redirects_to,
-            target_status_code=200,
-        )
         # The restricted urls are allowed to power user
         for url in self.restricted_urls:
             self.assertEqual(self.client.get(url).status_code, 200, url)

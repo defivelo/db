@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from django.conf.urls import url
+from django.conf.urls import include, url
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.decorators.cache import never_cache
@@ -55,29 +55,26 @@ from .views import (
 urlpatterns = [
     # Settings
     url(
-        r"^settings/$",
-        RedirectView.as_view(
-            url=reverse_lazy(
-                "annualstatesettings-list", kwargs={"year": timezone.now().year}
-            ),
-            permanent=False,
+        "^settings/y(?P<year>[0-9]{4})/",
+        include(
+            [
+                url(
+                    r"(?P<pk>[0-9]+)/$",
+                    never_cache(AnnualStateSettingUpdateView.as_view()),
+                    name="annualstatesetting-update",
+                ),
+                url(
+                    "new/$",
+                    never_cache(AnnualStateSettingCreateView.as_view()),
+                    name="annualstatesetting-create",
+                ),
+                url(
+                    "$",
+                    never_cache(AnnualStateSettingsListView.as_view()),
+                    name="annualstatesettings-list",
+                ),
+            ]
         ),
-        name="annualstatesettings-list",
-    ),
-    url(
-        r"^settings/y(?P<year>[0-9]{4})/$",
-        never_cache(AnnualStateSettingsListView.as_view()),
-        name="annualstatesettings-list",
-    ),
-    url(
-        r"^settings/y(?P<year>[0-9]{4})/new/$",
-        never_cache(AnnualStateSettingCreateView.as_view()),
-        name="annualstatesetting-create",
-    ),
-    url(
-        r"^settings/y(?P<year>[0-9]{4})/(?P<pk>[0-9]+)/$",
-        never_cache(AnnualStateSettingUpdateView.as_view()),
-        name="annualstatesetting-update",
     ),
     # Seasons
     url(
