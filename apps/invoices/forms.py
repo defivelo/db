@@ -52,22 +52,23 @@ class InvoiceForm(forms.ModelForm):
 
     @transaction.atomic
     def save(self, commit=True):
-        season = self.cleaned_data["season"]
-        for refid in range(100, 999):
-            ref = f"DV{season.year % 100}{refid:03d}"
-            self.instance.ref = ref
-
-            if not Invoice.objects.filter(ref=ref).exists():
-                # If unicity is garanteed, proceed
-                break
-        else:
-            # This should not happen.
-            raise ValidationError(
-                _(
-                    f"L'espace des factures établissements pour l'année {season.year} est épuisé avec l'identifiant {ref}."
-                )
-            )
         creating = not self.instance.pk
+        if creating:
+            season = self.cleaned_data["season"]
+            for refid in range(100, 999):
+                ref = f"DV{season.year % 100}{refid:03d}"
+                self.instance.ref = ref
+
+                if not Invoice.objects.filter(ref=ref).exists():
+                    # If unicity is garanteed, proceed
+                    break
+            else:
+                # This should not happen.
+                raise ValidationError(
+                    _(
+                        f"L'espace des factures établissements pour l'année {season.year} est épuisé avec l'identifiant {ref}."
+                    )
+                )
         invoice = super().save(commit=commit)
 
         if creating:
