@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Iterable
+
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import F, Sum
@@ -68,25 +70,21 @@ class Invoice(models.Model):
     def sessions(self):
         return self.season.sessions.filter(orga=self.organization)
 
-    def sum_of(self, thing: str):
-        return self.lines.aggregate(total=Sum(thing))["total"]
-
-    def sum_of_2(self, thing_1: str, thing_2: str):
-        return self.lines.aggregate(total=Sum(F(thing_1) + F(thing_2)))["total"]
+    def sum_of(self, things: Iterable[str]):
+        fields = sum(F(thing) for thing in things)
+        return self.lines.aggregate(total=Sum(fields))["total"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Generate sum_* methods
         for thing in ["nb_bikes", "nb_participants", "cost_bikes", "cost_participants"]:
-            setattr(self, f"sum_{thing}", self.sum_of(thing=thing))
+            setattr(self, f"sum_{thing}", self.sum_of([thing]))
         # Generate sum_* methods
         for prefix in ["nb", "cost"]:
             setattr(
                 self,
                 f"sum_{prefix}",
-                self.sum_of_2(
-                    thing_1=f"{prefix}_bikes", thing_2=f"{prefix}_participants"
-                ),
+                self.sum_of([f"{prefix}_bikes", f"{prefix}_participants"]),
             )
 
     @cached_property
