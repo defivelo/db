@@ -1,44 +1,89 @@
 {% extends "base.html" %}
 {% load i18n dv_filters bootstrap3 %}
 
-{% block head_title %}{% blocktrans with year=month.year month=month|date:'F' %}Heures du {{ month }} {{year}}{% endblocktrans %}{% endblock %}
+{% block head_title %}{% blocktrans with year=month.year month=month|date:'F' %}Heures du {{ month }}
+{{year}}{% endblocktrans %}{% endblock %}
 {% block container-class %}{% if dataset %}container-fluid{% else %}{{ block.super }}{% endif %}{% endblock %}
 
 {% block bootstrap3_extra_script %}
-    {{ formset.media.js }}
-    {% include 'snippets/datetimepicker_js.html' %}
+{{ formset.media.js }}
+{% include 'snippets/datetimepicker_js.html' %}
 {% endblock %}
 {% block content %}
 {% include 'info/_month_nav.html' with nav_url=nav_url previous_url=prev_url previous_month=previous_month next_url=next_url next_month=next_month only %}
 
 {% if object_list %}
-    <h1>{% blocktrans with year=month.year month=month|date:'F' %}Heure pour {{ month }} {{year}}{% endblocktrans %}</h1>
-    <form method="post">
-      {% csrf_token %}
-      {{ formset.management_form }}
-      <table>
-        <thead>
-          <tr>
-            {% for form in formset.forms %}
-            <th>{{ form.date.value }}</th>
-            {% endfor %}
-          </tr>
-        </thead>
-
-        <tr>
+<h1>{% blocktrans with year=month.year month=month|date:'F' %}Heure pour {{ month }} {{year}}{% endblocktrans %}</h1>
+<form method="post">
+  {% csrf_token %}
+  {{ formset.management_form }}
+  <table id="table-with-some" class="table">
+    <thead>
+      <tr>
+        <td></td>
         {% for form in formset.forms %}
-          <td>
-            {% bootstrap_form form layout="inline"  size='small' %}
-          </td>
+        <th align="center" class="text-center">
+          {{ form.date.value }}
+          {% for hidden in form.hidden_fields %}
+          {{ hidden }}
+          {% endfor %}
+        </th>
         {% endfor %}
-        </tr>
-      </table>
-      {% buttons %}
-          <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
-          <a class="btn btn-default" href="{% url 'home' %}">{% trans "Annuler" %}</a>
-      {% endbuttons %}
-    </form>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for label, fields in formsetrevert.items %}
+      <tr>
+        <th>{{ label|capfirst }}</th>
+        {% for field in fields %}
+        <td align="center">
+          {% bootstrap_field field layout="inline"  size='small' %}
+        </td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th>{% trans "Total"%}</th>
+        {% for form in formset.forms %}
+        <td align="center" class="text-center">
+        </td>
+        {% endfor %}
+      </tr>
+    </tfoot>
+  </table>
+  {% buttons %}
+  <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
+  <a class="btn btn-default" href="{% url 'home' %}">{% trans "Annuler" %}</a>
+  {% endbuttons %}
+</form>
 {% else %}
-  nothing
+nothing
 {% endif %}
+
+<script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function(event) {
+    $("table#table-with-some").change(function (e) {
+      $('table#table-with-some > thead > tr > th').each(function (index) {
+        var total = 0;
+        $('table#table-with-some > tbody > tr').each(function () {
+          var value = parseFloat($(this).children('td').eq(index).find("input[type=number]").val());
+          if (!isNaN(value)) {
+            total += value;
+          }
+        });
+        const hours = Math.trunc(total);
+        const minutes = (Math.abs(total) - Math.abs(hours))*60%60;
+        $('table#table-with-some > tfoot > tr > td').eq(index).text((total < 0 ? "-" : "" ) +("0" +
+          Math.abs(hours)).slice(-2) + ":" + ("0"
+        +
+        minutes).slice(-2))
+      });
+    }).change();
+  });
+
+
+</script>
 {% endblock %}

@@ -55,6 +55,10 @@ class MonthlyTimesheets(HasPermissionsMixin, MonthArchiveView, FormView):
         context = super().get_context_data(**kwargs)
         context["nav_url"] = resolve(self.request.path).url_name
         context["formset"] = context["form"]
+        context["formsetrevert"] = {
+            fieldname.label: [form[fieldname.name] for form in context["form"].forms] for fieldname in context["form"].forms[0].visible_fields()
+        }
+        print(context["formsetrevert"])
         return context
 
     def get_month(self):
