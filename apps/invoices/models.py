@@ -23,7 +23,6 @@ from django.db import models
 from django.db.models import F, Sum
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.utils.functional import cached_property
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 
@@ -86,13 +85,6 @@ class Invoice(models.Model):
                 f"sum_{prefix}",
                 self.sum_of([f"{prefix}_bikes", f"{prefix}_participants"]),
             )
-
-    @cached_property
-    def status_full(self):
-        try:
-            return dict(self.STATUS_CHOICES)[self.status]
-        except KeyError:
-            return ""
 
     @property
     def is_locked(self):

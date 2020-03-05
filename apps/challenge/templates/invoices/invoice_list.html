@@ -22,7 +22,7 @@
             <tbody>
         {% endif %}
                 <tr class="{{ invoice.status_class }}">
-                    <td>{{ invoice.status_full }}</td>
+                    <td>{{ invoice.get_status_display }}</td>
                     <td>
                         <a href="{% url 'invoice-detail' seasonpk=season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">
                             {{ invoice.ref }}

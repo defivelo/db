@@ -22,7 +22,7 @@
 <div class="hidden-print invoice-status">
     <dl>
         <dt>{% trans "Statut" %}</dt>
-        <dd>{{ invoice.status_full }}</dd>
+        <dd>{{ invoice.get_status_display }}</dd>
     </dl>
     {% if not invoice.is_locked and user|can:'challenge_invoice_cru' or invoice.is_locked and user|can:'challenge_invoice_reset_to_draft' %}
         <div>
