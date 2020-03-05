@@ -42,7 +42,10 @@ class Invoice(models.Model):
     ref = models.CharField(_("Référence"), max_length=20, blank=False, unique=True)
     title = models.CharField(_("Titre"), max_length=255, blank=True)
     organization = models.ForeignKey(
-        Organization, verbose_name=_("Établissement"), on_delete=models.PROTECT
+        Organization,
+        verbose_name=_("Établissement"),
+        on_delete=models.PROTECT,
+        related_name="invoices",
     )
     season = models.ForeignKey(
         Season, verbose_name=_("Saison"), on_delete=models.PROTECT
