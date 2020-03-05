@@ -53,7 +53,7 @@ class MonthlyTimesheets(MonthArchiveView, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["menu_category"] = "timesheet"
-        context["nav_url"] = resolve(self.request.path).url_name
+        context["nav_url"] = self.request.resolver_match.url_name
         context["formset"] = context["form"]
         context["formsetrevert"] = (
             {
@@ -73,12 +73,10 @@ class MonthlyTimesheets(MonthArchiveView, FormView):
         return context
 
     def get_month(self):
-        month = super().get_month()
-        return month if month is not None else str(date.today().month)
+        return super().get_month() or date.today().month
 
     def get_year(self):
-        year = super().get_year()
-        return year if year is not None else str(date.today().year)
+        return super().get_year() or date.today().year
 
     def get_initial(self):
         initial = []
@@ -111,7 +109,7 @@ class MonthlyTimesheets(MonthArchiveView, FormView):
         return kwargs
 
     def get_success_url(self):
-        return self.request.path
+        return self.request.get_full_path()
 
     def form_valid(self, formset):
         """If the form is valid, save the associated model."""
