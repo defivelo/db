@@ -42,7 +42,7 @@
   {% blocktrans with nb_participants=invoice.sum_nb_participants %}{{ nb_participants }} étudiant-e-s de votre établissement vont participer à « DÉFI VÉLO », compétition inter-cantonale pour la promotion du vélo. Par la participation de votre établissement, vous contribuez au succès d’un projet innovant de promotion du vélo, de l’activité physique et de la sécurité routière, qui place le plaisir et l’apprentissage par l’action au premier plan. DÉFI VÉLO est largement reconnu pour ces qualités: il est notamment soutenu par Promotion Santé Suisse, le Fonds suisse de sécurité routière et la commune de Sierre.{% endblocktrans %}
 </div>
 
-{% if invoice.invoiceline_set %}
+{% if invoice.lines %}
 <table class="table invoice-table">
     <thead>
         <tr>
@@ -53,7 +53,7 @@
         </tr>
     </thead>
     <tbody>
-    {% for line in invoice.invoiceline_set.all %}
+    {% for line in invoice.lines.all %}
         <tr>
             <td class="text-left">{{ line.session.day }} - {{ line.session.begin }}</td>
             <td>{{ line.nb_participants }}</td>

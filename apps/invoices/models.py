@@ -66,12 +66,10 @@ class Invoice(models.Model):
         return self.season.sessions.filter(orga=self.organization)
 
     def sum_of(self, thing: str):
-        return self.invoiceline_set.aggregate(total=Sum(thing))["total"]
+        return self.lines.aggregate(total=Sum(thing))["total"]
 
     def sum_of_2(self, thing_1: str, thing_2: str):
-        return self.invoiceline_set.aggregate(total=Sum(F(thing_1) + F(thing_2)))[
-            "total"
-        ]
+        return self.lines.aggregate(total=Sum(F(thing_1) + F(thing_2)))["total"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -111,7 +109,7 @@ class Invoice(models.Model):
 
 class InvoiceLine(models.Model):
     session = models.ForeignKey(Session, on_delete=models.PROTECT)
-    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="lines")
     nb_bikes = models.PositiveSmallIntegerField()
     nb_participants = models.PositiveSmallIntegerField()
     cost_bikes = models.DecimalField(
