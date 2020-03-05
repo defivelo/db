@@ -27,7 +27,7 @@ from .models import Invoice, InvoiceLine
 
 
 class InvoiceForm(forms.ModelForm):
-    sessions = forms.ModelMultipleChoiceField(queryset=Session.objects.all())
+    sessions = forms.ModelMultipleChoiceField(queryset=Session.objects.none())
 
     class Meta:
         model = Invoice
@@ -76,12 +76,9 @@ class InvoiceForm(forms.ModelForm):
                 canton=invoice.organization.address_canton, year=season.year
             )
         except AnnualStateSetting.DoesNotExist:
-            settings = AnnualStateSetting()
-            settings.cost_per_bike = 0
-            settings.cost_per_participant = 0
+            settings = AnnualStateSetting(cost_per_bike=0, cost_per_participant=0)
 
         if creating:
-            # So we're in create.
             for session in self.cleaned_data["sessions"]:
                 InvoiceLine.objects.create(
                     session=session,
@@ -89,7 +86,6 @@ class InvoiceForm(forms.ModelForm):
                     nb_participants=session.n_participants,
                     nb_bikes=session.n_bikes,
                     cost_bikes=(session.n_bikes * settings.cost_per_bike),
-                    # TODO: replace by site cantonal setting
                     cost_participants=(
                         session.n_participants * settings.cost_per_participant
                     ),
