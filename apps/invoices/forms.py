@@ -21,7 +21,7 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
 
-from apps.challenge.models import AnnualStateSetting, Session
+from apps.challenge.models import AnnualStateSetting, Season, Session
 
 from .models import Invoice, InvoiceLine
 
@@ -46,6 +46,9 @@ class InvoiceForm(forms.ModelForm):
 
         for f in ["organization", "season", "sessions"]:
             self.fields[f].disabled = True
+
+        #  Reduce the number of convoluted queries. We know we want this one only.
+        self.fields["season"].queryset = Season.objects.filter(pk=season.pk)
 
         # Circumvent weird bug due to the 'season' object being weird
         self.fields["season"].to_python = lambda x: x
