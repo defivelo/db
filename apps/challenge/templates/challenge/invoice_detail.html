@@ -55,7 +55,7 @@
     <tbody>
     {% for line in invoice.lines.all %}
         <tr>
-            <td class="text-left">{{ line.session.day }} - {{ line.session.begin }}</td>
+            <td class="text-left">{{ line.session.day }}{% if line.session.begin %} - {{ line.session.begin }}{% endif %}</td>
             <td>{{ line.nb_participants }}</td>
             <td>{{ line.cost_participants }}</td>
             <td>{{ line.nb_bikes }}</td>
