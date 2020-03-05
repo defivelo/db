@@ -19,15 +19,15 @@
             </thead>
             <tbody>
         {% endif %}
-        <tr class="{% if organization.invoices.count == 0 %}warning{% endif %}">
+        <tr class="{% if organization.nb_invoices == 0 %}warning{% endif %}">
             <td>
                 <a href="{% url 'invoice-list' seasonpk=season.pk orgapk=organization.pk %}">
                     {{ organization }}
                 </a>
             </td>
-            <td>{{ organization.invoices.count }}</td>
+            <td>{{ organization.nb_invoices }}</td>
             <td>
-                {% if organization.invoices.count == 0 %}
+                {% if organization.nb_invoices == 0 %}
                     <a href="{% url 'invoice-create' seasonpk=season.pk orgapk=organization.pk %}">{% trans "Créer une facture" %}</a>
                 {% endif %}
             </td>

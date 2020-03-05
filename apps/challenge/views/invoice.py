@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
@@ -115,6 +116,8 @@ class SeasonOrgaListView(SeasonMixin, HasPermissionsMixin, ListView):
     required_permission = "challenge_invoice_cru"
 
     def get_queryset(self):
-        return Organization.objects.filter(
-            sessions__in=self.season.sessions_with_qualifs
-        ).distinct()
+        return (
+            Organization.objects.filter(sessions__in=self.season.sessions_with_qualifs)
+            .annotate(nb_invoices=Count("invoices", distinct=True))
+            .distinct()
+        )
