@@ -33,6 +33,13 @@ from .mixins import CantonSeasonFormMixin
 from .season import SeasonMixin
 
 
+def user_can_edit_invoice(user, invoice: Invoice = None, locked: bool = False):
+    if locked or invoice.is_locked:
+        return has_permission(user, "challenge_invoice_reset_to_draft")
+    else:
+        return has_permission(user, "challenge_invoice_cru")
+
+
 class InvoiceMixin(CantonSeasonFormMixin, HasPermissionsMixin):
     model = Invoice
     required_permission = "challenge_invoice_cru"
@@ -85,7 +92,13 @@ class InvoiceMixin(CantonSeasonFormMixin, HasPermissionsMixin):
 
 
 class InvoiceDetailView(InvoiceMixin, DetailView):
-    pass
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add our menu_category context
+        context["user_can_edit_invoice"] = user_can_edit_invoice(
+            self.request.user, self.get_object()
+        )
+        return context
 
 
 class InvoiceCreateView(InvoiceMixin, CreateView):
@@ -95,16 +108,21 @@ class InvoiceCreateView(InvoiceMixin, CreateView):
 class InvoiceListView(InvoiceMixin, ListView):
     context_object_name = "invoices"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["user_can_edit_locked_invoice"] = user_can_edit_invoice(
+            user=self.request.user, invoice=None, locked=True
+        )
+        return context
+
 
 class InvoiceUpdateView(InvoiceMixin, UpdateView):
     def get_form(self, *args, **kwargs):
         """
-        Disallow any field edition if the field is locked
+        Disallow any field edition if the invoice is locked
         """
         form = super().get_form(*args, **kwargs)
-        if self.get_object().is_locked and not has_permission(
-            self.request.user, "challenge_invoice_reset_to_draft"
-        ):
+        if not user_can_edit_invoice(self.request.user, self.get_object()):
             for field in form.fields:
                 form.fields[field].disabled = True
         return form
