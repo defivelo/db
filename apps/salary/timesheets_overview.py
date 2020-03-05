@@ -5,10 +5,9 @@ from django.db.models import Q
 
 from rolepermissions.checkers import has_permission
 
-from defivelo.roles import user_cantons
-
 from apps.challenge.models.session import Session
 from apps.salary.models import Timesheet
+from defivelo.roles import user_cantons
 
 
 class TimesheetStatus(enum.IntFlag):
