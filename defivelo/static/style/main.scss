@@ -20,6 +20,7 @@ body {
 }
 
 @import 'partials/bootstrap-fixes';
+@import 'partials/variables';
 @import 'partials/footer';
 @import 'partials/flags';
 @import 'partials/select2';
@@ -28,3 +29,4 @@ body {
 @import 'partials/availtable';
 @import 'partials/calendar';
 @import 'partials/public';
+@import 'partials/invoices';

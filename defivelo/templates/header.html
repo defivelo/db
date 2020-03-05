@@ -14,6 +14,11 @@
                 <ul class="dropdown-menu">
                     <li{% if 'season-detail' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-detail' season.pk %}">{% trans "Toutes les sessions" %}</a></li>
                     <li{% if 'season-availability' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-availabilities' season.pk %}">{% trans "Planning" %}</a></li>
+                    {% if user|can:'challenge_invoice_cru' %}
+                    <li{% if 'season-orga-list' in submenu_category %} class="active"{% endif %}>
+                        <a href="{% url 'invoice-orga-list' seasonpk=season.pk %}">{% trans "Facturation établissements" %}</a>
+                    </li>
+                    {% endif %}
                     <li role="separator" class="divider"></li>
                     <li{% if 'season-helperlist' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-helperlist' season.pk %}">{% trans "Liste des moniteurs" %}</a></li>
                     <li{% if 'season-actorlist' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-actorlist' season.pk %}">{% trans "Liste des intervenants" %}</a></li>

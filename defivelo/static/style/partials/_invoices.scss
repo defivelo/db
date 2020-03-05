@@ -1,0 +1,59 @@
+body.dv-invoice {
+  .invoice-address-from {
+    float: left;
+  }
+  .invoice-address-to {
+    float: right;
+  }
+  .invoice-date {
+    clear: both;
+    float: right;
+    margin-top: 3em;
+    margin-bottom: 4em;
+  }
+  .invoice-title {
+    clear: both;
+  }
+  .invoice-status {
+    float: left;
+    border: 1px dotted $dv-red;
+    padding: 1em;
+    margin-left: 1em;
+  }
+
+  .invoice-header-text {
+    padding-bottom: 2em;
+    border-bottom: 1px solid #4fa2ce;
+    margin-bottom: 1em;
+  }
+
+  .invoice-table {
+    margin: 2em auto !important;
+    .invoice-total {
+      border: 2px solid $dv-red;
+    }
+    & > tbody,
+    & > tfoot,
+    & > thead {
+      & > tr {
+        & > td,
+        & > th {
+          border-color: $dv-blue;
+          border-right-width: 1px;
+          border-right-style: solid;
+        }
+      }
+    }
+  }
+
+  .invoice-bank-details {
+    float: left;
+    margin-top: 2em;
+    margin-right: 3em;
+  }
+  .invoice-footer-closing {
+    clear: both;
+    float: right;
+    text-align: right;
+  }
+}

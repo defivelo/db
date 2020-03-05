@@ -227,6 +227,10 @@ class Session(Address, models.Model):
     def n_helmets(self):
         return self.n_quali_things("n_helmets")
 
+    @cached_property
+    def n_participants(self):
+        return self.n_quali_things("n_participants")
+
     def helpers_time_with_default(self):
         if self.helpers_time:
             return self.helpers_time

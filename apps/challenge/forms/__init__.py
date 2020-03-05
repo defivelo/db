@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2015-2020 Didier Raboud <didier.raboud>
+# Copyright (C) 2020 Didier Raboud <didier.raboud@liip.ch>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -15,9 +15,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from .availability import HelperSessionAvailability
-from .invoices import Invoice, InvoiceLine
-from .qualification import Qualification, QualificationActivity
-from .season import Season
-from .session import Session
-from .settings import AnnualStateSetting
+
+from .invoices import InvoiceForm
+from .qualification import QualificationForm, QualificationFormQuick
+from .season import (
+    SeasonAvailabilityForm,
+    SeasonForm,
+    SeasonNewHelperAvailabilityForm,
+    SeasonStaffChoiceForm,
+)
+from .session import SessionForm
+from .settings import AnnualStateSettingForm

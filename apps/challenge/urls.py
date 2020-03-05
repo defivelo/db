@@ -27,6 +27,10 @@ from .views import (
     AnnualStateSettingCreateView,
     AnnualStateSettingsListView,
     AnnualStateSettingUpdateView,
+    InvoiceCreateView,
+    InvoiceDetailView,
+    InvoiceListView,
+    InvoiceUpdateView,
     QualiCreateView,
     QualiDeleteView,
     QualiUpdateView,
@@ -40,6 +44,7 @@ from .views import (
     SeasonExportView,
     SeasonHelperListView,
     SeasonListView,
+    SeasonOrgaListView,
     SeasonPlanningExportView,
     SeasonStaffChoiceUpdateView,
     SeasonUpdateView,
@@ -138,6 +143,46 @@ urlpatterns = [
         name="season-availabilities-update",
     ),
     url(r"^(?P<pk>[0-9]+)/delete/$", SeasonDeleteView.as_view(), name="season-delete"),
+    # Invoices
+    url(
+        r"^(?P<seasonpk>[0-9]+)/",
+        include(
+            [
+                url(
+                    "invoices/",
+                    never_cache(SeasonOrgaListView.as_view()),
+                    name="invoice-orga-list",
+                ),
+                url(
+                    r"i(?P<orgapk>[0-9]+)/",
+                    include(
+                        [
+                            url(
+                                r"^new/$",
+                                never_cache(InvoiceCreateView.as_view()),
+                                name="invoice-create",
+                            ),
+                            url(
+                                r"^list/$",
+                                never_cache(InvoiceListView.as_view()),
+                                name="invoice-list",
+                            ),
+                            url(
+                                r"^(?P<invoiceref>.+)/edit/$",
+                                never_cache(InvoiceUpdateView.as_view()),
+                                name="invoice-update",
+                            ),
+                            url(
+                                r"^(?P<invoiceref>.+)/$",
+                                never_cache(InvoiceDetailView.as_view()),
+                                name="invoice-detail",
+                            ),
+                        ]
+                    ),
+                ),
+            ]
+        ),
+    ),
     # Sessions
     url(
         r"^(?P<seasonpk>[0-9]+)/(?P<year>[0-9]{4})/w(?P<week>[0-9]+)/$",
