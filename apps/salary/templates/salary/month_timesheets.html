@@ -93,6 +93,11 @@
 
 <script type="text/javascript">
   document.addEventListener("DOMContentLoaded", function (event) {
+    const displayTime = function(value){
+        const hours = Math.trunc(value);
+        const minutes = (Math.abs(value) - Math.abs(hours)) * 60 % 60;
+        return (value < 0 ? "-" : "" ) + Math.abs(hours) + ":" + ("0" + minutes).slice(-2);
+    };
     $("table#table-with-sum").change(function (e) {
       $('table#table-with-sum > thead > tr > th:not(:last)').each(function (index) {
         var total = 0;
@@ -109,10 +114,7 @@
             }
           }
         });
-        const hours = Math.trunc(total);
-        const minutes = (Math.abs(total) - Math.abs(hours)) * 60 % 60;
-        $('table#table-with-sum > tfoot > tr:first > td').eq(index).data("floatValue", total).text((
-          total < 0 ? "-" : "") + ("0" + Math.abs(hours)).slice(-2) + ":" + ("0" + minutes).slice(-2));
+        $('table#table-with-sum > tfoot > tr:first > td').eq(index).data("floatValue", total).text(displayTime(total));
         $('table#table-with-sum > tfoot > tr:nth-child(2) > td').eq(index).data("floatValue", sum_salary)
           .text(sum_salary.toFixed(2))
       });
@@ -126,11 +128,7 @@
         }, null);
         if (sum !== null) {
           if ($(this).find("input[type=number]").first().data("customType") == "hours") {
-            const hours = Math.trunc(sum);
-            const minutes = (Math.abs(sum) - Math.abs(hours)) * 60 % 60;
-            $(this).find(' > td:last').text((sum < 0 ? "-" : "") + ("0" +
-              Math.abs(hours)).slice(-2) + ":" + ("0" +
-              minutes).slice(-2));
+            $(this).find(' > td:last').text(displayTime(sum));
           } else {
             $(this).find(' > td:last').text(sum);
           }
@@ -146,11 +144,7 @@
           return total;
         }, null);
         if (index == 0){
-            const hours = Math.trunc(sum);
-            const minutes = (Math.abs(sum) - Math.abs(hours)) * 60 % 60;
-            $(this).find(' > td:last').text((sum < 0 ? "-" : "") + ("0" +
-              Math.abs(hours)).slice(-2) + ":" + ("0" +
-              minutes).slice(-2));
+            $(this).find(' > td:last').text(displayTime(sum));
         } else {
             $(this).find(' > td:last').text(sum.toFixed(2));
         }
