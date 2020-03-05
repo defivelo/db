@@ -95,11 +95,11 @@ class Invoice(models.Model):
         except KeyError:
             return ""
 
-    @cached_property
+    @property
     def is_locked(self):
         return self.status == self.STATUS_VALIDATED
 
-    @cached_property
+    @property
     def status_class(self):
         css_class = "default"
         if self.status == self.STATUS_DRAFT:
