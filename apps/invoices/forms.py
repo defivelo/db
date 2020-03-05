@@ -55,8 +55,19 @@ class InvoiceForm(forms.ModelForm):
         creating = not self.instance.pk
         season = self.cleaned_data["season"]
         if creating:
-            for refid in range(100, 999):
-                ref = f"DV{season.year % 100}{refid:03d}"
+            ref_prefix = f"DV{season.year % 100}"
+            try:
+                largestref = (
+                    Invoice.objects.filter(ref__startswith=ref_prefix)
+                    .order_by("-ref")
+                    .first()
+                    .ref
+                )
+                startrefid = int(largestref[len(ref_prefix) :]) + 1
+            except (AttributeError, ValueError):
+                startrefid = 100
+            for refid in range(startrefid, 999):
+                ref = f"{ref_prefix}{refid:03d}"
                 self.instance.ref = ref
 
                 if not Invoice.objects.filter(ref=ref).exists():
