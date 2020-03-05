@@ -36,6 +36,14 @@ class InvoiceTestCaseMixin(SeasonTestCaseMixin):
             organization=self.canton_orgas[0],
             status=Invoice.STATUS_DRAFT,
         )
+        invoice_kwargs = {
+            "seasonpk": self.invoice.season.pk,
+            "orgapk": self.invoice.organization.pk,
+            "invoiceref": self.invoice.ref,
+        }
+
+        self.invoice_update_url = reverse("invoice-update", kwargs=invoice_kwargs)
+        self.invoice_detail_url = reverse("invoice-detail", kwargs=invoice_kwargs)
 
 
 class AuthUserTest(InvoiceTestCaseMixin):
@@ -123,21 +131,16 @@ class StateManagerUserTest(InvoiceTestCaseMixin):
             response, reverse("invoice-detail", kwargs=kwargs), target_status_code=200,
         )
 
-    def test_invoice_update(self):
+    def test_invoice_update_title_only(self):
         """
-        Updating a title is OK
+        Updating a title only is OK
         """
-        kwargs = {
-            "seasonpk": self.invoice.season.pk,
-            "orgapk": self.invoice.organization.pk,
-            "invoiceref": self.invoice.ref,
-        }
-        url = reverse("invoice-update", kwargs=kwargs)
-        initial = {"title": "Titre du CdP", "status": self.invoice.status}
-
         self.assertRedirects(
-            self.client.post(url, initial),
-            reverse("invoice-detail", kwargs=kwargs),
+            self.client.post(
+                self.invoice_update_url,
+                {"title": "Titre du CdP", "status": self.invoice.status},
+            ),
+            self.invoice_detail_url,
             target_status_code=200,
         )
 
@@ -146,39 +149,55 @@ class StateManagerUserTest(InvoiceTestCaseMixin):
         self.assertEqual(i.status, Invoice.STATUS_DRAFT, i)
         self.assertFalse(i.is_locked, i)
 
+    def test_invoice_update_status_locks(self):
+        """
+        Updating the status away from DRAFT locks
+        """
         # Maintenant passe la facture en "Validée"
-        initial = {"title": "Titre 2 du CdP", "status": Invoice.STATUS_VALIDATED}
         self.assertRedirects(
-            self.client.post(url, initial),
-            reverse("invoice-detail", kwargs=kwargs),
+            self.client.post(
+                self.invoice_update_url,
+                {"title": "Titre 2 du CdP", "status": Invoice.STATUS_VALIDATED},
+            ),
+            self.invoice_detail_url,
             target_status_code=200,
         )
 
         i = Invoice.objects.get(ref=self.invoice.ref)
         self.assertEqual(i.title, "Titre 2 du CdP", i)
         self.assertEqual(i.status, Invoice.STATUS_VALIDATED)
+        self.assertTrue(i.is_locked, i)
+
+    def test_invoice_update_locked(self):
+        """
+        Updating a locked invoice fails
+        """
+        # Passe la facture en "Validée"
+        self.invoice.status = Invoice.STATUS_VALIDATED
+        self.invoice.save()
+        self.assertTrue(self.invoice.is_locked, self.invoice)
 
         # Lea chargé de projet peut encore l'éditer
-        self.assertEqual(self.client.get(url).status_code, 200, url)
+        self.assertEqual(self.client.get(self.invoice_update_url).status_code, 200)
         # Mais mettre à jour son statut échoue
-        initial = {"title": "Titre 3 du CdP", "status": Invoice.STATUS_DRAFT}
         # Enfin. Ça marche, mais rien n'a changé
         self.assertRedirects(
-            self.client.post(url, initial),
-            reverse("invoice-detail", kwargs=kwargs),
+            self.client.post(
+                self.invoice_update_url,
+                {"title": "Titre 3 du CdP", "status": Invoice.STATUS_DRAFT},
+            ),
+            self.invoice_detail_url,
             target_status_code=200,
         )
 
         # Elle n'est bien pas mise à jour
         i = Invoice.objects.get(ref=self.invoice.ref)
-        self.assertEqual(i.title, "Titre 2 du CdP", i)
+        self.assertNotEqual(i.title, "Titre 2 du CdP", i)
         self.assertEqual(i.status, Invoice.STATUS_VALIDATED)
 
         # Iel peut encore la voir
         self.assertEqual(
-            self.client.get(reverse("invoice-detail", kwargs=kwargs)).status_code,
-            200,
-            url,
+            self.client.get(self.invoice_detail_url).status_code, 200,
         )
 
 
@@ -231,60 +250,70 @@ class PowerUserTest(InvoiceTestCaseMixin):
             response, reverse("invoice-detail", kwargs=kwargs), target_status_code=200,
         )
 
-    def test_invoice_update(self):
+    def test_invoice_update_title_only(self):
         """
-        Updating a title is OK
+        Updating a title only is OK
         """
-        kwargs = {
-            "seasonpk": self.invoice.season.pk,
-            "orgapk": self.invoice.organization.pk,
-            "invoiceref": self.invoice.ref,
-        }
-        url = reverse("invoice-update", kwargs=kwargs)
-        initial = {"title": "Titre du Bureau", "status": self.invoice.status}
-
         self.assertRedirects(
-            self.client.post(url, initial),
-            reverse("invoice-detail", kwargs=kwargs),
+            self.client.post(
+                self.invoice_update_url,
+                {"title": "Titre du CdP", "status": self.invoice.status},
+            ),
+            self.invoice_detail_url,
             target_status_code=200,
         )
 
         i = Invoice.objects.get(ref=self.invoice.ref)
-        self.assertEqual(i.title, "Titre du Bureau", i)
+        self.assertEqual(i.title, "Titre du CdP", i)
         self.assertEqual(i.status, Invoice.STATUS_DRAFT, i)
         self.assertFalse(i.is_locked, i)
 
+    def test_invoice_update_status_locks(self):
+        """
+        Updating the status away from DRAFT locks
+        """
         # Maintenant passe la facture en "Validée"
-        initial = {"title": "Titre 2 du Bureau", "status": Invoice.STATUS_VALIDATED}
         self.assertRedirects(
-            self.client.post(url, initial),
-            reverse("invoice-detail", kwargs=kwargs),
+            self.client.post(
+                self.invoice_update_url,
+                {"title": "Titre 2 du CdP", "status": Invoice.STATUS_VALIDATED},
+            ),
+            self.invoice_detail_url,
             target_status_code=200,
         )
 
         i = Invoice.objects.get(ref=self.invoice.ref)
-        self.assertEqual(i.title, "Titre 2 du Bureau", i)
+        self.assertEqual(i.title, "Titre 2 du CdP", i)
         self.assertEqual(i.status, Invoice.STATUS_VALIDATED)
         self.assertTrue(i.is_locked, i)
 
+    def test_invoice_update_locked(self):
+        """
+        Updating a locked invoice fails
+        """
+        # Passe la facture en "Validée"
+        self.invoice.status = Invoice.STATUS_VALIDATED
+        self.invoice.save()
+        self.assertTrue(self.invoice.is_locked, self.invoice)
+
         # Lea burea peut encore l'éditer
-        self.assertEqual(self.client.get(url).status_code, 200, url)
+        self.assertEqual(self.client.get(self.invoice_update_url).status_code, 200)
         # Et mettre à jour son statut, de retour vers Draft
-        initial = {"title": "Titre 3 du Bureau", "status": Invoice.STATUS_DRAFT}
         self.assertRedirects(
-            self.client.post(url, initial),
-            reverse("invoice-detail", kwargs=kwargs),
+            self.client.post(
+                self.invoice_update_url,
+                {"title": "Titre 3 du Bureau", "status": Invoice.STATUS_DRAFT},
+            ),
+            self.invoice_detail_url,
             target_status_code=200,
         )
-        # Est bien mis à jour
+        # Elle est bien mise à jour
         i = Invoice.objects.get(ref=self.invoice.ref)
-        self.assertEqual(i.title, "Titre 3 du Bureau", i)
-        self.assertEqual(i.status, Invoice.STATUS_DRAFT)
+        self.assertNotEqual(i.title, "Titre 3 du bureau", i)
+        self.assertEqual(i.status, Invoice.STATUS_DRAFT, i)
         self.assertFalse(i.is_locked, i)
 
         # Iel peut encore la voir
         self.assertEqual(
-            self.client.get(reverse("invoice-detail", kwargs=kwargs)).status_code,
-            200,
-            url,
+            self.client.get(self.invoice_detail_url).status_code, 200,
         )
