@@ -41,7 +41,9 @@ class Invoice(models.Model):
     )
 
     generated_at = models.DateTimeField(default=timezone.now)
-    status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_DRAFT)
+    status = models.IntegerField(
+        _("Statut"), choices=STATUS_CHOICES, default=STATUS_DRAFT
+    )
     ref = models.CharField(_("Référence"), max_length=20, blank=False, unique=True)
     title = models.CharField(_("Titre"), max_length=255, blank=True)
     organization = models.ForeignKey(
