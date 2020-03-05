@@ -26,8 +26,10 @@ from django.utils import timezone
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 
-from apps.challenge.models import Season, Session
 from apps.orga.models import Organization
+
+from .season import Season
+from .session import Session
 
 
 class Invoice(models.Model):

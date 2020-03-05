@@ -24,11 +24,11 @@ from django.views.generic.edit import CreateView, UpdateView
 
 from rolepermissions.mixins import HasPermissionsMixin
 
-from apps.invoices.forms import InvoiceForm
-from apps.invoices.models import Invoice
 from apps.orga.models import Organization
 from defivelo.roles import has_permission
 
+from ..forms import InvoiceForm
+from ..models import Invoice
 from .mixins import CantonSeasonFormMixin
 from .season import SeasonMixin
 

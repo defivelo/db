@@ -18,10 +18,10 @@
 
 from django.urls import reverse
 
-from apps.invoices.models import Invoice
-from apps.invoices.tests.factories import InvoiceFactory
 from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient
 
+from ..models import Invoice
+from .factories import InvoiceFactory
 from .test_seasons import SeasonTestCaseMixin
 
 season_urls = ["invoice-orga-list"]

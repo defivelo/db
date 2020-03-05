@@ -23,7 +23,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.challenge.models import AnnualStateSetting, Season, Session
 
-from .models import Invoice, InvoiceLine
+from ..models import Invoice, InvoiceLine
 
 
 class InvoiceForm(forms.ModelForm):

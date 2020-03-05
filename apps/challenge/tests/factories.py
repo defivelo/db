@@ -20,14 +20,14 @@ from __future__ import unicode_literals
 from datetime import date
 
 import factory
-from factory import Faker, fuzzy
+from factory import Faker, SubFactory, fuzzy
 from factory.django import DjangoModelFactory
 
 from apps.common import DV_SEASON_CHOICES, DV_SEASON_STATE_OPEN, DV_STATES
 from apps.orga.tests.factories import OrganizationFactory
 from apps.user.tests.factories import UserFactory
 
-from ..models import AnnualStateSetting, Qualification, Season, Session
+from ..models import AnnualStateSetting, Invoice, Qualification, Season, Session
 
 
 class SeasonFactory(DjangoModelFactory):
@@ -64,3 +64,13 @@ class AnnualStateSettingFactory(DjangoModelFactory):
 
     year = fuzzy.FuzzyInteger(1999, 2050)
     canton = fuzzy.FuzzyChoice(DV_STATES)
+
+
+class InvoiceFactory(DjangoModelFactory):
+    class Meta:
+        model = Invoice
+
+    season = SubFactory(SeasonFactory)
+    organization = SubFactory(OrganizationFactory)
+    ref = fuzzy.FuzzyText(length=20)
+    status = fuzzy.FuzzyChoice([s[0] for s in Invoice.STATUS_CHOICES])
