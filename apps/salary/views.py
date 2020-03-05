@@ -14,6 +14,8 @@ from apps.challenge.models.session import Session
 from apps.salary.forms import ControlTimesheetFormSet, TimesheetFormSet
 from apps.salary.models import Timesheet
 
+from . import timesheets_overview
+
 
 class MonthlyTimesheets(MonthArchiveView, FormView):
     date_field = "day"
@@ -171,4 +173,34 @@ class UserMonthlyTimesheets(HasPermissionsMixin, MonthlyTimesheets):
                 "pk": self.selected_user.id,
             },
         )
+        return context
+
+
+class YearlyTimesheets(TemplateView):
+    template_name = "salary/timesheets_yearly_overview.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        year = self.kwargs["year"]
+        active_canton = self.request.GET.get("canton")
+
+        users = timesheets_overview.get_visible_users(self.request.user).order_by(
+            "first_name", "last_name"
+        )
+        if active_canton:
+            users = users.filter(profile__affiliation_canton=active_canton)
+
+        context["months"] = MONTHS_3
+        context[
+            "timesheets_status_matrix"
+        ] = timesheets_overview.get_timesheets_status_matrix(year=year, users=users)
+        context[
+            "timesheets_amount"
+        ] = timesheets_overview.get_timesheets_amount_by_month(year=year, users=users)
+        context["cantons"] = DV_STATE_CHOICES
+        context["active_canton"] = (
+            dict(DV_STATE_CHOICES)[active_canton] if active_canton else None
+        )
+
         return context

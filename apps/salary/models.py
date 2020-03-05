@@ -2,6 +2,8 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from . import HOURLY_RATE_ACTOR, HOURLY_RATE_HELPER
+
 
 class Timesheet(models.Model):
     user = models.ForeignKey(
@@ -26,3 +28,14 @@ class Timesheet(models.Model):
 
     class Meta:
         unique_together = (("user", "date",),)
+
+    def get_total_amount_helper(self):
+        return (
+            self.time_monitor + self.overtime + self.traveltime
+        ) * HOURLY_RATE_HELPER
+
+    def get_total_amount_actor(self):
+        return self.time_actor * HOURLY_RATE_ACTOR
+
+    def get_total_amount(self):
+        return self.get_total_amount_actor() + self.get_total_amount_helper()
