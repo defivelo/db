@@ -19,14 +19,13 @@
       {% endif %}
     </tr>
   </table>
-<input type="{{ widget.type }}" name="{{ widget.name }}" {% if widget.value != None %}
+<input data-custom-type="number"  type="{{ widget.type }}" name="{{ widget.name }}" {% if widget.value != None %}
   value="{{ widget.value|stringformat:'s' }}" {% endif %}{% include "django/forms/widgets/attrs.html" %}>
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(event) {
   $("#{{ widget.attrs.id }}").change(function (e) {
     const value = $(e.target).val();
-    $("#{{ widget.attrs.id }}").prev(".table-responsive").find(".result").text((value < 0 ? "-" : "" ) +("0" +
-      Math.abs(value)).slice(-2));
+    $("#{{ widget.attrs.id }}").prev(".table-responsive").find(".result").text(value);
     $(e.target).parent("table").change();
   }).change();
   $("#{{ widget.attrs.id }}").prev(".table-responsive").find("a[data-decrement]").click(function (e) {
