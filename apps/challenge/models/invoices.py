@@ -53,7 +53,10 @@ class Invoice(models.Model):
         related_name="invoices",
     )
     season = models.ForeignKey(
-        Season, verbose_name=_("Saison"), on_delete=models.PROTECT
+        Season,
+        verbose_name=_("Saison"),
+        on_delete=models.PROTECT,
+        related_name="invoices",
     )
 
     def __str__(self):
