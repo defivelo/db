@@ -30,7 +30,7 @@ from defivelo.roles import has_permission
 from ..forms import InvoiceForm
 from ..models import Invoice
 from .mixins import CantonSeasonFormMixin
-from .season import SeasonMixin
+from .season import SeasonListView, SeasonMixin
 
 
 def user_can_edit_invoice(user, invoice: Invoice = None, locked: bool = False):
@@ -114,6 +114,24 @@ class InvoiceListView(InvoiceMixin, ListView):
             user=self.request.user, invoice=None, locked=True
         )
         return context
+
+
+class InvoiceYearlyListView(SeasonListView, HasPermissionsMixin, ListView):
+    required_permission = "challenge_invoice_cru"
+    template_name = "challenge/invoice_yearly_list.html"
+    allow_empty = True
+    allow_future = True
+    make_object_list = True
+    raise_without_cantons = False
+
+    def get_queryset(self, **kwargs):
+        return (
+            super()
+            .get_queryset(**kwargs)
+            .prefetch_related("invoices", "invoices__lines", "invoices__organization")
+            .annotate(nb_invoices=Count("invoices", distinct=True))
+            .order_by("season")
+        )
 
 
 class InvoiceUpdateView(InvoiceMixin, UpdateView):
