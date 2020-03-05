@@ -36,7 +36,6 @@ class InvoiceTestCaseMixin(SeasonTestCaseMixin):
             organization=self.canton_orgas[0],
             status=Invoice.STATUS_DRAFT,
         )
-        self.invoice.save()
 
 
 class AuthUserTest(InvoiceTestCaseMixin):
@@ -170,7 +169,7 @@ class StateManagerUserTest(InvoiceTestCaseMixin):
             target_status_code=200,
         )
 
-        # Iel n'est bien pas mis à jour
+        # Elle n'est bien pas mise à jour
         i = Invoice.objects.get(ref=self.invoice.ref)
         self.assertEqual(i.title, "Titre 2 du CdP", i)
         self.assertEqual(i.status, Invoice.STATUS_VALIDATED)
