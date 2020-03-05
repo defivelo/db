@@ -24,12 +24,12 @@
                 <tr class="{{ invoice.status_class }}">
                     <td>{{ invoice.get_status_display }}</td>
                     <td>
-                        <a href="{% url 'invoice-detail' seasonpk=season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">
+                        <a href="{{ invoice.get_absolute_url }}">
                             {{ invoice.ref }}
                         </a>
                     </td>
                     <td>
-                        <a href="{% url 'invoice-detail' seasonpk=season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">
+                        <a href="{{ invoice.get_absolute_url }}">
                             {{ invoice.title }}
                         </a>
                     </td>
