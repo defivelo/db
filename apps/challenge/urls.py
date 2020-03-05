@@ -158,22 +158,22 @@ urlpatterns = [
                     include(
                         [
                             url(
-                                r"^new$",
+                                r"^new/$",
                                 never_cache(InvoiceCreateView.as_view()),
                                 name="invoice-create",
                             ),
                             url(
-                                r"^list$",
+                                r"^list/$",
                                 never_cache(InvoiceListView.as_view()),
                                 name="invoice-list",
                             ),
                             url(
-                                r"^(?P<invoiceref>.+)/edit$",
+                                r"^(?P<invoiceref>.+)/edit/$",
                                 never_cache(InvoiceUpdateView.as_view()),
                                 name="invoice-update",
                             ),
                             url(
-                                r"^(?P<invoiceref>.+)$",
+                                r"^(?P<invoiceref>.+)/$",
                                 never_cache(InvoiceDetailView.as_view()),
                                 name="invoice-detail",
                             ),
