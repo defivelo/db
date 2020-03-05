@@ -74,8 +74,7 @@ class InvoiceMixin(CantonSeasonFormMixin, HasPermissionsMixin):
         return context
 
     def get_object(self):
-        resolvermatch = self.request.resolver_match
-        invoiceref = resolvermatch.kwargs.get("invoiceref")
+        invoiceref = self.kwargs.get("invoiceref")
 
         return get_object_or_404(
             self.model,
