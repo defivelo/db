@@ -6,6 +6,11 @@ class TimeNumberInput(widgets.NumberInput):
     template_name = "forms/widgets/timenumber.html"
 
 
+class NumberInput(widgets.NumberInput):
+    input_type = "number"
+    template_name = "forms/widgets/number.html"
+
+
 # overide to make compatible with bootstrap
 class CheckboxInput(widgets.Input):
     input_type = "checkbox"

@@ -14,8 +14,7 @@ from apps.salary.forms import ControlTimesheetFormSet, TimesheetFormSet
 from apps.salary.models import Timesheet
 
 
-class MonthlyTimesheets(HasPermissionsMixin, MonthArchiveView, FormView):
-    required_permission = "challenge_season_crud"
+class MonthlyTimesheets(MonthArchiveView, FormView):
     date_field = "day"
     month_format = "%m"
     allow_empty = True
@@ -56,9 +55,9 @@ class MonthlyTimesheets(HasPermissionsMixin, MonthArchiveView, FormView):
         context["nav_url"] = resolve(self.request.path).url_name
         context["formset"] = context["form"]
         context["formsetrevert"] = {
-            fieldname.label: [form[fieldname.name] for form in context["form"].forms] for fieldname in context["form"].forms[0].visible_fields()
-        }
-        print(context["formsetrevert"])
+            fieldname.label: [form[fieldname.name] for form in context["form"].forms]
+            for fieldname in context["form"].forms[0].visible_fields()
+        } if context["form"].forms else {}
         return context
 
     def get_month(self):
@@ -79,9 +78,9 @@ class MonthlyTimesheets(HasPermissionsMixin, MonthArchiveView, FormView):
             attributes = {
                 "user": self.selected_user,
                 "date": session["day"],
-                "time_monitor": session["monitor_count"] * 4
-                + (0.5 * (session["orga_count"] - 1)),
-                "time_actor": session["intervenant_count"] * 2,
+                "time_monitor": session["monitor_count"] * 4.5
+                - (0.5 if session["orga_count"] == 1 and session["monitor_count"] > 1 else 0),
+                "time_actor": session["intervenant_count"],
                 "overtime": timesheet.overtime if timesheet else 0,
                 "traveltime": timesheet.traveltime if timesheet else 0,
                 "validate": bool(timesheet.validated_at) if timesheet else False,
@@ -128,8 +127,9 @@ class MyMonthlyTimesheets(MonthlyTimesheets):
         return super().dispatch(request, *args, **kwargs)
 
 
-class UserMonthlyTimesheets(MonthlyTimesheets):
+class UserMonthlyTimesheets(HasPermissionsMixin, MonthlyTimesheets):
     form_class = ControlTimesheetFormSet
+    required_permission = "orga_crud"
 
     def dispatch(self, request, *args, **kwargs):
         self.selected_user = get_user_model().objects.get(pk=self.kwargs["pk"])

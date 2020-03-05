@@ -12,8 +12,8 @@
 {% block content %}
 {% include 'info/_month_nav.html' with nav_url=nav_url previous_url=prev_url previous_month=previous_month next_url=next_url next_month=next_month only %}
 
-{% if object_list %}
 <h1>{% blocktrans with year=month.year month=month|date:'F' %}Heure pour {{ month }} {{year}}{% endblocktrans %}</h1>
+{% if object_list %}
 <form method="post">
   {% csrf_token %}
   {{ formset.management_form }}
@@ -52,15 +52,22 @@
         </td>
         {% endfor %}
       </tr>
+      <tr>
+        <th>{% trans "Total CHF"%}</th>
+        {% for form in formset.forms %}
+        <td align="center" class="text-center">
+        </td>
+        {% endfor %}
+      </tr>
     </tfoot>
   </table>
   {% buttons %}
-  <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
-  <a class="btn btn-default" href="{% url 'home' %}">{% trans "Annuler" %}</a>
+  <button type="submit" class="btn btn-primary pull-right hidden-print">{% trans "Enregistrer" %}</button>
+  <a class="btn btn-default hidden-print" href="{% url 'home' %}">{% trans "Annuler" %}</a>
   {% endbuttons %}
 </form>
 {% else %}
-nothing
+  <p>{% trans "Vous n'avez pas travaillé ce mois" %}</p>
 {% endif %}
 
 <script type="text/javascript">
@@ -68,18 +75,26 @@ nothing
     $("table#table-with-some").change(function (e) {
       $('table#table-with-some > thead > tr > th').each(function (index) {
         var total = 0;
+        var sum_salary = 0;
         $('table#table-with-some > tbody > tr').each(function () {
-          var value = parseFloat($(this).children('td').eq(index).find("input[type=number]").val());
+          const input = $(this).children('td').eq(index).find("input[type=number]")
+          let value = parseFloat(input.val());
           if (!isNaN(value)) {
-            total += value;
+            if (input.data("customType") == "hours"){
+              total += value;
+            }
+            if (input.data("unitPrice")){
+              sum_salary += parseFloat(input.data("unitPrice")) * value;
+            }
           }
         });
         const hours = Math.trunc(total);
         const minutes = (Math.abs(total) - Math.abs(hours))*60%60;
-        $('table#table-with-some > tfoot > tr > td').eq(index).text((total < 0 ? "-" : "" ) +("0" +
+        $('table#table-with-some > tfoot > tr:first > td').eq(index).text((total < 0 ? "-" : "" ) +("0" +
           Math.abs(hours)).slice(-2) + ":" + ("0"
         +
-        minutes).slice(-2))
+        minutes).slice(-2));
+        $('table#table-with-some > tfoot > tr:nth-child(2) > td').eq(index).text(sum_salary.toFixed(2))
       });
     }).change();
   });

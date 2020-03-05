@@ -3,7 +3,7 @@ from django.forms import formset_factory
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from apps.salary.fields import CheckboxInput, TimeNumberInput
+from apps.salary.fields import CheckboxInput, NumberInput, TimeNumberInput
 from apps.salary.models import Timesheet
 
 
@@ -24,17 +24,30 @@ class TimesheetFormBase(forms.ModelForm):
             "user": forms.HiddenInput(),
             "date": forms.HiddenInput(),
             "time_monitor": TimeNumberInput(
-                attrs={"readonly": "readonly", "class": "hide"},
+                attrs={"readonly": "readonly", "class": "hide", "data-unit-price": 30},
             ),
-            "time_actor": TimeNumberInput(
-                attrs={"readonly": "readonly", "class": "hide"},
+            "time_actor": NumberInput(
+                attrs={"readonly": "readonly", "class": "hide", "data-unit-price": 100},
             ),
             "overtime": TimeNumberInput(
-                attrs={"step": 0.25, "min": -10, "max": 10, "class": "hide"}
+                attrs={
+                    "step": 0.25,
+                    "min": -10,
+                    "max": 10,
+                    "class": "hide",
+                    "data-unit-price": 30,
+                }
             ),
             "traveltime": TimeNumberInput(
-                attrs={"step": 0.25, "min": 0, "max": 5, "class": "hide"}
+                attrs={
+                    "step": 0.25,
+                    "min": 0,
+                    "max": 5,
+                    "class": "hide",
+                    "data-unit-price": 30,
+                }
             ),
+            'comments': forms.Textarea(attrs={'rows': 3, 'cols': 20}),
         }
 
     def __init__(self, validator, *args, **kwargs):
@@ -89,6 +102,20 @@ class ControlTimesheetForm(TimesheetFormBase):
             cleaned_data["validated_by"] = self.validator
         del cleaned_data["validate"]
         return cleaned_data
+
+    def save(self):
+        if self.cleaned_data["validated_at"]:
+            return super().save()
+        elif self.initial.get("validate"):
+            timesheet, created = Timesheet.objects.update_or_create(
+                user=self.cleaned_data["user"],
+                date=self.cleaned_data["date"],
+                defaults={
+                    "validated_at": self.cleaned_data["validated_at"],
+                    "validated_by": self.cleaned_data["validated_by"],
+                },
+            )
+            return timesheet
 
 
 ControlTimesheetFormSet = formset_factory(ControlTimesheetForm, max_num=0, extra=0)
