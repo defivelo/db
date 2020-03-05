@@ -12,7 +12,11 @@
 {% block content %}
 {% include 'info/_month_nav.html' with nav_url=nav_url previous_url=prev_url previous_month=previous_month next_url=next_url next_month=next_month only %}
 
+{% if monitor_name %}
+<h1>{% blocktrans with name=monitor_name year=month.year month=month|date:'F' %}Heure de {{ name }} pour {{ month }} {{year}}{% endblocktrans %}</h1>
+{% else %}
 <h1>{% blocktrans with year=month.year month=month|date:'F' %}Heure pour {{ month }} {{year}}{% endblocktrans %}</h1>
+{% endif %}
 {% if object_list %}
 <form method="post">
   {% csrf_token %}
@@ -78,7 +82,12 @@
   {% endbuttons %}
 </form>
 {% else %}
-<p>{% trans "Vous n'avez pas travaillé ce mois" %}</p>
+{{ month }}, {{ current_date }}
+{% if in_the_future %}
+  <p>{% trans "Vous ne pouvez pas entrer des heures dans le futur" %}</p>
+{% else %}
+  <p>{% trans "Vous n'avez pas travaillé ce mois" %}</p>
+{% endif %}
 {% endif %}
 
 <script type="text/javascript">
