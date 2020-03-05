@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
-{% load dv_filters %}{% block head_title %}{% blocktrans with season=season.desc %}Établissements pour la saison {{season}}{% endblocktrans %}{% endblock %}
+{% load dv_filters %}
+{% block head_title %}{% blocktrans with season=season.desc %}Établissements pour la saison {{season}}{% endblocktrans %}{% endblock %}
 
 {% block content %}
     <h1>{% blocktrans with season=season.desc %}Établissements pour la saison {{season}}{% endblocktrans %}</h1>

@@ -14,7 +14,7 @@
 {% block content %}
     <h1>{% if invoice %}{% blocktrans with ref=invoice.ref %}Édition de la facture {{ref}}{% endblocktrans %}{% else %}{% trans "Création de facture" %}{% endif %}</h1>
 
-    <form method="POST" action="" class="form-horizontal">
+    <form method="POST" class="form-horizontal">
         {% csrf_token %}
         {% bootstrap_form form layout='horizontal' size='small' %}
         {% buttons %}
