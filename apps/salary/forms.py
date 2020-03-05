@@ -47,7 +47,7 @@ class TimesheetFormBase(forms.ModelForm):
                     "data-unit-price": 30,
                 }
             ),
-            'comments': forms.Textarea(attrs={'rows': 3, 'cols': 20}),
+            "comments": forms.Textarea(attrs={"rows": 3, "cols": 20}),
         }
 
     def __init__(self, validator, *args, **kwargs):
@@ -94,28 +94,14 @@ class ControlTimesheetForm(TimesheetFormBase):
 
     def clean(self):
         cleaned_data = super().clean()
-        if not cleaned_data.get("validate"):
+        if self.initial["validate"] and not cleaned_data.get("validate"):
             cleaned_data["validated_at"] = None
             cleaned_data["validated_by"] = None
-        elif not self.initial["validate"]:
+        elif not self.initial["validate"] and cleaned_data.get("validate"):
             cleaned_data["validated_at"] = timezone.now
             cleaned_data["validated_by"] = self.validator
         del cleaned_data["validate"]
         return cleaned_data
-
-    def save(self):
-        if self.cleaned_data["validated_at"]:
-            return super().save()
-        elif self.initial.get("validate"):
-            timesheet, created = Timesheet.objects.update_or_create(
-                user=self.cleaned_data["user"],
-                date=self.cleaned_data["date"],
-                defaults={
-                    "validated_at": self.cleaned_data["validated_at"],
-                    "validated_by": self.cleaned_data["validated_by"],
-                },
-            )
-            return timesheet
 
 
 ControlTimesheetFormSet = formset_factory(ControlTimesheetForm, max_num=0, extra=0)

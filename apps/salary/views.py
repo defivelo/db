@@ -54,10 +54,19 @@ class MonthlyTimesheets(MonthArchiveView, FormView):
         context = super().get_context_data(**kwargs)
         context["nav_url"] = resolve(self.request.path).url_name
         context["formset"] = context["form"]
-        context["formsetrevert"] = {
-            fieldname.label: [form[fieldname.name] for form in context["form"].forms]
-            for fieldname in context["form"].forms[0].visible_fields()
-        } if context["form"].forms else {}
+        context["formsetrevert"] = (
+            {
+                fieldname.label: [
+                    form[fieldname.name] for form in context["form"].forms
+                ]
+                for fieldname in context["form"].forms[0].visible_fields()
+            }
+            if context["form"].forms
+            else {}
+        )
+        context["can_print"] = all(
+            form.initial["validate"] for form in context["form"].forms
+        )
         return context
 
     def get_month(self):
@@ -79,7 +88,11 @@ class MonthlyTimesheets(MonthArchiveView, FormView):
                 "user": self.selected_user,
                 "date": session["day"],
                 "time_monitor": session["monitor_count"] * 4.5
-                - (0.5 if session["orga_count"] == 1 and session["monitor_count"] > 1 else 0),
+                - (
+                    0.5
+                    if session["orga_count"] == 1 and session["monitor_count"] > 1
+                    else 0
+                ),
                 "time_actor": session["intervenant_count"],
                 "overtime": timesheet.overtime if timesheet else 0,
                 "traveltime": timesheet.traveltime if timesheet else 0,
