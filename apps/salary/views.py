@@ -52,6 +52,7 @@ class MonthlyTimesheets(MonthArchiveView, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["menu_category"] = "timesheet"
         context["nav_url"] = resolve(self.request.path).url_name
         context["formset"] = context["form"]
         context["formsetrevert"] = (
@@ -67,7 +68,8 @@ class MonthlyTimesheets(MonthArchiveView, FormView):
         context["can_print"] = all(
             form.initial["validate"] for form in context["form"].forms
         )
-        context['in_the_future'] = date.today() < context['month']
+        context["in_the_future"] = date.today() < context["month"]
+        context["is_current_month"] = date.today().replace(day=1) == context["month"]
         return context
 
     def get_month(self):
@@ -151,7 +153,7 @@ class UserMonthlyTimesheets(HasPermissionsMixin, MonthlyTimesheets):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['monitor_name'] = self.selected_user.get_full_name()
+        context["monitor_name"] = self.selected_user.get_full_name()
         context["prev_url"] = reverse(
             resolve(self.request.path).url_name,
             kwargs={

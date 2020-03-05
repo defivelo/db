@@ -82,9 +82,10 @@
   {% endbuttons %}
 </form>
 {% else %}
-{{ month }}, {{ current_date }}
 {% if in_the_future %}
   <p>{% trans "Vous ne pouvez pas entrer des heures dans le futur" %}</p>
+{% elif is_current_month %}
+  <p>{% trans "Vous n'avez pas encore d'heures a rentrer ce mois" %}</p>
 {% else %}
   <p>{% trans "Vous n'avez pas travaillé ce mois" %}</p>
 {% endif %}
