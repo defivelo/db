@@ -94,7 +94,11 @@ class MonthlyTimesheets(MonthArchiveView, FormView):
                 "user": self.selected_user,
                 "date": session["day"],
                 "time_helper": session["helper_count"]
-                * (4 if session["orga_count"] == 1 and session["helper_count"] > 1 else 4.5),
+                * (
+                    4
+                    if session["orga_count"] == 1 and session["helper_count"] > 1
+                    else 4.5
+                ),
                 "time_actor": session["actor_count"],
                 "overtime": timesheet.overtime if timesheet else 0,
                 "traveltime": timesheet.traveltime if timesheet else 0,
