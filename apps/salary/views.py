@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.dates import MONTHS_3
-from django.views.generic import TemplateView
+from django.views.generic import RedirectView, TemplateView
 from django.views.generic.dates import MonthArchiveView
 from django.views.generic.edit import FormView
 
@@ -16,6 +16,14 @@ from apps.salary.models import Timesheet
 from defivelo.roles import has_permission
 
 from . import timesheets_overview
+
+
+class RedirectUserMonthlyTimesheets(RedirectView):
+    is_permanent = False
+
+    def get_redirect_url(self, *args, **kwargs):
+        kwargs["pk"] = self.request.user.pk
+        return reverse("salary:user-timesheets", kwargs=kwargs,)
 
 
 class UserMonthlyTimesheets(MonthArchiveView, FormView):
@@ -161,9 +169,13 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
         return self.render_to_response(context)
 
     def dispatch(self, request, *args, **kwargs):
-        self.selected_user = get_object_or_404(
-            timesheets_overview.get_visible_users(self.request.user),
-            pk=self.kwargs["pk"],
+        self.selected_user = (
+            get_object_or_404(
+                timesheets_overview.get_visible_users(self.request.user),
+                pk=self.kwargs["pk"],
+            )
+            if self.kwargs["pk"]
+            else self.request.user
         )
         return super().dispatch(request, *args, **kwargs)
 
