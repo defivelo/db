@@ -60,10 +60,6 @@
             <div>
                 <div role="tabpane" class="tab-pane active adr" id="addr">
                     <dl class="dl-horizontal">
-                        {% if userprofile.profile.cresus_employee_number %}
-                            <dt>{% trans "N° d'employé Crésus" %}</dt>
-                                <dd><tt>{{ userprofile.profile.cresus_employee_number }}</tt></dd>
-                        {% endif %}
                         <dt>{% trans "Nom" %}</dt>
                             <dd>{{ userprofile.get_full_name }}</dd>
                         <dt>{% trans "Adresse" %}</dt>
@@ -119,6 +115,10 @@
                         {% if userprofile.profile.iban %}
                             <dt>{% trans "N° IBAN" %}</dt>
                                 <dd><tt>{{ userprofile.profile.iban_nice }}</tt></dd>
+                        {% endif %}
+                        {% if userprofile.profile.cresus_employee_number %}
+                            <dt>{% trans "N° d'employé Crésus" %}</dt>
+                                <dd><tt>{{ userprofile.profile.cresus_employee_number }}</tt></dd>
                         {% endif %}
                         {% if userprofile.profile.social_security %}
                             <dt>{% trans "N° AVS" %}</dt>

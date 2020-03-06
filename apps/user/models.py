@@ -103,7 +103,6 @@ BAGSTATUS_CHOICES = (
 )
 
 PERSONAL_FIELDS = [
-    "cresus_employee_number",
     "language",
     "languages_challenges",
     "natel",
@@ -118,6 +117,7 @@ PERSONAL_FIELDS = [
     "tax_jurisdiction",
     "bank_name",
     "iban",
+    "cresus_employee_number",
     "social_security",
     "marital_status",
     "status",
