@@ -71,6 +71,7 @@
                         </ul>
                     </a>
                 </li>
+                <li{% if 'timesheet' in menu_category  %} class="active"{% endif %}><a href="{% url 'my-timesheets' %}">{% trans "Heures" %}</a></li>
             {% endif %}
             {% if user|can:'settings_crud' %}
                 <li{% if 'settings' in menu_category  %} class="active"{% endif %}>
@@ -87,7 +88,7 @@
     {% endif %}
 </ul>
 
-<ul class="nav navbar-nav navbar-right">  
+<ul class="nav navbar-nav navbar-right">
     {% include "language_switcher.html" %}
 
     {% if request.user.is_authenticated %}

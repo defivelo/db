@@ -1,0 +1,43 @@
+  <table class="table-responsive">
+    <tr>
+      {% if not widget.attrs.readonly %}
+      <td width=1>
+        <a href="#" class="btn btn-success btn-xs" data-decrement="{{ widget.attrs.step }}">
+          <span class="glyphicon glyphicon-minus"></span>
+        </a>
+      </td>
+      {% endif %}
+      <td align="center" width="50">
+        <span class="result">&nbsp;</span>
+      </td>
+      {% if not widget.attrs.readonly %}
+      <td width=1>
+        <a href="#" class="btn btn-success btn-xs" data-increment="{{ widget.attrs.step }}">
+          <span class="glyphicon glyphicon-plus"></span>
+        </a>
+      </td>
+      {% endif %}
+    </tr>
+  </table>
+<input data-custom-type="number"  type="{{ widget.type }}" name="{{ widget.name }}" {% if widget.value != None %}
+  value="{{ widget.value|stringformat:'s' }}" {% endif %}{% include "django/forms/widgets/attrs.html" %}>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function(event) {
+  $("#{{ widget.attrs.id }}").change(function (e) {
+    const value = $(e.target).val();
+    $("#{{ widget.attrs.id }}").prev(".table-responsive").find(".result").text(value);
+  }).change();
+  $("#{{ widget.attrs.id }}").prev(".table-responsive").find("a[data-decrement]").click(function (e) {
+    e.preventDefault();
+    $("#{{ widget.attrs.id }}")[0].stepDown(1);
+    $("#{{ widget.attrs.id }}").change();
+    return false;
+  });
+  $("#{{ widget.attrs.id }}").prev(".table-responsive").find("a[data-increment]").click(function (e) {
+    e.preventDefault();
+    $("#{{ widget.attrs.id }}")[0].stepUp(1);
+    $("#{{ widget.attrs.id }}").change();
+    return false;
+  });
+});
+</script>

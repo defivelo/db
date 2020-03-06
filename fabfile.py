@@ -330,6 +330,7 @@ def fetch_db(c, destination="."):
 
 
 @task
+@remote
 def import_db(c, dump_file=None):
     """
     Restore the given database dump.
