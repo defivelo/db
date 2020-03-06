@@ -74,9 +74,9 @@ class TimesheetFormBase(forms.ModelForm):
             .exists()
         ):
             raise forms.ValidationError(
-                _("Vous ne pouver pas rentrer des heures pour le {day}.").format(
-                    day=cleaned_data["date"]
-                )
+                _(
+                    "Vous ne pouvez pas rentrer des heures pour le {day}: aucune qualif ce jour-ci."
+                ).format(day=cleaned_data["date"])
             )
 
         return cleaned_data

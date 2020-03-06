@@ -1,21 +1,25 @@
 {% extends "base.html" %}
 {% load i18n dv_filters bootstrap3 %}
 
-{% block head_title %}{% blocktrans with year=month.year month=month|date:'F' %}Heures du {{ month }}
-{{year}}{% endblocktrans %}{% endblock %}
+{% block head_title %}
+  {% blocktrans trimmed with year=month.year month=month|date:'F' %}
+    Heures pour {{ month }} {{ year }}
+  {% endblocktrans %}
+{% endblock %}
 {% block container-class %}{% if dataset %}container-fluid{% else %}{{ block.super }}{% endif %}{% endblock %}
 
 {% block bootstrap3_extra_script %}
-{{ formset.media.js }}
-{% include 'snippets/datetimepicker_js.html' %}
+  {{ formset.media.js }}
+  {% include 'snippets/datetimepicker_js.html' %}
 {% endblock %}
+
 {% block content %}
 {% include 'info/_month_nav.html' with nav_url=nav_url previous_url=prev_url previous_month=previous_month next_url=next_url next_month=next_month only %}
 
 {% if monitor_name %}
-<h1>{% blocktrans with name=monitor_name year=month.year month=month|date:'F' %}Heure de {{ name }} pour {{ month }} {{year}}{% endblocktrans %}</h1>
+<h1>{% blocktrans with name=monitor_name year=month.year month=month|date:'F' %}Heures de {{ name }} pour {{ month }} {{ year }}{% endblocktrans %}</h1>
 {% else %}
-<h1>{% blocktrans with year=month.year month=month|date:'F' %}Heure pour {{ month }} {{year}}{% endblocktrans %}</h1>
+<h1>{% blocktrans with year=month.year month=month|date:'F' %}Heures pour {{ month }} {{year}}{% endblocktrans %}</h1>
 {% endif %}
 {% if object_list %}
 <form method="post">
@@ -93,11 +97,11 @@
 </form>
 {% else %}
 {% if in_the_future %}
-  <p>{% trans "Vous ne pouvez pas entrer des heures dans le futur" %}</p>
+  <p>{% trans "Vous ne pouvez pas entrer des heures dans le futur." %}</p>
 {% elif is_current_month %}
-  <p>{% trans "Vous n'avez pas encore d'heures a rentrer ce mois" %}</p>
+  <p>{% trans "Vous n'avez pas encore d'heures a rentrer ce mois." %}</p>
 {% else %}
-  <p>{% trans "Vous n'avez pas travaillé ce mois" %}</p>
+  <p>{% trans "Vous n'avez pas travaillé ce mois." %}</p>
 {% endif %}
 {% endif %}
 
