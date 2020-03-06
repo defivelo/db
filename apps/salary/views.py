@@ -91,7 +91,6 @@ class MonthlyTimesheets(MonthArchiveView, FormView):
         for session in self.object_list:
             timesheet = timesheets.get(session["day"])
             attributes = {
-                "user": self.selected_user,
                 "date": session["day"],
                 "time_helper": session["helper_count"]
                 * (
@@ -110,7 +109,10 @@ class MonthlyTimesheets(MonthArchiveView, FormView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["form_kwargs"] = {"validator": self.request.user}
+        kwargs["form_kwargs"] = {
+            "validator": self.request.user,
+            "selected_user": self.selected_user,
+        }
         return kwargs
 
     def get_success_url(self):

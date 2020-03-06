@@ -14,7 +14,6 @@ class TimesheetFormBase(forms.ModelForm):
         model = Timesheet
         readonly = ("date", "time_helper", "time_actor")
         fields = [
-            "user",
             "date",
             "time_helper",
             "time_actor",
@@ -23,7 +22,6 @@ class TimesheetFormBase(forms.ModelForm):
             "comments",
         ]
         widgets = {
-            "user": forms.HiddenInput(),
             "date": forms.HiddenInput(),
             "time_helper": TimeNumberInput(
                 attrs={"readonly": "readonly", "class": "hide", "data-unit-price": 30},
@@ -52,23 +50,19 @@ class TimesheetFormBase(forms.ModelForm):
             "comments": forms.Textarea(attrs={"rows": 3, "cols": 20}),
         }
 
-    def __init__(self, validator, *args, **kwargs):
+    def __init__(self, selected_user, validator, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.validator = validator
-
-    def _get_validation_exclusions(self):
-        exclude = super()._get_validation_exclusions()
-        exclude.append("user")
-        return exclude
+        self.selected_user = selected_user
 
     def clean(self):
         cleaned_data = super().clean()
         if not (
             Session.objects.values("day")
             .filter(
-                Q(qualifications__actor=cleaned_data["user"])
-                | Q(qualifications__helpers=cleaned_data["user"])
-                | Q(qualifications__leader=cleaned_data["user"])
+                Q(qualifications__actor=self.selected_user)
+                | Q(qualifications__helpers=self.selected_user)
+                | Q(qualifications__leader=self.selected_user)
             )
             .filter(day=cleaned_data["date"])
             .exists()
@@ -91,7 +85,7 @@ class TimesheetFormBase(forms.ModelForm):
                 )
             )
         timesheet, created = Timesheet.objects.update_or_create(
-            user=self.cleaned_data["user"],
+            user=self.selected_user,
             date=self.cleaned_data["date"],
             defaults=self.cleaned_data,
         )
