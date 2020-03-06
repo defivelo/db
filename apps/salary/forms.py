@@ -8,6 +8,8 @@ from apps.challenge.models.session import Session
 from apps.common.fields import CheckboxInput, NumberInput, TimeNumberInput
 from apps.salary.models import Timesheet
 
+from . import HOURLY_RATE_ACTOR, HOURLY_RATE_HELPER
+
 
 class TimesheetFormBase(forms.ModelForm):
     class Meta:

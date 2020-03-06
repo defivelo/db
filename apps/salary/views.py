@@ -5,12 +5,15 @@ from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.dates import MONTHS_3
+from django.views.generic import TemplateView
 from django.views.generic.dates import MonthArchiveView
 from django.views.generic.edit import FormView
 
 from rolepermissions.mixins import HasPermissionsMixin
 
 from apps.challenge.models.session import Session
+from apps.common import DV_STATE_CHOICES
 from apps.salary.forms import ControlTimesheetFormSet, TimesheetFormSet
 from apps.salary.models import Timesheet
 
@@ -55,8 +58,10 @@ class MonthlyTimesheets(MonthArchiveView, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["menu_category"] = "timesheet"
-        context["nav_url"] = self.request.resolver_match.url_name
+        context["menu_category"] = ["timesheet"]
+        namespaces = self.request.resolver_match.namespaces
+        url_name = self.request.resolver_match.url_name
+        context["nav_url"] = ":".join([*namespaces, url_name])
         context["formset"] = context["form"]
         context["fields_grouped_by_field_name"] = (
             {
@@ -157,16 +162,19 @@ class UserMonthlyTimesheets(HasPermissionsMixin, MonthlyTimesheets):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["monitor_name"] = self.selected_user.get_full_name()
+        namespaces = self.request.resolver_match.namespaces
+        url_name = self.request.resolver_match.url_name
         context["prev_url"] = reverse(
-            self.request.resolver_match.url_name,
+            ":".join([*namespaces, url_name]),
             kwargs={
                 "month": context["previous_month"].month,
                 "year": context["previous_month"].year,
                 "pk": self.selected_user.id,
             },
         )
+
         context["next_url"] = reverse(
-            self.request.resolver_match.url_name,
+            ":".join([*namespaces, url_name]),
             kwargs={
                 "month": context["next_month"].month,
                 "year": context["next_month"].year,
@@ -176,11 +184,13 @@ class UserMonthlyTimesheets(HasPermissionsMixin, MonthlyTimesheets):
         return context
 
 
-class YearlyTimesheets(TemplateView):
+class YearlyTimesheets(HasPermissionsMixin, TemplateView):
     template_name = "salary/timesheets_yearly_overview.html"
+    required_permission = "timesheet_editor"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["menu_category"] = ["timesheet-editor"]
 
         year = self.kwargs["year"]
         active_canton = self.request.GET.get("canton")

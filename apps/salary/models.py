@@ -31,7 +31,7 @@ class Timesheet(models.Model):
 
     def get_total_amount_helper(self):
         return (
-            (self.time_monitor or 0) + self.overtime + self.traveltime
+            (self.time_helper or 0) + self.overtime + self.traveltime
         ) * HOURLY_RATE_HELPER
 
     def get_total_amount_actor(self):
