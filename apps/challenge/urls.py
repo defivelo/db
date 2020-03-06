@@ -31,6 +31,7 @@ from .views import (
     InvoiceDetailView,
     InvoiceListView,
     InvoiceUpdateView,
+    InvoiceYearlyListView,
     QualiCreateView,
     QualiDeleteView,
     QualiUpdateView,
@@ -91,9 +92,17 @@ urlpatterns = [
         name="season-list",
     ),
     url(
-        r"^y(?P<year>[0-9]{4})/$",
-        never_cache(SeasonListView.as_view()),
-        name="season-list",
+        r"^y(?P<year>[0-9]{4})/",
+        include(
+            [
+                url(
+                    r"^invoices/$",
+                    never_cache(InvoiceYearlyListView.as_view()),
+                    name="invoices-yearly-list",
+                ),
+                url(r"^$", never_cache(SeasonListView.as_view()), name="season-list"),
+            ]
+        ),
     ),
     url(r"^new/$", SeasonCreateView.as_view(), name="season-create"),
     url(r"^(?P<pk>[0-9]+)/update/$", SeasonUpdateView.as_view(), name="season-update"),

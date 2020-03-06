@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load dv_filters %}
+{% block head_title %}{% blocktrans with year=year %}Factures {{ year }}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+  <h1>{% blocktrans with year=year %}Factures {{ year }}{% endblocktrans %}</h1>
+
+  <nav>
+    <ul class="pager">
+      <li class="previous btn-xs">
+        <a href="{% url 'invoices-yearly-list' year=year|add:"-1" %}">
+          <span aria-hidden="true">&larr;</span> {{ year|add:"-1" }}
+        </a>
+      </li>
+      {% if year|add:0 != now.year|add:0 %}
+        <li class="btn-xs"><a href="{% url 'invoices-yearly-list' year=now.year %}">{% trans "Année courante" %}</a>
+        </li>
+      {% endif %}
+      <li class="next btn-xs">
+        <a href="{% url 'invoices-yearly-list' year=year|add:"1" %}">
+            {{ year|add:"1" }} <span aria-hidden="true">&rarr;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  {% for season in seasons %}
+      {% ifchanged season.season %}
+          {% if not forloop.first %}</table>{% endif %}
+          <h2>{{ season.season_full }}</h2>
+          <table class ="table">
+      {% endifchanged %}
+      {% if season.nb_invoices != 0 %}
+        <tr>
+          <th colspan="6">{{ season.get_cantons_display }}</th>
+        </tr>
+        {% for invoice in season.invoices.all %}
+          <tr class="{{ invoice.status_class }}">
+            <td>{{ invoice.get_status_display }}</td>
+            <td>
+              <a href="{{ invoice.get_absolute_url }}">{{ invoice.ref }}</a>
+            </td>
+            <td>{{ invoice.organization.name }}</td>
+            <td>
+              <a href="{{ invoice.get_absolute_url }}">{{ invoice.title }}</a>
+            </td>
+            <td>{{ invoice.sum_cost }}</td>
+            <td>
+              {% if user_can_edit_locked_invoice or not invoice.is_locked %}
+                <a class="btn btn-xs btn-{% if invoice.is_locked %}danger{% else %}primary{% endif %}" href="{% url 'invoice-update' seasonpk=invoice.season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">
+                  <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="{% trans "Éditer" %}"></span>
+                </a>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      {% endif %}
+      {% if forloop.last %}</table>{% endif %}
+  {% endfor %}
+
+{% endblock %}

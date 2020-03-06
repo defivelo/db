@@ -46,6 +46,9 @@
                     {% endif %}
                     <li><a href="{% url 'season-list' year=now_year %}">{% trans "Toutes les saisons" %}</a></li>
                     <li{% if 'qualifs-calendar' in submenu_category %} class="active"{% endif %}><a href="{% url 'qualifs-calendar' %}">{% trans "Calendrier" %}</a></li>
+                    {% if user|can:'challenge_invoice_cru' %}
+                      <li><a href="{% url 'invoices-yearly-list' year=now_year %}">{% trans "Facturation" %}</a></li>
+                    {% endif %}
                     {% if not user|can:'challenge_season_crud' %}
                         <li><a target="_blank" href="{% url 'public-nextqualifs' %}">{% trans "Prochaines Qualifs" %}</a></li>
                     {% endif %}

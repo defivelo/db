@@ -58,6 +58,11 @@ class AuthUserTest(InvoiceTestCaseMixin):
             # No access
             self.assertEqual(response.status_code, 403, url)
 
+    def test_access_to_yearly_urls(self):
+        url = reverse("invoices-yearly-list", kwargs={"year": 2020})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403, url)
+
     def test_access_to_invoice_lists(self):
         for symbolicurl in invoice_list_urls:
             url = reverse(
@@ -93,6 +98,11 @@ class StateManagerUserTest(InvoiceTestCaseMixin):
             # Final URL is OK
             response = self.client.get(url, follow=True)
             self.assertEqual(response.status_code, 200, url)
+
+    def test_access_to_yearly_urls(self):
+        url = reverse("invoices-yearly-list", kwargs={"year": 2020})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200, url)
 
     def test_access_to_invoice_lists(self):
         for symbolicurl in invoice_list_urls:
@@ -212,6 +222,11 @@ class PowerUserTest(InvoiceTestCaseMixin):
             # Final URL is OK
             response = self.client.get(url, follow=True)
             self.assertEqual(response.status_code, 200, url)
+
+    def test_access_to_yearly_urls(self):
+        url = reverse("invoices-yearly-list", kwargs={"year": 2020})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200, url)
 
     def test_access_to_invoice_lists(self):
         for symbolicurl in invoice_list_urls:

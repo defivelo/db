@@ -21,6 +21,7 @@ from .invoice import (
     InvoiceDetailView,
     InvoiceListView,
     InvoiceUpdateView,
+    InvoiceYearlyListView,
     SeasonOrgaListView,
 )
 from .quali import QualiCreateView, QualiDeleteView, QualiUpdateView

@@ -24,13 +24,14 @@ from django.views.generic.edit import CreateView, UpdateView
 
 from rolepermissions.mixins import HasPermissionsMixin
 
+from apps.common import MULTISELECTFIELD_REGEXP
 from apps.orga.models import Organization
-from defivelo.roles import has_permission
+from defivelo.roles import has_permission, user_cantons
 
 from ..forms import InvoiceForm
 from ..models import Invoice
 from .mixins import CantonSeasonFormMixin
-from .season import SeasonMixin
+from .season import SeasonListView, SeasonMixin
 
 
 def user_can_edit_invoice(user, invoice: Invoice = None, locked: bool = False):
@@ -45,6 +46,7 @@ class InvoiceMixin(CantonSeasonFormMixin, HasPermissionsMixin):
     required_permission = "challenge_invoice_cru"
     context_object_name = "invoice"
     form_class = InvoiceForm
+    raise_without_cantons = True
 
     def dispatch(self, request, *args, **kwargs):
         self.organization = get_object_or_404(
@@ -114,6 +116,28 @@ class InvoiceListView(InvoiceMixin, ListView):
             user=self.request.user, invoice=None, locked=True
         )
         return context
+
+
+class InvoiceYearlyListView(SeasonListView, HasPermissionsMixin, ListView):
+    required_permission = "challenge_invoice_cru"
+    template_name = "challenge/invoice_yearly_list.html"
+    allow_empty = True
+    allow_future = True
+    make_object_list = True
+
+    def get_queryset(self, **kwargs):
+        return (
+            super()
+            .get_queryset(**kwargs)
+            .filter(
+                cantons__regex=(
+                    MULTISELECTFIELD_REGEXP % "|".join(user_cantons(self.request.user))
+                )
+            )
+            .prefetch_related("invoices", "invoices__lines", "invoices__organization")
+            .annotate(nb_invoices=Count("invoices", distinct=True))
+            .order_by("season")
+        )
 
 
 class InvoiceUpdateView(InvoiceMixin, UpdateView):
