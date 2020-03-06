@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+import urllib.parse
 from re import search, sub
 
 from django import template
@@ -432,3 +433,32 @@ def lettercounter(count):
 @register.simple_tag
 def canton_colors():
     return DV_STATE_COLORS
+
+
+@register.filter
+def remove_qs(url, param_name):
+    """
+    Remove all occurences of the querystring named `param_name` from the given URL.
+    """
+    parsed_url = urllib.parse.urlparse(url)
+    parsed_qs = urllib.parse.parse_qsl(parsed_url.params)
+    qs_without_param = [
+        (name, value) for name, value in parsed_qs if name != param_name
+    ]
+    encoded_qs_without_param = urllib.parse.urlencode(qs_without_param)
+
+    return urllib.parse.urlunparse(parsed_url._replace(query=encoded_qs_without_param))
+
+
+@register.simple_tag
+def add_qs(url, **kwargs):
+    """
+    Add all kwargs and their values as querystrings to the given URL.
+    """
+    parsed_url = urllib.parse.urlparse(url)
+    new_qs = urllib.parse.parse_qsl(parsed_url.params) + [
+        (name, value) for name, value in kwargs.items()
+    ]
+    new_qs_encoded = urllib.parse.urlencode(new_qs)
+
+    return urllib.parse.urlunparse(parsed_url._replace(query=new_qs_encoded))

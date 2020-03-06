@@ -1,0 +1,16 @@
+.timesheets-canton-chooser {
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.timesheets-overview-table {
+  & tfoot > tr > th {
+    border-top-width: 2px;
+  }
+
+  & .status-cell {
+    padding: 0;
+    vertical-align: middle;
+    width: 7%;
+  }
+}

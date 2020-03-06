@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load i18n dv_filters bootstrap3 %}
+{% load salary_tags %}
+
+{% block head_title %}{% blocktrans %}Décompte salaires {{ year }}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+<nav>
+  <ul class="pager">
+    <li class="previous btn-xs">
+      {% with previous_year=year|add:"-1" %}
+        <a href="{% url 'salary:timesheets-overview' year=previous_year %}">
+          <span aria-hidden="true">←</span>
+          {{ previous_year }}
+        </a>
+      {% endwith %}
+    </li>
+    <li>
+      <h1 class="h3" style="display: inline">{% blocktrans %}Décompte salaires {{ year }}{% endblocktrans %}</h1>
+    </li>
+    <li class="next btn-xs">
+      {% with next_year=year|add:"1" %}
+        <a href="{% url "salary:timesheets-overview" year=next_year %}">
+          {{ next_year }}
+          <span aria-hidden="true">→</span>
+        </a>
+      {% endwith %}
+    </li>
+  </ul>
+</nav>
+
+<div class="center-block text-center timesheets-canton-chooser">
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      {% if active_canton %}
+        {% blocktrans %}Canton sélectionné: {{ active_canton }}{% endblocktrans %}
+      {% else %}
+        {% trans "Filtrer par canton" %}
+      {% endif %}
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      {% url 'salary:timesheets-overview' year=year as current_url %}
+      <li><a href="{{ current_url|remove_qs:"canton" }}">{% trans "Tous les cantons" %}</a></li>
+      {% for canton_code, canton_label in cantons %}
+        <li><a href="{% add_qs current_url|remove_qs:"canton" canton=canton_code %}">{{ canton_label }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+{% if timesheets_status_matrix %}
+  <table class="table table-bordered timesheets-overview-table">
+    <thead>
+      <tr>
+        <th></th>
+        {% for month in months.values %}
+          <th class="text-center">{{ month|capfirst }}.</th>
+        {% endfor %}
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for user, statuses in timesheets_status_matrix.items %}
+      <tr>
+        <td>
+          <a href="{% url 'user-detail' pk=user.pk %}">
+            {{ user.get_full_name }}
+          </a>
+        </td>
+        {% for status in statuses %}
+          <td class="text-center status-cell{% if status %} {{ status|timesheet_status_css_class }}{% endif %}">
+            {% if status %}
+              <a href="{% url 'salary:user-timesheets' year=year month=forloop.counter pk=user.pk %}">
+                <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+              </a>
+            {% endif %}
+          </td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+
+    <tfoot>
+      <tr>
+        <th>{% trans "Total CHF" %}</th>
+        {% for amount in timesheets_amount %}
+          <th>{{ amount }}</th>
+        {% endfor %}
+      </tr>
+    </tfoot>
+  </table>
+{% else %}
+  <div class="text-center">
+    {% trans "Aucun résultat." %}
+  </div>
+{% endif %}
+{% endblock %}

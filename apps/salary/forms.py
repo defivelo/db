@@ -8,6 +8,8 @@ from apps.challenge.models.session import Session
 from apps.common.fields import CheckboxInput, NumberInput, TimeNumberInput
 from apps.salary.models import Timesheet
 
+from . import HOURLY_RATE_ACTOR, HOURLY_RATE_HELPER
+
 
 class TimesheetFormBase(forms.ModelForm):
     class Meta:
@@ -24,10 +26,18 @@ class TimesheetFormBase(forms.ModelForm):
         widgets = {
             "date": forms.HiddenInput(),
             "time_helper": TimeNumberInput(
-                attrs={"readonly": "readonly", "class": "hide", "data-unit-price": 30},
+                attrs={
+                    "readonly": "readonly",
+                    "class": "hide",
+                    "data-unit-price": HOURLY_RATE_HELPER,
+                },
             ),
             "time_actor": NumberInput(
-                attrs={"readonly": "readonly", "class": "hide", "data-unit-price": 100},
+                attrs={
+                    "readonly": "readonly",
+                    "class": "hide",
+                    "data-unit-price": HOURLY_RATE_ACTOR,
+                },
             ),
             "overtime": TimeNumberInput(
                 attrs={
@@ -35,7 +45,7 @@ class TimesheetFormBase(forms.ModelForm):
                     "min": -10,
                     "max": 10,
                     "class": "hide",
-                    "data-unit-price": 30,
+                    "data-unit-price": HOURLY_RATE_HELPER,
                 }
             ),
             "traveltime": TimeNumberInput(
@@ -44,7 +54,7 @@ class TimesheetFormBase(forms.ModelForm):
                     "min": 0,
                     "max": 5,
                     "class": "hide",
-                    "data-unit-price": 30,
+                    "data-unit-price": HOURLY_RATE_HELPER,
                 }
             ),
             "comments": forms.Textarea(attrs={"rows": 3, "cols": 20}),

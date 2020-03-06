@@ -1,21 +1,32 @@
 from datetime import date
 
-from django.contrib.auth import get_user_model
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.dates import MONTHS_3
+from django.views.generic import RedirectView, TemplateView
 from django.views.generic.dates import MonthArchiveView
 from django.views.generic.edit import FormView
 
-from rolepermissions.mixins import HasPermissionsMixin
-
 from apps.challenge.models.session import Session
+from apps.common import DV_STATE_CHOICES
 from apps.salary.forms import ControlTimesheetFormSet, TimesheetFormSet
 from apps.salary.models import Timesheet
+from defivelo.roles import has_permission
+
+from . import timesheets_overview
 
 
-class MonthlyTimesheets(MonthArchiveView, FormView):
+class RedirectUserMonthlyTimesheets(RedirectView):
+    is_permanent = False
+
+    def get_redirect_url(self, *args, **kwargs):
+        kwargs["pk"] = self.request.user.pk
+        return reverse("salary:user-timesheets", kwargs=kwargs,)
+
+
+class UserMonthlyTimesheets(MonthArchiveView, FormView):
     date_field = "day"
     month_format = "%m"
     allow_empty = True
@@ -53,8 +64,27 @@ class MonthlyTimesheets(MonthArchiveView, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["menu_category"] = "timesheet"
-        context["nav_url"] = self.request.resolver_match.url_name
+        context["menu_category"] = ["timesheet"]
+        context["monitor_name"] = self.selected_user.get_full_name()
+        namespaces = self.request.resolver_match.namespaces
+        url_name = self.request.resolver_match.url_name
+        context["prev_url"] = reverse(
+            ":".join([*namespaces, url_name]),
+            kwargs={
+                "month": context["previous_month"].month,
+                "year": context["previous_month"].year,
+                "pk": self.selected_user.id,
+            },
+        )
+
+        context["next_url"] = reverse(
+            ":".join([*namespaces, url_name]),
+            kwargs={
+                "month": context["next_month"].month,
+                "year": context["next_month"].year,
+                "pk": self.selected_user.id,
+            },
+        )
         context["formset"] = context["form"]
         context["fields_grouped_by_field_name"] = (
             {
@@ -116,6 +146,7 @@ class MonthlyTimesheets(MonthArchiveView, FormView):
         return kwargs
 
     def get_success_url(self):
+        return reverse("salary:timesheets-overview", kwargs={"year": self.get_year()})
         return self.request.get_full_path()
 
     def form_valid(self, formset):
@@ -139,42 +170,50 @@ class MonthlyTimesheets(MonthArchiveView, FormView):
         )
         return self.render_to_response(context)
 
-
-class MyMonthlyTimesheets(MonthlyTimesheets):
-    form_class = TimesheetFormSet
-
     def dispatch(self, request, *args, **kwargs):
-        self.selected_user = request.user
-        return super().dispatch(request, *args, **kwargs)
-
-
-class UserMonthlyTimesheets(HasPermissionsMixin, MonthlyTimesheets):
-    form_class = ControlTimesheetFormSet
-    required_permission = "timesheet_editor"
-
-    def dispatch(self, request, *args, **kwargs):
-        self.selected_user = get_object_or_404(
-            get_user_model().objects, pk=self.kwargs["pk"]
+        self.selected_user = (
+            get_object_or_404(
+                timesheets_overview.get_visible_users(self.request.user),
+                pk=self.kwargs["pk"],
+            )
+            if self.kwargs["pk"]
+            else self.request.user
         )
         return super().dispatch(request, *args, **kwargs)
+
+    def get_form_class(self):
+        if has_permission(self.request.user, "timesheet_editor"):
+            return ControlTimesheetFormSet
+        else:
+            return TimesheetFormSet
+
+
+class YearlyTimesheets(TemplateView):
+    template_name = "salary/timesheets_yearly_overview.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["monitor_name"] = self.selected_user.get_full_name()
-        context["prev_url"] = reverse(
-            self.request.resolver_match.url_name,
-            kwargs={
-                "month": context["previous_month"].month,
-                "year": context["previous_month"].year,
-                "pk": self.selected_user.id,
-            },
+        context["menu_category"] = ["timesheet"]
+
+        year = self.kwargs["year"]
+        active_canton = self.request.GET.get("canton")
+
+        users = timesheets_overview.get_visible_users(self.request.user).order_by(
+            "first_name", "last_name"
         )
-        context["next_url"] = reverse(
-            self.request.resolver_match.url_name,
-            kwargs={
-                "month": context["next_month"].month,
-                "year": context["next_month"].year,
-                "pk": self.selected_user.id,
-            },
+        if active_canton:
+            users = users.filter(profile__affiliation_canton=active_canton)
+
+        context["months"] = MONTHS_3
+        context[
+            "timesheets_status_matrix"
+        ] = timesheets_overview.get_timesheets_status_matrix(year=year, users=users)
+        context[
+            "timesheets_amount"
+        ] = timesheets_overview.get_timesheets_amount_by_month(year=year, users=users)
+        context["cantons"] = DV_STATE_CHOICES
+        context["active_canton"] = (
+            dict(DV_STATE_CHOICES)[active_canton] if active_canton else None
         )
+
         return context
