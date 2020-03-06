@@ -16,11 +16,11 @@ from . import BONUS_LEADER, HOURLY_RATE_HELPER, RATE_ACTOR
 class TimesheetFormBase(forms.ModelForm):
     class Meta:
         model = Timesheet
-        readonly = ("date", "time_helper", "time_actor", "leader_count")
+        readonly = ("date", "time_helper", "actor_count", "leader_count")
         fields = [
             "date",
             "time_helper",
-            "time_actor",
+            "actor_count",
             "leader_count",
             "overtime",
             "traveltime",
@@ -35,7 +35,7 @@ class TimesheetFormBase(forms.ModelForm):
                     "data-unit-price": HOURLY_RATE_HELPER,
                 },
             ),
-            "time_actor": NumberInput(
+            "actor_count": NumberInput(
                 attrs={
                     "readonly": "readonly",
                     "class": "hide",

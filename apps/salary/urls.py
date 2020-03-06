@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.views.generic import RedirectView
 
 from apps.salary.views import (
+    ExportMonthlyTimesheets,
     RedirectUserMonthlyTimesheets,
     UserMonthlyTimesheets,
     YearlyTimesheets,
@@ -40,6 +41,11 @@ urlpatterns = [
                                 r"^$",
                                 RedirectUserMonthlyTimesheets.as_view(),
                                 name="my-timesheets",
+                            ),
+                            url(
+                                r"(?P<format>[a-z]+)-export$",
+                                ExportMonthlyTimesheets.as_view(),
+                                name="cresus-export",
                             ),
                             url(
                                 r"^(?P<pk>[0-9]+)/$",

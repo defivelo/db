@@ -15,6 +15,9 @@ class TimesheetStatus(enum.IntFlag):
     TIMESHEET_NOT_VALIDATED = 2
     TIMESHEET_VALIDATED = 4
 
+    def __str__(self):
+        return str(self.value)
+
 
 def get_timesheets_status_matrix(year, users):
     """
