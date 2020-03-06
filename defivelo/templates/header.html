@@ -71,8 +71,12 @@
                         </ul>
                     </a>
                 </li>
-                <li{% if 'timesheet' in menu_category  %} class="active"{% endif %}><a href="{% url 'my-timesheets' %}">{% trans "Heures" %}</a></li>
             {% endif %}
+            {% with now|date:'Y' as year %}
+              <li{% if 'timesheet' in menu_category  %} class="active" {% endif %}><a
+                  href="{% url 'salary:timesheets-overview' year=year %}">{% trans "Contrôle des heures" %}</a>
+                  </li>
+              {% endwith %}
             {% if user|can:'settings_crud' %}
                 <li{% if 'settings' in menu_category  %} class="active"{% endif %}>
                     <a href="{% url 'annualstatesettings-list' year=now.year %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Admin" %}<span class="caret"></span></a>
