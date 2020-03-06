@@ -21,12 +21,22 @@
 <form method="post">
   {% csrf_token %}
   {{ formset.management_form }}
+  {% for form in formset.forms %}
+    {% if form.non_field_errors %}
+    <div class='row form-group'>
+      <div class='{% firstof label_class "col-sm-4" %}'></div>
+      <div class='{% firstof field_class "col-sm-8" %} alert alert-warning'>
+        {{ form.non_field_errors }}
+      </div>
+    </div>
+    {% endif %}
+  {% endfor %}
   <table id="table-with-sum" class="table">
     <thead>
       <tr>
         <td></td>
         {% for form in formset.forms %}
-        <th align="center" class="text-center">
+        <th align="center" class="text-center{% if form.non_field_errors %} warning{% endif %}">
           {{ form.date.value }}
           {% for hidden in form.hidden_fields %}
           {{ hidden }}
@@ -38,7 +48,7 @@
     </thead>
 
     <tbody>
-      {% for label, fields in formsetrevert.items %}
+      {% for label, fields in fields_grouped_by_field_name.items %}
       <tr>
         <th>{{ label|capfirst }}</th>
         {% for field in fields %}
@@ -98,6 +108,8 @@
         const minutes = (Math.abs(value) - Math.abs(hours)) * 60 % 60;
         return (value < 0 ? "-" : "" ) + Math.abs(hours) + ":" + ("0" + minutes).slice(-2);
     };
+
+    $("table#table-with-sum input").change(function(e){ $("table#table-with-sum").change()})
     $("table#table-with-sum").change(function (e) {
       $('table#table-with-sum > thead > tr > th:not(:last)').each(function (index) {
         var total = 0;

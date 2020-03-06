@@ -2,7 +2,8 @@ from datetime import date
 
 from django.contrib.auth import get_user_model
 from django.db.models import Count, Q
-from django.urls import resolve, reverse
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.utils import timezone
 from django.views.generic.dates import MonthArchiveView
 from django.views.generic.edit import FormView
@@ -33,20 +34,20 @@ class MonthlyTimesheets(MonthArchiveView, FormView):
                 .filter(day__lte=timezone.now())
                 .annotate(
                     orga_count=Count("orga_id", distinct=True),
-                    monitor_count=Count(
+                    helper_count=Count(
                         "qualifications__pk",
                         filter=Q(qualifications__helpers=self.selected_user)
                         | Q(qualifications__leader=self.selected_user),
                         distinct=True,
                     ),
-                    intervenant_count=Count(
+                    actor_count=Count(
                         "qualifications__pk",
                         filter=Q(qualifications__actor=self.selected_user),
                         distinct=True,
                     ),
                 )
             )
-            .exclude(intervenant_count=0, monitor_count=0)
+            .exclude(actor_count=0, helper_count=0)
             .order_by("day")
         )
 
@@ -55,7 +56,7 @@ class MonthlyTimesheets(MonthArchiveView, FormView):
         context["menu_category"] = "timesheet"
         context["nav_url"] = self.request.resolver_match.url_name
         context["formset"] = context["form"]
-        context["formsetrevert"] = (
+        context["fields_grouped_by_field_name"] = (
             {
                 fieldname.label: [
                     form[fieldname.name] for form in context["form"].forms
@@ -66,7 +67,7 @@ class MonthlyTimesheets(MonthArchiveView, FormView):
             else {}
         )
         context["can_print"] = all(
-            form.initial["validate"] for form in context["form"].forms
+            form.initial["validated"] for form in context["form"].forms
         )
         context["in_the_future"] = date.today() < context["month"]
         context["is_current_month"] = date.today().replace(day=1) == context["month"]
@@ -80,24 +81,24 @@ class MonthlyTimesheets(MonthArchiveView, FormView):
 
     def get_initial(self):
         initial = []
+        timesheets = {
+            timesheet.date: timesheet
+            for timesheet in Timesheet.objects.filter(
+                date__in=[obj["day"] for obj in self.object_list],
+                user=self.selected_user,
+            )
+        }
         for session in self.object_list:
-            timesheet = Timesheet.objects.filter(
-                date=session["day"], user=self.selected_user
-            ).first()
-
+            timesheet = timesheets.get(session["day"])
             attributes = {
                 "user": self.selected_user,
                 "date": session["day"],
-                "time_monitor": session["monitor_count"] * 4.5
-                - (
-                    0.5
-                    if session["orga_count"] == 1 and session["monitor_count"] > 1
-                    else 0
-                ),
-                "time_actor": session["intervenant_count"],
+                "time_helper": session["helper_count"]
+                * (4 if session["orga_count"] == 1 else 4.5),
+                "time_actor": session["actor_count"],
                 "overtime": timesheet.overtime if timesheet else 0,
                 "traveltime": timesheet.traveltime if timesheet else 0,
-                "validate": bool(timesheet.validated_at) if timesheet else False,
+                "validated": bool(timesheet.validated_at) if timesheet else False,
                 "comments": timesheet.comments if timesheet else "",
             }
             initial.append(attributes)
@@ -143,17 +144,19 @@ class MyMonthlyTimesheets(MonthlyTimesheets):
 
 class UserMonthlyTimesheets(HasPermissionsMixin, MonthlyTimesheets):
     form_class = ControlTimesheetFormSet
-    required_permission = "orga_crud"
+    required_permission = "timesheet_editor"
 
     def dispatch(self, request, *args, **kwargs):
-        self.selected_user = get_user_model().objects.get(pk=self.kwargs["pk"])
+        self.selected_user = get_object_or_404(
+            get_user_model().objects, pk=self.kwargs["pk"]
+        )
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["monitor_name"] = self.selected_user.get_full_name()
         context["prev_url"] = reverse(
-            resolve(self.request.path).url_name,
+            self.request.resolver_match.url_name,
             kwargs={
                 "month": context["previous_month"].month,
                 "year": context["previous_month"].year,
@@ -161,7 +164,7 @@ class UserMonthlyTimesheets(HasPermissionsMixin, MonthlyTimesheets):
             },
         )
         context["next_url"] = reverse(
-            resolve(self.request.path).url_name,
+            self.request.resolver_match.url_name,
             kwargs={
                 "month": context["next_month"].month,
                 "year": context["next_month"].year,

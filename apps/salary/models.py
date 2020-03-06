@@ -9,8 +9,8 @@ class Timesheet(models.Model):
     )
     date = models.DateField(_("Date"), blank=True, null=True)
 
-    time_monitor = models.FloatField(_("Heure moniteur"), blank=True, null=True)
-    time_actor = models.FloatField(_("Heure intervenant"), blank=True, null=True)
+    time_helper = models.FloatField(_("Heure moniteur"), default=0)
+    time_actor = models.FloatField(_("Heure intervenant"), default=0)
 
     overtime = models.FloatField(_("Heure(s) supplémentaire(s)"), default=0)
     traveltime = models.FloatField(_("Heure(s) de trajet"), default=0)

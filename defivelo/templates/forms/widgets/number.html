@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
   $("#{{ widget.attrs.id }}").change(function (e) {
     const value = $(e.target).val();
     $("#{{ widget.attrs.id }}").prev(".table-responsive").find(".result").text(value);
-    $(e.target).parent("table").change();
   }).change();
   $("#{{ widget.attrs.id }}").prev(".table-responsive").find("a[data-decrement]").click(function (e) {
     e.preventDefault();
