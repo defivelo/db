@@ -97,7 +97,7 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
             else {}
         )
         context["can_print"] = all(
-            form.initial["validated"] for form in context["form"].forms
+            form.initial.get("validated") for form in context["form"].forms
         )
         context["in_the_future"] = date.today() < context["month"]
         context["is_current_month"] = date.today().replace(day=1) == context["month"]
@@ -147,7 +147,6 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
 
     def get_success_url(self):
         return reverse("salary:timesheets-overview", kwargs={"year": self.get_year()})
-        return self.request.get_full_path()
 
     def form_valid(self, formset):
         """If the form is valid, save the associated model."""
