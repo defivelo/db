@@ -3,6 +3,7 @@ from django.db.models import Q
 from django.forms import formset_factory
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from rolepermissions.checkers import has_role
 
 from apps.challenge.models.session import Session
 from apps.common.fields import CheckboxInput, NumberInput, TimeNumberInput
@@ -118,6 +119,13 @@ class ControlTimesheetForm(TimesheetFormBase):
 
     class Meta(TimesheetFormBase.Meta):
         fields = TimesheetFormBase.Meta.fields + ["validated"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.initial.get("validated") and has_role(self.validator, "power_user"):
+            for key in self.fields:
+                self.fields[key].widget.attrs["readonly"] = True
+                self.fields[key].disabled = True
 
     def clean(self):
         cleaned_data = super().clean()
