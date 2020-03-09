@@ -122,7 +122,7 @@ class ControlTimesheetForm(TimesheetFormBase):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.initial.get("validated") and has_role(self.validator, "power_user"):
+        if self.initial.get("validated") and not has_role(self.validator, "power_user"):
             for key in self.fields:
                 self.fields[key].widget.attrs["readonly"] = True
                 self.fields[key].disabled = True
