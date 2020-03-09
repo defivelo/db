@@ -3,6 +3,7 @@ from django.db.models import Q
 from django.forms import formset_factory
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+
 from rolepermissions.checkers import has_role
 
 from apps.challenge.models.session import Session
