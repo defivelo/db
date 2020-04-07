@@ -117,7 +117,6 @@ class Invoice(models.Model):
         except AnnualStateSetting.DoesNotExist:
             return AnnualStateSetting(cost_per_bike=0, cost_per_participant=0)
 
-    @cached_property
     def is_up_to_date(self):
         return all([l.is_up_to_date for l in self.lines.all()])
 
@@ -162,3 +161,16 @@ class InvoiceLine(models.Model):
             ) * getattr(self.invoice.settings, f"cost_per_{t}"):
                 return False
         return True
+
+    def refresh(self):
+        """
+        Align the invoiceline's attributes
+        """
+        self.nb_bikes = self.session.n_bikes
+        self.nb_participants = self.session.n_participants
+        self.cost_bikes = self.invoice.settings.cost_per_bike * self.session.n_bikes
+        self.cost_participants = (
+            self.invoice.settings.cost_per_participant * self.session.n_participants
+        )
+        # Clear the cache
+        del self.is_up_to_date

@@ -21,11 +21,20 @@ from django.urls import reverse
 from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient
 
 from ..models import Invoice
-from .factories import InvoiceFactory
+from .factories import InvoiceFactory, InvoiceLineFactory
 from .test_seasons import SeasonTestCaseMixin
 
 season_urls = ["invoice-orga-list"]
 invoice_list_urls = ["invoice-create", "invoice-list"]
+
+
+def test_invoiceline_out_of_date(db):
+    invoiceline = InvoiceLineFactory()
+    # Make sure it is not up-to-date
+    invoiceline.nb_bikes = invoiceline.session.n_bikes + 1
+    assert not invoiceline.is_up_to_date
+    invoiceline.refresh()
+    assert invoiceline.is_up_to_date
 
 
 class InvoiceTestCaseMixin(SeasonTestCaseMixin):
