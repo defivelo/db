@@ -101,7 +101,8 @@ class InvoiceDetailView(InvoiceMixin, DetailView):
         context["user_can_edit_invoice"] = user_can_edit_invoice(
             self.request.user, invoice
         )
-        context["refresh_form"] = InvoiceFormQuick(instance=invoice)
+        if not invoice.is_locked:
+            context["refresh_form"] = InvoiceFormQuick(instance=invoice)
         return context
 
 
