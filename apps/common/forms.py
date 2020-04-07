@@ -53,6 +53,20 @@ class SwissDateField(DateField):
         )
 
 
+class SwissTimeInput(DateTimePicker):
+    format = "HH:mm"
+
+    def __init__(self, attrs={}, *args, **kwargs):
+        attrs["placeholder"] = "HH:mm"
+        super().__init__(
+            attrs,
+            icon_attrs={"class": "glyphicon glyphicon-time"},
+            options={"format": "HH:mm", "stepping": 15},
+            *args,
+            **kwargs,
+        )
+
+
 class SwissTimeField(TimeField):
     """
     A date input field which uses the bootstrap widget for pickin a Date
@@ -60,13 +74,7 @@ class SwissTimeField(TimeField):
 
     def __init__(self, *args, **kwargs):
         super(TimeField, self).__init__(
-            widget=DateTimePicker(
-                {"placeholder": "HH:mm"},
-                icon_attrs={"class": "glyphicon glyphicon-time"},
-                options={"format": "HH:mm", "stepping": 15},
-            ),
-            *args,
-            **kwargs,
+            widget=SwissTimeInput, *args, **kwargs,
         )
 
 

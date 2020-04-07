@@ -108,9 +108,17 @@
                             <dt>{% trans "Lieu d'imposition" %}</dt>
                                 <dd>{{ userprofile.profile.tax_jurisdiction }}</dd>
                         {% endif %}
+                        {% if userprofile.profile.bank_name %}
+                            <dt>{% trans "Nom de la banque" %}</dt>
+                                <dd>{{ userprofile.profile.bank_name }}</dd>
+                        {% endif %}
                         {% if userprofile.profile.iban %}
                             <dt>{% trans "N° IBAN" %}</dt>
                                 <dd><tt>{{ userprofile.profile.iban_nice }}</tt></dd>
+                        {% endif %}
+                        {% if userprofile.profile.cresus_employee_number %}
+                            <dt>{% trans "N° d'employé Crésus" %}</dt>
+                                <dd><tt>{{ userprofile.profile.cresus_employee_number }}</tt></dd>
                         {% endif %}
                         {% if userprofile.profile.social_security %}
                             <dt>{% trans "N° AVS" %}</dt>

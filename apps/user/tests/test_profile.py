@@ -146,6 +146,7 @@ class AuthUserTest(ProfileTestCase):
         self.client.user.profile.bagstatus = BAGSTATUS_LOAN
         self.client.user.profile.status = USERSTATUS_ACTIVE
         self.client.user.profile.language = "fr"
+        self.client.user.profile.cresus_employee_number = "poor"
         self.client.user.profile.save()
         url = reverse("user-update", kwargs={"pk": self.client.user.pk})
         response = self.client.get(url)
@@ -165,11 +166,13 @@ class AuthUserTest(ProfileTestCase):
             "fr",
         ]
         initial["status"] = USERSTATUS_INACTIVE
+        initial["bank_name"] = "Banque Alternative Suisse, succursale de Lausanne"
 
         # And some that mustn't
         initial["formation"] = FORMATION_M2
         initial["affiliation_canton"] = "VD"
         initial["bagstatus"] = BAGSTATUS_PAID
+        initial["cresus_employee_number"] = "I want to be rich"
 
         response = self.client.post(url, initial)
         self.assertEqual(response.status_code, 302, url)
@@ -183,8 +186,12 @@ class AuthUserTest(ProfileTestCase):
         self.assertEqual(me.profile.language, "de")
         self.assertEqual(me.profile.languages_challenges, ["fr",])
         self.assertEqual(me.profile.status, USERSTATUS_INACTIVE)
+        self.assertEqual(
+            me.profile.bank_name, "Banque Alternative Suisse, succursale de Lausanne"
+        )
 
         # Not updated
+        self.assertEqual(me.profile.cresus_employee_number, "poor")
         self.assertEqual(me.profile.formation, FORMATION_M1)
         self.assertEqual(me.profile.bagstatus, BAGSTATUS_LOAN)
         self.assertEqual(me.profile.affiliation_canton, "GE")
@@ -269,6 +276,7 @@ class PowerUserTest(ProfileTestCase):
         for user in self.users:
             # Pre-update profile and user
             user.profile.formation = FORMATION_M1
+            user.profile.cresus_employee_number = "rich"
             user.profile.save()
             url = reverse("user-update", kwargs={"pk": user.pk})
             response = self.client.get(url)
@@ -282,8 +290,7 @@ class PowerUserTest(ProfileTestCase):
                 "VD",
                 "GE",
             ]
-
-            # And some that mustn't
+            initial["cresus_employee_number"] = "poor"
             initial["formation"] = FORMATION_M2
             initial["affiliation_canton"] = "VD"
 
@@ -301,6 +308,7 @@ class PowerUserTest(ProfileTestCase):
             # Updated as well
             self.assertEqual(her.profile.formation, FORMATION_M2)
             self.assertEqual(her.profile.affiliation_canton, "VD")
+            self.assertEqual(her.profile.cresus_employee_number, "poor")
 
     def test_roleassign(self):
         # Can't change my own role
@@ -376,6 +384,7 @@ class StateManagerUserTest(ProfileTestCase):
         OTHERSTATES = [c for c in DV_STATES if c != mycanton]
         for user in self.users:
             user.profile.affiliation_canton = OTHERSTATES[0]
+            user.profile.cresus_employee_number = "poor"
             user.profile.save()
 
         self.users[0].profile.affiliation_canton = mycanton
@@ -427,8 +436,11 @@ class StateManagerUserTest(ProfileTestCase):
         newuser = get_user_model().objects.get(pk=self.myuser.pk)
         self.assertEqual(newuser.profile.address_no, "24")
 
-        # Test some update, that must go through
+        # Test modifying the affiliation canton _away_
         initial["affiliation_canton"] = self.foreignuser.profile.affiliation_canton
+        # And modifying settings only accessible to Bureau
+        initial["cresus_employee_number"] = "rich"
+        initial["comments"] = "Nasty comment"
 
         response = self.client.post(url, initial)
         # Code 200 because update failed
@@ -438,12 +450,24 @@ class StateManagerUserTest(ProfileTestCase):
         self.assertEqual(
             newuser.profile.affiliation_canton, self.myuser.profile.affiliation_canton
         )
+        self.assertEqual(newuser.profile.cresus_employee_number, "poor")
+        self.assertEqual(newuser.profile.comments, "")
 
         # The other user cannot be accessed
         response = self.client.get(
             reverse("user-update", kwargs={"pk": self.foreignuser.pk})
         )
         self.assertEqual(response.status_code, 403)
+
+    def test_cannot_update_cresus_number(self):
+        url = reverse("user-update", kwargs={"pk": self.myuser.pk})
+        initial = self.getprofileinitial(self.myuser)
+        initial["cresus_employee_number"] = "rich"
+
+        self.client.post(url, initial)
+
+        self.myuser.profile.refresh_from_db()
+        self.assertEqual(self.myuser.profile.cresus_employee_number, "poor")
 
     def test_autocompletes(self):
         for al in ["AllPersons"]:

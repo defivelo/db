@@ -43,6 +43,7 @@ urlpatterns += i18n_patterns(
     url(r"^orga/", include("apps.orga.urls")),
     url(r"^user/", include("apps.user.urls")),
     url(r"^info/", include("apps.info.urls")),
+    url(r"^salary/", include("apps.salary.urls")),
 )
 
 if settings.DEBUG:

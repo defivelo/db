@@ -66,10 +66,12 @@ class SeasonTestCaseMixin(TestCase):
         self.season.save()
 
         self.sessions = []
+        self.canton_orgas = []
         for canton in self.season.cantons:
             s = SessionFactory()
             s.orga.address_canton = canton
             s.orga.save()
+            self.canton_orgas.append(s.orga)
             s.day = self.season.begin
             s.save()
             for i in range(0, 4):

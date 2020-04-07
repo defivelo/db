@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load i18n bootstrap3 dv_filters %}
+{% block body_class %}dv-invoice{% endblock %}
+{% block head_title %}{% blocktrans with ref=invoice.ref %}Facture {{ref}}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+
+<div class="invoice-address-from">
+  <strong>{% trans "Coordination DÉFI VÉLO" %}</strong></br>
+  {% trans "c/o Label Vert sàrl" %}</br>
+  {% trans "Rue Sébeillon 9a" %}</br>
+  {% trans "1004 Lausanne" %}
+</div>
+
+<div class="invoice-address-to">
+  <strong>{{ invoice.organization.name }}</strong></br>
+  {{ invoice.organization.address_street }} {{ invoice.organization.address_no }}</br>
+  {% if invoice.organization.address_additional %}{{ invoice.organization.address_additional }}</br>{% endif %}
+  {{ invoice.organization.address_zip }} {{ invoice.organization.address_city }}</br>
+</div>
+
+<div class="hidden-print invoice-status">
+    <dl>
+        <dt>{% trans "Statut" %}</dt>
+        <dd>
+            {{ invoice.get_status_display }}
+            {% if invoice.is_locked %}<br />{% include 'export_buttons.html' with printonly=True %}{% endif %}
+        </dd>
+    </dl>
+    {% if user_can_edit_invoice %}
+        <div>
+            <a class="btn btn-{% if invoice.is_locked %}danger{% else %}primary{% endif %}" href="{% url 'invoice-update' seasonpk=invoice.season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">{% trans "Éditer" %}</a>
+        </div>
+    {% endif %}
+</div>
+
+<div class="invoice-date">
+  {% now "DATE_FORMAT" as date %}
+  {% blocktrans %}Lausanne, le {{ date }}{% endblocktrans %}
+</div>
+
+<h4 class="invoice-title">{{ invoice.ref }}{% if invoice.title %}: {{ invoice.title }}{% endif %}</h4>
+
+<div class="invoice-header-text">
+  {% blocktrans with nb_participants=invoice.sum_nb_participants %}{{ nb_participants }} étudiant-e-s de votre établissement vont participer à « DÉFI VÉLO », compétition inter-cantonale pour la promotion du vélo. Par la participation de votre établissement, vous contribuez au succès d’un projet innovant de promotion du vélo, de l’activité physique et de la sécurité routière, qui place le plaisir et l’apprentissage par l’action au premier plan. DÉFI VÉLO est largement reconnu pour ces qualités: il est notamment soutenu par Promotion Santé Suisse, le Fonds suisse de sécurité routière et la commune de Sierre.{% endblocktrans %}
+</div>
+
+{% if invoice.lines %}
+<table class="table invoice-table">
+    <thead>
+        <tr>
+            <th scope="col">{% trans "Sessions" %}</th>
+            <th scope="col" colspan="2">{% trans "Participants" %}</th>
+            <th scope="col" colspan="2">{% trans "Vélos" %}</th>
+            <th scope="col">{% trans "Total" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for line in invoice.lines.all %}
+        <tr>
+            <td class="text-left">{{ line.session.day }}{% if line.session.begin %} - {{ line.session.begin }}{% endif %}</td>
+            <td>{{ line.nb_participants }}</td>
+            <td>{{ line.cost_participants }}</td>
+            <td>{{ line.nb_bikes }}</td>
+            <td>{{ line.cost_bikes }}</td>
+            <td>{{ line.cost }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+
+    <tfoot>
+        <tr>
+            <td></td>
+            <td>{{ invoice.sum_nb_participants }}</td>
+            <th>{{ invoice.sum_cost_participants }}</th>
+            <td>{{ invoice.sum_nb_bikes }}</td>
+            <th>{{ invoice.sum_cost_bikes }}</th>
+            <th class="invoice-total">{{ invoice.sum_cost }}</th>
+        </tr>
+    </tfoot>
+</table>
+{% endif %}
+
+<div class="invoice-footer-text">
+  {% blocktrans with ref=invoice.ref %}Paiement à 30 jours sur le compte de notre mandataire, avec la mention « DÉFI VÉLO {{ref}} »{% endblocktrans %}
+</div>
+
+<div class="invoice-bank-details">
+  {% trans "IBAN" %}: <tt>{% trans "CH41 0079 0016 9412 2759 3" %}</tt></br>
+  {% trans "PRO VELO SCHWEIZ" %}</br>
+  {% trans "Birkenweg 61" %}</br>
+  {% trans "3001" %} {% trans "Berne" %}
+</div>
+<div class="invoice-bank-details">
+  {% trans "Banque Cantonale Bernoise SA" %}</br>
+  {% trans "3000" %} {% trans "Berne" %}</br>
+  {% trans "CCP" %}: <tt>{% trans "30-106-9 " %}</tt>
+</div>
+
+
+<div class="invoice-footer-closing">
+  {% trans "Avec nos remerciements," %}</br></br>
+  {% trans "DÉFI VÉLO" %}
+</div>
+{% endblock %}

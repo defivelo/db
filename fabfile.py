@@ -36,7 +36,7 @@ ENVIRONMENTS = {
         "ini": "/etc/uwsgi/apps-enabled/staging.intranet.defi-velo.ch.ini",
         "settings": {
             "ALLOWED_HOSTS": "\n".join(
-                ["staging.intranet.defi-velo.ch", "defivelo.test.odyx.org"]
+                ["staging.intranet.defi-velo.ch"]
             ),
             "MEDIA_URL": "/media/",
             "STATIC_URL": "/static/",
@@ -330,6 +330,7 @@ def fetch_db(c, destination="."):
 
 
 @task
+@remote
 def import_db(c, dump_file=None):
     """
     Restore the given database dump.
@@ -378,6 +379,7 @@ def deploy(c):
     dj_collect_static(c)
     django_compress(c)
     dj_migrate_database(c)
+    compile_messages(c)
     restart_uwsgi(c)
     c.conn.clean_old_database_backups(nb_backups_to_keep=10)
 
@@ -422,6 +424,12 @@ def push_code_update(c, git_ref):
     with c.conn.cd(c.conn.project_root):
         c.conn.git("checkout -f -B master FABHEAD", hide=True)
         c.conn.git("branch -d FABHEAD", hide=True)
+        # Force using an absolute URL for locale submodule since the relative one would fail
+        # (this uses a deploy key generated on the server)
+        c.conn.git(
+            "config submodule.locale.url git@gitlab.liip.ch:swing/defivelo/intranet-i18n.git",
+            hide=True,
+        )
         c.conn.git("submodule update --init", hide=True)
 
         vcs_commit = subprocess.run(
@@ -507,7 +515,7 @@ def restart_uwsgi(c):
     """
     Restart uWSGI processes
     """
-    c.conn.run(f"uwsgi --ini '{c.conn.config.ini}'")
+    c.conn.run(f"uwsgi --reload '{c.conn.config.pid}'")
 
 
 @task

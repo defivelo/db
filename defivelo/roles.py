@@ -56,7 +56,10 @@ class StateManager(AbstractUserRole):
         "orga_crud": True,
         "challenge_season_crud": True,
         "challenge_session_crud": True,
+        "challenge_invoice_cru": True,
+        "challenge_invoice_reset_to_draft": False,
         "challenge_season_see_state_planning": True,
+        "timesheet_editor": True,
     }
 
 
@@ -70,6 +73,7 @@ class PowerUser(AbstractUserRole):
         "user_create": True,
         "user_crud_dv_public_fields": True,
         "user_crud_dv_private_fields": True,
+        "user_edit_cresus_employee_number": True,
         "user_can_send_credentials": True,
         "user_can_resend_credentials": True,
         "user_deletions": True,
@@ -77,14 +81,18 @@ class PowerUser(AbstractUserRole):
         "user_mark_inactive": True,
         "home_article_crud": True,
         "orga_crud": True,
-        "challenge_season_crud": True,
+        "challenge_invoice_cru": True,
+        "challenge_invoice_reset_to_draft": True,
         "challenge_session_crud": True,
+        "challenge_season_crud": True,
         "challenge_season_see_state_planning": True,
+        "settings_crud": True,
+        "timesheet_editor": True,
     }
 
 
 DV_AVAILABLE_ROLES = (
     (None, _("Aucun rôle")),
     ("state_manager", _("Chargé·e de projet")),
-    ("power_user", _("Super-utilisa·teur·trice")),
+    ("power_user", _("Super-utilisa·teur·trice")),  # Bureau
 )

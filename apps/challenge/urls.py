@@ -17,13 +17,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from django.conf.urls import url
+from django.conf.urls import include, url
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from django.views.generic.base import RedirectView
 
 from .views import (
+    AnnualStateSettingCreateView,
+    AnnualStateSettingsListView,
+    AnnualStateSettingUpdateView,
+    InvoiceCreateView,
+    InvoiceDetailView,
+    InvoiceListView,
+    InvoiceUpdateView,
+    InvoiceYearlyListView,
     QualiCreateView,
     QualiDeleteView,
     QualiUpdateView,
@@ -37,6 +45,7 @@ from .views import (
     SeasonExportView,
     SeasonHelperListView,
     SeasonListView,
+    SeasonOrgaListView,
     SeasonPlanningExportView,
     SeasonStaffChoiceUpdateView,
     SeasonUpdateView,
@@ -50,6 +59,29 @@ from .views import (
 )
 
 urlpatterns = [
+    # Settings
+    url(
+        "^settings/y(?P<year>[0-9]{4})/",
+        include(
+            [
+                url(
+                    r"^(?P<pk>[0-9]+)/$",
+                    never_cache(AnnualStateSettingUpdateView.as_view()),
+                    name="annualstatesetting-update",
+                ),
+                url(
+                    "^new/$",
+                    never_cache(AnnualStateSettingCreateView.as_view()),
+                    name="annualstatesetting-create",
+                ),
+                url(
+                    "^$",
+                    never_cache(AnnualStateSettingsListView.as_view()),
+                    name="annualstatesettings-list",
+                ),
+            ]
+        ),
+    ),
     # Seasons
     url(
         r"^$",
@@ -60,9 +92,17 @@ urlpatterns = [
         name="season-list",
     ),
     url(
-        r"^y(?P<year>[0-9]{4})/$",
-        never_cache(SeasonListView.as_view()),
-        name="season-list",
+        r"^y(?P<year>[0-9]{4})/",
+        include(
+            [
+                url(
+                    r"^invoices/$",
+                    never_cache(InvoiceYearlyListView.as_view()),
+                    name="invoices-yearly-list",
+                ),
+                url(r"^$", never_cache(SeasonListView.as_view()), name="season-list"),
+            ]
+        ),
     ),
     url(r"^new/$", SeasonCreateView.as_view(), name="season-create"),
     url(r"^(?P<pk>[0-9]+)/update/$", SeasonUpdateView.as_view(), name="season-update"),
@@ -112,6 +152,46 @@ urlpatterns = [
         name="season-availabilities-update",
     ),
     url(r"^(?P<pk>[0-9]+)/delete/$", SeasonDeleteView.as_view(), name="season-delete"),
+    # Invoices
+    url(
+        r"^(?P<seasonpk>[0-9]+)/",
+        include(
+            [
+                url(
+                    "invoices/",
+                    never_cache(SeasonOrgaListView.as_view()),
+                    name="invoice-orga-list",
+                ),
+                url(
+                    r"i(?P<orgapk>[0-9]+)/",
+                    include(
+                        [
+                            url(
+                                r"^new/$",
+                                never_cache(InvoiceCreateView.as_view()),
+                                name="invoice-create",
+                            ),
+                            url(
+                                r"^list/$",
+                                never_cache(InvoiceListView.as_view()),
+                                name="invoice-list",
+                            ),
+                            url(
+                                r"^(?P<invoiceref>.+)/edit/$",
+                                never_cache(InvoiceUpdateView.as_view()),
+                                name="invoice-update",
+                            ),
+                            url(
+                                r"^(?P<invoiceref>.+)/$",
+                                never_cache(InvoiceDetailView.as_view()),
+                                name="invoice-detail",
+                            ),
+                        ]
+                    ),
+                ),
+            ]
+        ),
+    ),
     # Sessions
     url(
         r"^(?P<seasonpk>[0-9]+)/(?P<year>[0-9]{4})/w(?P<week>[0-9]+)/$",

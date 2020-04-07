@@ -10,3 +10,7 @@
 	path = ext/moment
 	url = https://github.com/moment/moment.git
 	branch = master
+[submodule "locale"]
+	path = locale
+	url = ../intranet-i18n.git
+	branch = master
