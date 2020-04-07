@@ -22,7 +22,10 @@
 <div class="hidden-print invoice-status">
     <dl>
         <dt>{% trans "Statut" %}</dt>
-        <dd>{{ invoice.get_status_display }}</dd>
+        <dd>
+            {{ invoice.get_status_display }}
+            {% if invoice.is_locked %}<br />{% include 'export_buttons.html' with printonly=True %}{% endif %}
+        </dd>
     </dl>
     {% if user_can_edit_invoice %}
         <div>
