@@ -28,18 +28,19 @@
         </dd>
     </dl>
     {% if user_can_edit_invoice %}
-        <div>
-            <a class="btn btn-{% if invoice.is_locked %}danger{% else %}primary{% endif %}" href="{% url 'invoice-update' seasonpk=invoice.season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">{% trans "Éditer" %}</a>
-        </div>
         {% if refresh_form %}
+          <strong>{% trans "La facture n'est pas à jour."%}</strong>
           <form method="POST" action="{% url 'invoice-update' seasonpk=invoice.season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">
             {% csrf_token %}
             {{ refresh_form }}
             {% buttons %}
-                <button type="submit" class="btn btn-secondary pull-right">{% trans "Rafraîchir" %}</button>
+                <button type="submit" class="btn btn-primary">{% trans "Rafraîchir" %}</button>
             {% endbuttons %}
           </form>
         {% endif %}
+        <div>
+            <a class="btn btn-{% if invoice.is_locked %}danger{% else %}primary{% endif %}" href="{% url 'invoice-update' seasonpk=invoice.season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">{% trans "Éditer" %}</a>
+        </div>
     {% endif %}
 </div>
 

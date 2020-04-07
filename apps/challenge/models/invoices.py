@@ -23,6 +23,7 @@ from django.db import models
 from django.db.models import F, Sum
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 
@@ -30,6 +31,7 @@ from apps.orga.models import Organization
 
 from .season import Season
 from .session import Session
+from .settings import AnnualStateSetting
 
 
 class Invoice(models.Model):
@@ -106,6 +108,19 @@ class Invoice(models.Model):
             css_class = "success"  # Green
         return css_class
 
+    @cached_property
+    def settings(self):
+        try:
+            return AnnualStateSetting.objects.get(
+                canton=self.organization.address_canton, year=self.season.year,
+            )
+        except AnnualStateSetting.DoesNotExist:
+            return AnnualStateSetting(cost_per_bike=0, cost_per_participant=0)
+
+    @cached_property
+    def is_up_to_date(self):
+        return all([l.is_up_to_date for l in self.lines.all()])
+
 
 class InvoiceLine(models.Model):
     session = models.ForeignKey(Session, on_delete=models.PROTECT)
@@ -127,5 +142,23 @@ class InvoiceLine(models.Model):
             f"{self.invoice.ref}: {self.session} - Vélos: {self.nb_bikes} ({self.cost_bikes} CHF) - Participants: {self.nb_participants} ({self.cost_participants} CHF)"
         )
 
+    @property
     def cost(self):
         return self.cost_bikes + self.cost_participants
+
+    @cached_property
+    def is_up_to_date(self):
+        """
+        Check if that invoice line is up-to-date (! costly)
+        The settings is a cache, to avoid obtaining it repeatedly
+        """
+        for t in ["bike", "participant"]:
+            # Check if the nb_* is identical
+            if getattr(self, f"nb_{t}s") != getattr(self.session, f"n_{t}s"):
+                return False
+            # Check if the calculated cost is identical
+            if getattr(self, f"cost_{t}s") != getattr(
+                self.session, f"n_{t}s"
+            ) * getattr(self.invoice.settings, f"cost_per_{t}"):
+                return False
+        return True
