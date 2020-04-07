@@ -64,6 +64,7 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["year"] = self.get_year()
         context["menu_category"] = ["timesheet"]
         context["monitor_name"] = self.selected_user.get_full_name()
         namespaces = self.request.resolver_match.namespaces

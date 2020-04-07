@@ -92,7 +92,7 @@
     {% endif %}
     <button type="submit" class="btn btn-primary">{% trans "Enregistrer" %}</button>
   </div>
-  <a class="btn btn-default hidden-print" href="{% url 'home' %}">{% trans "Annuler" %}</a>
+  <a class="btn btn-default hidden-print" href="{% url 'salary:timesheets-overview' year %}">{% trans "Annuler" %}</a>
   {% endbuttons %}
 </form>
 {% else %}
