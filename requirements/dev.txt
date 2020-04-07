@@ -11,7 +11,7 @@ attrs==19.3.0             # via black, pytest
 babel==2.7.0              # via django-phonenumber-field
 backcall==0.1.0           # via ipython
 bcrypt==3.1.7             # via paramiko
-black==19.10b0            # via -r requirements/test.in (line 5), flake8-black
+black==19.10b0            # via -r test.in, flake8-black
 certifi==2019.11.28       # via dulwich, requests, sentry-sdk
 cffi==1.13.2              # via bcrypt, cryptography, pynacl
 chardet==3.0.4            # via requests
@@ -21,52 +21,51 @@ cryptography==2.8         # via paramiko
 decorator==4.4.1          # via ipython, traitlets
 defusedxml==0.6.0         # via odfpy, python3-openid
 diff-match-patch==20181111  # via django-import-export
-dj-database-url==0.5.0    # via -r requirements/base.in (line 1)
-django-agpl==4.0.0        # via -r requirements/base.in (line 22)
-django-allauth==0.41.0    # via -r requirements/base.in (line 10)
+dj-database-url==0.5.0    # via -r base.in
+django-agpl==4.0.0        # via -r base.in
+django-allauth==0.41.0    # via -r base.in
 django-appconf==1.0.3     # via django-compressor
-django-bootstrap3-datetimepicker-2==2.8.2  # via -r requirements/base.in (line 14)
-django-bootstrap3==12.0.1  # via -r requirements/base.in (line 4)
-django-compressor==2.4    # via -r requirements/base.in (line 6)
-django-countries==5.5     # via -r requirements/base.in (line 29)
-django-debug-toolbar==2.1  # via -r requirements/dev.in (line 4)
+django-bootstrap3-datetimepicker-2==2.8.2  # via -r base.in
+django-bootstrap3==12.0.1  # via -r base.in
+django-compressor==2.4    # via -r base.in
+django-countries==5.5     # via -r base.in
+django-debug-toolbar==2.1  # via -r dev.in
 django-discover-runner==1.0  # via django-role-permissions
-django-extensions==2.2.5  # via -r requirements/dev.in (line 5)
-django-filter==2.2.0      # via -r requirements/base.in (line 20)
-django-import-export==2.0  # via -r requirements/base.in (line 21)
-django-localflavor==2.2   # via -r requirements/base.in (line 11)
-django-memoize==2.2.1     # via -r requirements/base.in (line 28)
-django-multiselectfield==0.1.11  # via -r requirements/base.in (line 19)
-django-parler==2.0        # via -r requirements/base.in (line 18)
-django-phonenumber-field==4.0.0  # via -r requirements/base.in (line 12)
-django-role-permissions==2.2.1  # via -r requirements/base.in (line 26)
-django-simple-history==2.8.0  # via -r requirements/base.in (line 30)
-django-taggit==1.2.0      # via -r requirements/base.in (line 24)
-django-tinymce==2.8.0     # via -r requirements/base.in (line 27)
-django==2.2.9             # via -r requirements/base.in (line 2), django-agpl, django-allauth, django-appconf, django-debug-toolbar, django-filter, django-import-export, django-localflavor, django-memoize, django-multiselectfield, django-phonenumber-field, django-role-permissions, django-taggit
-dulwich==0.19.14          # via -r requirements/dev.in (line 10)
+django-extensions==2.2.5  # via -r dev.in
+django-filter==2.2.0      # via -r base.in
+django-import-export==2.0  # via -r base.in
+django-localflavor==2.2   # via -r base.in
+django-memoize==2.2.1     # via -r base.in
+django-multiselectfield==0.1.11  # via -r base.in
+django-parler==2.0        # via -r base.in
+django-phonenumber-field==4.0.0  # via -r base.in
+django-role-permissions==2.2.1  # via -r base.in
+django-simple-history==2.8.0  # via -r base.in
+django-taggit==1.2.0      # via -r base.in
+django-tinymce==2.8.0     # via -r base.in
+django==2.2.10            # via -r base.in, django-agpl, django-allauth, django-appconf, django-debug-toolbar, django-filter, django-import-export, django-localflavor, django-memoize, django-multiselectfield, django-phonenumber-field, django-role-permissions, django-taggit
+dulwich==0.19.14          # via -r dev.in
 entrypoints==0.3          # via flake8
 et-xmlfile==1.0.1         # via openpyxl
-fabric==2.5.0             # via -r requirements/dev.in (line 9)
-factory-boy==2.12.0       # via -r requirements/test.in (line 9)
+fabric==2.5.0             # via -r dev.in
+factory-boy==2.12.0       # via -r test.in
 faker==3.0.0              # via factory-boy
 filelock==3.0.12          # via tox
-flake8-black==0.1.1       # via -r requirements/test.in (line 7)
-flake8-isort==2.8.0       # via -r requirements/test.in (line 8)
-flake8==3.7.9             # via -r requirements/test.in (line 6), flake8-black, flake8-isort
+flake8-black==0.1.1       # via -r test.in
+flake8-isort==2.8.0       # via -r test.in
+flake8==3.7.9             # via -r test.in, flake8-black, flake8-isort
 idna==2.8                 # via requests
-importlib-metadata==1.3.0  # via pluggy, pytest, tox
 invoke==1.3.0             # via fabric
-ipdb==0.12.3              # via -r requirements/test.in (line 10)
+ipdb==0.12.3              # via -r test.in
 ipython-genutils==0.2.0   # via traitlets
 ipython==7.10.2           # via ipdb
 isort[pyproject]==4.3.21  # via flake8-isort
 jdcal==1.4.1              # via openpyxl
 jedi==0.15.1              # via ipython
-libsass==0.19.4           # via -r requirements/base.in (line 7)
+libsass==0.19.4           # via -r base.in
 markuppy==1.14            # via tablib
 mccabe==0.6.1             # via flake8
-more-itertools==8.0.2     # via pytest, zipp
+more-itertools==8.0.2     # via pytest
 oauthlib==3.1.0           # via requests-oauthlib
 odfpy==1.4.0              # via tablib
 openpyxl==3.0.2           # via tablib
@@ -75,13 +74,13 @@ paramiko==2.7.1           # via fabric
 parso==0.5.2              # via jedi
 pathspec==0.6.0           # via black
 pexpect==4.7.0            # via ipython
-phonenumbers==8.11.1      # via -r requirements/base.in (line 13)
+phonenumbers==8.11.1      # via -r base.in
 pickleshare==0.7.5        # via ipython
-pillow==6.2.1             # via -r requirements/base.in (line 25)
-pip-tools==4.5.0          # via -r requirements/dev.in (line 3)
+pillow==6.2.1             # via -r base.in
+pip-tools==4.5.0          # via -r dev.in
 pluggy==0.13.1            # via pytest, tox
 prompt-toolkit==3.0.2     # via ipython
-psycopg2-binary==2.8.4    # via -r requirements/base.in (line 5)
+psycopg2-binary==2.8.4    # via -r base.in
 ptyprocess==0.6.0         # via pexpect
 py==1.8.0                 # via pytest, tox
 pycodestyle==2.5.0        # via flake8
@@ -90,36 +89,35 @@ pyflakes==2.1.1           # via flake8
 pygments==2.5.2           # via ipython
 pynacl==1.3.0             # via paramiko
 pyparsing==2.4.5          # via packaging
-pytest-cov==2.8.1         # via -r requirements/test.in (line 4)
-pytest-django==3.7.0      # via -r requirements/test.in (line 3)
-pytest==5.3.2             # via -r requirements/test.in (line 2), pytest-cov, pytest-django
+pytest-cov==2.8.1         # via -r test.in
+pytest-django==3.7.0      # via -r test.in
+pytest==5.3.2             # via -r test.in, pytest-cov, pytest-django
 python-dateutil==2.8.1    # via faker
 python-stdnum==1.12       # via django-localflavor
 python3-openid==3.1.0     # via django-allauth
-pytz==2019.3              # via -r requirements/base.in (line 3), babel, django
+pytz==2019.3              # via -r base.in, babel, django
 pyyaml==5.2               # via tablib
 rcssmin==1.0.6            # via django-compressor
 regex==2019.12.19         # via black
 requests-oauthlib==1.3.0  # via django-allauth
 requests==2.22.0          # via django-allauth, requests-oauthlib
 rjsmin==1.1.0             # via django-compressor
-sentry-sdk==0.13.5        # via -r requirements/base.in (line 31)
-six==1.13.0               # via -r requirements/base.in (line 32), bcrypt, cryptography, django-appconf, django-autocomplete-light, django-compressor, django-countries, django-extensions, django-role-permissions, django-simple-history, faker, libsass, packaging, pip-tools, pynacl, python-dateutil, tox, traitlets
+sentry-sdk==0.13.5        # via -r base.in
+six==1.13.0               # via -r base.in, bcrypt, cryptography, django-appconf, django-autocomplete-light, django-compressor, django-countries, django-extensions, django-role-permissions, django-simple-history, faker, libsass, packaging, pip-tools, pynacl, python-dateutil, tox, traitlets
 sqlparse==0.3.0           # via django, django-debug-toolbar
-tablib==0.14.0            # via -r requirements/base.in (line 23), django-import-export
+tablib==0.14.0            # via -r base.in, django-import-export
 testfixtures==6.10.3      # via flake8-isort
 text-unidecode==1.3       # via faker
 toml==0.10.0              # via black, isort, tox
-tox==3.14.2               # via -r requirements/dev.in (line 2)
+tox==3.14.2               # via -r dev.in
 traitlets==4.3.3          # via ipython
 typed-ast==1.4.0          # via black
 urllib3==1.25.7           # via dulwich, requests, sentry-sdk
 virtualenv==16.7.9        # via tox
 wcwidth==0.1.7            # via prompt-toolkit, pytest
-werkzeug==0.16.0          # via -r requirements/dev.in (line 6)
+werkzeug==0.16.0          # via -r dev.in
 xlrd==1.2.0               # via tablib
 xlwt==1.3.0               # via tablib
-zipp==0.6.0               # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
