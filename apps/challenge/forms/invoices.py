@@ -26,7 +26,7 @@ from apps.challenge.models import AnnualStateSetting, Season, Session
 from ..models import Invoice, InvoiceLine
 
 
-class InvoiceForm(forms.ModelForm):
+class InvoiceFormMixin(forms.ModelForm):
     sessions = forms.ModelMultipleChoiceField(queryset=Session.objects.none())
 
     class Meta:
@@ -37,21 +37,6 @@ class InvoiceForm(forms.ModelForm):
             "organization",
             "season",
         ]
-
-    def __init__(self, organization, season, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        sessions = season.sessions.filter(orga=organization)
-        self.fields["sessions"].queryset = sessions
-        self.fields["sessions"].initial = sessions
-
-        for f in ["organization", "season", "sessions"]:
-            self.fields[f].disabled = True
-
-        #  Reduce the number of convoluted queries. We know we want this one only.
-        self.fields["season"].queryset = Season.objects.filter(pk=season.pk)
-
-        # Circumvent weird bug due to the 'season' object being weird
-        self.fields["season"].to_python = lambda x: x
 
     @transaction.atomic
     def save(self, commit=True):
@@ -120,3 +105,27 @@ class InvoiceForm(forms.ModelForm):
                     },
                 )
         return invoice
+
+
+class InvoiceForm(InvoiceFormMixin):
+    def __init__(self, organization, season, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        sessions = season.sessions.filter(orga=organization)
+        self.fields["sessions"].queryset = sessions
+        self.fields["sessions"].initial = sessions
+
+        for f in ["organization", "season", "sessions"]:
+            self.fields[f].disabled = True
+
+        #  Reduce the number of convoluted queries. We know we want this one only.
+        self.fields["season"].queryset = Season.objects.filter(pk=season.pk)
+
+        # Circumvent weird bug due to the 'season' object being weird
+        self.fields["season"].to_python = lambda x: x
+
+
+class InvoiceFormQuick(InvoiceFormMixin):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget = forms.HiddenInput()

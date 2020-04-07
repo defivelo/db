@@ -31,6 +31,13 @@
         <div>
             <a class="btn btn-{% if invoice.is_locked %}danger{% else %}primary{% endif %}" href="{% url 'invoice-update' seasonpk=invoice.season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">{% trans "Éditer" %}</a>
         </div>
+        <form method="POST" action="{% url 'invoice-update' seasonpk=invoice.season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">
+          {% csrf_token %}
+          {{ refresh_form }}
+          {% buttons %}
+              <button type="submit" class="btn btn-secondary pull-right">{% trans "Rafraîchir" %}</button>
+          {% endbuttons %}
+        </form>
     {% endif %}
 </div>
 
