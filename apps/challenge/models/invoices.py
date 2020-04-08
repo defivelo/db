@@ -153,7 +153,18 @@ class InvoiceLine(models.Model):
         return self.cost_bikes + self.cost_participants
 
     def most_recent_historical_session(self):
-        return self.historical_session.instance.history.latest("history_date")
+        """
+        Provide a shortcut to getting the latest historical copy of the session
+        """
+        return self.session.history.latest("history_date")
+
+    def save(self, *args, **kwargs):
+        """
+        Safeguard against not having a historical_session
+        """
+        if not self.historical_session_id:
+            self.historical_session = self.most_recent_historical_session()
+        super().save(*args, **kwargs)
 
     @cached_property
     def is_up_to_date(self):
@@ -188,3 +199,4 @@ class InvoiceLine(models.Model):
         self.cost_participants = (
             self.invoice.settings.cost_per_participant * self.session.n_participants
         )
+        del self.is_up_to_date
