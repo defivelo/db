@@ -121,6 +121,7 @@ class Invoice(models.Model):
         except AnnualStateSetting.DoesNotExist:
             return AnnualStateSetting()
 
+    @property
     def is_up_to_date(self):
         return all([l.is_up_to_date for l in self.lines.all()])
 
