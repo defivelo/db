@@ -151,19 +151,27 @@ class InvoiceLine(models.Model):
     def cost(self):
         return self.cost_bikes + self.cost_participants
 
+    def most_recent_historical_session(self):
+        return self.historical_session.instance.history.latest("history_date")
+
     @cached_property
     def is_up_to_date(self):
         """
-        Check if that invoice line is up-to-date (! costly)
-        The settings is a cache, to avoid obtaining it repeatedly
+        Check if that invoice line is up-to-date by comparing the historical session, number and costs
         """
+        if (
+            self.historical_session.history_id
+            != self.most_recent_historical_session().history_id
+        ):
+            return False
+
         for t in ["bike", "participant"]:
             # Check if the nb_* is identical
-            if getattr(self, f"nb_{t}s") != getattr(self.historical_session, f"n_{t}s"):
+            if getattr(self, f"nb_{t}s") != getattr(self.session, f"n_{t}s"):
                 return False
             # Check if the calculated cost is identical
             if getattr(self, f"cost_{t}s") != getattr(
-                self.historical_session, f"n_{t}s"
+                self.session, f"n_{t}s"
             ) * getattr(self.invoice.settings, f"cost_per_{t}"):
                 return False
         return True
@@ -172,17 +180,10 @@ class InvoiceLine(models.Model):
         """
         Align the invoiceline's attributes
         """
-        self.historical_session = self.historical_session.instance.history.latest(
-            "history_date"
-        )
-        self.nb_bikes = self.historical_session.n_bikes
-        self.nb_participants = self.historical_session.n_participants
-        self.cost_bikes = (
-            self.invoice.settings.cost_per_bike * self.historical_session.n_bikes
-        )
+        self.historical_session = self.most_recent_historical_session()
+        self.nb_bikes = self.session.n_bikes
+        self.nb_participants = self.session.n_participants
+        self.cost_bikes = self.invoice.settings.cost_per_bike * self.session.n_bikes
         self.cost_participants = (
-            self.invoice.settings.cost_per_participant
-            * self.historical_session.n_participants
+            self.invoice.settings.cost_per_participant * self.session.n_participants
         )
-        # Clear the cache
-        del self.is_up_to_date
