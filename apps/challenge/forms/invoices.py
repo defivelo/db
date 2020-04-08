@@ -21,14 +21,12 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
 
-from apps.challenge.models import AnnualStateSetting, Season, Session
+from apps.challenge.models import AnnualStateSetting, Season
 
 from ..models import Invoice, InvoiceLine
 
 
 class InvoiceFormMixin(forms.ModelForm):
-    sessions = forms.ModelMultipleChoiceField(queryset=Session.objects.none())
-
     class Meta:
         model = Invoice
         fields = [
@@ -77,10 +75,13 @@ class InvoiceFormMixin(forms.ModelForm):
         except AnnualStateSetting.DoesNotExist:
             settings = AnnualStateSetting()
 
+        sessions = season.sessions.filter(orga=self.cleaned_data["organization"])
+
         if creating:
-            for session in self.cleaned_data["sessions"]:
+            for session in sessions:
                 InvoiceLine.objects.create(
                     session=session,
+                    historical_session=session.history.latest("history_date"),
                     invoice=invoice,
                     nb_participants=session.n_participants,
                     nb_bikes=session.n_bikes,
@@ -91,7 +92,7 @@ class InvoiceFormMixin(forms.ModelForm):
                 )
         elif not invoice.is_locked:
             # We're in update, but still in draft mode
-            for session in self.cleaned_data["sessions"]:
+            for session in sessions:
                 InvoiceLine.objects.update_or_create(
                     session=session,
                     invoice=invoice,
@@ -102,6 +103,7 @@ class InvoiceFormMixin(forms.ModelForm):
                         "cost_participants": (
                             session.n_participants * settings.cost_per_participant
                         ),
+                        "historical_session": session.history.latest("history_date"),
                     },
                 )
         return invoice
@@ -110,11 +112,8 @@ class InvoiceFormMixin(forms.ModelForm):
 class InvoiceForm(InvoiceFormMixin):
     def __init__(self, organization, season, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        sessions = season.sessions.filter(orga=organization)
-        self.fields["sessions"].queryset = sessions
-        self.fields["sessions"].initial = sessions
 
-        for f in ["organization", "season", "sessions"]:
+        for f in ["organization", "season"]:
             self.fields[f].disabled = True
 
         #  Reduce the number of convoluted queries. We know we want this one only.

@@ -68,7 +68,7 @@
     <tbody>
     {% for line in invoice.lines.all %}
         <tr>
-            <td class="text-left">{{ line.session.day }}{% if line.session.begin %} - {{ line.session.begin }}{% endif %}</td>
+            <td class="text-left">{{ line.historical_session.day }}{% if line.historical_session.begin %} - {{ line.historical_session.begin }}{% endif %}</td>
             <td>{{ line.nb_participants }}</td>
             <td>{{ line.cost_participants }}</td>
             <td>{{ line.nb_bikes }}</td>

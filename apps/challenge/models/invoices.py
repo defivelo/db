@@ -27,11 +27,15 @@ from django.utils.functional import cached_property
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 
+from simple_history.utils import get_history_manager_for_model
+
 from apps.orga.models import Organization
 
 from .season import Season
 from .session import Session
 from .settings import AnnualStateSetting
+
+HistoricalSession = get_history_manager_for_model(Session).model
 
 
 class Invoice(models.Model):
@@ -123,6 +127,7 @@ class Invoice(models.Model):
 
 class InvoiceLine(models.Model):
     session = models.ForeignKey(Session, on_delete=models.PROTECT)
+    historical_session = models.ForeignKey(HistoricalSession, on_delete=models.PROTECT)
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="lines")
     nb_bikes = models.PositiveSmallIntegerField()
     nb_participants = models.PositiveSmallIntegerField()
@@ -135,11 +140,11 @@ class InvoiceLine(models.Model):
 
     class Meta:
         unique_together = (("session", "invoice"),)
-        ordering = ("session__date", "session__hour")
+        ordering = ("historical_session__day", "historical_session__begin")
 
     def __str__(self):
         return u(
-            f"{self.invoice.ref}: {self.session} - Vélos: {self.nb_bikes} ({self.cost_bikes} CHF) - Participants: {self.nb_participants} ({self.cost_participants} CHF)"
+            f"{self.invoice.ref}: {self.historical_session} - Vélos: {self.nb_bikes} ({self.cost_bikes} CHF) - Participants: {self.nb_participants} ({self.cost_participants} CHF)"
         )
 
     @property
@@ -154,11 +159,11 @@ class InvoiceLine(models.Model):
         """
         for t in ["bike", "participant"]:
             # Check if the nb_* is identical
-            if getattr(self, f"nb_{t}s") != getattr(self.session, f"n_{t}s"):
+            if getattr(self, f"nb_{t}s") != getattr(self.historical_session, f"n_{t}s"):
                 return False
             # Check if the calculated cost is identical
             if getattr(self, f"cost_{t}s") != getattr(
-                self.session, f"n_{t}s"
+                self.historical_session, f"n_{t}s"
             ) * getattr(self.invoice.settings, f"cost_per_{t}"):
                 return False
         return True
@@ -167,11 +172,17 @@ class InvoiceLine(models.Model):
         """
         Align the invoiceline's attributes
         """
-        self.nb_bikes = self.session.n_bikes
-        self.nb_participants = self.session.n_participants
-        self.cost_bikes = self.invoice.settings.cost_per_bike * self.session.n_bikes
+        self.historical_session = self.historical_session.instance.history.latest(
+            "history_date"
+        )
+        self.nb_bikes = self.historical_session.n_bikes
+        self.nb_participants = self.historical_session.n_participants
+        self.cost_bikes = (
+            self.invoice.settings.cost_per_bike * self.historical_session.n_bikes
+        )
         self.cost_participants = (
-            self.invoice.settings.cost_per_participant * self.session.n_participants
+            self.invoice.settings.cost_per_participant
+            * self.historical_session.n_participants
         )
         # Clear the cache
         del self.is_up_to_date
