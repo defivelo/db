@@ -75,7 +75,7 @@ class InvoiceFormMixin(forms.ModelForm):
                 canton=invoice.organization.address_canton, year=season.year
             )
         except AnnualStateSetting.DoesNotExist:
-            settings = AnnualStateSetting(cost_per_bike=0, cost_per_participant=0)
+            settings = AnnualStateSetting()
 
         if creating:
             for session in self.cleaned_data["sessions"]:

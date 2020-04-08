@@ -115,7 +115,7 @@ class Invoice(models.Model):
                 canton=self.organization.address_canton, year=self.season.year,
             )
         except AnnualStateSetting.DoesNotExist:
-            return AnnualStateSetting(cost_per_bike=0, cost_per_participant=0)
+            return AnnualStateSetting()
 
     def is_up_to_date(self):
         return all([l.is_up_to_date for l in self.lines.all()])
