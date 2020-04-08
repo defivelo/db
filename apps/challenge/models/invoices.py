@@ -123,7 +123,19 @@ class Invoice(models.Model):
 
     @property
     def is_up_to_date(self):
-        return all([l.is_up_to_date for l in self.lines.all()])
+        """
+        Check if the whole Invoice is up_to_date
+        """
+        # First check if the individual lines are OK.
+        lines = self.lines.prefetch_related("session", "historical_session")
+        if not all([l.is_up_to_date for l in lines.all()]):
+            return False
+        # Check if the invoice lines correspond to the concerned sessions
+        if set(lines.values_list("session_id", flat=True)) != set(
+            self.sessions.values_list("id", flat=True)
+        ):
+            return False
+        return True
 
 
 class InvoiceLine(models.Model):
@@ -199,4 +211,8 @@ class InvoiceLine(models.Model):
         self.cost_participants = (
             self.invoice.settings.cost_per_participant * self.session.n_participants
         )
-        del self.is_up_to_date
+        # Clear the cached is_up_to_date if possible
+        try:
+            del self.is_up_to_date
+        except AttributeError:
+            pass
