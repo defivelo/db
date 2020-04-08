@@ -135,6 +135,7 @@ class InvoiceLine(models.Model):
 
     class Meta:
         unique_together = (("session", "invoice"),)
+        ordering = ("session__date", "session__hour")
 
     def __str__(self):
         return u(
