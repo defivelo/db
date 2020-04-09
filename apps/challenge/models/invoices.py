@@ -143,6 +143,15 @@ class Invoice(models.Model):
         return True
 
 
+def round_CHF(n: D):
+    """
+    Round a Decimal to 0.05 cents
+    """
+    return D((n * 20).quantize(D("1"), rounding=ROUND_HALF_EVEN) / 20).quantize(
+        D("0.01")
+    )
+
+
 class InvoiceLine(models.Model):
     session = models.ForeignKey(Session, on_delete=models.PROTECT)
     historical_session = models.ForeignKey(HistoricalSession, on_delete=models.PROTECT)
@@ -168,9 +177,9 @@ class InvoiceLine(models.Model):
     @property
     def cost_bikes_reduced(self):
         # Sum of the costs, rounded to 5 cents.
-        return D(
-            (self.cost_bikes * D(1 - self.cost_bikes_reduction_percent() / 100)) * 2
-        ).quantize(D("0.01"), rounding=ROUND_HALF_EVEN) / D(2)
+        return round_CHF(
+            D(self.cost_bikes * D(1 - self.cost_bikes_reduction_percent() / 100))
+        )
 
     @property
     def cost(self):
