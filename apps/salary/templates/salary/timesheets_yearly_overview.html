@@ -9,7 +9,7 @@
   <ul class="pager">
     <li class="previous btn-xs">
       {% with previous_year=year|add:"-1" %}
-        <a href="{% url 'salary:timesheets-overview' year=previous_year %}">
+        <a href="{% url 'salary:timesheets-overview' year=previous_year %}{% if canton %}?canton={{ canton }}{% endif %}" >
           <span aria-hidden="true">←</span>
           {{ previous_year }}
         </a>
@@ -20,7 +20,7 @@
     </li>
     <li class="next btn-xs">
       {% with next_year=year|add:"1" %}
-        <a href="{% url "salary:timesheets-overview" year=next_year %}">
+        <a href="{% url "salary:timesheets-overview" year=next_year %}{% if canton %}?canton={{ canton }}{% endif %}">
           {{ next_year }}
           <span aria-hidden="true">→</span>
         </a>
@@ -69,7 +69,8 @@
           </a>
         </td>
         {% for status in statuses %}
-          <td class="text-center status-cell{% if status %} {{ status|timesheet_status_css_class }}{% endif %}">
+          <td
+            {% if status %}data-status="{{ status }}"{% endif %}class="text-center status-cell{% if status %} {{ status|timesheet_status_css_class }}{% endif %}">
             {% if status %}
               <a href="{% url 'salary:user-timesheets' year=year month=forloop.counter pk=user.pk %}">
                 <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
@@ -88,6 +89,23 @@
           <th>{{ amount }}</th>
         {% endfor %}
       </tr>
+      {% if user|can:'challenge_invoice_cru' %}
+        <tr>
+          <th></th>
+          {% for amount in timesheets_amount %}
+            <th class="text-center">
+              {% with "csv" as format %}
+                <a
+                  title="{% blocktrans %}Télécharger au format {{ format }}{% endblocktrans %}"
+                  class="btn btn-info hide"
+                  href="{% url "salary:cresus-export" year=year month=forloop.counter format=format %}{% if canton %}?canton={{ canton }}{% endif %}">
+                  <span class=" glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
+                </a>
+              {% endwith %}
+            </th>
+          {% endfor %}
+        </tr>
+      {% endif %}
     </tfoot>
   </table>
 {% else %}
@@ -95,4 +113,27 @@
     {% trans "Aucun résultat." %}
   </div>
 {% endif %}
+<script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function (event) {
+    $('table.timesheets-overview-table > thead > tr > th').each(function (index) {
+      let shouldDisplayExport = 0;
+      let shouldWaitDisplayExport = 0;
+      $('table.timesheets-overview-table > tbody > tr').each(function () {
+          const td = $(this).children('td').eq(index);
+          if (td.data("status") === 4) {
+            shouldDisplayExport += 1
+          } else if (td.data("status")) {
+            shouldWaitDisplayExport += 1
+          }
+      });
+      if (shouldWaitDisplayExport > 0 || shouldDisplayExport === 0){
+        $('table.timesheets-overview-table > tfoot > tr:last > th').eq(index).children("a").hide()
+      }
+      if (shouldWaitDisplayExport === 0 && shouldDisplayExport > 0){
+        $('table.timesheets-overview-table > tfoot > tr:last > th').eq(index).children("a").removeClass("hide")
+      }
+    });
+  });
+</script>
 {% endblock %}
+

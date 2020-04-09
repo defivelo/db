@@ -12,7 +12,7 @@ class Timesheet(models.Model):
     date = models.DateField(_("Date"), blank=True, null=True)
 
     time_helper = models.FloatField(_("Heures moni·teur·trice"), default=0)
-    time_actor = models.FloatField(_("Intervention(s)"), default=0)
+    actor_count = models.IntegerField(_("Intervention(s)"), default=0)
     leader_count = models.IntegerField(
         _("Participation(s) comme moniteur 2"), default=0
     )
@@ -38,7 +38,7 @@ class Timesheet(models.Model):
         ) * HOURLY_RATE_HELPER
 
     def get_total_amount_actor(self):
-        return (self.time_actor or 0) * RATE_ACTOR
+        return (self.actor_count or 0) * RATE_ACTOR
 
     def get_total_amount_leader(self):
         return (self.leader_count or 0) * BONUS_LEADER
