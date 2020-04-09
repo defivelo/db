@@ -246,7 +246,7 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
         return Timesheet.objects.filter(validated_at__isnull=False, user__in=users)
 
     def get_dataset_title(self):
-        return _("Export cresus {month} {year}").format(
+        return _("Export Crésus {month} {year}").format(
             month=self.get_month(), year=self.get_year()
         )
 
