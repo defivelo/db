@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import timedelta
+
 from django.urls import reverse
 
 from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient
@@ -39,7 +41,8 @@ def test_invoiceline_out_of_date(db):
 
 def test_invoice_out_of_date(db):
     invoice = InvoiceFactory()
-    invoicelines = [InvoiceLineFactory(invoice=invoice) for i in range(1, 5)]
+    # Create 1+2+3+4+5 invoicelines to test all possible sequences
+    invoicelines = [InvoiceLineFactory(invoice=invoice) for i in range(0, 15)]
 
     # Make sure it cannot be up-to-date
     invoicelines[0].nb_bikes = invoicelines[0].session.n_bikes + 1
@@ -51,14 +54,46 @@ def test_invoice_out_of_date(db):
     # This is a quick-fix for SeasonFactory that puts a single canton instead of an array
     invoice.season.cantons = [invoice.season.cantons]
     invoice.season.save()
+    # Create a 1-block, then a space, then a 2-block, then a space, etc
+    dayshift = 0
+    nth_in_sequence = 1
+    sequence_max = 1
     for il in invoicelines:
         il.session.orga = invoice.organization
-        il.session.day = invoice.season.begin
+        # Test the sequences too
+        il.session.day = invoice.season.begin + timedelta(days=dayshift)
+        if nth_in_sequence < sequence_max:
+            nth_in_sequence = nth_in_sequence + 1
+        elif nth_in_sequence >= sequence_max:
+            nth_in_sequence = 1
+            sequence_max = sequence_max + 1
+            dayshift = dayshift + 1
+        dayshift = dayshift + 1
         il.session.save()
         il.refresh()
         assert il.is_up_to_date
         il.save()
     assert invoice.is_up_to_date
+
+    nth_in_sequence = 1
+    sequence_max = 1
+    # We have 5 invoicelines, the deduction is 30% for all
+    for il in invoicelines:
+        if sequence_max == 1:
+            assert il.cost_bikes_reduction_percent() == 0
+        if sequence_max == 2:
+            assert il.cost_bikes_reduction_percent() == 5
+        if sequence_max == 3:
+            assert il.cost_bikes_reduction_percent() == 10
+        if sequence_max == 4:
+            assert il.cost_bikes_reduction_percent() == 20
+        if sequence_max == 5:
+            assert il.cost_bikes_reduction_percent() == 30
+        if nth_in_sequence < sequence_max:
+            nth_in_sequence = nth_in_sequence + 1
+        elif nth_in_sequence >= sequence_max:
+            nth_in_sequence = 1
+            sequence_max = sequence_max + 1
 
 
 class InvoiceTestCaseMixin(SeasonTestCaseMixin):
