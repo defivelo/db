@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('challenge', '0061_invoiceline_historical_session'),
+        ('challenge', '0063_invoiceline_historical_session_not_nullable'),
     ]
 
     operations = [
