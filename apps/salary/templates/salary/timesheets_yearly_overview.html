@@ -93,11 +93,11 @@
         <tr>
           <th></th>
           {% for amount in timesheets_amount %}
-            <th>
+            <th class="text-center">
               {% with "csv" as format %}
                 <a
                   title="{% blocktrans %}Télécharger au format {{ format }}{% endblocktrans %}"
-                  class="btn btn-info btn-lg hide"
+                  class="btn btn-info hide"
                   href="{% url "salary:cresus-export" year=year month=forloop.counter format=format %}{% if canton %}?canton={{ canton }}{% endif %}">
                   <span class=" glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
                 </a>
