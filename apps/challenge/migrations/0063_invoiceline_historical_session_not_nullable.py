@@ -13,9 +13,9 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterField(
             model_name="invoiceline",
-            name="session",
+            name="historical_session",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.PROTECT, to="challenge.Session"
+                on_delete=django.db.models.deletion.PROTECT, to="challenge.HistoricalSession"
             ),
         ),
     ]
