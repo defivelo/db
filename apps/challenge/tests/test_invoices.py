@@ -21,11 +21,44 @@ from django.urls import reverse
 from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient
 
 from ..models import Invoice
-from .factories import InvoiceFactory
+from .factories import InvoiceFactory, InvoiceLineFactory
 from .test_seasons import SeasonTestCaseMixin
 
 season_urls = ["invoice-orga-list"]
 invoice_list_urls = ["invoice-create", "invoice-list"]
+
+
+def test_invoiceline_out_of_date(db):
+    invoiceline = InvoiceLineFactory()
+    # Make sure it is not up-to-date
+    invoiceline.nb_bikes = invoiceline.session.n_bikes + 1
+    assert not invoiceline.is_up_to_date
+    invoiceline.refresh()
+    assert invoiceline.is_up_to_date
+
+
+def test_invoice_out_of_date(db):
+    invoice = InvoiceFactory()
+    invoicelines = [InvoiceLineFactory(invoice=invoice) for i in range(1, 5)]
+
+    # Make sure it cannot be up-to-date
+    invoicelines[0].nb_bikes = invoicelines[0].session.n_bikes + 1
+    assert not invoice.is_up_to_date
+
+    # Now align it all
+    invoice.organization.address_canton = invoice.season.cantons.split("|")[0]
+    invoice.organization.save()
+    # This is a quick-fix for SeasonFactory that puts a single canton instead of an array
+    invoice.season.cantons = [invoice.season.cantons]
+    invoice.season.save()
+    for il in invoicelines:
+        il.session.orga = invoice.organization
+        il.session.day = invoice.season.begin
+        il.session.save()
+        il.refresh()
+        assert il.is_up_to_date
+        il.save()
+    assert invoice.is_up_to_date
 
 
 class InvoiceTestCaseMixin(SeasonTestCaseMixin):

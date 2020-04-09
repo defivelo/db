@@ -23,13 +23,19 @@ from django.db import models
 from django.db.models import F, Sum
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
+
+from simple_history.utils import get_history_manager_for_model
 
 from apps.orga.models import Organization
 
 from .season import Season
 from .session import Session
+from .settings import AnnualStateSetting
+
+HistoricalSession = get_history_manager_for_model(Session).model
 
 
 class Invoice(models.Model):
@@ -106,9 +112,35 @@ class Invoice(models.Model):
             css_class = "success"  # Green
         return css_class
 
+    @cached_property
+    def settings(self):
+        try:
+            return AnnualStateSetting.objects.get(
+                canton=self.organization.address_canton, year=self.season.year,
+            )
+        except AnnualStateSetting.DoesNotExist:
+            return AnnualStateSetting()
+
+    @property
+    def is_up_to_date(self):
+        """
+        Check if the whole Invoice is up_to_date
+        """
+        # First check if the individual lines are OK.
+        lines = self.lines.prefetch_related("session", "historical_session")
+        if not all([l.is_up_to_date for l in lines.all()]):
+            return False
+        # Check if the invoice lines correspond to the concerned sessions
+        if set(lines.values_list("session_id", flat=True)) != set(
+            self.sessions.values_list("id", flat=True)
+        ):
+            return False
+        return True
+
 
 class InvoiceLine(models.Model):
     session = models.ForeignKey(Session, on_delete=models.PROTECT)
+    historical_session = models.ForeignKey(HistoricalSession, on_delete=models.PROTECT)
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="lines")
     nb_bikes = models.PositiveSmallIntegerField()
     nb_participants = models.PositiveSmallIntegerField()
@@ -121,11 +153,66 @@ class InvoiceLine(models.Model):
 
     class Meta:
         unique_together = (("session", "invoice"),)
+        ordering = ("historical_session__day", "historical_session__begin")
 
     def __str__(self):
         return u(
-            f"{self.invoice.ref}: {self.session} - Vélos: {self.nb_bikes} ({self.cost_bikes} CHF) - Participants: {self.nb_participants} ({self.cost_participants} CHF)"
+            f"{self.invoice.ref}: {self.historical_session} - Vélos: {self.nb_bikes} ({self.cost_bikes} CHF) - Participants: {self.nb_participants} ({self.cost_participants} CHF)"
         )
 
+    @property
     def cost(self):
         return self.cost_bikes + self.cost_participants
+
+    def most_recent_historical_session(self):
+        """
+        Provide a shortcut to getting the latest historical copy of the session
+        """
+        return self.session.history.latest("history_date")
+
+    def save(self, *args, **kwargs):
+        """
+        Safeguard against not having a historical_session
+        """
+        if not self.historical_session_id:
+            self.historical_session = self.most_recent_historical_session()
+        super().save(*args, **kwargs)
+
+    @cached_property
+    def is_up_to_date(self):
+        """
+        Check if that invoice line is up-to-date by comparing the historical session, number and costs
+        """
+        if (
+            self.historical_session.history_id
+            != self.most_recent_historical_session().history_id
+        ):
+            return False
+
+        for t in ["bike", "participant"]:
+            # Check if the nb_* is identical
+            if getattr(self, f"nb_{t}s") != getattr(self.session, f"n_{t}s"):
+                return False
+            # Check if the calculated cost is identical
+            if getattr(self, f"cost_{t}s") != getattr(
+                self.session, f"n_{t}s"
+            ) * getattr(self.invoice.settings, f"cost_per_{t}"):
+                return False
+        return True
+
+    def refresh(self):
+        """
+        Align the invoiceline's attributes
+        """
+        self.historical_session = self.most_recent_historical_session()
+        self.nb_bikes = self.session.n_bikes
+        self.nb_participants = self.session.n_participants
+        self.cost_bikes = self.invoice.settings.cost_per_bike * self.session.n_bikes
+        self.cost_participants = (
+            self.invoice.settings.cost_per_participant * self.session.n_participants
+        )
+        # Clear the cached is_up_to_date if possible
+        try:
+            del self.is_up_to_date
+        except AttributeError:
+            pass

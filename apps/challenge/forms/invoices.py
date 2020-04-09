@@ -21,14 +21,12 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
 
-from apps.challenge.models import AnnualStateSetting, Season, Session
+from apps.challenge.models import AnnualStateSetting, Season
 
 from ..models import Invoice, InvoiceLine
 
 
-class InvoiceForm(forms.ModelForm):
-    sessions = forms.ModelMultipleChoiceField(queryset=Session.objects.none())
-
+class InvoiceFormMixin(forms.ModelForm):
     class Meta:
         model = Invoice
         fields = [
@@ -37,21 +35,6 @@ class InvoiceForm(forms.ModelForm):
             "organization",
             "season",
         ]
-
-    def __init__(self, organization, season, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        sessions = season.sessions.filter(orga=organization)
-        self.fields["sessions"].queryset = sessions
-        self.fields["sessions"].initial = sessions
-
-        for f in ["organization", "season", "sessions"]:
-            self.fields[f].disabled = True
-
-        #  Reduce the number of convoluted queries. We know we want this one only.
-        self.fields["season"].queryset = Season.objects.filter(pk=season.pk)
-
-        # Circumvent weird bug due to the 'season' object being weird
-        self.fields["season"].to_python = lambda x: x
 
     @transaction.atomic
     def save(self, commit=True):
@@ -90,12 +73,15 @@ class InvoiceForm(forms.ModelForm):
                 canton=invoice.organization.address_canton, year=season.year
             )
         except AnnualStateSetting.DoesNotExist:
-            settings = AnnualStateSetting(cost_per_bike=0, cost_per_participant=0)
+            settings = AnnualStateSetting()
+
+        sessions = season.sessions.filter(orga=self.cleaned_data["organization"])
 
         if creating:
-            for session in self.cleaned_data["sessions"]:
+            for session in sessions:
                 InvoiceLine.objects.create(
                     session=session,
+                    historical_session=session.history.latest("history_date"),
                     invoice=invoice,
                     nb_participants=session.n_participants,
                     nb_bikes=session.n_bikes,
@@ -106,7 +92,7 @@ class InvoiceForm(forms.ModelForm):
                 )
         elif not invoice.is_locked:
             # We're in update, but still in draft mode
-            for session in self.cleaned_data["sessions"]:
+            for session in sessions:
                 InvoiceLine.objects.update_or_create(
                     session=session,
                     invoice=invoice,
@@ -117,6 +103,28 @@ class InvoiceForm(forms.ModelForm):
                         "cost_participants": (
                             session.n_participants * settings.cost_per_participant
                         ),
+                        "historical_session": session.history.latest("history_date"),
                     },
                 )
         return invoice
+
+
+class InvoiceForm(InvoiceFormMixin):
+    def __init__(self, organization, season, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for f in ["organization", "season"]:
+            self.fields[f].disabled = True
+
+        #  Reduce the number of convoluted queries. We know we want this one only.
+        self.fields["season"].queryset = Season.objects.filter(pk=season.pk)
+
+        # Circumvent weird bug due to the 'season' object being weird
+        self.fields["season"].to_python = lambda x: x
+
+
+class InvoiceFormQuick(InvoiceFormMixin):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget = forms.HiddenInput()

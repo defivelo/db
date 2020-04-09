@@ -28,6 +28,16 @@
         </dd>
     </dl>
     {% if user_can_edit_invoice %}
+        {% if refresh_form %}
+          <strong>{% trans "La facture n'est pas à jour."%}</strong>
+          <form method="POST" action="{% url 'invoice-update' seasonpk=invoice.season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">
+            {% csrf_token %}
+            {{ refresh_form }}
+            {% buttons %}
+                <button type="submit" class="btn btn-warning pull-right" title="{% trans "Rafraîchir" %}"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
+            {% endbuttons %}
+          </form>
+        {% endif %}
         <div>
             <a class="btn btn-{% if invoice.is_locked %}danger{% else %}primary{% endif %}" href="{% url 'invoice-update' seasonpk=invoice.season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">{% trans "Éditer" %}</a>
         </div>
@@ -58,7 +68,7 @@
     <tbody>
     {% for line in invoice.lines.all %}
         <tr>
-            <td class="text-left">{{ line.session.day }}{% if line.session.begin %} - {{ line.session.begin }}{% endif %}</td>
+            <td class="text-left">{{ line.historical_session.day }}{% if line.historical_session.begin %} - {{ line.historical_session.begin }}{% endif %}</td>
             <td>{{ line.nb_participants }}</td>
             <td>{{ line.cost_participants }}</td>
             <td>{{ line.nb_bikes }}</td>

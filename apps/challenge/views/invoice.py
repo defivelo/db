@@ -28,7 +28,7 @@ from apps.common import MULTISELECTFIELD_REGEXP
 from apps.orga.models import Organization
 from defivelo.roles import has_permission, user_cantons
 
-from ..forms import InvoiceForm
+from ..forms import InvoiceForm, InvoiceFormQuick
 from ..models import Invoice
 from .mixins import CantonSeasonFormMixin
 from .season import SeasonListView, SeasonMixin
@@ -86,7 +86,7 @@ class InvoiceMixin(CantonSeasonFormMixin, HasPermissionsMixin):
         invoiceref = self.kwargs.get("invoiceref")
 
         return get_object_or_404(
-            self.model,
+            self.model.objects.prefetch_related("lines"),
             season=self.season,
             organization=self.organization,
             ref=invoiceref,
@@ -97,9 +97,12 @@ class InvoiceDetailView(InvoiceMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Add our menu_category context
+        invoice = self.get_object()
         context["user_can_edit_invoice"] = user_can_edit_invoice(
-            self.request.user, self.get_object()
+            self.request.user, invoice
         )
+        if not invoice.is_locked and not invoice.is_up_to_date:
+            context["refresh_form"] = InvoiceFormQuick(instance=invoice)
         return context
 
 
