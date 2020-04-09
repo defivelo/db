@@ -51,6 +51,11 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
                         | Q(qualifications__leader=self.selected_user),
                         distinct=True,
                     ),
+                    leader_count=Count(
+                        "qualifications__pk",
+                        filter=Q(qualifications__leader=self.selected_user),
+                        distinct=True,
+                    ),
                     actor_count=Count(
                         "qualifications__pk",
                         filter=Q(qualifications__actor=self.selected_user),
@@ -130,6 +135,7 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
                     else 4.5
                 ),
                 "time_actor": session["actor_count"],
+                "leader_count": session["leader_count"],
                 "overtime": timesheet.overtime if timesheet else 0,
                 "traveltime": timesheet.traveltime if timesheet else 0,
                 "validated": bool(timesheet.validated_at) if timesheet else False,
