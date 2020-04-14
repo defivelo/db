@@ -52,7 +52,7 @@
 <h4 class="invoice-title">{{ invoice.ref }}{% if invoice.title %}: {{ invoice.title }}{% endif %}</h4>
 
 <div class="invoice-header-text">
-  {% blocktrans with nb_participants=invoice.sum_nb_participants %}{{ nb_participants }} étudiant-e-s de votre établissement vont participer à « DÉFI VÉLO », compétition inter-cantonale pour la promotion du vélo. Par la participation de votre établissement, vous contribuez au succès d’un projet innovant de promotion du vélo, de l’activité physique et de la sécurité routière, qui place le plaisir et l’apprentissage par l’action au premier plan. DÉFI VÉLO est largement reconnu pour ces qualités: il est notamment soutenu par Promotion Santé Suisse, le Fonds suisse de sécurité routière et la commune de Sierre.{% endblocktrans %}
+    {% blocktrans with nb_participants=invoice.sum_nb_participants %}Prochainement, {{ nb_participants }} étudiant·e·s de votre établissement vont participer à « DÉFI VÉLO », compétition inter-cantonale pour la promotion du vélo. Par la participation de votre établissement, vous contribuez au succès d’une action innovante de promotion du vélo, de l’activité physique et de la sécurité routière, qui place le plaisir et l’apprentissage par l’action au premier plan. DÉFI VÉLO est largement reconnu pour ces qualités: il est notamment soutenu par Promotion Santé Suisse, le Fonds suisse de sécurité routière et l’Office fédéral de l’énergie (OFEN). Nous nous réjouissons de votre confiance et vous remercions par avance de votre collaboration.{% endblocktrans %}
 </div>
 
 {% if invoice.lines %}
@@ -92,6 +92,7 @@
 {% endif %}
 
 <div class="invoice-footer-text">
+  {% blocktrans %}La facture est établie selon les listes fournies par le·la coordinateur·trice de l'établissement.{% endblocktrans %}<br/>
   {% blocktrans with ref=invoice.ref %}Paiement à 30 jours sur le compte de notre mandataire, avec la mention « DÉFI VÉLO {{ref}} »{% endblocktrans %}
 </div>
 
