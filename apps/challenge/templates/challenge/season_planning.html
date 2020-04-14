@@ -28,6 +28,6 @@
         </table>
 
 <div class="hidden-print">
-    <a class="btn btn-default" href="{% url 'season-detail' season.pk %}">{% trans "Retour à la saison" %}</a>
+    <a class="btn btn-default" href="{% url 'season-list' season.year %}">{% blocktrans with year=season.year %}Saisons {{ year }}{% endblocktrans %}</a>
 </div>
 {% endblock %}
