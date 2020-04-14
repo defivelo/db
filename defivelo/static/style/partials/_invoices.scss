@@ -9,7 +9,7 @@ body.dv-invoice {
     clear: both;
     float: right;
     margin-top: 2em;
-    margin-bottom: 1em;
+    margin-bottom: 0.5em;
   }
   .invoice-title {
     clear: both;
@@ -22,17 +22,14 @@ body.dv-invoice {
   }
 
   .invoice-header-text {
-    padding-bottom: 2em;
+    padding-bottom: 1em;
     border-bottom: 1px solid #4fa2ce;
     margin-bottom: 1em;
     text-align: justify;
   }
 
   .invoice-table {
-    margin: 2em auto !important;
-    .invoice-total {
-      border: 2px solid $dv-red;
-    }
+    margin: 1em auto !important;
     & > tbody,
     & > tfoot,
     & > thead {
@@ -42,8 +39,12 @@ body.dv-invoice {
           border-color: $dv-blue;
           border-right-width: 1px;
           border-right-style: solid;
+          padding: 4px;
         }
       }
+    }
+    .invoice-total {
+      border: 2px solid $dv-red;
     }
   }
 
