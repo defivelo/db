@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from decimal import ROUND_HALF_EVEN
+from decimal import Decimal as D
 from typing import Iterable
 
 from django.core.validators import MinValueValidator
@@ -86,18 +88,21 @@ class Invoice(models.Model):
         fields = sum(F(thing) for thing in things)
         return self.lines.aggregate(total=Sum(fields))["total"]
 
+    def sum_cost_bikes_reduced(self):
+        return sum([l.cost_bikes_reduced for l in self.lines.all()])
+
+    def sum_cost(self):
+        return self.sum_cost_bikes_reduced() + (self.sum_cost_participants or 0)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Generate sum_* methods
-        for thing in ["nb_bikes", "nb_participants", "cost_bikes", "cost_participants"]:
+        for thing in [
+            "nb_bikes",
+            "nb_participants",
+            "cost_participants",
+        ]:
             setattr(self, f"sum_{thing}", self.sum_of([thing]))
-        # Generate sum_* methods
-        for prefix in ["nb", "cost"]:
-            setattr(
-                self,
-                f"sum_{prefix}",
-                self.sum_of([f"{prefix}_bikes", f"{prefix}_participants"]),
-            )
 
     @property
     def is_locked(self):
@@ -138,6 +143,15 @@ class Invoice(models.Model):
         return True
 
 
+def round_CHF(n: D):
+    """
+    Round a Decimal to 0.05 cents
+    """
+    return D((n * 20).quantize(D("1"), rounding=ROUND_HALF_EVEN) / 20).quantize(
+        D("0.01")
+    )
+
+
 class InvoiceLine(models.Model):
     session = models.ForeignKey(Session, on_delete=models.PROTECT)
     historical_session = models.ForeignKey(HistoricalSession, on_delete=models.PROTECT)
@@ -161,8 +175,15 @@ class InvoiceLine(models.Model):
         )
 
     @property
+    def cost_bikes_reduced(self):
+        # Sum of the costs, rounded to 5 cents.
+        return round_CHF(
+            D(self.cost_bikes * D(1 - self.cost_bikes_reduction_percent() / 100))
+        )
+
+    @property
     def cost(self):
-        return self.cost_bikes + self.cost_participants
+        return self.cost_bikes_reduced + self.cost_participants
 
     def most_recent_historical_session(self):
         """
@@ -199,6 +220,35 @@ class InvoiceLine(models.Model):
             ) * getattr(self.invoice.settings, f"cost_per_{t}"):
                 return False
         return True
+
+    def cost_bikes_reduction_percent(self):
+        """
+        Compute the reduction in cost for bikes. Reductions are applied for consecutive days.
+        """
+        # Maps "consecutive days" to "percentage of reduction"
+        reductions_in_percent = {2: 5, 3: 10, 4: 20, 5: 30}
+        # Get the other lines of this invoice, with their daily differences to ours
+        lines_diff_days = self.invoice.lines.annotate(
+            diff_days=(F("historical_session__day") - self.historical_session.day)
+        ).values_list("diff_days", flat=True)
+        max_days_diff_to_check = max(reductions_in_percent.keys())
+
+        # Check the days before first
+        nth_in_serie = 0
+        while nth_in_serie < max_days_diff_to_check:
+            if -nth_in_serie - 1 not in lines_diff_days:
+                break
+            nth_in_serie = nth_in_serie + 1
+        # Check the days after
+        followed_by = 0
+        while followed_by < max_days_diff_to_check:
+            if followed_by + 1 not in lines_diff_days:
+                break
+            followed_by = followed_by + 1
+        # We now know we're in a sequence of that many lines:
+        in_a_sequence_of = nth_in_serie + 1 + followed_by
+        # Get me the reduction
+        return reductions_in_percent.get(in_a_sequence_of, 0)
 
     def refresh(self):
         """

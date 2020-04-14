@@ -61,7 +61,7 @@
         <tr>
             <th scope="col">{% trans "Sessions" %}</th>
             <th scope="col" colspan="2">{% trans "Participants" %}</th>
-            <th scope="col" colspan="2">{% trans "Vélos" %}</th>
+            <th scope="col" colspan="4">{% trans "Vélos" %}</th>
             <th scope="col">{% trans "Total" %}</th>
         </tr>
     </thead>
@@ -69,11 +69,15 @@
     {% for line in invoice.lines.all %}
         <tr>
             <td class="text-left">{{ line.historical_session.day }}{% if line.historical_session.begin %} - {{ line.historical_session.begin }}{% endif %}</td>
-            <td>{{ line.nb_participants }}</td>
-            <td>{{ line.cost_participants }}</td>
-            <td>{{ line.nb_bikes }}</td>
-            <td>{{ line.cost_bikes }}</td>
-            <td>{{ line.cost }}</td>
+            <td class="text-right">{{ line.nb_participants }}</td>
+            <td class="text-right">{{ line.cost_participants }}</td>
+            <td class="text-right">{{ line.nb_bikes }}</td>
+            <td class="text-right"{% if not line.cost_bikes_reduction_percent %} colspan="3"{% endif %}>{{ line.cost_bikes }}</td>
+            {% if line.cost_bikes_reduction_percent %}
+              <td class="text-right">-{{ line.cost_bikes_reduction_percent }} %</td>
+              <td class="text-right">{{ line.cost_bikes_reduced }}</td>
+            {% endif %}
+            <td class="text-right">{{ line.cost }}</td>
         </tr>
     {% endfor %}
     </tbody>
@@ -81,11 +85,11 @@
     <tfoot>
         <tr>
             <td></td>
-            <td>{{ invoice.sum_nb_participants }}</td>
-            <th>{{ invoice.sum_cost_participants }}</th>
-            <td>{{ invoice.sum_nb_bikes }}</td>
-            <th>{{ invoice.sum_cost_bikes }}</th>
-            <th class="invoice-total">{{ invoice.sum_cost }}</th>
+            <td class="text-right">{{ invoice.sum_nb_participants }}</td>
+            <th class="text-right">{{ invoice.sum_cost_participants }}</th>
+            <td class="text-right">{{ invoice.sum_nb_bikes }}</td>
+            <th class="text-right" colspan="3">{{ invoice.sum_cost_bikes_reduced }}</th>
+            <th class="text-right invoice-total">{{ invoice.sum_cost }}</th>
         </tr>
     </tfoot>
 </table>
