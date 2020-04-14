@@ -47,6 +47,7 @@ from apps.challenge import (
     SEASON_WORKWISH_FIELDKEY,
     STAFF_FIELDKEY,
     STAFF_FIELDKEY_HELPER_PREFIX,
+    SUPERLEADER_FIELDKEY,
 )
 from apps.common import (
     DV_SEASON_CHOICES,
@@ -180,6 +181,7 @@ def useravailsessions_readonly(
             avail_content = avail_forced_content
             conflict = False
             locked = False
+            superleader = False
             if not planning:
                 if availability == "i":
                     # If needed
@@ -204,6 +206,9 @@ def useravailsessions_readonly(
                 conflicts = struct[conflictkey] if conflictkey in struct else []
                 if len(conflicts) > 0:
                     conflict = conflicts.pop()
+
+                slkey = SUPERLEADER_FIELDKEY.format(hpk=user.pk, spk=thissesskey)
+                superleader = slkey in struct and struct[slkey]
 
                 # Si le choix des moniteurs est connu, remplace le label et
                 # la version verbeuse par l'état du choix
@@ -235,7 +240,7 @@ def useravailsessions_readonly(
 
             output += (
                 '<td class="{avail_class}"{avail_verbose}><div class="dvflex">'
-                "<!-- {key} -->{avail_label}{conflict_warning}"
+                "<!-- {key} -->{avail_label}{superleader}{conflict_warning}"
                 "</div></td>"
             ).format(
                 avail_class="info" if locked else avail_class,
@@ -251,6 +256,9 @@ def useravailsessions_readonly(
                         else ""
                     )
                 ),
+                superleader=f" /&nbsp;<span title=\"{_('Moniteur + / Photographe')}\">{_('M+')}</span>"
+                if superleader and planning
+                else "",
                 conflict_warning=(
                     (
                         '<a class="text-danger" href="{season_url}#sess{sessionpk}">{glyph}</a>'.format(

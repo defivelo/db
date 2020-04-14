@@ -58,6 +58,7 @@ from .. import (
     CONFLICT_FIELDKEY,
     SEASON_WORKWISH_FIELDKEY,
     STAFF_FIELDKEY,
+    SUPERLEADER_FIELDKEY,
 )
 from ..forms import (
     SeasonAvailabilityForm,
@@ -298,6 +299,9 @@ class SeasonAvailabilityMixin(SeasonMixin):
                         conflictkey = CONFLICT_FIELDKEY.format(
                             hpk=helper.pk, spk=session.pk
                         )
+                        superleaderkey = SUPERLEADER_FIELDKEY.format(
+                            hpk=helper.pk, spk=session.pk
+                        )
                         try:
                             hsa = helper_availability[session.id]
                             initials[fieldkey] = hsa.availability
@@ -312,6 +316,9 @@ class SeasonAvailabilityMixin(SeasonMixin):
                             initials[fieldkey] = ""
                             initials[staffkey] = ""
                             initials[choicekey] = ""
+                        # List super-leaders (Moniteurs +)
+                        if session.superleader == helper:
+                            initials[superleaderkey] = True
 
                         # Trouve les disponibilités en conflit
                         initials[conflictkey] = [
