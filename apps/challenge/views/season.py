@@ -170,6 +170,7 @@ class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
 
 class SeasonAvailabilityMixin(SeasonMixin):
     view_is_update = False
+    view_is_planning = False
 
     def potential_helpers_qs(self, qs=None):
         if not qs:
@@ -228,7 +229,7 @@ class SeasonAvailabilityMixin(SeasonMixin):
 
     def dispatch(self, request, *args, **kwargs):
         if (
-            # Check that the request user is alone in the potential_helpers
+            # Check that the request user is alone in the potential_helpers and we're in season_update
             (
                 self.potential_helpers_qs()
                 .filter(
@@ -238,7 +239,13 @@ class SeasonAvailabilityMixin(SeasonMixin):
                 .filter(pk=request.user.pk)
                 .exists()
                 and self.season
-                and self.season.staff_can_update_availability
+                and (
+                    (
+                        self.season.staff_can_update_availability
+                        and not self.view_is_planning
+                    )
+                    or (self.season.staff_can_see_planning and self.view_is_planning)
+                )
             )
             or
             # Soit j'ai le droit et c'est le bon moment
@@ -645,22 +652,14 @@ class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
 
 class SeasonPlanningView(SeasonAvailabilityMixin, DetailView):
     template_name = "challenge/season_planning.html"
+    allow_season_fetch = True
+    raise_without_cantons = False
+    view_is_planning = True
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        hsas = self.current_availabilities()
-        if hsas:
-            # Fill in the helpers with the ones we currently have
-            helpers_pks = self.current_availabilities_present().values_list(
-                "helper_id", flat=True
-            )
-            potential_helpers = self.potential_helpers(
-                qs=get_user_model().objects.filter(pk__in=helpers_pks)
-            )
-            context["potential_helpers"] = potential_helpers
-            context["availabilities"] = self.get_initial(
-                all_hsas=hsas, all_helpers=potential_helpers
-            )
+        context["potential_helpers"] = self.potential_helpers()
+        context["availabilities"] = self.get_initial()
         return context
 
 

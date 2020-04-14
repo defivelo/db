@@ -147,7 +147,7 @@ urlpatterns = [
                     name="season-availabilities",
                 ),
                 url(
-                    r"^planning/$",
+                    r"^planning/(?P<helperpk>[0-9]+)/$",
                     never_cache(SeasonPlanningView.as_view()),
                     name="season-planning",
                 ),
