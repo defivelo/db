@@ -186,8 +186,10 @@ class SeasonAvailabilityMixin(SeasonMixin):
 
             # Pick the one helper from the command line if it makes sense
             resolvermatch = self.request.resolver_match
-            if "helperpk" in resolvermatch.kwargs:
+            try:
                 qs = qs.filter(pk=int(resolvermatch.kwargs["helperpk"]))
+            except (KeyError, TypeError):
+                pass
         return qs.prefetch_related(
             "profile", "profile__actor_for", "profile__actor_for__translations",
         )
@@ -658,8 +660,9 @@ class SeasonPlanningView(SeasonAvailabilityMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["potential_helpers"] = self.potential_helpers()
-        context["availabilities"] = self.get_initial()
+        potential_helpers = self.potential_helpers()
+        context["potential_helpers"] = potential_helpers
+        context["availabilities"] = self.get_initial(all_helpers=potential_helpers)
         return context
 
 
