@@ -238,6 +238,18 @@ def useravailsessions_readonly(
             elif onlyavail:
                 avail_content = " "
 
+            final_avail_label = (
+                avail_content
+                if avail_content
+                else (
+                    STDGLYPHICON.format(
+                        icon=avail_label, title=avail_verb if avail_verb else ""
+                    )
+                    if avail_label
+                    else ""
+                )
+            )
+
             output += (
                 '<td class="{avail_class}"{avail_verbose}><div class="dvflex">'
                 "<!-- {key} -->{avail_label}{superleader}{conflict_warning}"
@@ -245,18 +257,11 @@ def useravailsessions_readonly(
             ).format(
                 avail_class="info" if locked else avail_class,
                 avail_verbose=' title="%s"' % avail_verb if avail_verb else "",
-                avail_label=(
-                    avail_content
-                    if avail_content
-                    else (
-                        STDGLYPHICON.format(
-                            icon=avail_label, title=avail_verb if avail_verb else ""
-                        )
-                        if avail_label
-                        else ""
-                    )
-                ),
-                superleader=f" /&nbsp;<span title=\"{_('Moniteur + / Photographe')}\">{_('M+')}</span>"
+                avail_label=final_avail_label,
+                superleader=(
+                    ("&nbsp;/&nbsp;" if final_avail_label else "")
+                    + f"<span title=\"{_('Moniteur + / Photographe')}\">{_('M+')}</span>"
+                )
                 if superleader and planning
                 else "",
                 conflict_warning=(
