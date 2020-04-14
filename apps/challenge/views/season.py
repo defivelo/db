@@ -636,6 +636,27 @@ class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
         )
 
 
+class SeasonPlanningView(SeasonAvailabilityMixin, DetailView):
+    template_name = "challenge/season_planning.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        hsas = self.current_availabilities()
+        if hsas:
+            # Fill in the helpers with the ones we currently have
+            helpers_pks = self.current_availabilities_present().values_list(
+                "helper_id", flat=True
+            )
+            potential_helpers = self.potential_helpers(
+                qs=get_user_model().objects.filter(pk__in=helpers_pks)
+            )
+            context["potential_helpers"] = potential_helpers
+            context["availabilities"] = self.get_initial(
+                all_hsas=hsas, all_helpers=potential_helpers
+            )
+        return context
+
+
 class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
     template_name = "challenge/season_availability_update.html"
     success_message = _("Disponibilités mises à jour")

@@ -152,7 +152,12 @@ def useravailsessions(form, user):
 
 @register.filter
 def useravailsessions_readonly(
-    struct, user, avail_forced_content=None, sesskey=None, onlyavail=False
+    struct,
+    user,
+    avail_forced_content=None,
+    sesskey=None,
+    onlyavail=False,
+    planning=False,
 ):
     """
     Output cells with the state of the availability / choice for all sessions,
@@ -175,19 +180,20 @@ def useravailsessions_readonly(
             avail_content = avail_forced_content
             conflict = False
             locked = False
-            if availability == "i":
-                # If needed
-                avail_verb = _("Si nécessaire")
-                avail_label = "ok-circle"
-                avail_class = "warning"
-            elif availability == "n":
-                avail_verb = _("Non")
-                avail_label = "remove-sign"
-                avail_class = "danger"
-            elif availability == "y":
-                avail_verb = _("Oui")
-                avail_label = "ok-sign"
-                avail_class = "success"
+            if not planning:
+                if availability == "i":
+                    # If needed
+                    avail_verb = _("Si nécessaire")
+                    avail_label = "ok-circle"
+                    avail_class = "warning"
+                elif availability == "n":
+                    avail_verb = _("Non")
+                    avail_label = "remove-sign"
+                    avail_class = "danger"
+                elif availability == "y":
+                    avail_verb = _("Oui")
+                    avail_label = "ok-sign"
+                    avail_class = "success"
 
             if availability in ["y", "i"]:
                 thissesskey = int(search(r"-s(\d+)", key).group(1))
@@ -220,8 +226,9 @@ def useravailsessions_readonly(
                             avail_verb = _("Choisi")
                             avail_label = "check"
                         else:
-                            avail_verb = _("Pas choisi")
-                            avail_label = "unchecked"
+                            if not planning:
+                                avail_verb = _("Pas choisi")
+                                avail_label = "unchecked"
 
             elif onlyavail:
                 avail_content = " "
@@ -257,12 +264,21 @@ def useravailsessions_readonly(
                             ),
                         )
                     )
-                    if conflict
+                    if conflict and not planning
                     else ""
                 ),
                 key=key,
             )
     return mark_safe(output)
+
+
+@register.filter
+def userplanning_sessions_readonly(struct, user):
+    """
+    Output cells with the state of the availability / choice for all sessions,
+    for that user
+    """
+    return useravailsessions_readonly(struct, user, planning=True)
 
 
 @register.filter

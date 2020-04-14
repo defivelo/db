@@ -47,6 +47,7 @@ from .views import (
     SeasonListView,
     SeasonOrgaListView,
     SeasonPlanningExportView,
+    SeasonPlanningView,
     SeasonStaffChoiceUpdateView,
     SeasonUpdateView,
     SessionCreateView,
@@ -144,6 +145,11 @@ urlpatterns = [
                     r"^availability/$",
                     never_cache(SeasonAvailabilityView.as_view()),
                     name="season-availabilities",
+                ),
+                url(
+                    r"^planning/$",
+                    never_cache(SeasonPlanningView.as_view()),
+                    name="season-planning",
                 ),
                 url(
                     r"^availability/staff/$",
