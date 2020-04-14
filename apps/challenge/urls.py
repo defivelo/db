@@ -105,53 +105,60 @@ urlpatterns = [
         ),
     ),
     url(r"^new/$", SeasonCreateView.as_view(), name="season-create"),
-    url(r"^(?P<pk>[0-9]+)/update/$", SeasonUpdateView.as_view(), name="season-update"),
     url(
-        r"^(?P<pk>[0-9]+)/$",
-        never_cache(SeasonDetailView.as_view()),
-        name="season-detail",
+        r"^(?P<pk>[0-9]+)/",
+        include(
+            [
+                url(r"^update/$", SeasonUpdateView.as_view(), name="season-update"),
+                url(
+                    r"^$",
+                    never_cache(SeasonDetailView.as_view()),
+                    name="season-detail",
+                ),
+                url(
+                    r"^(?P<format>[a-z]+)export$",
+                    never_cache(SeasonExportView.as_view()),
+                    name="season-export",
+                ),
+                url(
+                    r"^(?P<format>[a-z]+)exportplanning$",
+                    never_cache(SeasonPlanningExportView.as_view()),
+                    name="season-planning-export",
+                ),
+                url(
+                    r"^moniteurs/$",
+                    never_cache(SeasonHelperListView.as_view()),
+                    name="season-helperlist",
+                ),
+                url(
+                    r"^intervenants/$",
+                    never_cache(SeasonActorListView.as_view()),
+                    name="season-actorlist",
+                ),
+                url(
+                    r"^erreurs/$",
+                    never_cache(SeasonErrorsListView.as_view()),
+                    name="season-errorslist",
+                ),
+                url(
+                    r"^availability/$",
+                    never_cache(SeasonAvailabilityView.as_view()),
+                    name="season-availabilities",
+                ),
+                url(
+                    r"^availability/staff/$",
+                    never_cache(SeasonStaffChoiceUpdateView.as_view()),
+                    name="season-staff-update",
+                ),
+                url(
+                    r"^availability/(?P<helperpk>[0-9]+)/$",
+                    SeasonAvailabilityUpdateView.as_view(),
+                    name="season-availabilities-update",
+                ),
+                url(r"^delete/$", SeasonDeleteView.as_view(), name="season-delete",),
+            ]
+        ),
     ),
-    url(
-        r"^(?P<pk>[0-9]+)/(?P<format>[a-z]+)export$",
-        never_cache(SeasonExportView.as_view()),
-        name="season-export",
-    ),
-    url(
-        r"^(?P<pk>[0-9]+)/(?P<format>[a-z]+)exportplanning$",
-        never_cache(SeasonPlanningExportView.as_view()),
-        name="season-planning-export",
-    ),
-    url(
-        r"^(?P<pk>[0-9]+)/moniteurs/$",
-        never_cache(SeasonHelperListView.as_view()),
-        name="season-helperlist",
-    ),
-    url(
-        r"^(?P<pk>[0-9]+)/intervenants/$",
-        never_cache(SeasonActorListView.as_view()),
-        name="season-actorlist",
-    ),
-    url(
-        r"^(?P<pk>[0-9]+)/erreurs/$",
-        never_cache(SeasonErrorsListView.as_view()),
-        name="season-errorslist",
-    ),
-    url(
-        r"^(?P<pk>[0-9]+)/availability/$",
-        never_cache(SeasonAvailabilityView.as_view()),
-        name="season-availabilities",
-    ),
-    url(
-        r"^(?P<pk>[0-9]+)/availability/staff/$",
-        never_cache(SeasonStaffChoiceUpdateView.as_view()),
-        name="season-staff-update",
-    ),
-    url(
-        r"^(?P<pk>[0-9]+)/availability/(?P<helperpk>[0-9]+)/$",
-        SeasonAvailabilityUpdateView.as_view(),
-        name="season-availabilities-update",
-    ),
-    url(r"^(?P<pk>[0-9]+)/delete/$", SeasonDeleteView.as_view(), name="season-delete"),
     # Invoices
     url(
         r"^(?P<seasonpk>[0-9]+)/",
