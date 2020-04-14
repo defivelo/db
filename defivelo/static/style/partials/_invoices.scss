@@ -8,8 +8,8 @@ body.dv-invoice {
   .invoice-date {
     clear: both;
     float: right;
-    margin-top: 3em;
-    margin-bottom: 4em;
+    margin-top: 2em;
+    margin-bottom: 1em;
   }
   .invoice-title {
     clear: both;
@@ -25,6 +25,7 @@ body.dv-invoice {
     padding-bottom: 2em;
     border-bottom: 1px solid #4fa2ce;
     margin-bottom: 1em;
+    text-align: justify;
   }
 
   .invoice-table {

@@ -106,7 +106,7 @@ body.dv-invoice {
   .invoice-address-to {
     // Approximately what makes the address fit in a single-folded A4 sheet towards a window C5 letter
     margin-top: $letter-address-margin-top;
-    max-width: calc(100% - ($letter-address-margin-left + $letter-address-margin-right));
+    max-width: calc(100% - #{$letter-address-margin-left + $letter-address-margin-right});
     margin-right: $letter-address-margin-right; // 10mm is the standard right page margin
     font-size: 10pt;
   }
