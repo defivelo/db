@@ -1,7 +1,12 @@
 {% load i18n %}
 <div class="hidden-print">
     <a class="btn btn-default" href="{% url 'season-list' year=now.year %}">{% trans "Retour à la liste des saisons" %}</a>
-    <a class="btn btn-default" href="{% url 'season-update' season.pk %}"><span class="glyphicon glyphicon-pencil"></span> {% trans "Éditer la saison" %}</a>
+    <div class="btn-group">
+      <a class="btn btn-default" href="{% url 'season-update' season.pk %}"><span class="glyphicon glyphicon-pencil"></span> {% trans "Éditer la saison" %}</a>
+      {% if not season.staff_can_see_planning %}
+        <a class="btn btn-default" href="{% url 'season-set-running' season.pk %}"><span class="glyphicon glyphicon-apple"></span> {% trans "Annoncer le planning" %}</a>
+      {% endif %}
+    </div>
     <a class="btn btn-primary" href="{% url 'season-availabilities' season.pk %}"><span class="glyphicon glyphicon-th"></span> {% trans "Planning" %}</a>
     
     {% if season.has_availability_incoherences and season.manager_can_crud %}

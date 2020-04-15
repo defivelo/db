@@ -113,7 +113,7 @@ urlpatterns = [
             [
                 url(r"^update/$", SeasonUpdateView.as_view(), name="season-update"),
                 url(
-                    r"^setrunning/$",
+                    r"^openplanning/$",
                     SeasonToRunningView.as_view(),
                     name="season-set-running",
                 ),
