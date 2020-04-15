@@ -458,7 +458,7 @@ class SeasonToRunningView(SeasonToStateMixin):
             helperpk = profile.pk
         else:
             # Fake a profile that can be used in template
-            profile = {"get_full_name": _("{Nom} {Prénom}")}
+            profile = {"get_full_name": _("{Prénom} {Nom}")}
             helperpk = 0
 
         planning_link = self.request.build_absolute_uri(
