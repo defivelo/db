@@ -250,10 +250,11 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                     expected_status_code = 200
                     if (
                         symbolicurl == "season-set-running"
-                        and state[0] == DV_SEASON_STATE_RUNNING
+                        and not self.season.can_set_state_running
                     ):
-                        # A running season cannot be set running, see test_season_openplanning
+                        # There are only some states in which we cna set the state to running
                         expected_status_code = 403
+
                     self.assertEqual(response.status_code, expected_status_code, url)
 
                 for symbolicurl in restrictedhelperspecificurls:
@@ -282,7 +283,7 @@ class StateManagerUserTest(SeasonTestCaseMixin):
             url = reverse("season-set-running", kwargs={"pk": self.season.pk})
             response = self.client.get(url, follow=True)
             expected_status_code = 200
-            if state[0] == DV_SEASON_STATE_RUNNING:
+            if not self.season.can_set_state_running:
                 expected_status_code = 403
             self.assertEqual(response.status_code, expected_status_code, url)
 

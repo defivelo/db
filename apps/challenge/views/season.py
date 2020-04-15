@@ -482,6 +482,14 @@ class SeasonToRunningView(SeasonToStateMixin):
             ),
         }
 
+    def dispatch(self, request, bypassperm=False, *args, **kwargs):
+        """
+        Push away if we're not allowed to go to that state now
+        """
+        if self.season and self.season.can_set_state_running:
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["email"] = self.get_email()
