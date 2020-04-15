@@ -174,41 +174,6 @@ class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
             raise PermissionDenied
 
 
-class SeasonToStateMixin(SeasonUpdateView):
-    form_class = SeasonToSpecificStateForm
-    season_to_state = None
-    template_name = "challenge/season_form_tostate.html"
-
-    def get_form_kwargs(self):
-        """
-        Hand over tostate to the Form class
-        """
-        form_kwargs = super().get_form_kwargs()
-        form_kwargs["tostate"] = self.season_to_state
-        return form_kwargs
-
-    def get_context_data(self, **kwargs):
-        """
-        Set tostate to the verbose desired state
-        """
-        context = super().get_context_data(**kwargs)
-        context["tostate"] = next(
-            (v for (k, v) in DV_SEASON_STATES if k == self.season_to_state)
-        )
-        return context
-
-    def get_initial(self):
-        """
-        Set the inital form value to the state we target
-        """
-        return {"state": self.season_to_state}
-
-
-class SeasonToRunningView(SeasonToStateMixin):
-    season_to_state = DV_SEASON_STATE_RUNNING
-
-
-
 class SeasonHelpersMixin(SeasonMixin):
     """
     Provide helper functions to list helpers for season enin various formats
@@ -276,6 +241,14 @@ class SeasonHelpersMixin(SeasonMixin):
         return self.potential_helpers(
             qs=get_user_model().objects.filter(pk__in=helpers_pks)
         )
+
+    @cached_property
+    def season_helpers(self):
+        """
+        All the helpers who filled availabilities for this season
+        """
+        helpers_pks = self.current_availabilities().values_list("helper", flat=True)
+        return get_user_model().objects.filter(pk__in=helpers_pks)
 
 
 class SeasonAvailabilityMixin(SeasonHelpersMixin):

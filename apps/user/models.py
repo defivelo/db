@@ -281,13 +281,11 @@ class UserProfile(Address, models.Model):
         self.user.save()
 
         # This can raise exception, but that's good
-        send_mail(
+        self.send_mail(
             _("Accès au site '{site_name}'").format(
                 site_name=context["current_site"].name
             ),
             render_to_string("auth/email_user_send_credentials.txt", context),
-            settings.DEFAULT_FROM_EMAIL,
-            [self.mailtolink,],
         )
 
         # Create a validated email
@@ -497,6 +495,14 @@ class UserProfile(Address, models.Model):
             self.status == USERSTATUS_DELETED
             and not self.user.is_active
             and not self.user.has_usable_password()
+        )
+
+    def send_mail(self, subject: str, body: str):
+        """
+        Send an email to that user
+        """
+        return send_mail(
+            subject, body, settings.DEFAULT_FROM_EMAIL, [self.mailtolink,],
         )
 
     def __str__(self):
