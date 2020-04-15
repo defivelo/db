@@ -274,7 +274,7 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                     response = self.client.get(url, follow=True)
                     self.assertEqual(response.status_code, 200, url)
 
-    def test_season_openplanning(self):
+    def test_season_openplanning_accesses(self):
         # Loop over all states
         for state in DV_SEASON_STATES:
             self.season.state = state[0]
@@ -284,6 +284,23 @@ class StateManagerUserTest(SeasonTestCaseMixin):
             expected_status_code = 200
             if state[0] == DV_SEASON_STATE_RUNNING:
                 expected_status_code = 403
+            self.assertEqual(response.status_code, expected_status_code, url)
+
+    def test_season_openplanning(self):
+        url = reverse("season-set-running", kwargs={"pk": self.season.pk})
+
+        # Test that anything put that state works
+        for state in DV_SEASON_STATES:
+            # Set the season to be in preparation
+            self.season.state = DV_SEASON_STATE_OPEN
+            self.season.save()
+            # Test that we can post to set it running
+            response = self.client.post(url, {"state": state[0]})
+            # 200 means that we're back on the page with an error
+            expected_status_code = 200
+            if state[0] == DV_SEASON_STATE_RUNNING:
+                # 302 means that the post succeeded; so we can only post this state
+                expected_status_code = 302
             self.assertEqual(response.status_code, expected_status_code, url)
 
     def test_season_creation(self):

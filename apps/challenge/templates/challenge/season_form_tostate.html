@@ -25,6 +25,7 @@
       {% endfor %}
       </ul>
     {% endif %}
+    {{ form.errors }}
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
         {% bootstrap_form form layout='horizontal' size='small' %}
