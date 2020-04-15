@@ -38,7 +38,12 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from rolepermissions.mixins import HasPermissionsMixin
 from tablib import Dataset
 
-from apps.common import DV_STATES, MULTISELECTFIELD_REGEXP
+from apps.common import (
+    DV_SEASON_STATE_RUNNING,
+    DV_SEASON_STATES,
+    DV_STATES,
+    MULTISELECTFIELD_REGEXP,
+)
 from apps.common.views import ExportMixin
 from apps.user import FORMATION_KEYS, FORMATION_M1, FORMATION_M2, formation_short
 from apps.user.models import USERSTATUS_DELETED
@@ -65,6 +70,7 @@ from ..forms import (
     SeasonForm,
     SeasonNewHelperAvailabilityForm,
     SeasonStaffChoiceForm,
+    SeasonToSpecificStateForm,
 )
 from ..models import HelperSessionAvailability, Qualification, Season
 from ..models.availability import HelperSeasonWorkWish
@@ -166,6 +172,40 @@ class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
             return super(SeasonUpdateView, self).dispatch(request, *args, **kwargs)
         else:
             raise PermissionDenied
+
+
+class SeasonToStateMixin(SeasonUpdateView):
+    form_class = SeasonToSpecificStateForm
+    season_to_state = None
+    template_name = "challenge/season_form_tostate.html"
+
+    def get_form_kwargs(self):
+        """
+        Hand over tostate to the Form class
+        """
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs["tostate"] = self.season_to_state
+        return form_kwargs
+
+    def get_context_data(self, **kwargs):
+        """
+        Set tostate to the verbose desired state
+        """
+        context = super().get_context_data(**kwargs)
+        context["tostate"] = next(
+            (v for (k, v) in DV_SEASON_STATES if k == self.season_to_state)
+        )
+        return context
+
+    def get_initial(self):
+        """
+        Set the inital form value to the state we target
+        """
+        return {"state": self.season_to_state}
+
+
+class SeasonToRunningView(SeasonToStateMixin):
+    season_to_state = DV_SEASON_STATE_RUNNING
 
 
 class SeasonAvailabilityMixin(SeasonMixin):

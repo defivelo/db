@@ -49,6 +49,7 @@ from .views import (
     SeasonPlanningExportView,
     SeasonPlanningView,
     SeasonStaffChoiceUpdateView,
+    SeasonToRunningView,
     SeasonUpdateView,
     SessionCreateView,
     SessionDeleteView,
@@ -111,6 +112,11 @@ urlpatterns = [
         include(
             [
                 url(r"^update/$", SeasonUpdateView.as_view(), name="season-update"),
+                url(
+                    r"^setrunning/$",
+                    SeasonToRunningView.as_view(),
+                    name="season-set-running",
+                ),
                 url(
                     r"^$",
                     never_cache(SeasonDetailView.as_view()),

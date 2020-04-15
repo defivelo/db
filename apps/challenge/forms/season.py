@@ -26,6 +26,7 @@ from bootstrap3_datetime.widgets import DateTimePicker
 from dal.forward import Const as dal_const
 from dal_select2.widgets import ModelSelect2
 
+from apps.common import DV_SEASON_STATE_RUNNING, DV_SEASON_STATES
 from apps.user import FORMATION_KEYS, FORMATION_M2
 from apps.user.models import USERSTATUS_DELETED
 
@@ -48,13 +49,20 @@ from ..models.availability import HelperSessionAvailability
 class SeasonForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         cantons = kwargs.pop("cantons", None)
-        kwargs.pop("season", None)
-        super(SeasonForm, self).__init__(**kwargs)
+        season = kwargs.pop("season", None)
+        super().__init__(**kwargs)
         if cantons:
             # Only permit edition within the allowed cantons
             choices = self.fields["cantons"].choices
             choices = ((k, v) for (k, v) in choices if k in cantons)
             self.fields["cantons"].choices = choices
+        # Drop the DV_SEASON_STATE_RUNNING from the states, we want a different process for that one
+        state_choices = self.fields["state"].choices
+        self.fields["state"].choices = (
+            (k, v)
+            for (k, v) in state_choices
+            if k == season.state or k not in [DV_SEASON_STATE_RUNNING]
+        )
 
     year = forms.IntegerField(
         label=_("Année"),
@@ -74,6 +82,33 @@ class SeasonForm(forms.ModelForm):
     class Meta:
         model = Season
         fields = ["year", "season", "cantons", "state", "leader"]
+
+
+class SeasonToSpecificStateForm(forms.ModelForm):
+    """
+    A form with only hidden fields that will _only_ update a season to a specific season state
+    """
+
+    def __init__(
+        self, tostate: int, *args, **kwargs,
+    ):
+        """
+        Takes a tostate argument, an int of desired target state
+        """
+        kwargs.pop("cantons", None)
+        kwargs.pop("season", None)
+        super().__init__(*args, **kwargs)
+        # Only allow one target state
+        state_choices = self.fields["state"].choices
+        assert tostate in [k for (k, v) in DV_SEASON_STATES]
+        self.fields["state"].choices = (
+            (k, v) for (k, v) in state_choices if k == tostate
+        )
+        self.fields["state"].widget = forms.HiddenInput()
+
+    class Meta:
+        model = Season
+        fields = ["state"]
 
 
 class SeasonNewHelperAvailabilityForm(forms.Form):
