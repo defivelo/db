@@ -436,6 +436,14 @@ class SeasonToStateMixin(SeasonHelpersMixin, SeasonUpdateView):
         """
         return {"state": self.season_to_state}
 
+    def dispatch(self, request, bypassperm=False, *args, **kwargs):
+        """
+        Push away if we're already in the given state
+        """
+        if self.season.state == self.season_to_state:
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
 
 class SeasonToRunningView(SeasonToStateMixin):
     season_to_state = DV_SEASON_STATE_RUNNING
