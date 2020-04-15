@@ -56,13 +56,16 @@ class SeasonForm(forms.ModelForm):
             choices = self.fields["cantons"].choices
             choices = ((k, v) for (k, v) in choices if k in cantons)
             self.fields["cantons"].choices = choices
-        # Drop the DV_SEASON_STATE_RUNNING from the states, we want a different process for that one
-        state_choices = self.fields["state"].choices
-        self.fields["state"].choices = (
-            (k, v)
-            for (k, v) in state_choices
-            if k == season.state or k not in [DV_SEASON_STATE_RUNNING]
-        )
+        try:
+            # Drop the DV_SEASON_STATE_RUNNING from the states, we want a different process for that one
+            state_choices = self.fields["state"].choices
+            self.fields["state"].choices = (
+                (k, v)
+                for (k, v) in state_choices
+                if k == season.state or k not in [DV_SEASON_STATE_RUNNING]
+            )
+        except AttributeError:
+            pass
 
     year = forms.IntegerField(
         label=_("Année"),
