@@ -607,7 +607,7 @@ class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
         hsas = self.current_availabilities()
         if hsas:
             # Fill in the helpers with the ones we currently have
-            helpers_pks = self.current_availabilities_present().values_list(
+            helpers_pks = self.current_availabilities().values_list(
                 "helper_id", flat=True
             )
             potential_helpers = self.potential_helpers(
