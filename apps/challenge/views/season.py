@@ -20,10 +20,10 @@ from __future__ import unicode_literals
 import operator
 from collections import OrderedDict
 from functools import reduce
-from textwrap import TextWrapper
 
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.sites.models import Site
 from django.core.exceptions import PermissionDenied
 from django.db.models import Case, Count, F, IntegerField, Q, When
 from django.http import HttpResponseRedirect
@@ -456,25 +456,20 @@ class SeasonToRunningView(SeasonToStateMixin):
                 "season-planning", kwargs={"pk": self.season.pk, "helperpk": helperpk},
             )
         )
-        tw = TextWrapper(width=80, expand_tabs=False, replace_whitespace=False,)
-        body = render_to_string(
-            "challenge/season_email_to_state_running.txt",
-            {
-                "profile": profile,
-                "season": self.season,
-                "planning_link": planning_link,
-            },
-        )
-        body_indented = []
-        # Wrap all paragraphs identically
-        for line in body.splitlines():
-            body_indented.append(tw.fill(line))
 
         return {
             "subject": _("DÉFI VÉLO: Planning {season}").format(
                 season=self.season.desc()
             ),
-            "body": "\n".join(body_indented),
+            "body": render_to_string(
+                "challenge/season_email_to_state_running.txt",
+                {
+                    "profile": profile,
+                    "season": self.season,
+                    "planning_link": planning_link,
+                    "current_site": Site.objects.get_current(),
+                },
+            ),
         }
 
     def get_context_data(self, **kwargs):
