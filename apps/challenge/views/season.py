@@ -208,11 +208,16 @@ class SeasonToRunningView(SeasonToStateMixin):
     season_to_state = DV_SEASON_STATE_RUNNING
 
 
-class SeasonAvailabilityMixin(SeasonMixin):
-    view_is_update = False
-    view_is_planning = False
+
+class SeasonHelpersMixin(SeasonMixin):
+    """
+    Provide helper functions to list helpers for season enin various formats
+    """
 
     def potential_helpers_qs(self, qs=None):
+        """
+        Queryset of potential helpers
+        """
         if not qs:
             qs = get_user_model().objects.exclude(profile__status=USERSTATUS_DELETED)
             if self.season:
@@ -235,6 +240,9 @@ class SeasonAvailabilityMixin(SeasonMixin):
         )
 
     def potential_helpers(self, qs=None):
+        """
+        Return the struct of potential helpers, in three blocks
+        """
         qs = self.potential_helpers_qs(qs)
         all_helpers = qs.order_by("first_name", "last_name")
         return (
@@ -268,6 +276,11 @@ class SeasonAvailabilityMixin(SeasonMixin):
         return self.potential_helpers(
             qs=get_user_model().objects.filter(pk__in=helpers_pks)
         )
+
+
+class SeasonAvailabilityMixin(SeasonHelpersMixin):
+    view_is_update = False
+    view_is_planning = False
 
     def dispatch(self, request, *args, **kwargs):
         if (
