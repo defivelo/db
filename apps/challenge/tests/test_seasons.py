@@ -46,6 +46,7 @@ restrictedspecificurls = [
     "season-availabilities",
     "season-staff-update",
     "season-delete",
+    "season-set-running",
 ]
 restrictedhelperspecificurls = [
     "season-availabilities-update",
@@ -238,14 +239,22 @@ class StateManagerUserTest(SeasonTestCaseMixin):
     def test_access_to_season_detail(self):
         # The season is anything but archived
         for state in DV_SEASON_STATES:
+            self.season.state = state[0]
+            self.season.save()
+
             if state[0] != DV_SEASON_STATE_ARCHIVED:
-                self.season.state = state[0]
-                self.season.save()
                 for symbolicurl in restrictedspecificurls:
                     url = reverse(symbolicurl, kwargs={"pk": self.season.pk})
                     # Final URL is OK
                     response = self.client.get(url, follow=True)
-                    self.assertEqual(response.status_code, 200, url)
+                    expected_status_code = 200
+                    if (
+                        symbolicurl == "season-set-running"
+                        and state[0] == DV_SEASON_STATE_RUNNING
+                    ):
+                        # A running season cannot be set running, see test_season_openplanning
+                        expected_status_code = 403
+                    self.assertEqual(response.status_code, expected_status_code, url)
 
                 for symbolicurl in restrictedhelperspecificurls:
                     for helper in self.users:
@@ -264,6 +273,18 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                     # Final URL is OK
                     response = self.client.get(url, follow=True)
                     self.assertEqual(response.status_code, 200, url)
+
+    def test_season_openplanning(self):
+        # Loop over all states
+        for state in DV_SEASON_STATES:
+            self.season.state = state[0]
+            self.season.save()
+            url = reverse("season-set-running", kwargs={"pk": self.season.pk})
+            response = self.client.get(url, follow=True)
+            expected_status_code = 200
+            if state[0] == DV_SEASON_STATE_RUNNING:
+                expected_status_code = 403
+            self.assertEqual(response.status_code, expected_status_code, url)
 
     def test_season_creation(self):
         url = reverse("season-create")
@@ -339,6 +360,7 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                 "season-staff-update",
                 "season-helperlist",
                 "season-actorlist",
+                "season-set-running",
             ]:
                 self.assertEqual(response.status_code, 403, url)
             else:

@@ -442,7 +442,7 @@ class SeasonToStateMixin(SeasonHelpersMixin, SeasonUpdateView):
         """
         Push away if we're already in the given state
         """
-        if self.season.state == self.season_to_state:
+        if self.season and self.season.state == self.season_to_state:
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
