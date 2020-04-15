@@ -249,7 +249,9 @@ class SeasonHelpersMixin(SeasonMixin):
         """
         All the helpers who filled availabilities for this season
         """
-        helpers_pks = self.current_availabilities().values_list("helper", flat=True)
+        helpers_pks = self.current_availabilities_present().values_list(
+            "helper", flat=True
+        )
         return get_user_model().objects.filter(pk__in=helpers_pks)
 
 
