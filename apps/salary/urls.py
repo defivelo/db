@@ -6,6 +6,7 @@ from django.views.generic import RedirectView
 from apps.salary.views import (
     ExportMonthlyTimesheets,
     RedirectUserMonthlyTimesheets,
+    SendTimesheetsReminder,
     UserMonthlyTimesheets,
     YearlyTimesheets,
 )
@@ -51,6 +52,11 @@ urlpatterns = [
                                 r"^(?P<pk>[0-9]+)/$",
                                 UserMonthlyTimesheets.as_view(),
                                 name="user-timesheets",
+                            ),
+                            url(
+                                r"^send_reminder/$",
+                                SendTimesheetsReminder.as_view(),
+                                name="send-timesheets-reminder",
                             ),
                         ]
                     ),

@@ -89,6 +89,27 @@
           <th>{{ amount }}</th>
         {% endfor %}
       </tr>
+      {% if user|can:'timesheet_editor' %}
+        <tr>
+          <th>{% trans "Envoyer un rappel" %}</th>
+          {% for show_reminder_button in show_reminder_button_months %}
+            <th class="text-center">
+              <a
+                class="btn btn-info"
+                title="{% trans "Envoyer un rappel aux moniteurs qui n'ont pas remplis leurs heures" %}"
+                {% if show_reminder_button %}
+                  href="{% url "salary:send-timesheets-reminder" year=year month=forloop.counter %}"
+                {% else %}
+                  disabled
+                  aria-disabled="true"
+                {% endif %}
+              >
+                <span class=" glyphicon glyphicon-envelope" aria-hidden="true"></span>
+              </a>
+            </th>
+          {% endfor %}
+        </tr>
+      {% endif %}
       {% if user|can:'challenge_invoice_cru' %}
         <tr>
           <th></th>

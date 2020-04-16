@@ -144,3 +144,43 @@ def test_matrix_shows_timesheets_total(db):
 
     # Check that all months have "0" except for April that has a timesheet that is validated
     assert amounts == [0] * 3 + [5 * HOURLY_RATE_HELPER] + [0] * 8
+
+
+def test_state_manager_sees_reminder_button_for_month_with_missing_timesheets(db):
+    client = StateManagerAuthClient()
+    managed_cantons = user_cantons(client.user)
+
+    helper = UserFactory(
+        first_name="Maurice",
+        last_name="Moss",
+        profile__affiliation_canton=managed_cantons[0],
+    )
+
+    date_validated = datetime.date(2019, 2, 11)
+    QualificationFactory(
+        actor=helper, session=SessionFactory(day=date_validated),
+    )
+    TimesheetFactory(
+        date=date_validated, user=helper,
+    )
+
+    date_missing = datetime.date(2019, 3, 11)
+    QualificationFactory(
+        actor=helper, session=SessionFactory(day=date_missing),
+    )
+
+    response = client.get(reverse("salary:timesheets-overview", kwargs={"year": 2019}))
+    assert response.status_code == 200
+    show_jan, show_feb, show_march, *_ = response.context["show_reminder_button_months"]
+    assert not show_jan and not show_feb and show_march
+    assert "Envoyer un rappel aux moniteurs" in response.content.decode()
+
+
+def test_helper_doesnt_see_reminder_button(db):
+    client = AuthClient()
+    QualificationFactory(
+        actor=client.user, session=SessionFactory(day=datetime.date(2019, 3, 11)),
+    )
+    response = client.get(reverse("salary:timesheets-overview", kwargs={"year": 2019}))
+    assert response.status_code == 200
+    assert "Envoyer un rappel aux moniteurs" not in response.content.decode()
