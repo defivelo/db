@@ -166,6 +166,10 @@ class Season(models.Model):
             "orga",
         )
 
+    @property
+    def sessions_by_orga(self):
+        return self.sessions.order_by("orga__name", "day", "begin")
+
     @cached_property
     def sessions_with_qualifs(self):
         if not hasattr(self, "sessions_with_q"):
