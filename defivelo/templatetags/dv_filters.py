@@ -197,8 +197,12 @@ def useravailsessions_readonly(
                     avail_label = "ok-sign"
                     avail_class = "success"
 
+            thissesskey = int(search(r"-s(\d+)", key).group(1))
+
+            slkey = SUPERLEADER_FIELDKEY.format(hpk=user.pk, spk=thissesskey)
+            superleader = slkey in struct and struct[slkey]
+
             if availability in ["y", "i"]:
-                thissesskey = int(search(r"-s(\d+)", key).group(1))
                 choicekey = CHOICE_FIELDKEY.format(hpk=user.pk, spk=thissesskey)
                 locked = choicekey in struct and struct[choicekey]
 
@@ -206,9 +210,6 @@ def useravailsessions_readonly(
                 conflicts = struct[conflictkey] if conflictkey in struct else []
                 if len(conflicts) > 0:
                     conflict = conflicts.pop()
-
-                slkey = SUPERLEADER_FIELDKEY.format(hpk=user.pk, spk=thissesskey)
-                superleader = slkey in struct and struct[slkey]
 
                 # Si le choix des moniteurs est connu, remplace le label et
                 # la version verbeuse par l'état du choix
