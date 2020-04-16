@@ -24,6 +24,7 @@ from apps.common import (
     DV_SEASON_SPRING,
     DV_SEASON_STATE_ARCHIVED,
     DV_SEASON_STATE_OPEN,
+    DV_SEASON_STATE_RUNNING,
     DV_SEASON_STATES,
     DV_STATES,
 )
@@ -48,6 +49,7 @@ restrictedspecificurls = [
 ]
 restrictedhelperspecificurls = [
     "season-availabilities-update",
+    "season-planning",
 ]
 
 
@@ -129,41 +131,61 @@ class AuthUserTest(SeasonTestCaseMixin):
                 self.assertEqual(response.status_code, 403, url)
 
     def test_access_to_myseason_availabilities(self):
-        for symbolicurl in restrictedhelperspecificurls:
-            url = reverse(
+        urls = {
+            symbolicurl: reverse(
                 symbolicurl,
                 kwargs={"pk": self.season.pk, "helperpk": self.client.user.pk},
             )
-            # Fails, we have no formation
+            for symbolicurl in restrictedhelperspecificurls
+        }
+        # Fails, we have no formation
+        for k, url in urls.items():
             self.assertEqual(self.client.get(url).status_code, 403, url)
 
-            # Fails, we have not a common canton
-            self.client.user.profile.formation = FORMATION_M1
-            self.client.user.profile.save()
+        # Fails, we have not a common canton
+        self.client.user.profile.formation = FORMATION_M1
+        self.client.user.profile.save()
+        for k, url in urls.items():
             self.assertEqual(self.client.get(url).status_code, 403, url)
 
-            # Works, we have it all
-            self.client.user.profile.affiliation_canton = self.season.cantons[0]
-            self.client.user.profile.save()
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, 200, url)
-            self.assertTemplateUsed(response, "widgets/BSRadioSelect_option.html")
+        # Works, we have it all
+        self.client.user.profile.affiliation_canton = self.season.cantons[0]
+        self.client.user.profile.save()
+        response = self.client.get(urls["season-availabilities-update"])
+        self.assertEqual(response.status_code, 200, ["season-availabilities-update"])
+        self.assertTemplateUsed(response, "widgets/BSRadioSelect_option.html")
 
-            # The season is not open
-            for state in DV_SEASON_STATES:
-                if state[0] != DV_SEASON_STATE_OPEN:
-                    self.season.state = state[0]
-                    self.season.save()
-                    # … so no access
-                    response = self.client.get(url)
-                    self.assertEqual(response.status_code, 403, url)
-
-            self.season.state = DV_SEASON_STATE_OPEN
+        # The season is not open
+        for state in DV_SEASON_STATES:
+            self.season.state = state[0]
             self.season.save()
+            response = self.client.get(urls["season-availabilities-update"])
+            if state[0] == DV_SEASON_STATE_OPEN:
+                self.assertEqual(
+                    response.status_code, 200, urls["season-availabilities-update"]
+                )
+            else:
+                self.assertEqual(
+                    response.status_code, 403, urls["season-availabilities-update"]
+                )
+        # Test the access to the planning
+        for state in DV_SEASON_STATES:
+            self.season.state = state[0]
+            self.season.save()
+            response = self.client.get(urls["season-planning"])
+            if state[0] == DV_SEASON_STATE_RUNNING:
+                # … so no access
+                self.assertEqual(response.status_code, 200, urls["season-planning"])
+            else:
+                self.assertEqual(response.status_code, 403, urls["season-planning"])
 
-            # Fails, we have a common canton, but no Formation
-            self.client.user.profile.formation = ""
-            self.client.user.profile.save()
+        self.season.state = DV_SEASON_STATE_OPEN
+        self.season.save()
+
+        # Fails, we have a common canton, but no Formation
+        self.client.user.profile.formation = ""
+        self.client.user.profile.save()
+        for k, url in urls.items():
             self.assertEqual(self.client.get(url).status_code, 403, url)
 
     def test_no_access_to_session(self):

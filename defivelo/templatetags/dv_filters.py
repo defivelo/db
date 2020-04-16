@@ -47,6 +47,7 @@ from apps.challenge import (
     SEASON_WORKWISH_FIELDKEY,
     STAFF_FIELDKEY,
     STAFF_FIELDKEY_HELPER_PREFIX,
+    SUPERLEADER_FIELDKEY,
 )
 from apps.common import (
     DV_SEASON_CHOICES,
@@ -152,7 +153,12 @@ def useravailsessions(form, user):
 
 @register.filter
 def useravailsessions_readonly(
-    struct, user, avail_forced_content=None, sesskey=None, onlyavail=False
+    struct,
+    user,
+    avail_forced_content=None,
+    sesskey=None,
+    onlyavail=False,
+    planning=False,
 ):
     """
     Output cells with the state of the availability / choice for all sessions,
@@ -175,22 +181,28 @@ def useravailsessions_readonly(
             avail_content = avail_forced_content
             conflict = False
             locked = False
-            if availability == "i":
-                # If needed
-                avail_verb = _("Si nécessaire")
-                avail_label = "ok-circle"
-                avail_class = "warning"
-            elif availability == "n":
-                avail_verb = _("Non")
-                avail_label = "remove-sign"
-                avail_class = "danger"
-            elif availability == "y":
-                avail_verb = _("Oui")
-                avail_label = "ok-sign"
-                avail_class = "success"
+            superleader = False
+            if not planning:
+                if availability == "i":
+                    # If needed
+                    avail_verb = _("Si nécessaire")
+                    avail_label = "ok-circle"
+                    avail_class = "warning"
+                elif availability == "n":
+                    avail_verb = _("Non")
+                    avail_label = "remove-sign"
+                    avail_class = "danger"
+                elif availability == "y":
+                    avail_verb = _("Oui")
+                    avail_label = "ok-sign"
+                    avail_class = "success"
+
+            thissesskey = int(search(r"-s(\d+)", key).group(1))
+
+            slkey = SUPERLEADER_FIELDKEY.format(hpk=user.pk, spk=thissesskey)
+            superleader = slkey in struct and struct[slkey]
 
             if availability in ["y", "i"]:
-                thissesskey = int(search(r"-s(\d+)", key).group(1))
                 choicekey = CHOICE_FIELDKEY.format(hpk=user.pk, spk=thissesskey)
                 locked = choicekey in struct and struct[choicekey]
 
@@ -220,30 +232,41 @@ def useravailsessions_readonly(
                             avail_verb = _("Choisi")
                             avail_label = "check"
                         else:
-                            avail_verb = _("Pas choisi")
-                            avail_label = "unchecked"
+                            if not planning:
+                                avail_verb = _("Pas choisi")
+                                avail_label = "unchecked"
 
             elif onlyavail:
                 avail_content = " "
 
+            final_avail_label = (
+                avail_content
+                if avail_content
+                else (
+                    STDGLYPHICON.format(
+                        icon=avail_label, title=avail_verb if avail_verb else ""
+                    )
+                    if avail_label
+                    else ""
+                )
+            )
+
             output += (
                 '<td class="{avail_class}"{avail_verbose}><div class="dvflex">'
-                "<!-- {key} -->{avail_label}{conflict_warning}"
+                "<!-- {key} -->{avail_label}{superleader}{conflict_warning}"
                 "</div></td>"
             ).format(
                 avail_class="info" if locked else avail_class,
                 avail_verbose=' title="%s"' % avail_verb if avail_verb else "",
-                avail_label=(
-                    avail_content
-                    if avail_content
-                    else (
-                        STDGLYPHICON.format(
-                            icon=avail_label, title=avail_verb if avail_verb else ""
-                        )
-                        if avail_label
-                        else ""
+                avail_label=final_avail_label,
+                superleader=(
+                    ("&nbsp;/&nbsp;" if final_avail_label else "")
+                    + '<span title="{mplus}">{mplus_short}</span>'.format(
+                        mplus=_("Moniteur + / Photographe"), mplus_short=_("M+")
                     )
-                ),
+                )
+                if superleader and planning
+                else "",
                 conflict_warning=(
                     (
                         '<a class="text-danger" href="{season_url}#sess{sessionpk}">{glyph}</a>'.format(
@@ -257,12 +280,21 @@ def useravailsessions_readonly(
                             ),
                         )
                     )
-                    if conflict
+                    if conflict and not planning
                     else ""
                 ),
                 key=key,
             )
     return mark_safe(output)
+
+
+@register.filter
+def userplanning_sessions_readonly(struct, user):
+    """
+    Output cells with the state of the availability / choice for all sessions,
+    for that user
+    """
+    return useravailsessions_readonly(struct, user, planning=True)
 
 
 @register.filter

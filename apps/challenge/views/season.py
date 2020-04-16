@@ -58,6 +58,7 @@ from .. import (
     CONFLICT_FIELDKEY,
     SEASON_WORKWISH_FIELDKEY,
     STAFF_FIELDKEY,
+    SUPERLEADER_FIELDKEY,
 )
 from ..forms import (
     SeasonAvailabilityForm,
@@ -169,6 +170,7 @@ class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
 
 class SeasonAvailabilityMixin(SeasonMixin):
     view_is_update = False
+    view_is_planning = False
 
     def potential_helpers_qs(self, qs=None):
         if not qs:
@@ -184,8 +186,10 @@ class SeasonAvailabilityMixin(SeasonMixin):
 
             # Pick the one helper from the command line if it makes sense
             resolvermatch = self.request.resolver_match
-            if "helperpk" in resolvermatch.kwargs:
+            try:
                 qs = qs.filter(pk=int(resolvermatch.kwargs["helperpk"]))
+            except (KeyError, TypeError):
+                pass
         return qs.prefetch_related(
             "profile", "profile__actor_for", "profile__actor_for__translations",
         )
@@ -227,7 +231,7 @@ class SeasonAvailabilityMixin(SeasonMixin):
 
     def dispatch(self, request, *args, **kwargs):
         if (
-            # Check that the request user is alone in the potential_helpers
+            # Check that the request user is alone in the potential_helpers and we're in season_update
             (
                 self.potential_helpers_qs()
                 .filter(
@@ -237,7 +241,13 @@ class SeasonAvailabilityMixin(SeasonMixin):
                 .filter(pk=request.user.pk)
                 .exists()
                 and self.season
-                and self.season.staff_can_update_availability
+                and (
+                    (
+                        self.season.staff_can_update_availability
+                        and not self.view_is_planning
+                    )
+                    or (self.season.staff_can_see_planning and self.view_is_planning)
+                )
             )
             or
             # Soit j'ai le droit et c'est le bon moment
@@ -298,6 +308,9 @@ class SeasonAvailabilityMixin(SeasonMixin):
                         conflictkey = CONFLICT_FIELDKEY.format(
                             hpk=helper.pk, spk=session.pk
                         )
+                        superleaderkey = SUPERLEADER_FIELDKEY.format(
+                            hpk=helper.pk, spk=session.pk
+                        )
                         try:
                             hsa = helper_availability[session.id]
                             initials[fieldkey] = hsa.availability
@@ -312,6 +325,9 @@ class SeasonAvailabilityMixin(SeasonMixin):
                             initials[fieldkey] = ""
                             initials[staffkey] = ""
                             initials[choicekey] = ""
+                        # List super-leaders (Moniteurs +)
+                        if session.superleader == helper:
+                            initials[superleaderkey] = True
 
                         # Trouve les disponibilités en conflit
                         initials[conflictkey] = [
@@ -634,6 +650,20 @@ class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
         return HttpResponseRedirect(
             reverse_lazy("season-availabilities", kwargs={"pk": seasonpk})
         )
+
+
+class SeasonPlanningView(SeasonAvailabilityMixin, DetailView):
+    template_name = "challenge/season_planning.html"
+    allow_season_fetch = True
+    raise_without_cantons = False
+    view_is_planning = True
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        potential_helpers = self.potential_helpers()
+        context["potential_helpers"] = potential_helpers
+        context["availabilities"] = self.get_initial(all_helpers=potential_helpers)
+        return context
 
 
 class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):

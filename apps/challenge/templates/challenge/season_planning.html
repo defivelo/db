@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load i18n bootstrap3 dv_filters %}
+{% block head_title %}{{ season.desc }}{% endblock %}
+
+{% block container-class %}container-fluid{% endblock %}
+
+{% block content %}
+    {% include "challenge/season_header.html" with season=season only %}
+    <h4>{% trans "Planning" %}</h4>
+        <table class="table text-center table-avail">
+        {% include "challenge/season_availability_thead.html" with sessions=sessions season=season user=request.user preamble_columns=3 only %}
+        <tbody>
+            {% for helper_category,helpers in potential_helpers %}
+                {% if helpers %}
+                    <tr><th colspan="{{ sessions.count|add:"5" }}">{{ helper_category }}</th></tr>
+                    {% for helper in helpers %}
+                    <tr>
+                        {% include "challenge/season_availability_partial_helper_columns.html" with helper=helper only %}
+                        {{ availabilities|userplanning_sessions_readonly:helper }}
+                    </tr>
+                    {% endfor %}
+                    {% if helpers.count > 10 %}
+                        {% include "challenge/season_availability_partial_head.html" with sessions=sessions season=season user=request.user preamble_columns=3 only %}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </tbody>
+        </table>
+
+<div class="hidden-print">
+    <a class="btn btn-default" href="{% url 'season-list' season.year %}">{% blocktrans with year=season.year %}Saisons {{ year }}{% endblocktrans %}</a>
+</div>
+{% endblock %}
