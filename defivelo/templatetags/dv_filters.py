@@ -260,7 +260,9 @@ def useravailsessions_readonly(
                 avail_label=final_avail_label,
                 superleader=(
                     ("&nbsp;/&nbsp;" if final_avail_label else "")
-                    + f"<span title=\"{_('Moniteur + / Photographe')}\">{_('M+')}</span>"
+                    + '<span title="{mplus}">{mplus_short}</span>'.format(
+                        mplus=_("Moniteur + / Photographe"), mplus_short=_("M+")
+                    )
                 )
                 if superleader and planning
                 else "",
