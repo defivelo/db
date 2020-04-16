@@ -293,6 +293,10 @@ ROLEPERMISSIONS_MODULE = "defivelo.roles"
 SERVER_EMAIL = get_env_variable("SERVER_EMAIL", "noreply@defi-velo.ch")
 DEFAULT_FROM_EMAIL = get_env_variable("DEFAULT_FROM_EMAIL", "noreply@defi-velo.ch")
 
+if get_env_variable("USE_DB_EMAIL_BACKEND", False):
+    INSTALLED_APPS = INSTALLED_APPS + ("db_email_backend",)
+    EMAIL_BACKEND = "db_email_backend.backend.DBEmailBackend"
+
 LOGIN_REDIRECT_URL = "/"
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 2048  # Up from '1000'
