@@ -2,6 +2,7 @@ from datetime import date
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.sites.models import Site
 from django.core import mail
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count, F, Q, Sum
@@ -374,7 +375,10 @@ class SendTimesheetsReminder(TemplateView):
             )
             message = render_to_string(
                 "salary/email_send_timesheets_reminder.txt",
-                {"timesheets_url": timesheets_url},
+                {
+                    "current_site": Site.objects.get_current(),
+                    "timesheets_url": timesheets_url,
+                },
                 self.request,
             )
             return (
