@@ -27,7 +27,6 @@ from apps.salary.models import Timesheet
 from defivelo.roles import has_permission
 
 from . import timesheets_overview
-from .timesheets_overview import TimesheetStatus
 
 
 class RedirectUserMonthlyTimesheets(RedirectView):
@@ -219,20 +218,24 @@ class YearlyTimesheets(TemplateView):
         users = timesheets_overview.get_visible_users(self.request.user).order_by(
             "first_name", "last_name"
         )
+        global_timesheets_status_matrix = timesheets_overview.get_timesheets_status_matrix(
+            year=year, users=users
+        )
         if active_canton:
             users = users.filter(profile__affiliation_canton=active_canton)
+            timesheets_status_matrix = timesheets_overview.get_timesheets_status_matrix(
+                year=year, users=users
+            )
+        else:
+            timesheets_status_matrix = global_timesheets_status_matrix
 
         context["months"] = MONTHS_3
+        context["timesheets_status_matrix"] = timesheets_status_matrix
         context[
-            "timesheets_status_matrix"
-        ] = timesheets_overview.get_timesheets_status_matrix(year=year, users=users)
-        context["show_reminder_button_months"] = [
-            any(
-                statuses[month_index] & TimesheetStatus.TIMESHEET_MISSING
-                for _, statuses in context["timesheets_status_matrix"].items()
-            )
-            for month_index in range(0, 12)
-        ]
+            "show_reminder_button_months"
+        ] = timesheets_overview.get_missing_timesheet_status_per_month(
+            global_timesheets_status_matrix
+        )
         context[
             "timesheets_amount"
         ] = timesheets_overview.get_timesheets_amount_by_month(year=year, users=users)
