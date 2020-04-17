@@ -1,6 +1,6 @@
 {% load i18n %}
 <tr {% if session.errors %}class="warning"{% endif %} >
-    <th><a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">{{ session }}</a></th>
+    <th><a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">{{ session.day }} ({{ session.begin }}) {{ session.city }}</a></th>
     <td>
         {% if session.errors %}
             <span class="glyphicon glyphicon-warning-sign"></span>
