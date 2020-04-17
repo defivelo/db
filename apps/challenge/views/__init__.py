@@ -39,6 +39,7 @@ from .season import (
     SeasonPlanningExportView,
     SeasonPlanningView,
     SeasonStaffChoiceUpdateView,
+    SeasonToRunningView,
     SeasonUpdateView,
 )
 from .session import (

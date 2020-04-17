@@ -23,6 +23,7 @@ from .season import (
     SeasonForm,
     SeasonNewHelperAvailabilityForm,
     SeasonStaffChoiceForm,
+    SeasonToSpecificStateForm,
 )
 from .session import SessionForm
 from .settings import AnnualStateSettingForm
