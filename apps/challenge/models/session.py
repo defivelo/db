@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 
 from django.conf import settings
 from django.db import models
@@ -143,6 +143,16 @@ class Session(Address, models.Model):
                     ]
                 )
             )
+
+    @property
+    def start_datetime(self):
+        return datetime.combine(
+            self.day, self.begin if self.begin is not None else time.min
+        )
+
+    @property
+    def end_datetime(self):
+        return self.start_datetime + self.duration
 
     @cached_property
     def fallback(self):
