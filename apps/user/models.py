@@ -30,6 +30,7 @@ from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible, smart_text
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 
 from allauth.account.models import EmailAddress
@@ -282,7 +283,7 @@ class UserProfile(Address, models.Model):
 
         # This can raise exception, but that's good
         self.send_mail(
-            (settings.EMAIL_SUBJECT_PREFIX + _("Accès à l'Intranet")),
+            (settings.EMAIL_SUBJECT_PREFIX + u("Accès à l'Intranet")),
             render_to_string("auth/email_user_send_credentials.txt", context),
         )
 

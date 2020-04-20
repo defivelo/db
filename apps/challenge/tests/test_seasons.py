@@ -502,6 +502,40 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                 response = self.client.get(url, follow=True)
                 self.assertEqual(response.status_code, 403, url)
 
+    def test_access_to_quali_views(self):
+        session = self.sessions[0]
+        # Test the Qualification creation for a session
+        url = reverse(
+            "quali-create",
+            kwargs={"seasonpk": session.season.pk, "sessionpk": session.pk,},
+        )
+        initial = {
+            "session": session.pk,
+            "name": "Classe A",
+            "class_teacher_natel": "",
+        }
+        response = self.client.post(url, initial,)
+        self.assertEqual(response.status_code, 302, url)
+
+        qualification = session.qualifications.first()
+
+        # Now test the Qualification update access for a session
+        url = reverse(
+            "quali-update",
+            kwargs={
+                "seasonpk": session.season.pk,
+                "sessionpk": session.pk,
+                "pk": qualification.pk,
+            },
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200, url)
+
+        # Test Quali update now
+        initial = {"session": qualification.session.pk, "name": "Classe D"}
+        response = self.client.post(url, initial)
+        self.assertEqual(response.status_code, 302, url)
+
 
 class PowerUserTest(SeasonTestCaseMixin):
     def setUp(self):

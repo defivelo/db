@@ -470,7 +470,7 @@ class SeasonToRunningView(SeasonToStateMixin):
 
         return {
             "subject": settings.EMAIL_SUBJECT_PREFIX
-            + _("Planning {season}").format(season=self.season.desc()),
+            + u("Planning {season}").format(season=self.season.desc()),
             "body": render_to_string(
                 "challenge/season_email_to_state_running.txt",
                 {
