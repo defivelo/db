@@ -21,6 +21,7 @@ import operator
 from collections import OrderedDict
 from functools import reduce
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sites.models import Site
@@ -48,7 +49,7 @@ from apps.common import (
     MULTISELECTFIELD_REGEXP,
 )
 from apps.common.views import ExportMixin
-from apps.user import FORMATION_KEYS, FORMATION_M1, FORMATION_M2, formation_short
+from apps.user import FORMATION_KEYS, FORMATION_M1, FORMATION_M2
 from apps.user.models import USERSTATUS_DELETED
 from apps.user.views import ActorsList, HelpersList
 from defivelo.roles import has_permission, user_cantons
@@ -61,7 +62,6 @@ from .. import (
     CHOSEN_AS_HELPER,
     CHOSEN_AS_LEADER,
     CHOSEN_AS_NOT,
-    CHOSEN_AS_REPLACEMENT,
     CHOSEN_KEYS,
     CONFLICT_FIELDKEY,
     SEASON_WORKWISH_FIELDKEY,
@@ -82,6 +82,7 @@ from ..models.qualification import (
     CATEGORY_CHOICE_B,
     CATEGORY_CHOICE_C,
 )
+from ..utils import get_users_roles_for_session
 from .mixins import CantonSeasonFormMixin
 
 EXPORT_NAMETEL = u("{name} - {tel}")
@@ -718,43 +719,8 @@ class SeasonPersonalPlanningExportView(
                 "%s - %s" % (time(session.begin), time(session.end)),
                 session.n_qualifications,
             ]
-            user_session_chosen_as = dict(
-                session.availability_statuses.exclude(
-                    chosen_as=CHOSEN_AS_NOT
-                ).values_list("helper_id", "chosen_as")
-            )
-            for user in qs:
-                label = ""
-                if user == session.superleader:
-                    # Translators: Nom court pour 'Moniteur +'
-                    label = u("M+")
-                else:
-                    for quali in session.qualifications.all():
-                        if user == quali.leader:
-                            label = formation_short(FORMATION_M2, True)
-                            break
-                        elif user in quali.helpers.all():
-                            label = formation_short(FORMATION_M1, True)
-                            break
-                        elif user == quali.actor:
-                            # Translators: Nom court pour 'Intervenant'
-                            label = u("Int.")
-                            break
-                    # Vérifie tout de même si l'utilisateur est déjà sélectionné
-                    if not label and user.id in user_session_chosen_as:
-                        if user_session_chosen_as[user.id] == CHOSEN_AS_LEADER:
-                            label = formation_short(FORMATION_M2, True)
-                        elif user_session_chosen_as[user.id] == CHOSEN_AS_HELPER:
-                            label = formation_short(FORMATION_M1, True)
-                        elif user_session_chosen_as[user.id] == CHOSEN_AS_ACTOR:
-                            # Translators: Nom court pour 'Intervenant'
-                            label = u("Int.")
-                        elif user_session_chosen_as[user.id] == CHOSEN_AS_REPLACEMENT:
-                            # Translators: Nom court pour 'Moniteur de secours'
-                            label = u("S")
-                        else:
-                            label = u("×")
-                col += [label]
+            users_roles = list(get_users_roles_for_session(qs, session).values())
+            col += users_roles
             dataset.append_col(col)
         return dataset
 
@@ -1040,8 +1006,8 @@ class SeasonErrorsListView(HasPermissionsMixin, SeasonMixin, ListView):
         )
 
 
-class SeasonPersonalPlanningExportFeed(ExportMixin, SeasonAvailabilityMixin, ICalFeed):
-    timezone = "UTC"
+class SeasonPersonalPlanningExportFeed(ICalFeed):
+    timezone = settings.TIME_ZONE
     file_name = "sessions.ics"
 
     def __call__(self, request, *args, **kwargs):
@@ -1065,42 +1031,9 @@ class SeasonPersonalPlanningExportFeed(ExportMixin, SeasonAvailabilityMixin, ICa
         return "{}-{}".format(session.id, "session")
 
     def item_title(self, session):
-        label = ""
-        user_session_chosen_as = dict(
-            session.availability_statuses.exclude(chosen_as=CHOSEN_AS_NOT).values_list(
-                "helper_id", "chosen_as"
-            )
-        )
-        if self.user == session.superleader:
-            # Translators: Nom court pour 'Moniteur +'
-            label = u("M+")
-        else:
-            for quali in session.qualifications.all():
-                if self.user == quali.leader:
-                    label = formation_short(FORMATION_M2, True)
-                    break
-                elif self.user in quali.helpers.all():
-                    label = formation_short(FORMATION_M1, True)
-                    break
-                elif self.user == quali.actor:
-                    # Translators: Nom court pour 'Intervenant'
-                    label = u("Int.")
-                    break
-            # Vérifie tout de même si l'utilisateur est déjà sélectionné
-            if not label and self.user.id in user_session_chosen_as:
-                if user_session_chosen_as[self.user.id] == CHOSEN_AS_LEADER:
-                    label = formation_short(FORMATION_M2, True)
-                elif user_session_chosen_as[self.user.id] == CHOSEN_AS_HELPER:
-                    label = formation_short(FORMATION_M1, True)
-                elif user_session_chosen_as[self.user.id] == CHOSEN_AS_ACTOR:
-                    # Translators: Nom court pour 'Intervenant'
-                    label = u("Int.")
-                elif user_session_chosen_as[self.user.id] == CHOSEN_AS_REPLACEMENT:
-                    # Translators: Nom court pour 'Moniteur de secours'
-                    label = u("S")
-                else:
-                    label = u("×")
-        return " ".join([label, session.orga.address_canton, session.orga.name,])
+        roles_by_user = get_users_roles_for_session([self.user], session)
+        role_label = roles_by_user[self.user]
+        return " ".join([role_label, session.orga.address_canton, session.orga.name])
 
     def item_description(self, session):
         session_place = session.place
