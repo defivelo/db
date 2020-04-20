@@ -282,7 +282,7 @@ class UserProfile(Address, models.Model):
 
         # This can raise exception, but that's good
         self.send_mail(
-            _("DÉFI VÉLO: Accès à l'Intranet"),
+            (settings.EMAIL_SUBJECT_PREFIX + _("Accès à l'Intranet")),
             render_to_string("auth/email_user_send_credentials.txt", context),
         )
 

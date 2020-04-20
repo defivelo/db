@@ -21,6 +21,7 @@ import operator
 from collections import OrderedDict
 from functools import reduce
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sites.models import Site
@@ -468,9 +469,8 @@ class SeasonToRunningView(SeasonToStateMixin):
         )
 
         return {
-            "subject": _("DÉFI VÉLO: Planning {season}").format(
-                season=self.season.desc()
-            ),
+            "subject": settings.EMAIL_SUBJECT_PREFIX
+            + _("Planning {season}").format(season=self.season.desc()),
             "body": render_to_string(
                 "challenge/season_email_to_state_running.txt",
                 {
