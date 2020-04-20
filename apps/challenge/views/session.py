@@ -92,8 +92,13 @@ class SessionMixin(CantonSeasonFormMixin, HasPermissionsMixin, MenuView):
             "session_next": None,
         }
 
+        try:
+            sessions = self.season.sessions_by_orga.filter(orga=mysession.orga)
+        except AttributeError:
+            sessions = []
+
         # Iterate through all of them, index is 'next'
-        for session in self.season.sessions_by_orga.filter(orga=mysession.orga):
+        for session in sessions:
             session_pages["session_current"] = session_pages["session_next"]
             session_pages["session_next"] = session
             # On arrive
