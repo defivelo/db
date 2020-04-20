@@ -11,7 +11,6 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import formats, timezone, translation
 from django.utils.dates import MONTHS_3
-from django.utils.translation import gettext
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import RedirectView, TemplateView
@@ -382,7 +381,7 @@ class SendTimesheetsReminder(TemplateView):
                 self.request,
             )
             return (
-                settings.EMAIL_SUBJECT_PREFIX + gettext("Soumission des heures"),
+                settings.EMAIL_SUBJECT_PREFIX + u("Soumission des heures"),
                 message,
                 settings.DEFAULT_FROM_EMAIL,
                 [user.email],
