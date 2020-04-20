@@ -174,3 +174,25 @@ def get_visible_users(user):
         qs = User.objects.filter(pk=user.pk)
 
     return qs
+
+
+def get_users_with_missing_timesheets(year: int, month: int, users):
+    return [
+        user
+        for user, flags in get_timesheets_status_matrix(year, users).items()
+        if flags[month - 1] & TimesheetStatus.TIMESHEET_MISSING
+    ]
+
+
+def get_missing_timesheet_status_per_month(timesheets_status_matrix):
+    """
+    Return a list of booleans (one per month) that indicate if any user has missing
+    timesheets for each month.
+    """
+    return [
+        any(
+            statuses[month_index] & TimesheetStatus.TIMESHEET_MISSING
+            for _, statuses in timesheets_status_matrix.items()
+        )
+        for month_index in range(0, 12)
+    ]

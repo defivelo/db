@@ -1,10 +1,17 @@
 from datetime import date
 
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.sites.models import Site
+from django.core import mail
+from django.core.exceptions import PermissionDenied
 from django.db.models import Count, F, Q, Sum
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
+from django.template.loader import render_to_string
 from django.urls import reverse
-from django.utils import timezone
+from django.utils import formats, timezone, translation
 from django.utils.dates import MONTHS_3
+from django.utils.translation import gettext
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import RedirectView, TemplateView
@@ -212,13 +219,24 @@ class YearlyTimesheets(TemplateView):
         users = timesheets_overview.get_visible_users(self.request.user).order_by(
             "first_name", "last_name"
         )
+        global_timesheets_status_matrix = timesheets_overview.get_timesheets_status_matrix(
+            year=year, users=users
+        )
         if active_canton:
             users = users.filter(profile__affiliation_canton=active_canton)
+            timesheets_status_matrix = timesheets_overview.get_timesheets_status_matrix(
+                year=year, users=users
+            )
+        else:
+            timesheets_status_matrix = global_timesheets_status_matrix
 
         context["months"] = MONTHS_3
+        context["timesheets_status_matrix"] = timesheets_status_matrix
         context[
-            "timesheets_status_matrix"
-        ] = timesheets_overview.get_timesheets_status_matrix(year=year, users=users)
+            "show_reminder_button_months"
+        ] = timesheets_overview.get_missing_timesheet_status_per_month(
+            global_timesheets_status_matrix
+        )
         context[
             "timesheets_amount"
         ] = timesheets_overview.get_timesheets_amount_by_month(year=year, users=users)
@@ -301,3 +319,71 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
                 ]
             )
         return dataset
+
+
+class SendTimesheetsReminder(TemplateView):
+    template_name = "salary/send_timesheets_reminder.html"
+    required_permission = "timesheet_editor"
+
+    def dispatch(self, request, *args, month, year, **kwargs):
+        if not has_permission(request.user, self.required_permission):
+            raise PermissionDenied
+        self.month = int(month)
+        self.year = int(year)
+        users = (
+            timesheets_overview.get_visible_users(self.request.user)
+            .order_by("first_name", "last_name")
+            .select_related("profile")
+        )
+        self.recipients = timesheets_overview.get_users_with_missing_timesheets(
+            self.year, self.month, users
+        )
+        if not self.recipients:
+            messages.warning(
+                request,
+                _("Aucun rappel à envoyer: les heures de ce mois sont déjà remplies."),
+            )
+            return redirect(self.get_redirect_url())
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_redirect_url(self):
+        return reverse("salary:timesheets-overview", kwargs={"year": self.year})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["redirect_url"] = self.get_redirect_url()
+        context["recipients"] = self.recipients
+        context["period"] = formats.date_format(date(self.year, self.month, 1), "F Y")
+        _, email_text, *_ = self.render_email_for_user(self.request.user)
+        context["email_text"] = email_text
+        return context
+
+    def post(self, request, *args, **kwargs):
+        emails = [self.render_email_for_user(user) for user in self.recipients]
+        mail.send_mass_mail(emails)
+        messages.success(request, _("Rappel de soumission des heures expédié."))
+        return redirect(self.get_redirect_url())
+
+    def render_email_for_user(self, user):
+        email_lang = user.profile.language or translation.get_language()
+        with translation.override(email_lang):
+            timesheets_url = self.request.build_absolute_uri(
+                reverse(
+                    "salary:my-timesheets",
+                    kwargs={"year": self.year, "month": self.month},
+                )
+            )
+            message = render_to_string(
+                "salary/email_send_timesheets_reminder.txt",
+                {
+                    "current_site": Site.objects.get_current(),
+                    "timesheets_url": timesheets_url,
+                },
+                self.request,
+            )
+            return (
+                settings.EMAIL_SUBJECT_PREFIX + gettext("Soumission des heures"),
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [user.email],
+            )
