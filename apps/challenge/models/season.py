@@ -133,6 +133,14 @@ class Season(models.Model):
         return self.state == DV_SEASON_STATE_OPEN
 
     @cached_property
+    def staff_can_see_planning(self):
+        return self.state == DV_SEASON_STATE_RUNNING
+
+    @cached_property
+    def can_set_state_running(self):
+        return self.state in [DV_SEASON_STATE_PLANNING, DV_SEASON_STATE_OPEN]
+
+    @cached_property
     def manager_can_crud(self):
         return self.state != DV_SEASON_STATE_ARCHIVED
 
@@ -166,6 +174,10 @@ class Season(models.Model):
             "orga",
         )
 
+    @property
+    def sessions_by_orga(self):
+        return self.sessions.order_by("orga__name", "day", "begin")
+
     @cached_property
     def sessions_with_qualifs(self):
         if not hasattr(self, "sessions_with_q"):
@@ -183,6 +195,24 @@ class Season(models.Model):
     @cached_property
     def moment(self):
         return _("{saison} {annee}").format(saison=self.season_full, annee=self.year,)
+
+    def save(self, *args, **kwargs):
+        """
+        Override save to clear some cached properties
+        """
+        super().save(*args, **kwargs)
+        # Clear cached properties
+        for cached_prop in [
+            "can_set_state_running",
+            "staff_can_update_availability",
+            "staff_can_see_planning",
+            "manager_can_crud",
+            "season_full",
+        ]:
+            try:
+                del self.__dict__[cached_prop]
+            except KeyError:
+                pass
 
     def desc(self, abbr=False):
         return mark_safe(

@@ -35,6 +35,9 @@
                             {% elif season.staff_can_update_availability %}
                                 <a href="{% url 'season-availabilities-update' pk=season.pk helperpk=user.pk %}"
                                 title="{% trans "Mes disponibilités" %}">
+                            {% elif season.staff_can_see_planning %}
+                                <a href="{% url 'season-planning' pk=season.pk helperpk=request.user.pk %}"
+                                title="{% trans "Mon planning" %}">
                             {% else %}
                                 <a style="cursor: not-allowed;" title="{% trans "Saison pas ouverte" %}">
                             {% endif %}

@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from . import HOURLY_RATE_ACTOR, HOURLY_RATE_HELPER
+from . import BONUS_LEADER, HOURLY_RATE_HELPER, RATE_ACTOR
 
 
 class Timesheet(models.Model):
@@ -12,7 +12,10 @@ class Timesheet(models.Model):
     date = models.DateField(_("Date"), blank=True, null=True)
 
     time_helper = models.FloatField(_("Heures moni·teur·trice"), default=0)
-    time_actor = models.FloatField(_("Intervention(s)"), default=0)
+    actor_count = models.IntegerField(_("Intervention(s)"), default=0)
+    leader_count = models.IntegerField(
+        _("Participation(s) comme moniteur 2"), default=0
+    )
 
     overtime = models.FloatField(_("Heures supplémentaires"), default=0)
     traveltime = models.FloatField(_("Heures de trajet"), default=0)
@@ -35,7 +38,14 @@ class Timesheet(models.Model):
         ) * HOURLY_RATE_HELPER
 
     def get_total_amount_actor(self):
-        return (self.time_actor or 0) * HOURLY_RATE_ACTOR
+        return (self.actor_count or 0) * RATE_ACTOR
+
+    def get_total_amount_leader(self):
+        return (self.leader_count or 0) * BONUS_LEADER
 
     def get_total_amount(self):
-        return self.get_total_amount_actor() + self.get_total_amount_helper()
+        return (
+            self.get_total_amount_actor()
+            + self.get_total_amount_helper()
+            + self.get_total_amount_leader()
+        )

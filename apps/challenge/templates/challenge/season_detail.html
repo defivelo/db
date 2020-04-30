@@ -13,7 +13,10 @@
     </nav>
     
     <table class="table">
-    {% for session in season.sessions %}
+    {% for session in season.sessions_by_orga %}
+        {% ifchanged session.orga %}
+            <tr><th colspan="3">{{ session.orga }}</th></th>
+        {% endifchanged %}
         {% include "challenge/session_item_in_list.html" with session=session season=season only %}
     {% endfor %}
     </table>

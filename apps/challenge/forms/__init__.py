@@ -16,13 +16,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .invoices import InvoiceForm
+from .invoices import InvoiceForm, InvoiceFormQuick
 from .qualification import QualificationForm, QualificationFormQuick
 from .season import (
     SeasonAvailabilityForm,
     SeasonForm,
     SeasonNewHelperAvailabilityForm,
     SeasonStaffChoiceForm,
+    SeasonToSpecificStateForm,
 )
 from .session import SessionForm
 from .settings import AnnualStateSettingForm

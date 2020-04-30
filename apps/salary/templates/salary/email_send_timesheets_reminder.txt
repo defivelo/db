@@ -1,0 +1,13 @@
+{% load i18n %}{% filter wordwrap:80 %}{% autoescape off %}{% blocktrans with site_domain=current_site.domain %}Salut,
+
+Nous avons remarqué que tu n’as pas encore rempli tes heures supplémentaires et tes heures de trajet dans ton décompte d’heures DÉFI VÉLO. Merci de le remplir au plus vite afin qu’on puisse procéder au paiement des salaires. En cas de questions, tu peux t’adresser à ton chargé de projet.
+
+Tu peux accéder au décompte d’heures via le lien ci-dessous:
+{{ timesheets_url }}
+
+Salutations,
+
+L’équipe DÉFI VÉLO - {{ site_domain }}
+
+PS : même si tu n’as aucune heures supplémentaires ni aucune heures de trajet, tu dois tout de même valider mensuellement ton décompte d’heures. Par défaut, ton chargé de projet le validera en l’état actuel.
+{% endblocktrans %}{% endautoescape %}{% endfilter %}

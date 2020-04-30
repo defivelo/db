@@ -35,15 +35,14 @@ ENVIRONMENTS = {
         "pid": "/run/uwsgi/app/staging.intranet.defi-velo.ch/pid",
         "ini": "/etc/uwsgi/apps-enabled/staging.intranet.defi-velo.ch.ini",
         "settings": {
-            "ALLOWED_HOSTS": "\n".join(
-                ["staging.intranet.defi-velo.ch"]
-            ),
+            "ALLOWED_HOSTS": "\n".join(["staging.intranet.defi-velo.ch"]),
             "MEDIA_URL": "/media/",
             "STATIC_URL": "/static/",
             "MEDIA_ROOT": "/var/www/intranet.defi-velo.ch/staging/media/",
             "STATIC_ROOT": "/var/www/intranet.defi-velo.ch/staging/static/",
             "SITE_DOMAIN": "staging.intranet.defi-velo.ch",
             "VIRTUAL_ENV": "/var/www/intranet.defi-velo.ch/staging/venv",
+            "USE_DB_EMAIL_BACKEND": "1",
         },
     },
 }

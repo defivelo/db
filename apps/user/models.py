@@ -30,6 +30,7 @@ from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible, smart_text
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 
 from allauth.account.models import EmailAddress
@@ -281,13 +282,9 @@ class UserProfile(Address, models.Model):
         self.user.save()
 
         # This can raise exception, but that's good
-        send_mail(
-            _("Accès au site '{site_name}'").format(
-                site_name=context["current_site"].name
-            ),
+        self.send_mail(
+            (settings.EMAIL_SUBJECT_PREFIX + u("Accès à l'Intranet")),
             render_to_string("auth/email_user_send_credentials.txt", context),
-            settings.DEFAULT_FROM_EMAIL,
-            [self.mailtolink,],
         )
 
         # Create a validated email
@@ -497,6 +494,14 @@ class UserProfile(Address, models.Model):
             self.status == USERSTATUS_DELETED
             and not self.user.is_active
             and not self.user.has_usable_password()
+        )
+
+    def send_mail(self, subject: str, body: str):
+        """
+        Send an email to that user
+        """
+        return send_mail(
+            subject, body, settings.DEFAULT_FROM_EMAIL, [self.mailtolink,],
         )
 
     def __str__(self):

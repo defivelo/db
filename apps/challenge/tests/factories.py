@@ -27,7 +27,14 @@ from apps.common import DV_SEASON_CHOICES, DV_SEASON_STATE_OPEN, DV_STATES
 from apps.orga.tests.factories import OrganizationFactory
 from apps.user.tests.factories import UserFactory
 
-from ..models import AnnualStateSetting, Invoice, Qualification, Season, Session
+from ..models import (
+    AnnualStateSetting,
+    Invoice,
+    InvoiceLine,
+    Qualification,
+    Season,
+    Session,
+)
 
 
 class SeasonFactory(DjangoModelFactory):
@@ -56,6 +63,8 @@ class QualificationFactory(DjangoModelFactory):
 
     name = Faker("name")
     class_teacher_fullname = Faker("name")
+    n_bikes = fuzzy.FuzzyInteger(1, 10)
+    n_participants = fuzzy.FuzzyInteger(10, 20)
 
 
 class AnnualStateSettingFactory(DjangoModelFactory):
@@ -74,3 +83,15 @@ class InvoiceFactory(DjangoModelFactory):
     organization = SubFactory(OrganizationFactory)
     ref = fuzzy.FuzzyText(length=20)
     status = fuzzy.FuzzyChoice([s[0] for s in Invoice.STATUS_CHOICES])
+
+
+class InvoiceLineFactory(DjangoModelFactory):
+    class Meta:
+        model = InvoiceLine
+
+    session = SubFactory(SessionFactory)
+    invoice = SubFactory(InvoiceFactory)
+    nb_bikes = fuzzy.FuzzyInteger(0, 20)
+    nb_participants = fuzzy.FuzzyInteger(0, 20)
+    cost_bikes = fuzzy.FuzzyDecimal(0, 400)
+    cost_participants = fuzzy.FuzzyDecimal(0, 400)

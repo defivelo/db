@@ -10,17 +10,18 @@ from apps.challenge.models.session import Session
 from apps.common.fields import CheckboxInput, NumberInput, TimeNumberInput
 from apps.salary.models import Timesheet
 
-from . import HOURLY_RATE_ACTOR, HOURLY_RATE_HELPER
+from . import BONUS_LEADER, HOURLY_RATE_HELPER, RATE_ACTOR
 
 
 class TimesheetFormBase(forms.ModelForm):
     class Meta:
         model = Timesheet
-        readonly = ("date", "time_helper", "time_actor")
+        readonly = ("date", "time_helper", "actor_count", "leader_count")
         fields = [
             "date",
             "time_helper",
-            "time_actor",
+            "actor_count",
+            "leader_count",
             "overtime",
             "traveltime",
             "comments",
@@ -34,11 +35,18 @@ class TimesheetFormBase(forms.ModelForm):
                     "data-unit-price": HOURLY_RATE_HELPER,
                 },
             ),
-            "time_actor": NumberInput(
+            "actor_count": NumberInput(
                 attrs={
                     "readonly": "readonly",
                     "class": "hide",
-                    "data-unit-price": HOURLY_RATE_ACTOR,
+                    "data-unit-price": RATE_ACTOR,
+                },
+            ),
+            "leader_count": NumberInput(
+                attrs={
+                    "readonly": "readonly",
+                    "class": "hide",
+                    "data-unit-price": BONUS_LEADER,
                 },
             ),
             "overtime": TimeNumberInput(

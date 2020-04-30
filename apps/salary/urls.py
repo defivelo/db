@@ -4,7 +4,9 @@ from django.utils import timezone
 from django.views.generic import RedirectView
 
 from apps.salary.views import (
+    ExportMonthlyTimesheets,
     RedirectUserMonthlyTimesheets,
+    SendTimesheetsReminder,
     UserMonthlyTimesheets,
     YearlyTimesheets,
 )
@@ -42,9 +44,19 @@ urlpatterns = [
                                 name="my-timesheets",
                             ),
                             url(
+                                r"(?P<format>[a-z]+)-export$",
+                                ExportMonthlyTimesheets.as_view(),
+                                name="cresus-export",
+                            ),
+                            url(
                                 r"^(?P<pk>[0-9]+)/$",
                                 UserMonthlyTimesheets.as_view(),
                                 name="user-timesheets",
+                            ),
+                            url(
+                                r"^send_reminder/$",
+                                SendTimesheetsReminder.as_view(),
+                                name="send-timesheets-reminder",
                             ),
                         ]
                     ),

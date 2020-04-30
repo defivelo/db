@@ -1,16 +1,27 @@
 from datetime import date
 
-from django.db.models import Count, Q
-from django.shortcuts import get_object_or_404
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.sites.models import Site
+from django.core import mail
+from django.core.exceptions import PermissionDenied
+from django.db.models import Count, F, Q, Sum
+from django.shortcuts import get_object_or_404, redirect
+from django.template.loader import render_to_string
 from django.urls import reverse
-from django.utils import timezone
+from django.utils import formats, timezone, translation
 from django.utils.dates import MONTHS_3
+from django.utils.translation import ugettext as u
+from django.utils.translation import ugettext_lazy as _
 from django.views.generic import RedirectView, TemplateView
 from django.views.generic.dates import MonthArchiveView
 from django.views.generic.edit import FormView
 
+from tablib import Dataset
+
 from apps.challenge.models.session import Session
 from apps.common import DV_STATE_CHOICES
+from apps.common.views import ExportMixin
 from apps.salary.forms import ControlTimesheetFormSet, TimesheetFormSet
 from apps.salary.models import Timesheet
 from defivelo.roles import has_permission
@@ -49,6 +60,11 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
                         "qualifications__pk",
                         filter=Q(qualifications__helpers=self.selected_user)
                         | Q(qualifications__leader=self.selected_user),
+                        distinct=True,
+                    ),
+                    leader_count=Count(
+                        "qualifications__pk",
+                        filter=Q(qualifications__leader=self.selected_user),
                         distinct=True,
                     ),
                     actor_count=Count(
@@ -129,7 +145,8 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
                     if session["orga_count"] == 1 and session["helper_count"] > 1
                     else 4.5
                 ),
-                "time_actor": session["actor_count"],
+                "actor_count": session["actor_count"],
+                "leader_count": session["leader_count"],
                 "overtime": timesheet.overtime if timesheet else 0,
                 "traveltime": timesheet.traveltime if timesheet else 0,
                 "validated": bool(timesheet.validated_at) if timesheet else False,
@@ -196,18 +213,29 @@ class YearlyTimesheets(TemplateView):
         context["menu_category"] = ["timesheet"]
 
         year = self.kwargs["year"]
-        active_canton = self.request.GET.get("canton")
+        context["canton"] = active_canton = self.request.GET.get("canton")
 
         users = timesheets_overview.get_visible_users(self.request.user).order_by(
             "first_name", "last_name"
         )
+        global_timesheets_status_matrix = timesheets_overview.get_timesheets_status_matrix(
+            year=year, users=users
+        )
         if active_canton:
             users = users.filter(profile__affiliation_canton=active_canton)
+            timesheets_status_matrix = timesheets_overview.get_timesheets_status_matrix(
+                year=year, users=users
+            )
+        else:
+            timesheets_status_matrix = global_timesheets_status_matrix
 
         context["months"] = MONTHS_3
+        context["timesheets_status_matrix"] = timesheets_status_matrix
         context[
-            "timesheets_status_matrix"
-        ] = timesheets_overview.get_timesheets_status_matrix(year=year, users=users)
+            "show_reminder_button_months"
+        ] = timesheets_overview.get_missing_timesheet_status_per_month(
+            global_timesheets_status_matrix
+        )
         context[
             "timesheets_amount"
         ] = timesheets_overview.get_timesheets_amount_by_month(year=year, users=users)
@@ -217,3 +245,144 @@ class YearlyTimesheets(TemplateView):
         )
 
         return context
+
+
+class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
+    date_field = "date"
+    month_format = "%m"
+    allow_empty = False
+    allow_future = False
+
+    def get_queryset(self):
+        active_canton = self.request.GET.get("canton")
+        users = timesheets_overview.get_visible_users(self.request.user).order_by(
+            "first_name", "last_name"
+        )
+        if active_canton:
+            users = users.filter(profile__affiliation_canton=active_canton)
+        return Timesheet.objects.filter(validated_at__isnull=False, user__in=users)
+
+    def get_dataset_title(self):
+        return _("Export Crésus {month} {year}").format(
+            month=self.get_month(), year=self.get_year()
+        )
+
+    @property
+    def export_filename(self):
+        return "%s-%s-%s" % ("export-cresus", self.get_year(), self.get_month())
+
+    def get_dataset(self, html=False):
+        dataset = Dataset()
+        dataset.append(
+            [
+                u("Année courante"),
+                u("Mois courant"),
+                u("Numéro d'employé Crésus"),
+                u("Salaire heure Formateur"),  # 0
+                u("Salaire heures moniteur"),  # time_helper
+                u("Prime moniteur 2"),  # leader_count
+                u("Salaire heures supplémentaires"),  # overtime
+                u("Salaire heures de trajet"),  # traveltime
+                u("Salaire heure moniteur Finale"),  # not implented
+                u("interventions"),  # actor_count
+            ]
+        )
+
+        salary_details_list = (
+            self.get_queryset()
+            .values("user")
+            .annotate(
+                cresus_employee_number=F("user__profile__cresus_employee_number"),
+                user_id=F("user_id"),
+                actor_count=Sum("actor_count"),
+                leader_count=Sum("leader_count"),
+                time_helper=Sum("time_helper"),
+                traveltime=Sum("traveltime"),
+                overtime=Sum("overtime"),
+            )
+        )
+
+        for salary_details in salary_details_list:
+            dataset.append(
+                [
+                    self.get_year(),
+                    self.get_month(),
+                    salary_details["cresus_employee_number"],
+                    0,
+                    salary_details["time_helper"],
+                    salary_details["leader_count"],
+                    salary_details["overtime"],
+                    salary_details["traveltime"],
+                    0,
+                    salary_details["actor_count"],
+                ]
+            )
+        return dataset
+
+
+class SendTimesheetsReminder(TemplateView):
+    template_name = "salary/send_timesheets_reminder.html"
+    required_permission = "timesheet_editor"
+
+    def dispatch(self, request, *args, month, year, **kwargs):
+        if not has_permission(request.user, self.required_permission):
+            raise PermissionDenied
+        self.month = int(month)
+        self.year = int(year)
+        users = (
+            timesheets_overview.get_visible_users(self.request.user)
+            .order_by("first_name", "last_name")
+            .select_related("profile")
+        )
+        self.recipients = timesheets_overview.get_users_with_missing_timesheets(
+            self.year, self.month, users
+        )
+        if not self.recipients:
+            messages.warning(
+                request,
+                _("Aucun rappel à envoyer: les heures de ce mois sont déjà remplies."),
+            )
+            return redirect(self.get_redirect_url())
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_redirect_url(self):
+        return reverse("salary:timesheets-overview", kwargs={"year": self.year})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["redirect_url"] = self.get_redirect_url()
+        context["recipients"] = self.recipients
+        context["period"] = formats.date_format(date(self.year, self.month, 1), "F Y")
+        _, email_text, *_ = self.render_email_for_user(self.request.user)
+        context["email_text"] = email_text
+        return context
+
+    def post(self, request, *args, **kwargs):
+        emails = [self.render_email_for_user(user) for user in self.recipients]
+        mail.send_mass_mail(emails)
+        messages.success(request, _("Rappel de soumission des heures expédié."))
+        return redirect(self.get_redirect_url())
+
+    def render_email_for_user(self, user):
+        email_lang = user.profile.language or translation.get_language()
+        with translation.override(email_lang):
+            timesheets_url = self.request.build_absolute_uri(
+                reverse(
+                    "salary:my-timesheets",
+                    kwargs={"year": self.year, "month": self.month},
+                )
+            )
+            message = render_to_string(
+                "salary/email_send_timesheets_reminder.txt",
+                {
+                    "current_site": Site.objects.get_current(),
+                    "timesheets_url": timesheets_url,
+                },
+                self.request,
+            )
+            return (
+                settings.EMAIL_SUBJECT_PREFIX + u("Soumission des heures"),
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [user.email],
+            )

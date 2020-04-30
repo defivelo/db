@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+
+{% block head_title %}{% blocktrans with month_year=period %}Rappel de soumission des heures pour {{ month_year }}
+{% endblocktrans %}{% endblock %}
+{% block content %}
+  <h2 class="page-header">
+    {% blocktrans with month_year=period %}Rappel de soumission des heures pour {{ month_year }}{% endblocktrans %}
+  </h2>
+  <p>{% blocktrans trimmed with month_year=period %}
+    Ce rappel sera envoyé aux moniteurs qui ont participé à une session durant {{ month_year }}
+    et qui n’ont pas encore soumis leurs heures.
+  {% endblocktrans %}</p>
+
+  <h3>{% trans "Destinataires" %}</h3>
+  <ul>
+    {% for user in recipients %}
+      <li>
+        <a href="{% url 'user-detail' pk=user.pk %}">
+          {{ user.get_full_name }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <h3>{% trans "Contenu de l’email" %}</h3>
+  <pre style="white-space: pre-wrap;">{{ email_text }}</pre>
+  <form method="POST" action="{{ request.get_full_path }}">
+    {% csrf_token %}
+    {% buttons %}
+      <button type="submit" class="btn btn-primary pull-right">{% trans 'Envoyer' %}</button>
+      <a class="btn btn-default" href="{{ redirect_url }}">{% trans "Annuler" %}</a>
+    {% endbuttons %}
+  </form>
+{% endblock %}
