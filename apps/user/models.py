@@ -294,6 +294,7 @@ class UserProfile(Address, models.Model):
 
     def delete(self):
         self.user.is_active = False
+        self.user.email = ""
         self.user.set_unusable_password()
         self.user.save()
         self.status = USERSTATUS_DELETED
@@ -493,6 +494,7 @@ class UserProfile(Address, models.Model):
         return (
             self.status == USERSTATUS_DELETED
             and not self.user.is_active
+            and not self.user.email
             and not self.user.has_usable_password()
         )
 
