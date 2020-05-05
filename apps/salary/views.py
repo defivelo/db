@@ -291,8 +291,7 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
         _, object_list, _ = self.get_dated_items()
 
         salary_details_list = (
-            object_list
-            .values("user")
+            object_list.values("user")
             .annotate(
                 cresus_employee_number=F("user__profile__cresus_employee_number"),
                 user_id=F("user_id"),
@@ -301,7 +300,8 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
                 time_helper=Sum("time_helper"),
                 traveltime=Sum("traveltime"),
                 overtime=Sum("overtime"),
-            ).order_by()
+            )
+            .order_by()
         )
 
         for salary_details in salary_details_list:
