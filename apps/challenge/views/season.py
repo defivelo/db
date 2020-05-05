@@ -38,6 +38,7 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
+from django_ical.views import ICalFeed
 from rolepermissions.mixins import HasPermissionsMixin
 from tablib import Dataset
 
@@ -48,7 +49,7 @@ from apps.common import (
     MULTISELECTFIELD_REGEXP,
 )
 from apps.common.views import ExportMixin
-from apps.user import FORMATION_KEYS, FORMATION_M1, FORMATION_M2, formation_short
+from apps.user import FORMATION_KEYS, FORMATION_M1, FORMATION_M2
 from apps.user.models import USERSTATUS_DELETED
 from apps.user.views import ActorsList, HelpersList
 from defivelo.roles import has_permission, user_cantons
@@ -61,7 +62,6 @@ from .. import (
     CHOSEN_AS_HELPER,
     CHOSEN_AS_LEADER,
     CHOSEN_AS_NOT,
-    CHOSEN_AS_REPLACEMENT,
     CHOSEN_KEYS,
     CONFLICT_FIELDKEY,
     SEASON_WORKWISH_FIELDKEY,
@@ -82,6 +82,7 @@ from ..models.qualification import (
     CATEGORY_CHOICE_B,
     CATEGORY_CHOICE_C,
 )
+from ..utils import get_users_roles_for_session
 from .mixins import CantonSeasonFormMixin
 
 EXPORT_NAMETEL = u("{name} - {tel}")
@@ -371,6 +372,11 @@ class SeasonAvailabilityMixin(SeasonHelpersMixin):
 
     def get_context_data(self, **kwargs):
         context = super(SeasonAvailabilityMixin, self).get_context_data(**kwargs)
+        resolvermatch = self.request.resolver_match
+        try:
+            context["helperpk"] = resolvermatch.kwargs["helperpk"]
+        except (KeyError, TypeError):
+            pass
         # Add our submenu_category context
         context["submenu_category"] = "season-availability"
         context["sessions"] = self.object.sessions_with_qualifs.annotate(
@@ -645,9 +651,13 @@ class SeasonExportView(
         return dataset
 
 
-class SeasonPlanningExportView(
-    ExportMixin, SeasonAvailabilityMixin, HasPermissionsMixin, DetailView
+class SeasonPersonalPlanningExportView(
+    ExportMixin, SeasonAvailabilityMixin, DetailView
 ):
+    allow_season_fetch = True
+    raise_without_cantons = False
+    view_is_planning = True
+
     @property
     def export_filename(self):
         return _("Planning_Saison") + "-" + "-".join(self.season.cantons)
@@ -681,6 +691,12 @@ class SeasonPlanningExportView(
             .distinct()
             .order_by("first_name", "last_name")
         )
+        resolvermatch = self.request.resolver_match
+        try:
+            qs = qs.filter(pk=int(resolvermatch.kwargs["helperpk"]))
+        except (KeyError, TypeError):
+            pass
+
         firstcol += [user.get_full_name() for user in qs]
         dataset.append_col(firstcol)
         # Ajoute le canton d'affiliation comme deuxième colonne
@@ -702,45 +718,14 @@ class SeasonPlanningExportView(
                 "%s - %s" % (time(session.begin), time(session.end)),
                 session.n_qualifications,
             ]
-            user_session_chosen_as = dict(
-                session.availability_statuses.exclude(
-                    chosen_as=CHOSEN_AS_NOT
-                ).values_list("helper_id", "chosen_as")
-            )
-            for user in qs:
-                label = ""
-                if user == session.superleader:
-                    # Translators: Nom court pour 'Moniteur +'
-                    label = u("M+")
-                else:
-                    for quali in session.qualifications.all():
-                        if user == quali.leader:
-                            label = formation_short(FORMATION_M2, True)
-                            break
-                        elif user in quali.helpers.all():
-                            label = formation_short(FORMATION_M1, True)
-                            break
-                        elif user == quali.actor:
-                            # Translators: Nom court pour 'Intervenant'
-                            label = u("Int.")
-                            break
-                    # Vérifie tout de même si l'utilisateur est déjà sélectionné
-                    if not label and user.id in user_session_chosen_as:
-                        if user_session_chosen_as[user.id] == CHOSEN_AS_LEADER:
-                            label = formation_short(FORMATION_M2, True)
-                        elif user_session_chosen_as[user.id] == CHOSEN_AS_HELPER:
-                            label = formation_short(FORMATION_M1, True)
-                        elif user_session_chosen_as[user.id] == CHOSEN_AS_ACTOR:
-                            # Translators: Nom court pour 'Intervenant'
-                            label = u("Int.")
-                        elif user_session_chosen_as[user.id] == CHOSEN_AS_REPLACEMENT:
-                            # Translators: Nom court pour 'Moniteur de secours'
-                            label = u("S")
-                        else:
-                            label = u("×")
-                col += [label]
+            users_roles = list(get_users_roles_for_session(qs, session).values())
+            col += users_roles
             dataset.append_col(col)
         return dataset
+
+
+class SeasonPlanningExportView(SeasonPersonalPlanningExportView, HasPermissionsMixin):
+    view_is_planning = False
 
 
 class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
@@ -1017,4 +1002,57 @@ class SeasonErrorsListView(HasPermissionsMixin, SeasonMixin, ListView):
             .get_queryset()
             .filter(pk__in=wrong_qualifs)
             .distinct()
+        )
+
+
+class SeasonPersonalPlanningExportFeed(ICalFeed):
+    timezone = settings.TIME_ZONE
+    file_name = "sessions.ics"
+
+    def __call__(self, request, *args, **kwargs):
+        self.object = self.season = Season.objects.get(pk=kwargs.get("pk"))
+        self.request = request
+        resolvermatch = self.request.resolver_match
+        self.user = get_user_model().objects.get(
+            pk=int(resolvermatch.kwargs["helperpk"])
+        )
+        return super().__call__(request)
+
+    def items(self):
+        return self.season.sessions_with_qualifs.filter(
+            Q(superleader=self.user)
+            | Q(qualifications__actor=self.user)
+            | Q(qualifications__helpers=self.user)
+            | Q(qualifications__leader=self.user)
+        )
+
+    def item_guid(self, session):
+        return "{}-{}".format(session.id, "session")
+
+    def item_title(self, session):
+        roles_by_user = get_users_roles_for_session([self.user], session)
+        role_label = roles_by_user[self.user]
+        return " ".join([role_label, session.orga.address_canton, session.orga.name])
+
+    def item_description(self, session):
+        session_place = session.place
+        if not session_place:
+            session_place = (
+                session.address_city
+                if session.address_city
+                else session.orga.address_city
+            )
+        return " ".join(
+            [session_place, "%s - %s" % (time(session.begin), time(session.end)),]
+        )
+
+    def item_start_datetime(self, session):
+        return session.start_datetime
+
+    def item_end_datetime(self, session):
+        return session.end_datetime
+
+    def item_link(self, session):
+        return reverse(
+            "season-planning", kwargs={"pk": self.season.pk, "helperpk": self.user.id}
         )

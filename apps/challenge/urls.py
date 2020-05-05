@@ -46,6 +46,8 @@ from .views import (
     SeasonHelperListView,
     SeasonListView,
     SeasonOrgaListView,
+    SeasonPersonalPlanningExportFeed,
+    SeasonPersonalPlanningExportView,
     SeasonPlanningExportView,
     SeasonPlanningView,
     SeasonStaffChoiceUpdateView,
@@ -153,9 +155,26 @@ urlpatterns = [
                     name="season-availabilities",
                 ),
                 url(
-                    r"^planning/(?P<helperpk>[0-9]+)/$",
-                    never_cache(SeasonPlanningView.as_view()),
-                    name="season-planning",
+                    r"^planning/(?P<helperpk>[0-9]+)/",
+                    include(
+                        [
+                            url(
+                                "^$",
+                                never_cache(SeasonPlanningView.as_view()),
+                                name="season-planning",
+                            ),
+                            url(
+                                "^(?P<format>[a-z]+)exportplanning$",
+                                never_cache(SeasonPersonalPlanningExportView.as_view()),
+                                name="season-personal-planning-export",
+                            ),
+                            url(
+                                r"^feed.ics$",
+                                SeasonPersonalPlanningExportFeed(),
+                                name="season-personal-calendar",
+                            ),
+                        ]
+                    ),
                 ),
                 url(
                     r"^availability/staff/$",
