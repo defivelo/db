@@ -177,6 +177,23 @@ class AuthUserTest(SeasonTestCaseMixin):
             if state[0] == DV_SEASON_STATE_RUNNING:
                 # … so no access
                 self.assertEqual(response.status_code, 200, urls["season-planning"])
+                for exportformat in ["csv", "ods", "xls"]:
+                    url = reverse(
+                        "season-personal-planning-export",
+                        kwargs={
+                            "pk": self.season.pk,
+                            "helperpk": self.client.user.pk,
+                            "format": exportformat,
+                        },
+                    )
+                    response = self.client.get(url, follow=True)
+                    self.assertEqual(response.status_code, 200, url)
+                url = reverse(
+                    "season-personal-calendar",
+                    kwargs={"pk": self.season.pk, "helperpk": self.client.user.pk},
+                )
+                response = self.client.get(url, follow=True)
+                self.assertEqual(response.status_code, 200, url)
             else:
                 self.assertEqual(response.status_code, 403, urls["season-planning"])
 
