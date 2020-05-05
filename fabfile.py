@@ -243,6 +243,40 @@ class CustomConnection(Connection):
 
         return outfile
 
+    def drop_and_recreate_db(self, **kwargs):
+        """
+        Drop and recreate an empty DB for this environment
+        """
+        db_creds = self.db_creds()
+        try:
+            confirmed = kwargs.pop("confirm_that_this_is_really_what_I_want")
+        except KeyError:
+            confirmed = False
+
+        if not confirmed:
+            raise Exit("You need to pass the righteous argument to proceed with this")
+
+        if db_creds["NAME"] == "intranetdefiveloch001":
+            raise Exit("This is the production DB, abort.")
+        self.run(
+            f"dropdb -h '{db_creds['HOST']}' -U '{db_creds['USER']}' '{db_creds['NAME']}'",
+            env={"PGPASSWORD": db_creds["PASSWORD"].replace("$", "\$")},
+        )
+        self.run(
+            f"createdb -h '{db_creds['HOST']}' -U '{db_creds['USER']}' '{db_creds['NAME']}'",
+            env={"PGPASSWORD": db_creds["PASSWORD"].replace("$", "\$")},
+        )
+
+    def restore_dump(self, db_dump_gz):
+        """
+        Restore a gz DB dump to our database
+        """
+        db_creds = self.db_creds()
+        self.run(
+            f"gunzip -c {db_dump_gz} | psql -h '{db_creds['HOST']}' -U '{db_creds['USER']}' '{db_creds['NAME']}'",
+            env={"PGPASSWORD": db_creds["PASSWORD"].replace("$", "\$")},
+        )
+
     def create_structure(self):
         """
         Create the basic directory structure on the remote server.
