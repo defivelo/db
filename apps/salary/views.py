@@ -252,6 +252,7 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
     month_format = "%m"
     allow_empty = False
     allow_future = False
+    model = Timesheet
 
     def get_queryset(self):
         active_canton = self.request.GET.get("canton")
@@ -260,7 +261,7 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
         )
         if active_canton:
             users = users.filter(profile__affiliation_canton=active_canton)
-        return Timesheet.objects.filter(validated_at__isnull=False, user__in=users)
+        return super().get_queryset().filter(validated_at__isnull=False, user__in=users)
 
     def get_dataset_title(self):
         return _("Export Crésus {month} {year}").format(
@@ -287,9 +288,10 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
                 u("interventions"),  # actor_count
             ]
         )
+        _, object_list, _ = self.get_dated_items()
 
         salary_details_list = (
-            self.get_queryset()
+            object_list
             .values("user")
             .annotate(
                 cresus_employee_number=F("user__profile__cresus_employee_number"),
@@ -299,7 +301,7 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
                 time_helper=Sum("time_helper"),
                 traveltime=Sum("traveltime"),
                 overtime=Sum("overtime"),
-            )
+            ).order_by()
         )
 
         for salary_details in salary_details_list:
