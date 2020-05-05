@@ -204,10 +204,9 @@ class CustomConnection(Connection):
                 value = "1" if value else ""
             self.put(StringIO("{}\n".format(value)), envfile_path)
 
-    def dump_db(self, destination):
+    def db_creds(self):
         """
-        Dump the database to the given directory and return the path to the file created.
-        This creates a gzipped SQL file.
+        Return DB dictionary of credentials from the DATABASE_URL envdir var
         """
         with self.cd(self.project_root):
             db_credentials = self.run(
@@ -219,6 +218,14 @@ class CustomConnection(Connection):
             raise NotImplementedError(
                 "The dump_db task doesn't support the remote database engine"
             )
+        return db_credentials_dict
+
+    def dump_db(self, destination):
+        """
+        Dump the database to the given directory and return the path to the file created.
+        This creates a gzipped SQL file.
+        """
+        db_credentials_dict = self.db_creds()
 
         outfile = os.path.join(
             destination, datetime.now().strftime("%Y-%m-%d_%H%M%S.sql.gz")
