@@ -51,6 +51,8 @@ ENVIRONMENTS = {
 
 project_name = "defivelo"
 
+PRODUCTION_DB_NAME = "intranetdefiveloch001"
+
 
 def remote(task_func):
     """
@@ -245,7 +247,9 @@ class CustomConnection(Connection):
 
         return outfile
 
-    def drop_and_recreate_db(self, **kwargs):
+    def drop_and_recreate_db(
+        self, production_db_name: str = PRODUCTION_DB_NAME, **kwargs
+    ):
         """
         Drop and recreate an empty DB for this environment
         """
@@ -258,7 +262,7 @@ class CustomConnection(Connection):
         if not confirmed:
             raise Exit("You need to pass the righteous argument to proceed with this")
 
-        if db_creds["NAME"] == "intranetdefiveloch001":
+        if db_creds["NAME"] == production_db_name:
             raise Exit("This is the production DB, abort.")
         self.run(
             f"dropdb -h '{db_creds['HOST']}' -U '{db_creds['USER']}' '{db_creds['NAME']}'",
