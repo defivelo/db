@@ -12,6 +12,7 @@ from apps.salary.models import Timesheet
 
 from . import BONUS_LEADER, HOURLY_RATE_HELPER, RATE_ACTOR
 
+
 class TimesheetFormBase(forms.ModelForm):
     class Meta:
         model = Timesheet
@@ -26,9 +27,12 @@ class TimesheetFormBase(forms.ModelForm):
             "comments",
         ]
         labels = {
-            "time_helper": _("Heures moni·teur·trice (%(price)s.-/h)") % dict(price=HOURLY_RATE_HELPER),
-            "actor_count": _(" Intervention(s) (%(price)s.-/Qualif')") % dict(price=RATE_ACTOR),
-            "leader_count": _("Participation(s) comme moniteur 2 (%(price)s.-/Qualif')") % dict(price=BONUS_LEADER),
+            "time_helper": _("Heures moni·teur·trice (%(price)s.-/h)")
+            % dict(price=HOURLY_RATE_HELPER),
+            "actor_count": _("Intervention(s) (%(price)s.-/Qualif')")
+            % dict(price=RATE_ACTOR),
+            "leader_count": _("Participation(s) comme moniteur 2 (%(price)s.-/Qualif')")
+            % dict(price=BONUS_LEADER),
             "traveltime": _("Heures de trajet (cf. règlement)"),
         }
         widgets = {
