@@ -452,6 +452,7 @@ def reset_db_from_prod(c):
     c.conn.manage_py(
         f'set_default_site --name "{project_name_verbose} ({c.environment})" --domain "{c.config.settings["ALLOWED_HOSTS"].split(",")[0]}"'
     )
+    c.conn.manage_py(f'set_fake_passwords')
     restart_uwsgi(c)
 
 
