@@ -26,6 +26,17 @@ class TimesheetFormBase(forms.ModelForm):
             "traveltime",
             "comments",
         ]
+        labels = {
+            "time_helper": _("Heures moni·teur·trice (%(price)s.-/h)")
+            % dict(price=HOURLY_RATE_HELPER),
+            "actor_count": _("Intervention(s) (%(price)s.-/Qualif')")
+            % dict(price=RATE_ACTOR),
+            "leader_count": _("Participation(s) comme moniteur 2 (%(price)s.-/Qualif')")
+            % dict(price=BONUS_LEADER),
+            "overtime": _("Heures supplémentaires (%(price)s.-/h)")
+            % dict(price=HOURLY_RATE_HELPER),
+            "traveltime": _("Heures de trajet (cf. règlement)"),
+        }
         widgets = {
             "date": forms.HiddenInput(),
             "time_helper": TimeNumberInput(

@@ -47,7 +47,7 @@
           {% endfor %}
         </th>
         {% endfor %}
-        <th>{% trans "Total" %}</th>
+        <th align="center" class="text-center">{% trans "Total" %}</th>
       </tr>
     </thead>
 
@@ -66,7 +66,7 @@
     </tbody>
     <tfoot>
       <tr>
-        <th>{% trans "Total"%}</th>
+        <th>{% trans "Total heures"%}</th>
         {% for form in formset.forms %}
         <td align="center" class="text-center">
         </td>
@@ -74,7 +74,10 @@
         <td class="text-center"></td>
       </tr>
       <tr>
-        <th>{% trans "Total CHF"%}</th>
+        <th>
+        {% trans "Total CHF"%} <br/>
+        <small class="text-muted">{% trans "Attention: Ceci n'est pas le salaire brut mais le décompte d'heures" %}</small>
+        </th>
         {% for form in formset.forms %}
         <td align="center" class="text-center">
         </td>
