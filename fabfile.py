@@ -52,6 +52,7 @@ ENVIRONMENTS = {
 }
 
 project_name = "defivelo"
+project_name_verbose = "Intranet Défi Vélo"
 
 PRODUCTION_DB_NAME = "intranetdefiveloch001"
 
@@ -448,6 +449,9 @@ def reset_db_from_prod(c):
 
     # Run what's needed to bring the target env to a working state
     dj_migrate_database(c)
+    c.conn.manage_py(
+        f'set_default_site --name "{project_name_verbose} ({c.environment})" --domain "{c.config.settings["ALLOWED_HOSTS"].split(",")[0]}"'
+    )
     restart_uwsgi(c)
 
 
@@ -578,7 +582,7 @@ def install_requirements(c):
     try:
         requirements_variant = c.config.requirements
     except AttributeError:
-        requirements_variant = 'base'
+        requirements_variant = "base"
 
     c.conn.pip(f"install -r requirements/{requirements_variant}.txt")
 
