@@ -46,6 +46,7 @@ ENVIRONMENTS = {
             "SITE_DOMAIN": "staging.intranet.defi-velo.ch",
             "VIRTUAL_ENV": "/var/www/intranet.defi-velo.ch/staging/venv",
             "USE_DB_EMAIL_BACKEND": "1",
+            "DJANGO_SETTINGS_MODULE": "defivelo.settings.staging",
         },
     },
 }
