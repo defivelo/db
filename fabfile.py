@@ -36,6 +36,7 @@ ENVIRONMENTS = {
         "host": "wpy10809@onhp-python3.iron.bsa.oriented.ch:29992",
         "pid": "/run/uwsgi/app/staging.intranet.defi-velo.ch/pid",
         "ini": "/etc/uwsgi/apps-enabled/staging.intranet.defi-velo.ch.ini",
+        "requirements": "staging",
         "settings": {
             "ALLOWED_HOSTS": "\n".join(["staging.intranet.defi-velo.ch"]),
             "MEDIA_URL": "/media/",
@@ -573,7 +574,12 @@ def install_requirements(c):
     except UnexpectedExit:
         c.conn.mk_venv()
 
-    c.conn.pip("install -r requirements/base.txt")
+    try:
+        requirements_variant = c.config.requirements
+    except AttributeError:
+        requirements_variant = 'base'
+
+    c.conn.pip(f"install -r requirements/{requirements_variant}.txt")
 
 
 @task
