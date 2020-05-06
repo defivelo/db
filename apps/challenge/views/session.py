@@ -28,6 +28,7 @@ from django.views.generic.dates import WeekArchiveView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
+from rolepermissions.checkers import has_permission
 from rolepermissions.mixins import HasPermissionsMixin
 from tablib import Dataset
 
@@ -47,7 +48,7 @@ from .mixins import CantonSeasonFormMixin
 EXPORT_NAMETEL = u("{name} - {tel}")
 
 
-class SessionMixin(CantonSeasonFormMixin, HasPermissionsMixin, MenuView):
+class SessionMixin(CantonSeasonFormMixin, MenuView):
     required_permission = "challenge_session_crud"
     model = Session
     context_object_name = "session"
@@ -60,6 +61,11 @@ class SessionMixin(CantonSeasonFormMixin, HasPermissionsMixin, MenuView):
             not self.view_does_crud
             or (self.season and self.season.manager_can_crud)
         ):
+            # Replace HasPermissionsMixin, allowing a child class to discard this
+            if self.required_permission and not has_permission(
+                request.user, self.required_permission
+            ):
+                raise PermissionDenied
             return super(SessionMixin, self).dispatch(request, *args, **kwargs)
         else:
             raise PermissionDenied
@@ -126,6 +132,16 @@ class SessionsListView(SessionMixin, WeekArchiveView):
 
 class SessionDetailView(SessionMixin, DetailView):
     view_does_crud = False
+    # Accessible for anyone, strengthen in dispatch
+    required_permission = None
+    # Allow season fetch even for non-state managers
+    allow_season_fetch = True
+
+    def dispatch(self, request, *args, **kwargs):
+        if self.season.all_helpers_qs.filter(id=self.request.user.id).exists():
+            return super(SessionMixin, self).dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
 
     def get_context_data(self, **kwargs):
         context = super(SessionDetailView, self).get_context_data(**kwargs)

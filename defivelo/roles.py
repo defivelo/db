@@ -34,6 +34,9 @@ def has_permission(user, permission_name):
 
 @memoize()
 def user_cantons(user):
+    """
+    List of the cantons _managed_ by this user
+    """
     if has_permission(user, "cantons_all"):
         return DV_STATES
     elif has_permission(user, "cantons_mine"):

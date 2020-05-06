@@ -30,6 +30,9 @@ class CantonSeasonFormMixin(object):
 
     @cached_property
     def season(self):
+        """
+        self.season a Season object of the currently running season
+        """
         try:
             seasonpk = int(
                 self.kwargs["seasonpk"]
@@ -56,7 +59,7 @@ class CantonSeasonFormMixin(object):
                     raise LookupError
                 raise PermissionDenied
         except LookupError:
-            # That user doesn't have allowed seasons
+            # That user doesn't manage cantons
             if self.allow_season_fetch:
                 season = Season.objects.prefetch_related("leader").get(pk=seasonpk)
             else:
