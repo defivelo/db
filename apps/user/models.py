@@ -21,7 +21,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
-from django.db import models
+from django.db import models, transaction
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.forms import ValidationError
@@ -292,11 +292,16 @@ class UserProfile(Address, models.Model):
             user=self.user, email=self.user.email, verified=True, primary=True
         )
 
+    @transaction.atomic
     def delete(self):
         self.user.is_active = False
+        email_comment = _("Email avant suppression: %s") % self.user.email
         self.user.email = ""
         self.user.set_unusable_password()
         self.user.save()
+        self.comments = (
+            f"{self.comments}\n{email_comment}" if self.comments else email_comment
+        )
         self.status = USERSTATUS_DELETED
         self.save()
 
