@@ -47,7 +47,7 @@
           {% endfor %}
         </th>
         {% endfor %}
-        <th>{% trans "Total heures" %}</th>
+        <th align="center" class="text-center">{% trans "Total" %}</th>
       </tr>
     </thead>
 
@@ -66,7 +66,7 @@
     </tbody>
     <tfoot>
       <tr>
-        <th>{% trans "Total"%}</th>
+        <th>{% trans "Total heures"%}</th>
         {% for form in formset.forms %}
         <td align="center" class="text-center">
         </td>
