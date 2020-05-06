@@ -72,10 +72,14 @@
             <td class="text-right">{{ line.nb_participants }}</td>
             <td class="text-right">{{ line.cost_participants }}</td>
             <td class="text-right">{{ line.nb_bikes }}</td>
-            <td class="text-right"{% if not line.cost_bikes_reduction_percent %} colspan="3"{% endif %}>{{ line.cost_bikes }}</td>
-            {% if line.cost_bikes_reduction_percent %}
-              <td class="text-right">-{{ line.cost_bikes_reduction_percent }} %</td>
-              <td class="text-right">{{ line.cost_bikes_reduced }}</td>
+            {% if line.has_cost_bikes %}
+              <td class="text-right"{% if not line.cost_bikes_reduction_percent %} colspan="3"{% endif %}>{{ line.cost_bikes }}</td>
+              {% if line.cost_bikes_reduction_percent %}
+                <td class="text-right">-{{ line.cost_bikes_reduction_percent }} %</td>
+                <td class="text-right">{{ line.cost_bikes_reduced }}</td>
+              {% endif %}
+            {% else %}
+              <td class="text-center" colspan="3">–</td>
             {% endif %}
             <td class="text-right">{{ line.cost }}</td>
         </tr>
