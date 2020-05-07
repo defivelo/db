@@ -204,6 +204,16 @@ class Season(models.Model):
             | Q(qualifs_actor__session__in=self.sessions_with_qualifs)
         ).distinct()
 
+    def unprivileged_user_can_see(self, user):
+        """
+        Whether a user can consult this season;
+        All users selected in season can see all of this season's sessions
+        """
+        return (
+            self.state == DV_SEASON_STATE_RUNNING
+            and self.all_helpers_qs.filter(id=user.id).exists()
+        )
+
     def get_absolute_url(self):
         return reverse("season-detail", args=[self.pk])
 

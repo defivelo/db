@@ -70,7 +70,7 @@ class SessionMixin(CantonSeasonFormMixin, MenuView):
 
         if not self.view_does_cud:
             # Read-only view
-            if self.get_object().unprivileged_user_can_see(request.user):
+            if self.season and self.season.unprivileged_user_can_see(request.user):
                 allowed = True
 
         if allowed:
