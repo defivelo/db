@@ -53,22 +53,29 @@ class SessionMixin(CantonSeasonFormMixin, MenuView):
     model = Session
     context_object_name = "session"
     form_class = SessionForm
-    view_does_crud = True
+    view_does_cud = True
 
     def dispatch(self, request, *args, **kwargs):
+        """
+        Check allowances for access to view
+        """
+        allowed = False
+
         if (
-            # Si c'est le bon moment
-            not self.view_does_crud
-            or (self.season and self.season.manager_can_crud)
+            self.season
+            and self.season.manager_can_crud
+            and has_permission(request.user, self.required_permission)
         ):
-            # Replace HasPermissionsMixin, allowing a child class to discard this
-            if self.required_permission and not has_permission(
-                request.user, self.required_permission
-            ):
-                raise PermissionDenied
-            return super(SessionMixin, self).dispatch(request, *args, **kwargs)
-        else:
-            raise PermissionDenied
+            allowed = True
+
+        if not self.view_does_cud:
+            # Read-only view
+            if self.get_object().unprivileged_user_can_see(request.user):
+                allowed = True
+
+        if allowed:
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
 
     def get_queryset(self):
         qs = super(SessionMixin, self).get_queryset()
@@ -127,21 +134,13 @@ class SessionsListView(SessionMixin, WeekArchiveView):
     allow_future = True
     week_format = "%W"
     ordering = ["day", "begin", "duration"]
-    view_does_crud = False
+    view_does_cud = False
 
 
 class SessionDetailView(SessionMixin, DetailView):
-    view_does_crud = False
-    # Accessible for anyone, strengthen in dispatch
-    required_permission = None
+    view_does_cud = False
     # Allow season fetch even for non-state managers
     allow_season_fetch = True
-
-    def dispatch(self, request, *args, **kwargs):
-        if self.season.all_helpers_qs.filter(id=self.request.user.id).exists():
-            return super(SessionMixin, self).dispatch(request, *args, **kwargs)
-        else:
-            raise PermissionDenied
 
     def get_context_data(self, **kwargs):
         context = super(SessionDetailView, self).get_context_data(**kwargs)
@@ -197,7 +196,7 @@ class SessionStaffChoiceView(SessionDetailView):
 
 
 class SessionExportView(ExportMixin, SessionMixin, HasPermissionsMixin, DetailView):
-    view_does_crud = False
+    view_does_cud = False
 
     @property
     def export_filename(self):

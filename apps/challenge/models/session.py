@@ -226,6 +226,13 @@ class Session(Address, models.Model):
                 return CHOSEN_AS_ACTOR
         return None
 
+    def unprivileged_user_can_see(self, user):
+        """
+        Whether a user can consult this session;
+        All users selected in season can see all of this season's sessions
+        """
+        return self.season.all_helpers_qs.filter(id=user.id).exists()
+
     def n_quali_things(self, field):
         return sum([q for q in self.qualifications.values_list(field, flat=True) if q])
 
