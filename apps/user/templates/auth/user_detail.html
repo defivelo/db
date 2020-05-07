@@ -207,7 +207,7 @@
                     <div role="tabpane" class="tab-pane panel panel-danger" id="notes">
                         <div class="panel-heading">{% trans "Remarques privées" %}</div>
                         <div class="panel-body">
-                        {{ userprofile.profile.comments }}
+                        {{ userprofile.profile.comments|linebreaksbr }}
                         </div>
                     </div>
                 {% endif %}
