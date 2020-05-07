@@ -605,7 +605,7 @@ def sync_settings(c):
 
     c.conn.set_setting(
         "DJANGO_SETTINGS_MODULE",
-        value="%s.config.settings.base" % project_name,
+        value="%s.settings.base" % project_name,
         force=False,
     )
     c.conn.set_setting("SECRET_KEY", value=generate_secret_key(), force=False)
