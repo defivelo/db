@@ -3,9 +3,9 @@ import inspect
 import os
 import random
 import subprocess
-from tempfile import NamedTemporaryFile
 from datetime import datetime
 from io import StringIO
+from tempfile import NamedTemporaryFile
 
 import dj_database_url
 from dulwich import porcelain
@@ -450,9 +450,9 @@ def reset_db_from_prod(c):
     # Run what's needed to bring the target env to a working state
     dj_migrate_database(c)
     c.conn.manage_py(
-        f'set_default_site --name "{project_name_verbose} ({c.environment})" --domain "{c.config.settings["ALLOWED_HOSTS"].split(",")[0]}"'
+        f'set_default_site --name "{project_name_verbose} ({c.environment})" --domain "{c.config.settings["SITE_DOMAIN"]}"'
     )
-    c.conn.manage_py(f'set_fake_passwords')
+    c.conn.manage_py(f"set_fake_passwords")
     restart_uwsgi(c)
 
 
@@ -616,9 +616,7 @@ def sync_settings(c):
         c.conn.set_setting(setting, force=False)
 
     c.conn.set_setting(
-        "DJANGO_SETTINGS_MODULE",
-        value="%s.settings.base" % project_name,
-        force=False,
+        "DJANGO_SETTINGS_MODULE", value="%s.settings.base" % project_name, force=False,
     )
     c.conn.set_setting("SECRET_KEY", value=generate_secret_key(), force=False)
 

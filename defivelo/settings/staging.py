@@ -18,7 +18,4 @@
 from . import get_env_variable
 from .base import *
 
-INSTALLED_APPS += (
-    "django_extensions",
-)
-
+INSTALLED_APPS += ("django_extensions",)
