@@ -15,7 +15,6 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 from decimal import ROUND_HALF_EVEN
 from decimal import Decimal as D
 from typing import Iterable
@@ -175,7 +174,25 @@ class InvoiceLine(models.Model):
         )
 
     @property
+    def has_cost_bikes(self):
+        """
+        True when this line is the one accounting for the cost of bikes.
+        There may be multiple lines (sessions) on the same day,
+        but bikes are rented for the whole day.
+        """
+        last_line_with_most_bikes = (
+            self.invoice.lines.filter(
+                historical_session__day=self.historical_session.day
+            )
+            .order_by("-nb_bikes", "-historical_session__begin", "-id")
+            .first()
+        )
+        return self == last_line_with_most_bikes
+
+    @property
     def cost_bikes_reduced(self):
+        if not self.has_cost_bikes:
+            return 0
         # Sum of the costs, rounded to 5 cents.
         return round_CHF(
             D(self.cost_bikes * D(1 - self.cost_bikes_reduction_percent() / 100))

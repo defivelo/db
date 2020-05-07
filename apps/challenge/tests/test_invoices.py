@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import timedelta
+from datetime import date, time, timedelta
 
 from django.urls import reverse
 
@@ -94,6 +94,50 @@ def test_invoice_out_of_date(db):
         elif nth_in_sequence >= sequence_max:
             nth_in_sequence = 1
             sequence_max = sequence_max + 1
+
+
+def test_bikes_are_accounted_once_per_day(db):
+    invoice = InvoiceFactory()
+    line_am = InvoiceLineFactory(
+        invoice=invoice,
+        nb_bikes=10,
+        session__day=date(2020, 1, 1),
+        session__begin=time(8, 30),
+    )
+    line_pm = InvoiceLineFactory(
+        invoice=invoice,
+        nb_bikes=10,
+        session__day=date(2020, 1, 1),
+        session__begin=time(13, 30),
+    )
+    assert not line_am.has_cost_bikes and line_am.cost_bikes_reduced == 0
+    assert line_pm.has_cost_bikes and line_pm.cost_bikes_reduced > 0
+
+    previous_sum_cost = invoice.sum_cost()
+    line_am.cost_bikes = 0
+    line_am.save()
+    assert invoice.sum_cost() == previous_sum_cost
+    line_pm.cost_bikes = 0
+    line_pm.save()
+    assert invoice.sum_cost() < previous_sum_cost
+
+
+def test_bikes_are_accounted_for_the_session_with_most_bikes(db):
+    invoice = InvoiceFactory()
+    line_am = InvoiceLineFactory(
+        invoice=invoice,
+        nb_bikes=11,
+        session__day=date(2020, 1, 1),
+        session__begin=time(8, 30),
+    )
+    line_pm = InvoiceLineFactory(
+        invoice=invoice,
+        nb_bikes=10,
+        session__day=date(2020, 1, 1),
+        session__begin=time(13, 30),
+    )
+    assert line_am.has_cost_bikes and line_am.cost_bikes_reduced > 0
+    assert not line_pm.has_cost_bikes and line_pm.cost_bikes_reduced == 0
 
 
 class InvoiceTestCaseMixin(SeasonTestCaseMixin):
