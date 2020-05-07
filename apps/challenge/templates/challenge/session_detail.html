@@ -29,14 +29,18 @@
         </ul>
     </nav>
 
-    {% if season.manager_can_crud %}
+    {% if season.manager_can_crud and user|can:'challenge_session_crud' %}
         <div class="hidden-print">
             <a class="btn btn-primary pull-right" href="{% url 'session-update' seasonpk=season.pk pk=session.pk %}">{% trans "Éditer" %}</a>
         </div>
     {% endif %}
     <table class="table table-condensed">
     <tr><th>{% trans "Établissement" %}</th>
-        <td><a href="{% url 'organization-detail' session.orga.pk %}">{{ session.orga }}</a>
+        <td>{% if user|can:'orga_crud' %}
+              <a href="{% url 'organization-detail' session.orga.pk %}">{{ session.orga }}</a>
+            {% else %}
+              {{ session.orga }}
+            {% endif %}
             {% if session.orga.coordinator_fullname %}
                 <br />
                 <small>{{ session.orga.coordinator_fullname }}
@@ -92,7 +96,7 @@
                 </dl>
             </td>
         </tr>
-    {% endif %} 
+    {% endif %}
     <tr><th><a href="{% url 'session-staff-choices' season.pk session.pk %}" title="{% trans "Disponibilités" %}">{% trans "Moniteurs" %}</a></th>
         <td><dl class="dl-horizontal small">
                 <dt>{% trans "Rendez-vous" %}</dt>
@@ -105,7 +109,7 @@
         </td>
     </tr>
 
-    {% if session.errors %}
+    {% if session.errors and user|can:'challenge_session_crud' %}
         <tr class="hidden-print"><th>{% trans "Erreurs" %}</th><td>{{ session.errors }}</td></tr>
     {% endif %}
     {% if session.comments %}
@@ -121,8 +125,8 @@
         <tr><th>{% trans "Classe" %}</th>
             {% for quali in session.qualifications.all %}
                 <th>{% if not quali.errors %}{% include "ok.html" %}{% endif%}
-                {{ forloop.counter }} - {% if season.manager_can_crud %}<a href="{% url 'quali-update' seasonpk=season.pk sessionpk=session.pk pk=quali.pk %}">{{ quali.name }}</a>{% else %}{{ quali.name }}{% endif %}
-                {% if quali.errors %}<span class="hidden-print">
+                {{ forloop.counter }} - {% if season.manager_can_crud and user|can:'challenge_session_crud' %}<a href="{% url 'quali-update' seasonpk=season.pk sessionpk=session.pk pk=quali.pk %}">{{ quali.name }}</a>{% else %}{{ quali.name }}{% endif %}
+                {% if quali.errors and user|can:'challenge_session_crud' %}<span class="hidden-print">
                     <br />
                     {{ quali.errors }}</span>
                 {% endif %}
@@ -171,7 +175,7 @@
         <tr><th>{% trans "Remarques" %}</th>
                 {% for quali in session.qualifications.all %}<td><em>{{ quali.comments }}</em></td>{% endfor %}</tr>
 
-        {% if season.manager_can_crud %}
+        {% if season.manager_can_crud and user|can:'challenge_session_crud' %}
             <tr class="hidden-print"><td></td>
                     {% for quali in session.qualifications.all %}
                         <td>
@@ -187,7 +191,7 @@
         {% endif %}
     {% endif %}
 
-    {% if season.manager_can_crud %}
+    {% if season.manager_can_crud and user|can:'challenge_session_crud' %}
         <tr class="hidden-print">
             <td{% if session.qualifications.count > 0 %} colspan="{{ session.qualifications.count|add:1 }}"{% endif %}>
                 <form method="POST" action="{% url 'quali-create' seasonpk=season.pk sessionpk=session.pk %}" class="form-horizontal">
@@ -201,7 +205,7 @@
     </table>
 
     <div class="hidden-print">
-        {% if season.manager_can_crud %}
+        {% if season.manager_can_crud and user|can:'challenge_session_crud' %}
             <a class="btn btn-danger pull-right" href="{% url 'session-delete' seasonpk=season.pk pk=session.pk %}">{% trans "Supprimer" %}</a>
         {% endif %}
         <div class="btn-group" role="group" aria-label="exports">
