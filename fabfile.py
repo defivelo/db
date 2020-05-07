@@ -176,7 +176,7 @@ class CustomConnection(Connection):
         """
         return self.run_in_venv("python", args, **run_kwargs)
 
-    def manage_py(self, args, **run_kwargs):
+    def manage_py(self, args, debug=False, **run_kwargs):
         """
         manage.py with the python from the venv, in the project_root
         """
@@ -186,6 +186,8 @@ class CustomConnection(Connection):
             }
         except KeyError:
             env = {}
+        if debug:
+            env["DEBUG"] = 1
         return self.python("./manage.py {}".format(args), env=env, **run_kwargs)
 
     def set_setting(self, name, value=None, force: bool = True):
@@ -452,7 +454,7 @@ def reset_db_from_prod(c):
     c.conn.manage_py(
         f'set_default_site --name "{project_name_verbose} ({c.environment})" --domain "{c.config.settings["SITE_DOMAIN"]}"'
     )
-    c.conn.manage_py(f"set_fake_passwords")
+    c.conn.manage_py(f"set_fake_passwords", debug=True)
     restart_uwsgi(c)
 
 
