@@ -99,7 +99,8 @@ class UserCreate(HasPermissionsMixin, ProfileMixin, SuccessMessageMixin, CreateV
 class UserProfileFilterSet(FilterSet):
     def __init__(self, data=None, *args, **kwargs):
         cantons = kwargs.pop("cantons", None)
-        if data is None or len(data) == 0:
+        any_filter_is_set = bool(set(self.base_filters) & set(data or {}))
+        if not any_filter_is_set:
             data = {}
             for name, f in self.base_filters.items():
                 initial = f.extra.get("initial")

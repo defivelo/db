@@ -45,7 +45,8 @@ from .models import ORGASTATUS_ACTIVE, ORGASTATUS_CHOICES, Organization
 class OrganizationFilterSet(FilterSet):
     def __init__(self, data=None, *args, **kwargs):
         cantons = kwargs.pop("cantons", None)
-        if data is None:
+        any_filter_is_set = bool(set(self.base_filters) & set(data or {}))
+        if not any_filter_is_set:
             data = {}
             for name, f in self.base_filters.items():
                 initial = f.extra.get("initial")
