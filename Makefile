@@ -1,9 +1,10 @@
 .DEFAULT_GOAL := help
 
 REQUIREMENTS_DIR = requirements
-objects = $(REQUIREMENTS_DIR)/base.txt $(REQUIREMENTS_DIR)/test.txt $(REQUIREMENTS_DIR)/dev.txt
+reqbases = $(wildcard $(REQUIREMENTS_DIR)/*.in)
+objects = $(patsubst %.in,%.txt,$(reqbases))
 
-requirements/%.txt: $(REQUIREMENTS_DIR)/%.in $(REQUIREMENTS_DIR)/test.in $(REQUIREMENTS_DIR)/base.in
+$(REQUIREMENTS_DIR)/%.txt: $(REQUIREMENTS_DIR)/%.in $(reqbases)
 	pip-compile $<
 
 .PHONY: requirements

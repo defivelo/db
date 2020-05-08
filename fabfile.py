@@ -3,9 +3,9 @@ import inspect
 import os
 import random
 import subprocess
-from tempfile import NamedTemporaryFile
 from datetime import datetime
 from io import StringIO
+from tempfile import NamedTemporaryFile
 
 import dj_database_url
 from dulwich import porcelain
@@ -36,6 +36,7 @@ ENVIRONMENTS = {
         "host": "wpy10809@onhp-python3.iron.bsa.oriented.ch:29992",
         "pid": "/run/uwsgi/app/staging.intranet.defi-velo.ch/pid",
         "ini": "/etc/uwsgi/apps-enabled/staging.intranet.defi-velo.ch.ini",
+        "requirements": "staging",
         "settings": {
             "ALLOWED_HOSTS": "\n".join(["staging.intranet.defi-velo.ch"]),
             "MEDIA_URL": "/media/",
@@ -45,11 +46,13 @@ ENVIRONMENTS = {
             "SITE_DOMAIN": "staging.intranet.defi-velo.ch",
             "VIRTUAL_ENV": "/var/www/intranet.defi-velo.ch/staging/venv",
             "USE_DB_EMAIL_BACKEND": "1",
+            "DJANGO_SETTINGS_MODULE": "defivelo.settings.staging",
         },
     },
 }
 
 project_name = "defivelo"
+project_name_verbose = "Intranet Défi Vélo"
 
 PRODUCTION_DB_NAME = "intranetdefiveloch001"
 
@@ -173,7 +176,7 @@ class CustomConnection(Connection):
         """
         return self.run_in_venv("python", args, **run_kwargs)
 
-    def manage_py(self, args, **run_kwargs):
+    def manage_py(self, args, debug=False, **run_kwargs):
         """
         manage.py with the python from the venv, in the project_root
         """
@@ -183,6 +186,8 @@ class CustomConnection(Connection):
             }
         except KeyError:
             env = {}
+        if debug:
+            env["DEBUG"] = 1
         return self.python("./manage.py {}".format(args), env=env, **run_kwargs)
 
     def set_setting(self, name, value=None, force: bool = True):
@@ -446,6 +451,10 @@ def reset_db_from_prod(c):
 
     # Run what's needed to bring the target env to a working state
     dj_migrate_database(c)
+    c.conn.manage_py(
+        f'set_default_site --name "{project_name_verbose} ({c.environment})" --domain "{c.config.settings["SITE_DOMAIN"]}"'
+    )
+    c.conn.manage_py(f"set_fake_passwords", debug=True)
     restart_uwsgi(c)
 
 
@@ -573,7 +582,12 @@ def install_requirements(c):
     except UnexpectedExit:
         c.conn.mk_venv()
 
-    c.conn.pip("install -r requirements/base.txt")
+    try:
+        requirements_variant = c.config.requirements
+    except AttributeError:
+        requirements_variant = "base"
+
+    c.conn.pip(f"install -r requirements/{requirements_variant}.txt")
 
 
 @task
@@ -604,9 +618,7 @@ def sync_settings(c):
         c.conn.set_setting(setting, force=False)
 
     c.conn.set_setting(
-        "DJANGO_SETTINGS_MODULE",
-        value="%s.settings.base" % project_name,
-        force=False,
+        "DJANGO_SETTINGS_MODULE", value="%s.settings.base" % project_name, force=False,
     )
     c.conn.set_setting("SECRET_KEY", value=generate_secret_key(), force=False)
 
