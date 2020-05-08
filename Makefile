@@ -4,7 +4,7 @@ REQUIREMENTS_DIR = requirements
 reqbases = $(wildcard $(REQUIREMENTS_DIR)/*.in)
 objects = $(patsubst %.in,%.txt,$(reqbases))
 
-$(REQUIREMENTS_DIR)/%.txt: $(reqbases)
+$(REQUIREMENTS_DIR)/%.txt: $(REQUIREMENTS_DIR)/%.in $(reqbases)
 	pip-compile $<
 
 .PHONY: requirements
