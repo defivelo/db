@@ -168,7 +168,7 @@ class UserProfile(Address, models.Model):
     languages_challenges = MultiSelectField(
         _("Prêt à animer en"), choices=DV_LANGUAGES, blank=True
     )
-    birthdate = models.DateField(_("Date"), blank=True, null=True)
+    birthdate = models.DateField(_("Date de naissance"), blank=True, null=True)
     nationality = CountryField(_("Nationalité"), default="CH")
     work_permit = models.CharField(
         _("Permis de travail (si pas suisse)"), max_length=255, blank=True
@@ -209,7 +209,7 @@ class UserProfile(Address, models.Model):
         _("État civil"), choices=MARITALSTATUS_CHOICES, default=MARITALSTATUS_UNDEF
     )
     status = models.PositiveSmallIntegerField(
-        _("Statut"), choices=USERSTATUS_CHOICES, default=USERSTATUS_UNDEF
+        _("Statut"), choices=USERSTATUS_CHOICES, default=USERSTATUS_ACTIVE
     )
     status_updatetime = models.DateTimeField(null=True, blank=True)
     pedagogical_experience = models.TextField(_("Expérience pédagogique"), blank=True)

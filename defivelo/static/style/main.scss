@@ -1,7 +1,9 @@
 /* Dimensions dans la page */
-/* /!\ Divisible par 3 ! */
-$global-footer-height: 30px;
 
+
+/* /!\ Divisible par 3 ! */
+
+$global-footer-height: 30px;
 html {
     position: relative;
     min-height: 100%;
@@ -17,6 +19,10 @@ body {
     margin-top: -15px;
     padding-left: 0;
     padding-right: 0;
+}
+
+.required-field label:after {
+    content: " *";
 }
 
 @import 'partials/bootstrap-fixes';
