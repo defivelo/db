@@ -1,19 +1,21 @@
-{% load i18n %}
+{% load i18n dv_filters %}
 <div class="hidden-print">
     <a class="btn btn-default" href="{% url 'season-list' year=now.year %}">{% trans "Retour à la liste des saisons" %}</a>
-    <div class="btn-group">
-      <a class="btn btn-default" href="{% url 'season-update' season.pk %}"><span class="glyphicon glyphicon-pencil"></span> {% trans "Éditer la saison" %}</a>
-      {% if season.can_set_state_open %}
-        <a class="btn btn-default" href="{% url 'season-set-open' season.pk %}"><span
-          class="glyphicon glyphicon-flash"></span> {% trans "Diffuser le planning" %}</a>
-      {% endif %}
-      {% if season.can_set_state_running %}
-        <a class="btn btn-default" href="{% url 'season-set-running' season.pk %}"><span class="glyphicon glyphicon-apple"></span> {% trans "Finaliser le planning" %}</a>
-      {% endif %}
-    </div>
+    {% if user|can:'challenge_session_crud' %}
+      <div class="btn-group">
+        <a class="btn btn-default" href="{% url 'season-update' season.pk %}"><span class="glyphicon glyphicon-pencil"></span> {% trans "Éditer la saison" %}</a>
+        {% if season.can_set_state_open %}
+          <a class="btn btn-default" href="{% url 'season-set-open' season.pk %}"><span
+            class="glyphicon glyphicon-flash"></span> {% trans "Diffuser le planning" %}</a>
+        {% endif %}
+        {% if season.can_set_state_running %}
+          <a class="btn btn-default" href="{% url 'season-set-running' season.pk %}"><span class="glyphicon glyphicon-apple"></span> {% trans "Finaliser le planning" %}</a>
+        {% endif %}
+      </div>
+    {% endif %}
     <a class="btn btn-primary" href="{% url 'season-availabilities' season.pk %}"><span class="glyphicon glyphicon-th"></span> {% trans "Planning" %}</a>
 
-    {% if season.has_availability_incoherences and season.manager_can_crud %}
+    {% if user|can:'challenge_session_crud' and season.has_availability_incoherences and season.manager_can_crud %}
         <a class="btn btn-warning" href="{% url 'season-errorslist' season.pk %}" title="{% trans "Sessions avec Qualif' incohérente" %}"><span class="glyphicon glyphicon-warning-sign"></span></a>
     {% endif %}
 
@@ -21,7 +23,7 @@
         {% include 'export_buttons.html' with exporturl='season-export' exportargs=season.pk filter_querystring=filter_querystring only %}
     </div>
 
-    {% if season.manager_can_crud %}
+    {% if user|can:'challenge_session_crud' and season.manager_can_crud %}
         <a class="btn btn-primary pull-right" href="{% url 'session-create' season.pk %}">{% trans "Créer une nouvelle session" %}</a>
     {% endif %}
 </div>

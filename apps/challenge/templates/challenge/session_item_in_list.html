@@ -1,18 +1,20 @@
-{% load i18n %}
-<tr {% if session.errors %}class="warning"{% endif %} >
+{% load i18n dv_filters %}
+<tr {% if session.errors and user|can:'challenge_session_crud' %}class="warning"{% endif %} >
     <th><a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">{{ session.day }} ({{ session.begin }}) {{ session.city }}</a></th>
     <td>
-        {% if session.errors %}
-            <span class="glyphicon glyphicon-warning-sign"></span>
-            {% if session.qualifications.count == 0 %}
-                {% trans "Aucune Qualif'" %}
-            {% elif session.has_availability_incoherences %}
-                {% trans "Qualif' incohérente" %}
-            {% else %}
-                {% trans "Incomplet" %}
-            {% endif %}
-        {% else %}
-        {% include "ok.html" %}
+        {% if user|can:'challenge_session_crud' %}
+          {% if session.errors %}
+              <span class="glyphicon glyphicon-warning-sign"></span>
+              {% if session.qualifications.count == 0 %}
+                  {% trans "Aucune Qualif'" %}
+              {% elif session.has_availability_incoherences %}
+                  {% trans "Qualif' incohérente" %}
+              {% else %}
+                  {% trans "Incomplet" %}
+              {% endif %}
+          {% else %}
+            {% include "ok.html" %}
+          {% endif %}
         {% endif %}
     </td>
     <td>

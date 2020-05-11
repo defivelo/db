@@ -133,6 +133,8 @@ class SessionsListView(SessionMixin, WeekArchiveView):
     week_format = "%W"
     ordering = ["day", "begin", "duration"]
     view_does_cud = False
+    # Allow season fetch even for non-state managers
+    allow_season_fetch = True
 
 
 class SessionDetailView(SessionMixin, DetailView):
