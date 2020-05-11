@@ -372,12 +372,16 @@ class SeasonAvailabilityMixin(SeasonHelpersMixin):
             return initials
 
     def get_context_data(self, **kwargs):
-        context = super(SeasonAvailabilityMixin, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         resolvermatch = self.request.resolver_match
         try:
             context["helperpk"] = resolvermatch.kwargs["helperpk"]
         except (KeyError, TypeError):
             pass
+
+        context["user_can_see"] = self.season.unprivileged_user_can_see(
+            self.request.user
+        )
         # Add our submenu_category context
         context["submenu_category"] = "season-availability"
         context["sessions"] = self.object.sessions_with_qualifs.annotate(
