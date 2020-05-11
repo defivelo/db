@@ -355,8 +355,9 @@ class SendTimesheetsReminder(TemplateView):
         context["redirect_url"] = self.get_redirect_url()
         context["recipients"] = self.recipients
         context["period"] = formats.date_format(date(self.year, self.month, 1), "F Y")
-        _, email_text, *_ = self.render_email_for_user(self.request.user)
+        email_subject, email_text, *_ = self.render_email_for_user(self.request.user)
         context["email_text"] = email_text
+        context["email_subject"] = email_subject
         return context
 
     def post(self, request, *args, **kwargs):

@@ -43,6 +43,7 @@ from rolepermissions.mixins import HasPermissionsMixin
 from tablib import Dataset
 
 from apps.common import (
+    DV_SEASON_STATE_OPEN,
     DV_SEASON_STATE_RUNNING,
     DV_SEASON_STATES,
     DV_STATES,
@@ -509,6 +510,68 @@ class SeasonToRunningView(SeasonToStateMixin):
         form_result = super().form_valid(form)
         # Then send emails
         for helper in self.season_helpers:
+            email = self.get_email(helper)
+            helper.profile.send_mail(email["subject"], email["body"])
+        return form_result
+
+
+class SeasonToOpenView(SeasonToStateMixin):
+    season_to_state = DV_SEASON_STATE_OPEN
+
+    def get_email(self, profile=None):
+        """
+        Get a simple struct with the email we're sending at this step
+        """
+        if profile:
+            helperpk = profile.pk
+        else:
+            # Fake a profile that can be used in template
+            profile = {"get_full_name": _("{Prénom} {Nom}")}
+            helperpk = 0
+
+        planning_link = self.request.build_absolute_uri(
+            reverse(
+                "season-availabilities-update",
+                kwargs={"pk": self.season.pk, "helperpk": helperpk},
+            )
+        )
+
+        return {
+            "subject": settings.EMAIL_SUBJECT_PREFIX
+            + u("Planning {season}").format(season=self.season.desc()),
+            "body": render_to_string(
+                "challenge/season_email_to_state_open.txt",
+                {
+                    "profile": profile,
+                    "season": self.season,
+                    "planning_link": planning_link,
+                    "current_site": Site.objects.get_current(),
+                },
+            ),
+        }
+
+    def dispatch(self, request, bypassperm=False, *args, **kwargs):
+        """
+        Push away if we're not allowed to go to that state now
+        """
+        if self.season and self.season.can_set_state_open:
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["helpers"] = self.potential_helpers_qs().all()
+        context["email"] = self.get_email()
+        return context
+
+    def form_valid(self, form):
+        """
+        Run our specific action here
+        """
+        #  Save first
+        form_result = super().form_valid(form)
+        # Then send emails
+        for helper in self.potential_helpers_qs().all():
             email = self.get_email(helper)
             helper.profile.send_mail(email["subject"], email["body"])
         return form_result

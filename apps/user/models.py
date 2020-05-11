@@ -507,9 +507,10 @@ class UserProfile(Address, models.Model):
         """
         Send an email to that user
         """
-        return send_mail(
-            subject, body, settings.DEFAULT_FROM_EMAIL, [self.mailtolink,],
-        )
+        if self.user.email:
+            return send_mail(
+                subject, body, settings.DEFAULT_FROM_EMAIL, [self.mailtolink,],
+            )
 
     def __str__(self):
         return self.user.get_full_name()

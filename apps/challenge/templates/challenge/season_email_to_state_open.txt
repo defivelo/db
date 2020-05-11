@@ -1,0 +1,15 @@
+{% load i18n %}{% filter wordwrap:80 %}{% autoescape off %}{% blocktrans with full_name=profile.get_full_name season_desc=season.desc %}Bonjour {{ full_name }},
+
+Le planning DÉFI VÉLO du canton {{ season_desc }} est désormais disponible sur intranet. Merci de remplir tes disponibilités au plus vite afin qu’on puisse préparer la saison au mieux. En cas de questions, tu peux t’adresser à ton chargé de projet.
+
+Tu peux accéder au planning directement ici ou via ton compte personnel intranet.
+
+    {{ planning_link }}
+
+{% endblocktrans %}{% endautoescape %}{% blocktrans with site_domain=current_site.domain %}Salutations,
+
+L’équipe DÉFI VÉLO - {{ site_domain }}{% endblocktrans %}
+{% autoescape off %}{% blocktrans %}
+PS : Tu reçois ce mail parce que tu es affilié à ce canton ou parce que tu l’as sélectionné comme canton mobile. Si tu ne souhaites plus travailler dans ce canton, tu peux aller modifier ton profil intranet ou contacter ton chargé de projet régional
+{% endblocktrans %}{% endautoescape %}{% endfilter %}
+

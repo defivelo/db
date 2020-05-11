@@ -21,7 +21,11 @@
     {% if helpers %}
       <ul>
       {% for helper in helpers %}
-        <li><a href="mailto:{{ helper.profile.mailtolink|urlencode }}">{{ helper.profile.mailtolink }}</a></li>
+          <li>
+            <a href="{% url 'user-detail' pk=helper.pk %}">
+                {{ helper.profile.mailtolink }}
+            </a>
+          </li>
       {% endfor %}
       </ul>
     {% endif %}
