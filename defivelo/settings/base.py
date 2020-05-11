@@ -356,3 +356,8 @@ try:
     AGPL_TREE_PREFIX = "defivelo-intranet"
 except ImportError:
     pass  # Sorry
+
+
+BOOTSTRAP3 = {
+    "required_css_class": "required-field",
+}

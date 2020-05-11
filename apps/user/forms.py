@@ -44,7 +44,14 @@ class UserProfileForm(forms.ModelForm):
 
         if not allow_email and "email" in self.fields:
             del self.fields["email"]
-        for field in "first_name", "last_name", "email":
+        for field in (
+            "first_name",
+            "last_name",
+            "email",
+            "language",
+            "affiliation_canton",
+            "status",
+        ):
             if field in self.fields:
                 self.fields[field].required = True
 

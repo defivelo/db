@@ -100,6 +100,7 @@ class ProfileTestCase(TestCase):
         )
 
         # Some corrections
+        initial["language"] = "fr"
         initial["status"] = 0
         initial["birthdate"] = ""
         initial["formation_firstdate"] = ""
