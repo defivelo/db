@@ -396,7 +396,7 @@ class SeasonAvailabilityMixin(SeasonHelpersMixin):
         except (KeyError, TypeError):
             pass
 
-        context["user_can_see"] = self.season.unprivileged_user_can_see(
+        context["user_can_see_season"] = self.season.unprivileged_user_can_see(
             self.request.user
         )
         # Add our submenu_category context

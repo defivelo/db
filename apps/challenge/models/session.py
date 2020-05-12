@@ -114,6 +114,8 @@ class Session(Address, models.Model):
     @property
     def errors(self):
         errors = []
+        if not self.visible:
+            errors.append(_("Visibilité"))
         if not self.begin or not self.duration:
             errors.append(_("Horaire"))
         if not self.fallback_plan:
