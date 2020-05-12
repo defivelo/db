@@ -248,17 +248,28 @@ class AuthUserTest(SeasonTestCaseMixin):
                 q.helpers.add(self.client.user)
                 # Recheck all URLs
                 for url in urls:
-                    # Final URL is forbidden
-                    response = self.client.get(url, follow=True)
-                    # When the season is running, we can access some stuff
-                    if state[0] == DV_SEASON_STATE_RUNNING and url in [
-                        weeklysessionlist,
-                        reverse("session-detail", kwargs=session_kwargs,),
-                        reverse("session-staff-choices", kwargs=session_kwargs,),
-                    ]:
-                        self.assertEqual(response.status_code, 200, url)
-                    else:
-                        self.assertEqual(response.status_code, 403, url)
+                    # Loop through the two cases
+                    for visible in [True, False]:
+                        session.visible = visible
+                        session.save()
+                        response = self.client.get(url, follow=True)
+                        # When the season is running, we can access some stuff
+                        if state[0] == DV_SEASON_STATE_RUNNING and (
+                            url == weeklysessionlist
+                            or (
+                                visible
+                                and url
+                                in [
+                                    reverse("session-detail", kwargs=session_kwargs,),
+                                    reverse(
+                                        "session-staff-choices", kwargs=session_kwargs,
+                                    ),
+                                ]
+                            )
+                        ):
+                            self.assertEqual(response.status_code, 200, url)
+                        else:
+                            self.assertEqual(response.status_code, 403, url)
                 # Drop it from the Qualif
                 q.helpers.remove(self.client.user)
 
