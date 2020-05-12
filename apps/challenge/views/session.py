@@ -29,7 +29,6 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from rolepermissions.checkers import has_permission
-from rolepermissions.mixins import HasPermissionsMixin
 from tablib import Dataset
 
 from apps.common.views import ExportMixin
