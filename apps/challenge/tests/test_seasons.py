@@ -433,6 +433,7 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                 "season-actorlist",
                 "season-set-running",
                 "season-set-open",
+                "season-detail",
             ]:
                 self.assertEqual(response.status_code, 403, url)
             else:
