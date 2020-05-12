@@ -116,9 +116,11 @@
         <tr><th>{% trans "Remarques" %}</th><td>{{ session.comments }}</td></tr>
     {% endif %}
     </table>
-    <div class="hidden-print">
-        <a class="btn btn-primary pull-right" href="{% url 'season-availabilities' pk=season.pk %}#sess{{session.pk}}">{% trans "Planning" %}</a>
-    </div>
+    {% if season.manager_can_crud and user|can:'challenge_session_crud' %}
+      <div class="hidden-print">
+          <a class="btn btn-primary pull-right" href="{% url 'season-availabilities' pk=season.pk %}#sess{{session.pk}}">{% trans "Planning" %}</a>
+      </div>
+    {% endif %}
     <h2 class="hidden-print">{% trans "Qualifs" %}</h2>
     <table class="table">
     {% if session.qualifications.count > 0 %}
