@@ -1,6 +1,6 @@
 {% load i18n dv_filters %}
 <tr {% if session.errors and user|can:'challenge_session_crud' %}class="warning"{% endif %} >
-    {% if session.visible %}
+    {% if user|can:'challenge_session_crud' or session.visible %}
       <th>
         <a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">
           {{ session.day }} ({{ session.begin }}) {{ session.city }}
@@ -13,6 +13,9 @@
     {% endif %}
     <td>
         {% if user|can:'challenge_session_crud' %}
+          {% if not session.visible %}
+            <span class="badge pull-right" title="{% trans "Session invisible" %}"><span class="glyphicon glyphicon-eye-close"></span> </span>
+          {% endif %}
           {% if session.errors %}
               <span class="glyphicon glyphicon-warning-sign"></span>
               {% if session.qualifications.count == 0 %}
