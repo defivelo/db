@@ -195,8 +195,10 @@ class SessionStaffChoiceView(SessionDetailView):
     template_name = "challenge/session_availability.html"
 
 
-class SessionExportView(ExportMixin, SessionMixin, HasPermissionsMixin, DetailView):
+class SessionExportView(ExportMixin, SessionMixin, DetailView):
     view_does_cud = False
+    # Allow season fetch even for non-state managers
+    allow_season_fetch = True
 
     @property
     def export_filename(self):
