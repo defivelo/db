@@ -95,30 +95,6 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
     context_object_name = "season"
     form_class = SeasonForm
     raise_without_cantons = True
-    view_does_cud = True
-
-    def dispatch(self, request, bypassperm=False, *args, **kwargs):
-        """
-        Check allowances for access to view
-        """
-        allowed = False
-        if (
-            bypassperm
-            or not self.required_permission
-            or has_permission(request.user, self.required_permission)
-        ):
-            if not self.view_does_cud:
-                allowed = True
-            if self.season and self.season.manager_can_crud:
-                allowed = True
-        elif not self.view_does_cud:
-            # Read-only view
-            if self.season and self.season.unprivileged_user_can_see(request.user):
-                allowed = True
-
-        if allowed:
-            return super().dispatch(request, *args, **kwargs)
-        raise PermissionDenied
 
     def get_context_data(self, **kwargs):
         context = super(SeasonMixin, self).get_context_data(**kwargs)
@@ -161,13 +137,11 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
 
 
 class SeasonListView(SeasonMixin, ListView):
-    required_permission = None
     allow_empty = True
     allow_future = True
     context_object_name = "seasons"
     make_object_list = True
     raise_without_cantons = False
-    view_does_cud = False
 
     def dispatch(self, request, *args, **kwargs):
         self.year = self.kwargs.pop("year")
@@ -182,13 +156,9 @@ class SeasonListView(SeasonMixin, ListView):
         return context
 
 
-class SeasonDetailView(SeasonMixin, DetailView):
-    view_does_cud = False
-    allow_season_fetch = True
-    raise_without_cantons = False
-
+class SeasonDetailView(SeasonMixin, HasPermissionsMixin, DetailView):
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super(SeasonDetailView, self).get_context_data(**kwargs)
         # Add our submenu_category context
         context["submenu_category"] = "season-detail"
         return context
