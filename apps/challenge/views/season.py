@@ -156,7 +156,24 @@ class SeasonListView(SeasonMixin, ListView):
         return context
 
 
-class SeasonDetailView(SeasonMixin, HasPermissionsMixin, DetailView):
+class SeasonDetailView(SeasonMixin, DetailView):
+    allow_season_fetch = True
+    raise_without_cantons = False
+
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Allow view by participants of the season if allowed
+        """
+        allowed = False
+        if self.season.unprivileged_user_can_see(request.user):
+            allowed = True
+        elif has_permission(request.user, self.required_permission):
+            allowed = True
+
+        if allowed:
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
     def get_context_data(self, **kwargs):
         context = super(SeasonDetailView, self).get_context_data(**kwargs)
         # Add our submenu_category context

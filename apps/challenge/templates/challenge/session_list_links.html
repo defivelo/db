@@ -13,7 +13,9 @@
         {% endif %}
       </div>
     {% endif %}
-    <a class="btn btn-primary" href="{% url 'season-availabilities' season.pk %}"><span class="glyphicon glyphicon-th"></span> {% trans "Planning" %}</a>
+    {% if user|can:'challenge_season_crud' %}
+      <a class="btn btn-primary" href="{% url 'season-availabilities' season.pk %}"><span class="glyphicon glyphicon-th"></span> {% trans "Planning" %}</a>
+    {% endif %}
 
     {% if user|can:'challenge_session_crud' and season.has_availability_incoherences and season.manager_can_crud %}
         <a class="btn btn-warning" href="{% url 'season-errorslist' season.pk %}" title="{% trans "Sessions avec Qualif' incohérente" %}"><span class="glyphicon glyphicon-warning-sign"></span></a>
