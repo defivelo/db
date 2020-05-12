@@ -122,4 +122,5 @@ class SessionForm(forms.ModelForm):
             "bikes_concept",
             "bikes_phone",
             "comments",
+            "visible",
         ]

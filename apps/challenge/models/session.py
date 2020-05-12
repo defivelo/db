@@ -58,6 +58,7 @@ class Session(Address, models.Model):
     duration = models.DurationField(
         _("Durée"), default=timedelta(hours=DEFAULT_SESSION_DURATION_HOURS)
     )
+    visible = models.BooleanField(_("Visible pour les moniteurs"), default=False)
     orga = models.ForeignKey(
         Organization,
         verbose_name=_("Établissement"),
