@@ -9,7 +9,7 @@
 
     <nav class="hidden-print">
         <ul class="pager">
-        {% if session_previous %}
+        {% if session_previous and user|can:'challenge_session_crud' or session_previous.visible %}
             <li class="previous btn-xs">
                 <a href="{% url 'session-detail' seasonpk=season.pk pk=session_previous.pk %}" title="{{ session_previous }}">
                     <span aria-hidden="true">&larr;</span> {{ session_previous.short }}
@@ -19,7 +19,7 @@
             <li class="btn-xs">
                 <a href="{% url 'season-detail' pk=season.pk %}">{% trans "Toutes les sessions" %}</a>
             </li>
-        {% if session_next %}
+        {% if session_next and user|can:'challenge_session_crud' or session_next.visible %}
             <li class="next btn-xs">
                 <a href="{% url 'session-detail' seasonpk=season.pk pk=session_next.pk  %}" title="{{ session_next }}">
                     {{ session_next.short }}<span aria-hidden="true">&rarr;</span>
