@@ -2,7 +2,7 @@ import datetime
 
 import factory
 
-from apps.salary.models import Timesheet
+from apps.salary.models import MonthlyCantonalValidation, Timesheet
 from apps.user.tests.factories import UserFactory
 
 
@@ -19,3 +19,10 @@ class ValidatedTimesheetFactory(TimesheetFactory):
         lambda timesheet: timesheet.date + datetime.timedelta(days=1)
     )
     validated_by = factory.SubFactory(UserFactory)
+
+
+class MonthlyCantonalValidationFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = MonthlyCantonalValidation
+
+    date = factory.LazyFunction(lambda: datetime.date.today())
