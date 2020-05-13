@@ -46,6 +46,9 @@ class CantonSeasonFormMixin(object):
             if usercantons and not list(
                 set(usercantons).intersection(set(season.cantons))
             ):
+                # If the user is marked as state manager for that season
+                if season.leader == self.request.user:
+                    return season
                 # Verify that this state manager can access that canton as mobile
                 if (
                     list(
