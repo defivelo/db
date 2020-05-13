@@ -44,7 +44,6 @@ from .models import ORGASTATUS_ACTIVE, ORGASTATUS_CHOICES, Organization
 
 class OrganizationFilterSet(FilterSet):
     def __init__(self, data=None, *args, **kwargs):
-        cantons = kwargs.pop("cantons", None)
         any_filter_is_set = bool(set(self.base_filters) & set(data or {}))
         if not any_filter_is_set:
             data = {}
@@ -55,13 +54,6 @@ class OrganizationFilterSet(FilterSet):
                     data[name] = initial
 
         super(OrganizationFilterSet, self).__init__(data, *args, **kwargs)
-        if cantons:
-            if len(cantons) > 1:
-                choices = self.filters["address_canton"].extra["choices"]
-                choices = ((k, v) for (k, v) in choices if k in cantons or not k)
-                self.filters["address_canton"].extra["choices"] = choices
-            elif len(cantons) == 1:
-                del self.filters["address_canton"]
 
     def filter_wide(queryset, name, value):
         if value:
@@ -94,10 +86,47 @@ class OrganizationFilterSet(FilterSet):
         ]
 
 
-class OrganizationMixin(HasPermissionsMixin, MenuView):
-    required_permission = "orga_crud"
+class OrganizationDetailMixin(HasPermissionsMixin, MenuView):
+    required_permission = "orga_detail_all"
     model = Organization
     context_object_name = "organization"
+
+    def get_context_data(self, **kwargs):
+        context = super(OrganizationDetailMixin, self).get_context_data(**kwargs)
+        # Add our menu_category context
+        context["menu_category"] = "organization"
+        return context
+
+
+class OrganizationDetailView(OrganizationDetailMixin, DetailView):
+    pass
+
+
+class OrganizationsListView(OrganizationDetailMixin, PaginatorMixin, FilterView):
+    filterset_class = OrganizationFilterSet
+    context_object_name = "organizations"
+
+
+class OrganizationListExport(ExportMixin, OrganizationsListView):
+    export_class = OrganizationResource()
+    export_filename = _("Établissements")
+
+
+class OrganizationAutocomplete(OrganizationDetailMixin, Select2QuerySetView):
+    required_permission = "orga_detail_all"
+
+    def get_queryset(self):
+        if has_permission(self.request.user, self.required_permission):
+            qs = super(OrganizationAutocomplete, self).get_queryset()
+            if self.q:
+                qs = OrganizationFilterSet.filter_wide(qs, "", self.q)
+            return qs
+        else:
+            raise PermissionDenied
+
+
+class OrganizationCrudMixin(OrganizationDetailMixin):
+    required_permission = "orga_crud"
     form_class = OrganizationForm
 
     def get_queryset(self):
@@ -111,56 +140,14 @@ class OrganizationMixin(HasPermissionsMixin, MenuView):
         return qs
 
     def get_form_kwargs(self):
-        kwargs = super(OrganizationMixin, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs["cantons"] = user_cantons(self.request.user)
         return kwargs
 
-    def get_context_data(self, **kwargs):
-        context = super(OrganizationMixin, self).get_context_data(**kwargs)
-        # Add our menu_category context
-        context["menu_category"] = "organization"
-        return context
 
-
-class OrganizationsListView(OrganizationMixin, PaginatorMixin, FilterView):
-    filterset_class = OrganizationFilterSet
-    context_object_name = "organizations"
-
-    def get_filterset_kwargs(self, filterset_class):
-        kwargs = super(OrganizationsListView, self).get_filterset_kwargs(
-            filterset_class
-        )
-        usercantons = user_cantons(self.request.user)
-        if usercantons:
-            kwargs["cantons"] = usercantons
-        return kwargs
-
-
-class OrganizationDetailView(OrganizationMixin, DetailView):
-    pass
-
-
-class OrganizationUpdateView(OrganizationMixin, SuccessMessageMixin, UpdateView):
+class OrganizationUpdateView(OrganizationCrudMixin, SuccessMessageMixin, UpdateView):
     success_message = _("Établissement mis à jour")
 
 
-class OrganizationCreateView(OrganizationMixin, SuccessMessageMixin, CreateView):
+class OrganizationCreateView(OrganizationCrudMixin, SuccessMessageMixin, CreateView):
     success_message = _("Établissement créé")
-
-
-class OrganizationListExport(ExportMixin, OrganizationsListView):
-    export_class = OrganizationResource()
-    export_filename = _("Établissements")
-
-
-class OrganizationAutocomplete(OrganizationMixin, Select2QuerySetView):
-    required_permission = "orga_crud"
-
-    def get_queryset(self):
-        if has_permission(self.request.user, self.required_permission):
-            qs = super(OrganizationAutocomplete, self).get_queryset()
-            if self.q:
-                qs = OrganizationFilterSet.filter_wide(qs, "", self.q)
-            return qs
-        else:
-            raise PermissionDenied

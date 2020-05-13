@@ -43,6 +43,8 @@ from defivelo.tests.utils import (
     SuperUserAuthClient,
 )
 
+User = get_user_model()
+
 myurlsforall = [
     "user-detail",
     "user-update",
@@ -414,11 +416,11 @@ class StateManagerUserTest(ProfileTestCase):
         self.assertTemplateUsed(response, "auth/user_detail.html")
         self.assertEqual(response.status_code, 200, response)
 
-        # The other user cannot be accessed
+        # The other user can also be accessed
         response = self.client.get(
             reverse("user-detail", kwargs={"pk": self.foreignuser.pk})
         )
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 200)
 
     def test_otherusers_edit(self):
         url = reverse("user-update", kwargs={"pk": self.myuser.pk})
@@ -475,9 +477,10 @@ class StateManagerUserTest(ProfileTestCase):
             url = reverse("user-%s-ac" % al)
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200, url)
-            # Check that we only find ourselves
+            # Check that we find everyone, including users of other cantons
             entries = re.findall(r'"id": "(\d+)"', str(response.content))
-            self.assertEqual(entries, [str(self.myuser.pk)])
+            expected_entries = set(str(u.id) for u in User.objects.all())
+            self.assertEqual(set(entries), expected_entries)
 
 
 class SuperUserTest(ProfileTestCase):

@@ -170,11 +170,11 @@ class OrgaStateManagerUserTest(TestCase):
         self.assertTemplateUsed(response, "orga/organization_detail.html")
         self.assertEqual(response.status_code, self.expected_code)
 
-        # The other orga cannot be accessed
+        # The other orga can also be accessed
         response = self.client.get(
             reverse("organization-detail", kwargs={"pk": self.foreignorga.pk})
         )
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
 
     def test_access_to_orga_edit(self):
         url = reverse("organization-update", kwargs={"pk": self.myorga.pk})
@@ -218,6 +218,7 @@ class OrgaStateManagerUserTest(TestCase):
         url = reverse("organization-autocomplete")
         response = self.client.get(url)
         self.assertEqual(response.status_code, self.expected_code, url)
-        # Check that we only find our orga
+        # Check that we find all orgas, including orgas of other cantons
         entries = re.findall(r'"id": "(\d+)"', str(response.content))
-        self.assertEqual(entries, [str(self.myorga.pk)])
+        expected_entries = set(str(o.id) for o in Organization.objects.all())
+        self.assertEqual(set(entries), expected_entries)

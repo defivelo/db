@@ -17,24 +17,26 @@
                 {% if userprofile.profile.actor %}
                     <span class="badge pull-right">{{ userprofile.profile.actor_inline }} {{ userprofile.profile.actor_icon }}</span>
                 {% endif %}
-                {% if userprofile.profile.can_login %}
-                    <span class="badge pull-right">{{ userprofile.profile.access_level_icon }}</span>
-                    {% if request.user|can:"user_can_resend_credentials" %}
-                        <a class="badge pull-right" href="{% url 'user-resendcredentials' pk=userprofile.pk %}" title="{% trans "Réinitialiser les données de connexion" %}">
-                            <span class="glyphicon glyphicon-envelope" aria-hidden="true" title="{% trans "Réinitialiser les données de connexion" %}"></span>
+                {% if request.user|inusercantons:userprofile.profile.affiliation_canton %}
+                    {% if userprofile.profile.can_login %}
+                        <span class="badge pull-right">{{ userprofile.profile.access_level_icon }}</span>
+                        {% if request.user|can:"user_can_resend_credentials" %}
+                            <a class="badge pull-right" href="{% url 'user-resendcredentials' pk=userprofile.pk %}" title="{% trans "Réinitialiser les données de connexion" %}">
+                                <span class="glyphicon glyphicon-envelope" aria-hidden="true" title="{% trans "Réinitialiser les données de connexion" %}"></span>
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        {% if request.user|can:"user_can_send_credentials" and request.user.pk != userprofile.pk %}
+                            <a class="badge pull-right" href="{% url 'user-sendcredentials' pk=userprofile.pk %}" title="{% trans "Envoyer les données de connexion" %}">
+                                <span class="glyphicon glyphicon-envelope" aria-hidden="true" title="{% trans "Envoyer les données de connexion" %}"></span>
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                    {% if request.user|can:"user_deletions" and request.user.pk != userprofile.pk and not userprofile.profile.deleted %}
+                        <a class="badge pull-right" href="{% url 'user-delete' pk=userprofile.pk %}" title="{% trans "Supprimer" %}">
+                            <span class="glyphicon glyphicon-trash" aria-hidden="true" title="{% trans "Supprimer" %}"></span>
                         </a>
                     {% endif %}
-                {% else %}
-                    {% if request.user|can:"user_can_send_credentials" and request.user.pk != userprofile.pk %}
-                        <a class="badge pull-right" href="{% url 'user-sendcredentials' pk=userprofile.pk %}" title="{% trans "Envoyer les données de connexion" %}">
-                            <span class="glyphicon glyphicon-envelope" aria-hidden="true" title="{% trans "Envoyer les données de connexion" %}"></span>
-                        </a>
-                    {% endif %}
-                {% endif %}
-                {% if request.user|can:"user_deletions" and request.user.pk != userprofile.pk and not userprofile.profile.deleted %}
-                    <a class="badge pull-right" href="{% url 'user-delete' pk=userprofile.pk %}" title="{% trans "Supprimer" %}">
-                        <span class="glyphicon glyphicon-trash" aria-hidden="true" title="{% trans "Supprimer" %}"></span>
-                    </a>
                 {% endif %}
             </h2>
         </div>

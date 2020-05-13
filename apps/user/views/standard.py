@@ -44,7 +44,6 @@ from apps.common import (
     MULTISELECTFIELD_REGEXP,
 )
 from apps.common.views import ExportMixin, PaginatorMixin
-from defivelo.roles import user_cantons
 
 from .. import FORMATION_KEYS
 from ..export import UserResource
@@ -98,7 +97,6 @@ class UserCreate(HasPermissionsMixin, ProfileMixin, SuccessMessageMixin, CreateV
 
 class UserProfileFilterSet(FilterSet):
     def __init__(self, data=None, *args, **kwargs):
-        cantons = kwargs.pop("cantons", None)
         any_filter_is_set = bool(set(self.base_filters) & set(data or {}))
         if not any_filter_is_set:
             data = {}
@@ -107,15 +105,7 @@ class UserProfileFilterSet(FilterSet):
                 # filter param is either missing or empty, use initial as default
                 if not data.get(name) and initial:
                     data[name] = initial
-
         super(UserProfileFilterSet, self).__init__(data, *args, **kwargs)
-        if cantons:
-            if len(cantons) > 1:
-                choices = self.filters["profile__activity_cantons"].extra["choices"]
-                choices = ((k, v) for (k, v) in choices if k in cantons or not k)
-                self.filters["profile__activity_cantons"].extra["choices"] = choices
-            elif len(cantons) == 1:
-                del self.filters["profile__activity_cantons"]
 
     def filter_multi_nonempty(queryset, name, values):
         if values:
@@ -210,13 +200,6 @@ class UserList(HasPermissionsMixin, ProfileMixin, PaginatorMixin, FilterView):
     required_permission = "user_view_list"
     filterset_class = UserProfileFilterSet
     context_object_name = "users"
-
-    def get_filterset_kwargs(self, filterset_class):
-        kwargs = super(UserList, self).get_filterset_kwargs(filterset_class)
-        usercantons = user_cantons(self.request.user)
-        if usercantons:
-            kwargs["cantons"] = usercantons
-        return kwargs
 
 
 class UserListExport(ExportMixin, UserList):

@@ -25,6 +25,8 @@ from django.views.generic.edit import FormView
 from rolepermissions.mixins import HasPermissionsMixin
 from rolepermissions.roles import get_user_roles
 
+from defivelo.roles import has_permission, user_cantons
+
 from ..forms import UserAssignRoleForm
 from .mixins import ProfileMixin
 
@@ -34,6 +36,17 @@ class UserCredentials(ProfileMixin, FormView):
     success_message = _("Données de connexion expédiées.")
     form_class = DjangoEmptyForm
     initial_send = True
+
+    def dispatch(self, request, *args, **kwargs):
+        managed_cantons = user_cantons(self.request.user)
+        if (
+            self.get_object().profile.affiliation_canton in managed_cantons
+            # Useful when the edited user has no canton (affiliation_canton == '')
+            or has_permission(self.request.user, "cantons_all")
+        ):
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
 
     def get_context_data(self, **kwargs):
         context = super(UserCredentials, self).get_context_data(**kwargs)
