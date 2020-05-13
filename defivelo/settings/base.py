@@ -360,4 +360,8 @@ except ImportError:
 
 BOOTSTRAP3 = {
     "required_css_class": "required-field",
+    "field_renderers": {
+        "default": "defivelo.bootstrap3.DvFieldRenderer",
+        "inline": "defivelo.bootstrap3.DvInlineFieldRenderer",
+    },
 }
