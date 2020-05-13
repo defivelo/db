@@ -86,6 +86,27 @@ class UserProfileForm(forms.ModelForm):
             )
         return email
 
+    def clean(self):
+        """
+        Vérifie les contraintes croisées
+        """
+        cleaned_data = super().clean()
+
+        try:
+            affiliation_canton = cleaned_data["affiliation_canton"]
+        except KeyError:
+            affiliation_canton = None
+        if not affiliation_canton and (
+            cleaned_data["actor_for"] or cleaned_data["formation"]
+        ):
+            self.add_error(
+                "affiliation_canton",
+                ValidationError(
+                    _("Moniteurs/intervenants ont besoin d'un canton d'affiliation.")
+                ),
+            )
+        return cleaned_data
+
 
 class UserAssignRoleForm(forms.Form):
     role = forms.ChoiceField(
