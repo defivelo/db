@@ -12,4 +12,3 @@ L’équipe DÉFI VÉLO - {{ site_domain }}{% endblocktrans %}
 {% autoescape off %}{% blocktrans %}
 PS : Tu reçois ce mail parce que tu es affilié à ce canton ou parce que tu l’as sélectionné comme canton mobile. Si tu ne souhaites plus travailler dans ce canton, tu peux aller modifier ton profil intranet ou contacter ton chargé de projet régional
 {% endblocktrans %}{% endautoescape %}{% endfilter %}
-
