@@ -53,6 +53,7 @@ class SessionMixin(CantonSeasonFormMixin, MenuView):
     context_object_name = "session"
     form_class = SessionForm
     view_does_cud = True
+    raise_without_cantons = False
 
     def dispatch(self, request, *args, **kwargs):
         """
