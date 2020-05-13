@@ -158,6 +158,7 @@ class ProfileMixin(MenuView):
             except LookupError:
                 pass
         if self.form_class == UserProfileForm:
+            # Ne permet qu'au bureau de créer des utilisateurs sans canton d'affiliation
             kwargs["affiliation_canton_required"] = not has_permission(
                 self.request.user, "cantons_all"
             )

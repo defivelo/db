@@ -44,7 +44,14 @@ class UserProfileForm(forms.ModelForm):
 
         if not allow_email and "email" in self.fields:
             del self.fields["email"]
-        for field in "first_name", "last_name", "email":
+        for field in (
+            "first_name",
+            "last_name",
+            "email",
+            "language",
+            "affiliation_canton",
+            "status",
+        ):
             if field in self.fields:
                 self.fields[field].required = True
 
@@ -78,6 +85,27 @@ class UserProfileForm(forms.ModelForm):
                 _("Un utilisateur avec cette adresse e-mail existe déjà.")
             )
         return email
+
+    def clean(self):
+        """
+        Vérifie les contraintes croisées
+        """
+        cleaned_data = super().clean()
+
+        try:
+            affiliation_canton = cleaned_data["affiliation_canton"]
+        except KeyError:
+            affiliation_canton = None
+        if not affiliation_canton and (
+            cleaned_data["actor_for"] or cleaned_data["formation"]
+        ):
+            self.add_error(
+                "affiliation_canton",
+                ValidationError(
+                    _("Moniteurs/intervenants ont besoin d'un canton d'affiliation.")
+                ),
+            )
+        return cleaned_data
 
 
 class UserAssignRoleForm(forms.Form):
