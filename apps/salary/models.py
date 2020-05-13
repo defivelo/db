@@ -2,6 +2,8 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from apps.common import DV_STATE_CHOICES
+
 from . import BONUS_LEADER, HOURLY_RATE_HELPER, RATE_ACTOR
 
 
@@ -49,3 +51,39 @@ class Timesheet(models.Model):
             + self.get_total_amount_helper()
             + self.get_total_amount_leader()
         )
+
+
+class MonthlyCantonalValidation(models.Model):
+    date = models.DateField("Date (1er du mois)")
+    canton = models.CharField(
+        _("Canton"),
+        max_length=2,
+        choices=DV_STATE_CHOICES,
+        unique_for_month="date",
+        unique_for_year="date",
+    )
+    validated_at = models.DateTimeField(null=True, blank=True)
+    validated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="+",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+
+    class Meta:
+        unique_together = (("canton", "date",),)
+        verbose_name = _("Validation mensuelle cantonale")
+        verbose_name_plural = _("Validations mensuelles cantonales")
+        ordering = ["date", "canton"]
+
+    def __str__(self):
+        return _("{year}/{month}: Validation du canton {canton}").format(
+            year=self.date.year, month=self.date.month, canton=self.canton
+        )
+
+    def save(self, *args, **kwargs):
+        """
+        Enforce date to get day=1
+        """
+        self.date = self.date.replace(day=1)
+        super().save(*args, **kwargs)
