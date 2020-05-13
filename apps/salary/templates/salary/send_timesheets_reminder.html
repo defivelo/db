@@ -5,27 +5,30 @@
 {% block head_title %}{% blocktrans with month_year=period %}Rappel de soumission des heures pour {{ month_year }}
 {% endblocktrans %}{% endblock %}
 {% block content %}
-  <h2 class="page-header">
+  <h1 class="page-header">
     {% blocktrans with month_year=period %}Rappel de soumission des heures pour {{ month_year }}{% endblocktrans %}
-  </h2>
+  </h1>
   <p>{% blocktrans trimmed with month_year=period %}
     Ce rappel sera envoyé aux moniteurs qui ont participé à une session durant {{ month_year }}
     et qui n’ont pas encore soumis leurs heures.
   {% endblocktrans %}</p>
 
-  <h3>{% trans "Destinataires" %}</h3>
+  <h3>{% trans "Contenu de l’email" %}</h3>
+  <blockquote>
+    <pre style="white-space: pre-wrap;">{% trans "Sujet:" %} {{ email_subject }}
+
+{{ email_text }}</pre>
+  </blockquote>
+  <p>{% trans "Ce courriel sera envoyé à:" %}</p>
   <ul>
     {% for user in recipients %}
-      <li>
-        <a href="{% url 'user-detail' pk=user.pk %}">
-          {{ user.get_full_name }}
-        </a>
-      </li>
+    <li>
+      <a href="{% url 'user-detail' pk=user.pk %}">
+        {{ user.profile.mailtolink }}
+      </a>
+    </li>
     {% endfor %}
   </ul>
-
-  <h3>{% trans "Contenu de l’email" %}</h3>
-  <pre style="white-space: pre-wrap;">{{ email_text }}</pre>
   <form method="POST" action="{{ request.get_full_path }}">
     {% csrf_token %}
     {% buttons %}

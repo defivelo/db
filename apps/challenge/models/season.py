@@ -136,7 +136,11 @@ class Season(models.Model):
     def staff_can_see_planning(self):
         return self.state == DV_SEASON_STATE_RUNNING
 
-    @cached_property
+    @property
+    def can_set_state_open(self):
+        return self.state == DV_SEASON_STATE_PLANNING
+
+    @property
     def can_set_state_running(self):
         return self.state in [DV_SEASON_STATE_PLANNING, DV_SEASON_STATE_OPEN]
 

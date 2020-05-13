@@ -24,6 +24,7 @@ from apps.common import (
     DV_SEASON_SPRING,
     DV_SEASON_STATE_ARCHIVED,
     DV_SEASON_STATE_OPEN,
+    DV_SEASON_STATE_PLANNING,
     DV_SEASON_STATE_RUNNING,
     DV_SEASON_STATES,
     DV_STATES,
@@ -47,6 +48,7 @@ restrictedspecificurls = [
     "season-staff-update",
     "season-delete",
     "season-set-running",
+    "season-set-open",
 ]
 restrictedhelperspecificurls = [
     "season-availabilities-update",
@@ -258,7 +260,7 @@ class StateManagerUserTest(SeasonTestCaseMixin):
         for state in DV_SEASON_STATES:
             self.season.state = state[0]
             self.season.save()
-
+            self.season.refresh_from_db()
             if state[0] != DV_SEASON_STATE_ARCHIVED:
                 for symbolicurl in restrictedspecificurls:
                     url = reverse(symbolicurl, kwargs={"pk": self.season.pk})
@@ -271,7 +273,12 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                     ):
                         # There are only some states in which we cna set the state to running
                         expected_status_code = 403
-
+                    if (
+                        symbolicurl == "season-set-open"
+                        and not self.season.can_set_state_open
+                    ):
+                        # There are only some states in which we cna set the state to running
+                        expected_status_code = 403
                     self.assertEqual(response.status_code, expected_status_code, url)
 
                 for symbolicurl in restrictedhelperspecificurls:
@@ -292,7 +299,7 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                     response = self.client.get(url, follow=True)
                     self.assertEqual(response.status_code, 200, url)
 
-    def test_season_openplanning_accesses(self):
+    def test_season_runningplanning_accesses(self):
         # Loop over all states
         for state in DV_SEASON_STATES:
             self.season.state = state[0]
@@ -304,7 +311,7 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                 expected_status_code = 403
             self.assertEqual(response.status_code, expected_status_code, url)
 
-    def test_season_openplanning(self):
+    def test_season_runningplanning(self):
         url = reverse("season-set-running", kwargs={"pk": self.season.pk})
 
         # Test that anything put that state works
@@ -317,6 +324,35 @@ class StateManagerUserTest(SeasonTestCaseMixin):
             # 200 means that we're back on the page with an error
             expected_status_code = 200
             if state[0] == DV_SEASON_STATE_RUNNING:
+                # 302 means that the post succeeded; so we can only post this state
+                expected_status_code = 302
+            self.assertEqual(response.status_code, expected_status_code, url)
+
+    def test_season_openplanning_accesses(self):
+        # Loop over all states
+        for state in DV_SEASON_STATES:
+            self.season.state = state[0]
+            self.season.save()
+            url = reverse("season-set-open", kwargs={"pk": self.season.pk})
+            response = self.client.get(url, follow=True)
+            expected_status_code = 200
+            if not self.season.can_set_state_open:
+                expected_status_code = 403
+            self.assertEqual(response.status_code, expected_status_code, url)
+
+    def test_season_openplanning(self):
+        url = reverse("season-set-open", kwargs={"pk": self.season.pk})
+
+        # Test that anything put that state works
+        for state in DV_SEASON_STATES:
+            # Set the season to be in preparation
+            self.season.state = DV_SEASON_STATE_PLANNING
+            self.season.save()
+            # Test that we can post to set it running
+            response = self.client.post(url, {"state": state[0]})
+            # 200 means that we're back on the page with an error
+            expected_status_code = 200
+            if state[0] == DV_SEASON_STATE_OPEN:
                 # 302 means that the post succeeded; so we can only post this state
                 expected_status_code = 302
             self.assertEqual(response.status_code, expected_status_code, url)
@@ -396,6 +432,7 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                 "season-helperlist",
                 "season-actorlist",
                 "season-set-running",
+                "season-set-open",
             ]:
                 self.assertEqual(response.status_code, 403, url)
             else:
@@ -571,7 +608,10 @@ class PowerUserTest(SeasonTestCaseMixin):
             url = reverse(symbolicurl, kwargs={"pk": self.season.pk})
             # Final URL is OK
             response = self.client.get(url, follow=True)
-            self.assertEqual(response.status_code, 200, url)
+            if "season-set-open" == symbolicurl and not self.season.can_set_state_open:
+                self.assertEqual(response.status_code, 403, url)
+            else:
+                self.assertEqual(response.status_code, 200, url)
         for symbolicurl in restrictedhelperspecificurls:
             for helper in self.users:
                 url = reverse(

@@ -51,6 +51,7 @@ from .views import (
     SeasonPlanningExportView,
     SeasonPlanningView,
     SeasonStaffChoiceUpdateView,
+    SeasonToOpenView,
     SeasonToRunningView,
     SeasonUpdateView,
     SessionCreateView,
@@ -115,9 +116,14 @@ urlpatterns = [
             [
                 url(r"^update/$", SeasonUpdateView.as_view(), name="season-update"),
                 url(
-                    r"^openplanning/$",
+                    r"^running-planning/$",
                     SeasonToRunningView.as_view(),
                     name="season-set-running",
+                ),
+                url(
+                    r"^open-planning/$",
+                    SeasonToOpenView.as_view(),
+                    name="season-set-open",
                 ),
                 url(
                     r"^$",
