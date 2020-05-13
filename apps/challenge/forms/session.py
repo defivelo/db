@@ -52,9 +52,10 @@ class SessionForm(forms.ModelForm):
             self.fields["day"].widget.options["minDate"] = self.season.begin.strftime(
                 "%Y-%m-%d"
             )
-            self.fields["day"].widget.options["maxDate"] = self.season.end.strftime(
-                "%Y-%m-%d"
-            )
+            # Disable maxDate - DEFIVELO-98
+            # self.fields["day"].widget.options["maxDate"] = self.season.end.strftime(
+            #     "%Y-%m-%d"
+            # )
         except Exception:
             pass
 
