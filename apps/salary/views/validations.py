@@ -48,17 +48,25 @@ class ValidationsMixin(HasPermissionsMixin, MenuView):
         qs = (
             super()
             .get_queryset()
-            .filter(date__year=self.year, date__month=self.month)
+            .filter(
+                date__year=self.year,
+                date__month=self.month,
+                canton__in=self.managed_cantons,
+            )
             .order_by("canton")
         )
-        available_mcvs = qs.values_list("canton", flat=True)
-        need_creation = [c for c in self.managed_cantons if c not in available_mcvs]
+        # Create the MCVs for the cantons' we're about to see (if needed)
         MonthlyCantonalValidation.objects.bulk_create(
             [
                 MonthlyCantonalValidation(canton=c, date=date(self.year, self.month, 1))
-                for c in need_creation
+                for c in [
+                    c
+                    for c in self.managed_cantons
+                    if c not in qs.values_list("canton", flat=True)
+                ]
             ]
         )
+        # Return the qs, that'll get the newly created ones.
         return qs
 
     def get_context_data(self, **kwargs):
