@@ -51,7 +51,7 @@ from apps.common import (
 )
 from apps.common.views import ExportMixin
 from apps.user import FORMATION_KEYS, FORMATION_M1, FORMATION_M2
-from apps.user.models import USERSTATUS_DELETED
+from apps.user.models import USERSTATUS_ACTIVE, USERSTATUS_DELETED, USERSTATUS_RESERVE
 from apps.user.views import ActorsList, HelpersList
 from defivelo.roles import has_permission, user_cantons
 from defivelo.views import MenuView
@@ -437,7 +437,7 @@ class SeasonToStateMixin(SeasonHelpersMixin, SeasonUpdateView):
         context["tostate"] = next(
             (v for (k, v) in DV_SEASON_STATES if k == self.season_to_state)
         )
-        context["helpers"] = self.season_helpers
+        context["recipients"] = self.season_helpers
         return context
 
     def get_initial(self):
@@ -499,6 +499,9 @@ class SeasonToRunningView(SeasonToStateMixin):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["some_recipients_cant_login"] = any(
+            not user.profile.can_login for user in context["recipients"]
+        )
         context["email"] = self.get_email()
         return context
 
@@ -558,9 +561,27 @@ class SeasonToOpenView(SeasonToStateMixin):
             return super().dispatch(request, *args, **kwargs)
         raise PermissionDenied
 
+    def get_email_recipients(self):
+        """
+        List of potential helpers/actors that we want to notify.
+        This might include users that can't login.
+        """
+        return (
+            self.potential_helpers_qs()
+            .filter(profile__status__in=(USERSTATUS_ACTIVE, USERSTATUS_RESERVE))
+            .exclude(Q(profile__formation="") & Q(profile__actor_for__isnull=True))
+            .distinct()
+        )
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["helpers"] = self.potential_helpers_qs().all()
+        recipients = list(
+            self.get_email_recipients().order_by("first_name", "last_name", "id")
+        )
+        context["recipients"] = recipients
+        context["some_recipients_cant_login"] = any(
+            not user.profile.can_login for user in recipients
+        )
         context["email"] = self.get_email()
         return context
 
@@ -571,7 +592,7 @@ class SeasonToOpenView(SeasonToStateMixin):
         #  Save first
         form_result = super().form_valid(form)
         # Then send emails
-        for helper in self.potential_helpers_qs().all():
+        for helper in self.get_email_recipients():
             email = self.get_email(helper)
             helper.profile.send_mail(email["subject"], email["body"])
         return form_result

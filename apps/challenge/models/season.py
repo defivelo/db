@@ -142,7 +142,7 @@ class Season(models.Model):
 
     @property
     def can_set_state_running(self):
-        return self.state in [DV_SEASON_STATE_PLANNING, DV_SEASON_STATE_OPEN]
+        return self.state in [DV_SEASON_STATE_OPEN]
 
     @cached_property
     def manager_can_crud(self):

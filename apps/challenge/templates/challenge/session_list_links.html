@@ -5,10 +5,10 @@
       <a class="btn btn-default" href="{% url 'season-update' season.pk %}"><span class="glyphicon glyphicon-pencil"></span> {% trans "Éditer la saison" %}</a>
       {% if season.can_set_state_open %}
         <a class="btn btn-default" href="{% url 'season-set-open' season.pk %}"><span
-          class="glyphicon glyphicon-flash"></span> {% trans "Diffusion du planning" %}</a>
+          class="glyphicon glyphicon-flash"></span> {% trans "Diffuser le planning" %}</a>
       {% endif %}
       {% if season.can_set_state_running %}
-        <a class="btn btn-default" href="{% url 'season-set-running' season.pk %}"><span class="glyphicon glyphicon-apple"></span> {% trans "Annoncer le planning" %}</a>
+        <a class="btn btn-default" href="{% url 'season-set-running' season.pk %}"><span class="glyphicon glyphicon-apple"></span> {% trans "Finaliser le planning" %}</a>
       {% endif %}
     </div>
     <a class="btn btn-primary" href="{% url 'season-availabilities' season.pk %}"><span class="glyphicon glyphicon-th"></span> {% trans "Planning" %}</a>
