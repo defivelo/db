@@ -26,7 +26,7 @@ from apps.salary.forms import ControlTimesheetFormSet, TimesheetFormSet
 from apps.salary.models import Timesheet
 from defivelo.roles import has_permission
 
-from . import timesheets_overview
+from .. import timesheets_overview
 
 
 class RedirectUserMonthlyTimesheets(RedirectView):
