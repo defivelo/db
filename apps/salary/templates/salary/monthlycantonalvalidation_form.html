@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% block head_title %}{% if setting %}{% trans "Édition de la configuration cantonale annuelle" %}{% else %}{% trans "Nouvelle configuration cantonale annuelle" %}{% endif %}{% endblock %}
+
+{% block bootstrap3_extra_head %}
+    {{ form.media.css }}
+{% endblock %}
+{% block bootstrap3_extra_script %}
+    {{ form.media.js }}
+{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Valider le canton" %}</h1>
+
+    <form method="POST" class="form-horizontal">
+    {{ form.errors }}
+        {% csrf_token %}
+        {% bootstrap_form form layout='horizontal' size='small' %}
+        {% buttons %}
+            <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
+            <a class="btn btn-default" href="{% url 'salary:validations-month' year=mcv.date.year month=mcv.date.month %}">{% trans "Annuler" %}</a>
+        {% endbuttons %}
+    </form>
+{% endblock %}

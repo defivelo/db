@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load dv_filters %}
+{% block head_title %}{% blocktrans with month=month|date:'F Y' %}Validations cantonales mensuelles pour {{ month }}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+    <h1>{% blocktrans with month=month|date:'F Y' %}Validations cantonales mensuelles pour {{ month }}{% endblocktrans %}</h1>
+
+    <nav>
+        <ul class="pager">
+            <li class="previous btn-xs">
+                <a href="{% url 'salary:validations-month' year=previous_month.year month=previous_month.month %}">
+                    <span aria-hidden="true">&larr;</span> {{ previous_month|date:'F Y' }}
+                </a>
+            </li>
+            <li class="btn-xs">
+              <a href="{% url 'salary:validations-month' year=now.year month=now.month %}">
+                {% trans "Mois courant" %}
+              </a>
+            </li>
+            <li class="next btn-xs">
+                <a href="{% url 'salary:validations-month' year=next_month.year month=next_month.month %}">
+                    {{ next_month|date:'F Y' }} <span aria-hidden="true">&rarr;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    {% for mcv in mcvs %}
+        {% if forloop.first %}<table class="table">
+        <tr>
+            <th>{% trans "Canton" %}</th>
+            <th></th>
+        </tr>
+        {% endif %}
+        <tr>
+            <td>{{ mcv.canton|canton_abbr }}</td>
+            <td>{{ mcv.validated }}</td>
+            <td>
+                <a class="btn btn-xs btn-primary" href="{% url 'salary:validation-update' year=mcv.date.year month=mcv.date.month canton=mcv.canton %}" title="{% trans "Éditer" %}"><span class="glyphicon glyphicon-pencil"></span></a>
+            </td>
+        </tr>
+        {% if forloop.last %}</table>{% endif %}
+    {% endfor %}
+{% endblock %}

@@ -8,7 +8,7 @@ from rolepermissions.checkers import has_role
 
 from apps.challenge.models.session import Session
 from apps.common.fields import CheckboxInput, NumberInput, TimeNumberInput
-from apps.salary.models import Timesheet
+from apps.salary.models import MonthlyCantonalValidation, Timesheet
 
 from . import BONUS_LEADER, HOURLY_RATE_HELPER, RATE_ACTOR
 
@@ -161,3 +161,37 @@ class ControlTimesheetForm(TimesheetFormBase):
 
 ControlTimesheetFormSet = formset_factory(ControlTimesheetForm, max_num=0, extra=0)
 TimesheetFormSet = formset_factory(TimesheetForm, max_num=0, extra=0)
+
+
+class MonthlyCantonalValidationForm(forms.ModelForm):
+    validated = forms.BooleanField(
+        label=_("Valider"), required=False, widget=CheckboxInput()
+    )
+
+    class Meta:
+        model = MonthlyCantonalValidation
+        fields = ["validated"]
+
+    def __init__(self, validator, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.validator = validator
+        if self.initial.get("validated"):
+            for key in self.fields:
+                self.fields[key].widget.attrs["readonly"] = True
+                self.fields[key].disabled = True
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if self.initial["validated"] and not cleaned_data.get("validated"):
+            cleaned_data["validated_at"] = None
+            cleaned_data["validated_by"] = None
+        elif not self.initial["validated"] and cleaned_data.get("validated"):
+            cleaned_data["validated_at"] = timezone.now()
+            cleaned_data["validated_by"] = self.validator
+        del cleaned_data["validated"]
+        return cleaned_data
+
+    def save(self, commit=True):
+        self.instance.validated_at = self.cleaned_data["validated_at"]
+        self.instance.validated_by = self.cleaned_data["validated_by"]
+        return super().save(commit)

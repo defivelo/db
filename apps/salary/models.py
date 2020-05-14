@@ -87,3 +87,7 @@ class MonthlyCantonalValidation(models.Model):
         """
         self.date = self.date.replace(day=1)
         super().save(*args, **kwargs)
+
+    @property
+    def validated(self):
+        return bool(self.validated_at and self.validated_by)

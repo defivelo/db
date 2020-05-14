@@ -10,6 +10,7 @@ from apps.salary.views import (
     SendTimesheetsReminder,
     UserMonthlyTimesheets,
     ValidationsMonthView,
+    ValidationUpdate,
     YearlyTimesheets,
 )
 
@@ -72,9 +73,23 @@ urlpatterns = [
         include(
             [
                 url(
-                    r"^(?P<month>[0-9]{1,2})/$",
-                    never_cache(ValidationsMonthView.as_view(month_format="%m")),
-                    name="validations-month",
+                    r"^(?P<month>[0-9]{1,2})/",
+                    include(
+                        [
+                            url(
+                                r"^$",
+                                never_cache(
+                                    ValidationsMonthView.as_view(month_format="%m")
+                                ),
+                                name="validations-month",
+                            ),
+                            url(
+                                r"^(?P<canton>[A-z]{2})/$",
+                                never_cache(ValidationUpdate.as_view()),
+                                name="validation-update",
+                            ),
+                        ]
+                    ),
                 ),
             ]
         ),

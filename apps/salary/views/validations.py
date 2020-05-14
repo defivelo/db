@@ -18,13 +18,20 @@
 
 from datetime import date
 
+from django import forms
+from django.urls import reverse_lazy
+from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
 from django.views.generic.dates import MonthArchiveView
+from django.views.generic.edit import UpdateView
 
 from rolepermissions.mixins import HasPermissionsMixin
 
+from apps.common.fields import CheckboxInput
 from defivelo.roles import user_cantons
 from defivelo.views import MenuView
 
+from ..forms import MonthlyCantonalValidationForm
 from ..models import MonthlyCantonalValidation
 
 
@@ -45,7 +52,7 @@ class ValidationsMixin(HasPermissionsMixin, MenuView):
         Get the list of validations
         … but also make sure all the validations exist for that month and my cantons
         """
-        qs = (
+        return (
             super()
             .get_queryset()
             .filter(
@@ -55,6 +62,20 @@ class ValidationsMixin(HasPermissionsMixin, MenuView):
             )
             .order_by("canton")
         )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add our menu_category context
+        context["menu_category"] = "finance"
+        return context
+
+
+class ValidationsMonthView(ValidationsMixin, MonthArchiveView):
+    allow_future = True
+    allow_empty = True
+
+    def get_queryset(self):
+        qs = super().get_queryset()
         # Create the MCVs for the cantons' we're about to see (if needed)
         MonthlyCantonalValidation.objects.bulk_create(
             [
@@ -69,35 +90,42 @@ class ValidationsMixin(HasPermissionsMixin, MenuView):
         # Return the qs, that'll get the newly created ones.
         return qs
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Add our menu_category context
-        context["menu_category"] = "finance"
-        return context
+
+class ValidationUpdate(ValidationsMixin, UpdateView):
+    context_object_name = "mcv"
+    success_message = _("Validation cantonale mise à jour")
+    form_class = MonthlyCantonalValidationForm
 
     def get_form_kwargs(self):
-        form_kwargs = super().get_form_kwargs()
-        form_kwargs["year"] = self.year
-        form_kwargs["month"] = self.month
-        return form_kwargs
+        fk = super().get_form_kwargs()
+        fk["validator"] = self.request.user
+        return fk
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial["validated"] = self.get_object().validated
+        return initial
+
+    def dispatch(self, request, *args, **kwargs):
+        self.canton = kwargs.pop("canton")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        """
+        Extrait l'objet à partir de l'URL plutôt que du pk
+        Permet toujours une mise à jour; en créant l'objet si nécessaire
+        """
+        p, _ = (
+            super()
+            .get_queryset()
+            .get_or_create(
+                canton=self.canton, defaults={"date": date(self.year, self.month, 1)}
+            )
+        )
+        return p
 
     def get_success_url(self):
-        return reverse_lazy("validations-list", kwargs={"year": self.object.year})
-
-
-class ValidationsMonthView(ValidationsMixin, MonthArchiveView):
-    allow_future = True
-    allow_empty = True
-
-
-# class AnnualStateSettingMixin(ValidationsMixin, SuccessMessageMixin, MenuView):
-#     context_object_name = "setting"
-#     form_class = AnnualStateSettingForm
-
-
-# class AnnualStateSettingCreateView(AnnualStateSettingMixin, CreateView):
-#     success_message = _("Configuration cantonale par année créée")
-
-
-# class AnnualStateSettingUpdateView(AnnualStateSettingMixin, UpdateView):
-#     success_message = _("Configuration cantonale par année mise à jour")
+        return reverse_lazy(
+            "salary:validations-month",
+            kwargs={"year": self.object.date.year, "month": self.object.date.month},
+        )
