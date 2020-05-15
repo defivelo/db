@@ -71,7 +71,9 @@
         </div>
     </div>
     {% buttons %}
-        <a class="btn btn-primary pull-right" href="{% url 'organization-update' pk=organization.pk %}">{% trans "Éditer" %}</a>
+        {% if request.user|can:'orga_crud' and request.user|inusercantons:organization.address_canton %}
+            <a class="btn btn-primary pull-right" href="{% url 'organization-update' pk=organization.pk %}">{% trans "Éditer" %}</a>
+        {% endif %}
         <a class="btn btn-default" href="{% url 'organization-list' %}">{% trans "Retour à la liste des établissements" %}</a>
     {% endbuttons %}
 {% endblock %}

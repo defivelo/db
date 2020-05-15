@@ -89,7 +89,7 @@
                     {% if user.profile.can_login %}
                         <span class="btn btn-disabled btn-xs">{{ user.profile.access_level_icon }}</span>
                     {% else %}
-                        {% if request.user|can:"user_can_send_credentials" and request.user.pk != user.pk %}
+                        {% if request.user|can:"user_can_send_credentials" and request.user.pk != user.pk and request.user|inusercantons:user.profile.affiliation_canton %}
                         <a class="btn btn-default btn-xs" href="{% url 'user-sendcredentials' pk=user.pk %}">
                             <span class="glyphicon glyphicon-envelope" aria-hidden="true" title="{% trans "Envoyer les données de connexion" %}"></span>
                         </a>
