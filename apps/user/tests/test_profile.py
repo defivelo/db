@@ -85,7 +85,7 @@ class ProfileTestCase(TestCase):
     def setUp(self):
         # Every test needs a client.
         self.client = AuthClient()
-        self.users = [UserFactory() for i in range(3)]
+        self.users = [UserFactory(profile__affiliation_canton="NE") for i in range(3)]
 
     def getprofileinitial(self, user):
         userfields = ["first_name", "last_name", "email"]

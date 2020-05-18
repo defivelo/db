@@ -35,21 +35,19 @@
                     <dt>{% trans "Canton d'affiliation" %}</dt>
                         <dd>{{ organization.address_canton|canton_abbr:False }}</dd>
                 {% endif %}
-                {% if organization.coordinator_fullname %}
+                {% if organization.coordinator.get_full_name %}
                     <dt>{% trans "Coordinateur" %}</dt>
-                        <dd>{{ organization.coordinator_fullname }}</dd>
+                        <dd>{{ organization.coordinator.get_full_name }}</dd>
                 {% endif %}
-                {% if organization.coordinator_email %}
+                {% if organization.coordinator.email %}
                     <dt>{% trans "Courriel" %}</dt>
-                        <dd><a class="email" href="mailto:{{ organization.mailtolink|urlencode }}">{{ organization.coordinator_email }}</a></dd>
+                        <dd><a class="email"
+                            href="mailto:{{ organization.coordinator.mailtolink|urlencode }}">{{ organization.coordinator.email }}</a>
+                        </dd>
                 {% endif %}
-                {% if organization.coordinator_natel %}
+                {% if organization.coordinator.profile.natel %}
                     <dt>{% trans "Natel" %}</dt>
-                        <dd>{{ organization.coordinator_natel|tel_link }}</a></dd>
-                {% endif %}
-                {% if organization.coordinator_phone %}
-                    <dt>{% trans "Téléphone" %}</dt>
-                        <dd>{{ organization.coordinator_phone|tel_link }}</dd>
+                        <dd>{{ organization.coordinator.profile.natel|tel_link }}</a></dd>
                 {% endif %}
                 {% if organization.status > 0 %}
                 <dt>{% trans "État" %}</dt>
@@ -71,7 +69,11 @@
         </div>
     </div>
     {% buttons %}
-        <a class="btn btn-primary pull-right" href="{% url 'organization-update' pk=organization.pk %}">{% trans "Éditer" %}</a>
-        <a class="btn btn-default" href="{% url 'organization-list' %}">{% trans "Retour à la liste des établissements" %}</a>
+        {% if user|can:'orga_edit' %}
+            <a class="btn btn-primary pull-right" href="{% url 'organization-update' pk=organization.pk %}">{% trans "Éditer" %}</a>
+        {% endif %}
+        {% if user|can:'orga_crud' %}
+            <a class="btn btn-default" href="{% url 'organization-list' %}">{% trans "Retour à la liste des établissements" %}</a>
+        {% endif %}
     {% endbuttons %}
 {% endblock %}

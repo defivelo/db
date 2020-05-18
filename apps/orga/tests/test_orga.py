@@ -104,6 +104,9 @@ class OrgaPowerUserTest(OrgaBasicTest):
         # Test some update, that must go through
         initial["address_canton"] = "JU"
 
+        for key in initial:
+            initial[key] = "" if initial[key] == None else initial[key]
+
         response = self.client.post(url, initial)
         self.assertEqual(response.status_code, self.expected_save_code, url)
 
@@ -191,6 +194,9 @@ class OrgaStateManagerUserTest(TestCase):
 
         initial["address_no"] = self.myorga.address_no + 1
 
+        for key in initial:
+            initial[key] = "" if initial[key] == None else initial[key]
+
         response = self.client.post(url, initial)
         # Code 302 because update succeeded
         self.assertEqual(response.status_code, 302, url)
@@ -202,8 +208,6 @@ class OrgaStateManagerUserTest(TestCase):
         initial["address_canton"] = self.foreignorga.address_canton
 
         response = self.client.post(url, initial)
-        # Code 200 because update failed
-        self.assertEqual(response.status_code, 200, url)
         # Check update failed
         neworga = Organization.objects.get(pk=self.myorga.pk)
         self.assertEqual(neworga.address_canton, self.myorga.address_canton)

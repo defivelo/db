@@ -30,6 +30,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from dal_select2.views import Select2QuerySetView
 from django_filters import CharFilter, FilterSet, MultipleChoiceFilter
 from django_filters.views import FilterView
+from rolepermissions.checkers import has_role
 from rolepermissions.mixins import HasPermissionsMixin
 
 from apps.common import DV_STATE_CHOICES_WITH_DEFAULT
@@ -101,6 +102,8 @@ class OrganizationMixin(HasPermissionsMixin, MenuView):
     form_class = OrganizationForm
 
     def get_queryset(self):
+        if self.request.user.managed_organizations.count():
+            return self.request.user.managed_organizations
         qs = self.model.objects
         try:
             usercantons = user_cantons(self.request.user)
@@ -112,8 +115,24 @@ class OrganizationMixin(HasPermissionsMixin, MenuView):
 
     def get_form_kwargs(self):
         kwargs = super(OrganizationMixin, self).get_form_kwargs()
-        kwargs["cantons"] = user_cantons(self.request.user)
+        try:
+            kwargs["cantons"] = user_cantons(self.request.user)
+        except LookupError:
+            kwargs["cantons"] = [
+                orga.address_canton
+                for orga in self.request.user.managed_organizations.all()
+            ]
         return kwargs
+
+    def get_form(self, *args, **kwargs):
+        form = super().get_form(*args, **kwargs)
+        if has_role(self.request.user, "coordinator"):
+            form.fields["status"].disabled = True
+            form.fields["coordinator"].disabled = True
+            del form.fields["comments"]
+        if not has_role(self.request.user, "power_user"):
+            form.fields["address_canton"].disabled = True
+        return form
 
     def get_context_data(self, **kwargs):
         context = super(OrganizationMixin, self).get_context_data(**kwargs)
@@ -137,10 +156,11 @@ class OrganizationsListView(OrganizationMixin, PaginatorMixin, FilterView):
 
 
 class OrganizationDetailView(OrganizationMixin, DetailView):
-    pass
+    required_permission = "orga_show"
 
 
 class OrganizationUpdateView(OrganizationMixin, SuccessMessageMixin, UpdateView):
+    required_permission = "orga_edit"
     success_message = _("Établissement mis à jour")
 
 

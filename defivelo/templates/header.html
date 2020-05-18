@@ -65,6 +65,15 @@
             {% endif %}
             {% if user|can:'orga_crud' %}
                 <li{% if 'organization' in menu_category  %} class="active"{% endif %}><a href="{% url 'organization-list' %}">{% trans "Établissements" %}</a></li>
+            {% elif user|can:"orga_show"%}
+                <li{% if 'organization' in menu_category %} class="active" {% endif %}>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Établissements" %}<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        {% for orga in user.managed_organizations.all %}
+                            <li><a href="{% url 'organization-detail' pk=orga.pk %}">{{ orga }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
             {% endif %}
             {% if user|can:'challenge_season_crud' %}
                 <li{% if 'exports' in menu_category  %} class="active"{% endif %}>
@@ -82,7 +91,7 @@
               <li{% if 'timesheet' in menu_category  %} class="active" {% endif %}><a
                   href="{% url 'salary:timesheets-overview' year=year %}">{% trans "Contrôle des heures" %}</a>
                   </li>
-              {% endwith %}
+            {% endwith %}
             {% if user|can:'settings_crud' %}
                 <li{% if 'settings' in menu_category  %} class="active"{% endif %}>
                     <a href="{% url 'annualstatesettings-list' year=now.year %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Admin" %}<span class="caret"></span></a>

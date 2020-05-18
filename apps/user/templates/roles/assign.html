@@ -25,8 +25,18 @@
 <script type="text/javascript">
 function onlyStatesIfStateManager() {
     // Ne permet pas la coche dans le canton d'activité pour Défi Vélo Mobile
-    disabled = $( '#id_role' ).val() != 'state_manager';
-    $( '#id_managed_states input[name="managed_states"]').prop("disabled", disabled);
+    [
+    {role: 'state_manager', name: 'managed_states'},
+    {role: 'coordinator', name: 'managed_organizations'},
+    ].forEach(fieldConfig => {
+      disabled = $( '#id_role' ).val() != fieldConfig.role;
+      $( '#id_'+fieldConfig.name+' input[name="'+fieldConfig.name+'"]').prop("disabled", disabled);
+      if (disabled) {
+        $( '#id_'+fieldConfig.name).parents(".form-group").hide()
+      } else {
+        $( '#id_'+fieldConfig.name).parents(".form-group").show()
+      }
+    })
 }
 
 $( '#id_role' ).change( onlyStatesIfStateManager );
