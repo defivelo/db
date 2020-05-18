@@ -105,4 +105,16 @@ class MonthlyCantonalValidation(models.Model):
 
     @property
     def validated(self):
-        return bool(self.validated_at and self.validated_by)
+        if self.validated_at is None:
+            return False
+        if self.validated_by is None:
+            return False
+
+        our_urls_pks = self.validated_urls.all().values_list("pk", flat=True)
+        all_urls_pks = MonthlyCantonalValidationUrl.objects.all().values_list(
+            "pk", flat=True
+        )
+        for url_pk in all_urls_pks:
+            if url_pk not in our_urls_pks:
+                return False
+        return True
