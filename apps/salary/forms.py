@@ -1,14 +1,20 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.forms import formset_factory
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from rolepermissions.checkers import has_role
 
 from apps.challenge.models.session import Session
 from apps.common.fields import CheckboxInput, NumberInput, TimeNumberInput
-from apps.salary.models import MonthlyCantonalValidation, Timesheet
+from apps.salary.models import (
+    MonthlyCantonalValidation,
+    Timesheet,
+    MonthlyCantonalValidationUrl,
+)
 
 from . import BONUS_LEADER, HOURLY_RATE_HELPER, RATE_ACTOR
 
@@ -172,9 +178,26 @@ class MonthlyCantonalValidationForm(forms.ModelForm):
         model = MonthlyCantonalValidation
         fields = ["validated"]
 
-    def __init__(self, validator, *args, **kwargs):
+    def __init__(self, validator, urls, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.validator = validator
+        # Add the urls as checkboxes, but first; so:
+        # Store away the fields
+        fields = self.fields.copy()
+        # Empty it
+        self.fields = {}
+        for url in urls:
+            self.fields[f"url_{url.pk}"] = forms.BooleanField(
+                label=url.name,
+                required=False,
+                widget=CheckboxInput,
+                help_text=mark_safe(
+                    f'<a href="{url.url}" target="_blank">{url.url}</a>'
+                ),
+            )
+        # Refill it
+        for k, v in fields.items():
+            self.fields[k] = v
         if self.initial.get("validated"):
             for key in self.fields:
                 self.fields[key].widget.attrs["readonly"] = True
@@ -186,8 +209,21 @@ class MonthlyCantonalValidationForm(forms.ModelForm):
             cleaned_data["validated_at"] = None
             cleaned_data["validated_by"] = None
         elif not self.initial["validated"] and cleaned_data.get("validated"):
-            cleaned_data["validated_at"] = timezone.now()
-            cleaned_data["validated_by"] = self.validator
+            # Verify that all URLs are ticked
+            all_urls_ticked = True
+            for k, v in self.fields.items():
+                if k.startswith("url_"):
+                    if not cleaned_data.get(k):
+                        self.add_error(
+                            k,
+                            ValidationError(
+                                _("Toutes les URLs doivent être vérifiées")
+                            ),
+                        )
+                        all_urls_ticked = False
+            if all_urls_ticked:
+                cleaned_data["validated_at"] = timezone.now()
+                cleaned_data["validated_by"] = self.validator
         del cleaned_data["validated"]
         return cleaned_data
 
@@ -197,4 +233,10 @@ class MonthlyCantonalValidationForm(forms.ModelForm):
                 setattr(self.instance, val, self.cleaned_data[val])
             except KeyError:
                 pass
+        for k, v in self.fields.items():
+            if k.startswith("url_"):
+                pk = int(k.split("_")[1])
+                self.instance.validated_urls.add(
+                    MonthlyCantonalValidationUrl.objects.get(pk=pk)
+                )
         return super().save(commit)

@@ -30,7 +30,7 @@ from defivelo.roles import user_cantons
 from defivelo.views import MenuView
 
 from ..forms import MonthlyCantonalValidationForm
-from ..models import MonthlyCantonalValidation
+from ..models import MonthlyCantonalValidation, MonthlyCantonalValidationUrl
 
 
 class ValidationsMixin(HasPermissionsMixin, MenuView):
@@ -105,6 +105,7 @@ class ValidationUpdate(ValidationsMixin, UpdateView):
     def get_form_kwargs(self):
         fk = super().get_form_kwargs()
         fk["validator"] = self.request.user
+        fk["urls"] = MonthlyCantonalValidationUrl.objects.all()
         return fk
 
     def get_initial(self):

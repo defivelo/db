@@ -14,7 +14,6 @@
 {% block content %}
     <h1>{% with canton=mcv.canton|canton_abbr:False monthyear=mcv.date|date:'F Y' %}{% blocktrans %}{{ canton }}: Validation pour {{ monthyear }}{% endblocktrans %}{% endwith %}</h1>
     <form method="POST" class="form-horizontal">
-    {{ form.errors }}
         {% csrf_token %}
         {% bootstrap_form form layout='horizontal' size='small' %}
         {% buttons %}
