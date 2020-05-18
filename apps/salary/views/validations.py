@@ -18,17 +18,14 @@
 
 from datetime import date
 
-from django import forms
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.dates import MonthArchiveView
 from django.views.generic.edit import UpdateView
 
 from rolepermissions.mixins import HasPermissionsMixin
 
-from apps.common.fields import CheckboxInput
 from defivelo.roles import user_cantons
 from defivelo.views import MenuView
 
