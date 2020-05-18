@@ -31,11 +31,21 @@
         {% if forloop.first %}<table class="table">
         <tr>
             <th>{% trans "Canton" %}</th>
+            {% for mcv_url in mcv_urls %}
+              <th>{{ mcv_url.name }}</th>
+            {% endfor %}
             <th>{% trans "Validé" %}</th>
         </tr>
         {% endif %}
         <tr>
             <td>{{ mcv.canton|canton_abbr:False }}</td>
+            {% for mcv_url in mcv_urls %}
+              <td>
+                {% for validated_url in mcv.validated_urls.all %}
+                {% if validated_url.pk == mcv_url.pk %}{% include "ok.html" %}{% endif %}
+                {% endfor %}
+              </td>
+            {% endfor %}
             <td>
               {% if mcv.validated %}
                 {% include "ok.html" %} {% blocktrans with by=mcv.validated_by.get_full_name at=mcv.validated_at %}par {{ by }}, le {{ at }}{% endblocktrans %}

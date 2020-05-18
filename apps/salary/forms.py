@@ -186,6 +186,7 @@ class MonthlyCantonalValidationForm(forms.ModelForm):
         fields = self.fields.copy()
         # Empty it
         self.fields = {}
+        # urls are MonthlyCantonalValidationUrl
         for url in urls:
             self.fields[f"url_{url.pk}"] = forms.BooleanField(
                 label=url.name,
@@ -194,6 +195,7 @@ class MonthlyCantonalValidationForm(forms.ModelForm):
                 help_text=mark_safe(
                     f'<a href="{url.url}" target="_blank">{url.url}</a>'
                 ),
+                initial=self.instance.validated_urls.filter(pk=url.pk).exists(),
             )
         # Refill it
         for k, v in fields.items():
@@ -209,7 +211,7 @@ class MonthlyCantonalValidationForm(forms.ModelForm):
             cleaned_data["validated_at"] = None
             cleaned_data["validated_by"] = None
         elif not self.initial["validated"] and cleaned_data.get("validated"):
-            # Verify that all URLs are ticked
+            # Verify that all URLs are ticked to allow validation
             all_urls_ticked = True
             for k, v in self.fields.items():
                 if k.startswith("url_"):
@@ -235,8 +237,9 @@ class MonthlyCantonalValidationForm(forms.ModelForm):
                 pass
         for k, v in self.fields.items():
             if k.startswith("url_"):
-                pk = int(k.split("_")[1])
-                self.instance.validated_urls.add(
-                    MonthlyCantonalValidationUrl.objects.get(pk=pk)
-                )
+                mcvu = MonthlyCantonalValidationUrl.objects.get(pk=int(k.split("_")[1]))
+                if self.cleaned_data[k]:
+                    self.instance.validated_urls.add(mcvu)
+                else:
+                    self.instance.validated_urls.remove(mcvu)
         return super().save(commit)

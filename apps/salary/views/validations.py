@@ -72,6 +72,7 @@ class ValidationsMixin(HasPermissionsMixin, MenuView):
         context = super().get_context_data(**kwargs)
         # Add our menu_category context
         context["menu_category"] = "finance"
+        context["mcv_urls"] = MonthlyCantonalValidationUrl.objects.all()
         return context
 
 
