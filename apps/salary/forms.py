@@ -12,8 +12,8 @@ from apps.challenge.models.session import Session
 from apps.common.fields import CheckboxInput, NumberInput, TimeNumberInput
 from apps.salary.models import (
     MonthlyCantonalValidation,
-    Timesheet,
     MonthlyCantonalValidationUrl,
+    Timesheet,
 )
 
 from . import BONUS_LEADER, HOURLY_RATE_HELPER, RATE_ACTOR
