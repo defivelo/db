@@ -76,15 +76,16 @@ class ValidationsMonthView(ValidationsMixin, MonthArchiveView):
 
     def get_queryset(self):
         qs = super().get_queryset()
+        missing_cantons = [
+            c
+            for c in self.managed_cantons
+            if c not in qs.values_list("canton", flat=True)
+        ]
         # Create the MCVs for the cantons' we're about to see (if needed)
         MonthlyCantonalValidation.objects.bulk_create(
             [
                 MonthlyCantonalValidation(canton=c, date=date(self.year, self.month, 1))
-                for c in [
-                    c
-                    for c in self.managed_cantons
-                    if c not in qs.values_list("canton", flat=True)
-                ]
+                for c in missing_cantons
             ]
         )
         # Return the qs, that'll get the newly created ones.
