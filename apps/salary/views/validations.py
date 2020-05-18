@@ -45,7 +45,10 @@ class ValidationsMixin(HasPermissionsMixin, MenuView):
     def dispatch(self, request, *args, **kwargs):
         self.year = int(kwargs.pop("year"))
         self.month = int(kwargs.pop("month"))
-        self.managed_cantons = user_cantons(request.user)
+        try:
+            self.managed_cantons = user_cantons(request.user)
+        except LookupError:
+            self.managed_cantons = []
         self.canton = kwargs.get("canton", None)
         if self.canton and self.canton not in self.managed_cantons:
             # Vue individuelle, mais pas dans nos cantons
