@@ -192,6 +192,9 @@ class MonthlyCantonalValidationForm(forms.ModelForm):
         return cleaned_data
 
     def save(self, commit=True):
-        self.instance.validated_at = self.cleaned_data["validated_at"]
-        self.instance.validated_by = self.cleaned_data["validated_by"]
+        for val in ["validated_at", "validated_by"]:
+            try:
+                setattr(self.instance, val, self.cleaned_data[val])
+            except KeyError:
+                pass
         return super().save(commit)
