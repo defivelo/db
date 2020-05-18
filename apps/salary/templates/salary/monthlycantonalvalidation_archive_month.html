@@ -31,14 +31,17 @@
         {% if forloop.first %}<table class="table">
         <tr>
             <th>{% trans "Canton" %}</th>
-            <th></th>
+            <th>{% trans "Validé" %}</th>
         </tr>
         {% endif %}
         <tr>
-            <td>{{ mcv.canton|canton_abbr }}</td>
-            <td>{{ mcv.validated }}</td>
+            <td>{{ mcv.canton|canton_abbr:False }}</td>
             <td>
+              {% if mcv.validated %}
+                {% include "ok.html" %} {% blocktrans with by=mcv.validated_by.get_full_name at=mcv.validated_at %}par {{ by }}, le {{ at }}{% endblocktrans %}
+              {% else %}
                 <a class="btn btn-xs btn-primary" href="{% url 'salary:validation-update' year=mcv.date.year month=mcv.date.month canton=mcv.canton %}" title="{% trans "Éditer" %}"><span class="glyphicon glyphicon-pencil"></span></a>
+              {% endif %}
             </td>
         </tr>
         {% if forloop.last %}</table>{% endif %}
