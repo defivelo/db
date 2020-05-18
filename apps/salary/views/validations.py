@@ -19,6 +19,7 @@
 from datetime import date
 
 from django import forms
+from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -45,6 +46,10 @@ class ValidationsMixin(HasPermissionsMixin, MenuView):
         self.year = int(kwargs.pop("year"))
         self.month = int(kwargs.pop("month"))
         self.managed_cantons = user_cantons(request.user)
+        self.canton = kwargs.get("canton", None)
+        if self.canton and self.canton not in self.managed_cantons:
+            # Vue individuelle, mais pas dans nos cantons
+            raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -106,10 +111,6 @@ class ValidationUpdate(ValidationsMixin, UpdateView):
         initial = super().get_initial()
         initial["validated"] = self.get_object().validated
         return initial
-
-    def dispatch(self, request, *args, **kwargs):
-        self.canton = kwargs.pop("canton")
-        return super().dispatch(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
         """
