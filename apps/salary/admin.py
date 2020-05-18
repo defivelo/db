@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import admin
 from django.templatetags.static import static
+from django.utils.safestring import mark_safe
 
 from parler.admin import TranslatableAdmin
 from simple_history.admin import SimpleHistoryAdmin
@@ -23,9 +24,7 @@ class MonthlyCantonalValidationUrlAdmin(TranslatableAdmin):
         if missing_languages:
             return " | ".join(missing_languages)
         else:
-            return '<img src="%s" />' % static("admin/img/icon-yes.gif")
-
-    missing_languages.allow_tags = True
+            return mark_safe('<img src="%s" />' % static("admin/img/icon-yes.svg"))
 
 
 class MonthlyCantonalValidationAdmin(SimpleHistoryAdmin):
