@@ -155,7 +155,9 @@ class OrganizationCrudMixin(OrganizationDetailMixin):
 
     def get_form(self, *args, **kwargs):
         form = super().get_form(*args, **kwargs)
-        if has_role(self.request.user, "coordinator") and not has_role(self.request.user, "power_user"):
+        if has_role(self.request.user, "coordinator") and not has_role(
+            self.request.user, "power_user"
+        ):
             form.fields["status"].disabled = True
             form.fields["coordinator"].disabled = True
             del form.fields["comments"]

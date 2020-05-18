@@ -106,9 +106,17 @@ class SimpleUserProfileForm(forms.ModelForm):
             affiliation_canton = cleaned_data["affiliation_canton"]
         except KeyError:
             affiliation_canton = None
-        if not affiliation_canton and (
-            cleaned_data["actor_for"] or cleaned_data["formation"]
-        ):
+        actor_for = (
+            cleaned_data["actor_for"]
+            if "actor_for" in cleaned_data
+            else self.instance.profile.actor_for.all()
+        )
+        formation = (
+            cleaned_data["formation"]
+            if "formation" in cleaned_data
+            else self.instance.profile.formation
+        )
+        if not affiliation_canton and (actor_for or formation):
             self.add_error(
                 "affiliation_canton",
                 ValidationError(

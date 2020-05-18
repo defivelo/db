@@ -175,9 +175,13 @@ class UserSelfAccessMixin(object):
         try:
             usercantons = user_cantons(request.user)
         except LookupError:
-            usercantons = False
-
+            usercantons = []
         user = self.get_object()
+        user_cantons_intersection = [
+            orga.address_canton
+            for orga in user.managed_organizations.all()
+            if orga.address_canton in usercantons
+        ]
         if (
             # Soit c'est moi
             request.user.pk == user.pk
@@ -190,9 +194,10 @@ class UserSelfAccessMixin(object):
             (
                 has_permission(request.user, self.required_permission)
                 and (
+                    user_cantons_intersection
+                    or
                     # Il est dans mes cantons d'affiliation
-                    usercantons
-                    and user.profile.affiliation_canton in usercantons
+                    user.profile.affiliation_canton in usercantons
                     # Je ne fais que le consulter
                     or not edit
                 )

@@ -45,6 +45,7 @@ from apps.common import (
 )
 from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.roles import DV_AVAILABLE_ROLES
+from defivelo.roles import user_cantons
 
 from .. import FORMATION_KEYS
 from ..export import UserResource
@@ -59,6 +60,22 @@ from .mixins import ProfileMixin, UserSelfAccessMixin
 
 class UserDetail(UserSelfAccessMixin, ProfileMixin, DetailView):
     required_permission = "user_detail_other"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            managed_cantons = user_cantons(self.request.user)
+        except LookupError:
+            managed_cantons = []
+        user_cantons_intersection = [
+            orga.address_canton
+            for orga in self.get_object().managed_organizations.all()
+            if orga.address_canton in managed_cantons
+        ]
+        context["userprofilecanton"] = (
+            user_cantons_intersection[0] if user_cantons_intersection else None
+        )
+        return context
 
 
 class UserUpdate(UserSelfAccessMixin, ProfileMixin, SuccessMessageMixin, UpdateView):

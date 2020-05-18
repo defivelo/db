@@ -37,9 +37,15 @@ class UserCredentials(ProfileMixin, FormView):
     initial_send = True
 
     def dispatch(self, request, *args, **kwargs):
-        managed_cantons = user_cantons(self.request.user)
+        self.managed_cantons = user_cantons(self.request.user)
+        self.user_cantons_intersection = [
+            orga.address_canton
+            for orga in self.get_object().managed_organizations.all()
+            if orga.address_canton in self.managed_cantons
+        ]
         if (
-            self.get_object().profile.affiliation_canton in managed_cantons
+            self.get_object().profile.affiliation_canton in self.managed_cantons
+            or self.user_cantons_intersection
             # Useful when the edited user has no canton (affiliation_canton == '')
             or has_permission(self.request.user, "cantons_all")
         ):
@@ -49,7 +55,12 @@ class UserCredentials(ProfileMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super(UserCredentials, self).get_context_data(**kwargs)
+
+        user_cantons_intersection = self.user_cantons_intersection + [
+            self.get_object().profile.affiliation_canton
+        ]
         context["userprofile"] = self.get_object()
+        context["userprofilecanton"] = user_cantons_intersection
         context["initial_send"] = self.initial_send
         return context
 

@@ -437,6 +437,9 @@ class UserProfile(Address, models.Model):
                 elif has_role(self.user, "state_manager"):
                     title = _("Chargé·e de projet")
                     icon = "bishop"
+                elif has_role(self.user, "coordinator"):
+                    title = _("Coordinateur")
+                    icon = "pawn"
         if title and textonly:
             return title
         if icon:
@@ -463,7 +466,7 @@ class UserProfile(Address, models.Model):
 
     @cached_property
     def can_login(self):
-        return self.user.is_active and self.user.has_usable_password
+        return self.user.is_active and self.user.has_usable_password()
 
     @memoize()
     def get_seasons(self, raise_without_cantons=False):
