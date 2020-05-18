@@ -83,6 +83,7 @@ class MonthlyCantonalValidation(models.Model):
         on_delete=models.SET_NULL,
         null=True,
     )
+    validated_urls = models.ManyToManyField(MonthlyCantonalValidationUrl)
 
     class Meta:
         unique_together = (("canton", "date",),)
