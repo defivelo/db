@@ -2,6 +2,8 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from parler.models import TranslatableModel, TranslatedFields
+
 from apps.common import DV_STATE_CHOICES
 
 from . import BONUS_LEADER, HOURLY_RATE_HELPER, RATE_ACTOR
@@ -51,6 +53,18 @@ class Timesheet(models.Model):
             + self.get_total_amount_helper()
             + self.get_total_amount_leader()
         )
+
+
+class MonthlyCantonalValidationUrl(TranslatableModel):
+    translations = TranslatedFields(name=models.CharField(_("Nom"), max_length=255))
+    url = models.URLField(_("URL"))
+
+    class Meta:
+        verbose_name = _("URL pour validation mensuelle")
+        verbose_name_plural = _("URLs pour validation mensuelle")
+
+    def __str__(self):
+        return self.name
 
 
 class MonthlyCantonalValidation(models.Model):
