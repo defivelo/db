@@ -72,6 +72,11 @@ class AllPersons(PersonAutocomplete):
     pass
 
 
+class AllCoordinators(PersonAutocomplete):
+    def get_queryset(self):
+        return super().get_queryset().filter(groups__name="coordinator")
+
+
 class PersonsRelevantForSessions(PersonAutocomplete):
     def get_queryset(self):
         qs = super(PersonsRelevantForSessions, self).get_queryset()

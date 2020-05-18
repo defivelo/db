@@ -79,12 +79,13 @@
             <td><a href="{% url 'organization-detail' pk=orga.pk %}">{{ orga.name }}</a></td>
             <td>{{ orga.address_zip }} {{ orga.address_city }}</td>
             <td>{{ orga.address_canton|canton_abbr }}</td>
-            <td>{{ orga.coordinator_fullname }}</td>
-            <td>{% if orga.coordinator_natel %}
-                {{ orga.coordinator_natel|tel_link }}
+            <td>{{ orga.coordinator.get_full_name }}</td>
+            <td>{% if orga.coordinator.profile.natel %}
+                {{ orga.coordinator.profile.natel|tel_link }}
                 {% endif %}</td>
-            <td>{% if orga.coordinator_email %}
-                <a class="email" href="mailto:{{ orga.mailtolink|urlencode }}">{{ orga.coordinator_email }}</a>
+            <td>{% if orga.coordinator.email %}
+                <a class="email"
+                  href="mailto:{{ orga.coordinator.mailtolink|urlencode }}">{{ orga.coordinator.email }}</a>
                 {% endif %}</td>
             <td>
                 {% if request.user|can:'orga_crud' and request.user|inusercantons:orga.address_canton %}

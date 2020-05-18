@@ -58,6 +58,8 @@ class StateManager(AbstractUserRole):
         "user_create": True,
         "orga_detail_all": True,
         "orga_crud": True,
+        "orga_show": True,
+        "orga_edit": True,
         "challenge_season_crud": True,
         "challenge_session_crud": True,
         "challenge_invoice_cru": True,
@@ -86,6 +88,8 @@ class PowerUser(AbstractUserRole):
         "home_article_crud": True,
         "orga_detail_all": True,
         "orga_crud": True,
+        "orga_show": True,
+        "orga_edit": True,
         "challenge_invoice_cru": True,
         "challenge_invoice_reset_to_draft": True,
         "challenge_session_crud": True,
@@ -96,8 +100,16 @@ class PowerUser(AbstractUserRole):
     }
 
 
+class Coordinator(AbstractUserRole):
+    available_permissions = {
+        "orga_show": True,
+        "orga_edit": True,
+    }
+
+
 DV_AVAILABLE_ROLES = (
     (None, _("Aucun rôle")),
     ("state_manager", _("Chargé·e de projet")),
+    ("coordinator", _("Coordinateur")),
     ("power_user", _("Super-utilisa·teur·trice")),  # Bureau
 )

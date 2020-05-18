@@ -23,10 +23,12 @@ from django.core.exceptions import PermissionDenied
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 
+from rolepermissions.checkers import has_role
+
 from defivelo.roles import has_permission, user_cantons
 from defivelo.views import MenuView
 
-from ..forms import UserProfileForm
+from ..forms import SimpleUserProfileForm, UserProfileForm
 from ..models import (
     DV_PRIVATE_FIELDS,
     DV_PUBLIC_FIELDS,
@@ -42,6 +44,20 @@ class ProfileMixin(MenuView):
     context_object_name = "userprofile"
     form_class = UserProfileForm
     profile_fields = STD_PROFILE_FIELDS
+
+    def get_form_class(self):
+        try:
+            user = self.object
+        except AttributeError:
+            user = self.get_object()
+        if (
+            not user
+            or user.profile.affiliation_canton
+            or UserProfileForm != self.form_class
+        ):
+            return self.form_class
+        else:
+            return SimpleUserProfileForm
 
     def get_context_data(self, **kwargs):
         context = super(ProfileMixin, self).get_context_data(**kwargs)
@@ -79,7 +95,7 @@ class ProfileMixin(MenuView):
         return reverse_lazy("user-detail", kwargs={"pk": updatepk})
 
     def get_form(self, *args, **kwargs):
-        form = super(ProfileMixin, self).get_form(*args, **kwargs)
+        form = super().get_form(*args, **kwargs)
         disabled_fields = []
         # if the edit user has access, extend the update_profile_fields
         if not has_permission(self.request.user, "user_crud_dv_public_fields"):
@@ -131,7 +147,12 @@ class ProfileMixin(MenuView):
         return ret
 
     def get_form_kwargs(self):
-        kwargs = super(ProfileMixin, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
+        if self.get_form_class() == SimpleUserProfileForm and (
+            self.request.user.is_superuser or has_role(self.request.user, "power_user")
+        ):
+            kwargs["affiliation_canton"] = True
+
         if self.cantons:
             try:
                 kwargs["cantons"] = user_cantons(self.request.user)

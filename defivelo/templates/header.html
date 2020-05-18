@@ -74,8 +74,9 @@
                       </ul>
                     </a>
                 </li>
+            {% elif user|can:'orga_detail_all' %}
+                <li{% if 'organization' in menu_category  %} class="active"{% endif %}><a href="{% url 'organization-list' %}">{% trans "Établissements" %}</a></li>
             {% endif %}
-
             {% if user|can:'challenge_season_crud' %}
                 <li{% if 'exports' in menu_category  %} class="active"{% endif %}>
                     <a href="{% url 'season-exports' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Exports" %}<span class="caret"></span></a>

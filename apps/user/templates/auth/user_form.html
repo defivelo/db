@@ -39,8 +39,12 @@
                 {% bootstrap_field form.first_name layout='horizontal' size='small' %}
                 {% bootstrap_field form.last_name layout='horizontal' size='small' %}
                 {% bootstrap_field form.language layout='horizontal' size='small' %}
-                {% bootstrap_field form.languages_challenges layout='horizontal' size='small' %}
-                {% include "address_bootstrap_form.html" with has_additional=False %}
+                {% if form.languages_challenges %}
+                  {% bootstrap_field form.languages_challenges layout='horizontal' size='small' %}
+                {% endif %}
+                {% if form.address_street %}
+                  {% include "address_bootstrap_form.html" with has_additional=False %}
+                {% endif %}
             </div>
             <div role="tabpanel" class="tab-pane" id="contacts">
                 {% bootstrap_field form.natel layout='horizontal' size='small' %}
@@ -49,27 +53,56 @@
                 {% endif %}
             </div>
             <div role="tabpanel" class="tab-pane" id="administrativia">
-                {% bootstrap_field form.birthdate layout='horizontal' size='small' %}
-                {% bootstrap_field form.nationality layout='horizontal' size='small' %}
-                {% bootstrap_field form.work_permit layout='horizontal' size='small' %}
-                {% bootstrap_field form.tax_jurisdiction layout='horizontal' size='small' %}
-                {% bootstrap_field form.bank_name layout='horizontal' size='small' %}
-                {% trans "CCP ?" as ccp %}
-                {% bootstrap_field form.iban layout='horizontal' size='small' addon_after=ccp %}
+                {% if form.birthdate %}
+                    {% bootstrap_field form.birthdate layout='horizontal' size='small' %}
+                {% endif %}
+                {% if form.nationality %}
+                    {% bootstrap_field form.nationality layout='horizontal' size='small' %}
+                {% endif %}
+                {% if form.work_permit %}
+                    {% bootstrap_field form.work_permit layout='horizontal' size='small' %}
+                {% endif %}
+                {% if form.tax_jurisdiction %}
+                    {% bootstrap_field form.tax_jurisdiction layout='horizontal' size='small' %}
+                {% endif %}
+                {% if form.bank_name %}
+                    {% bootstrap_field form.bank_name layout='horizontal' size='small' %}
+                {% endif %}
+                {% if form.iban %}
+                    {% trans "CCP ?" as ccp %}
+                    {% bootstrap_field form.iban layout='horizontal' size='small' addon_after=ccp %}
+                {% endif %}
                 {% if form.cresus_employee_number %}
                     {% bootstrap_field form.cresus_employee_number layout='horizontal' size='small' %}
                 {% endif %}
-                {% bootstrap_field form.social_security layout='horizontal' size='small' %}
-                {% bootstrap_field form.marital_status layout='horizontal' size='small' %}
+                {% if form.social_security %}
+                    {% bootstrap_field form.social_security layout='horizontal' size='small' %}
+                {% endif %}
+                {% if form.marital_status %}
+                    {% bootstrap_field form.marital_status layout='horizontal' size='small' %}
+                {% endif %}
             </div>
 
             <div role="tabpanel" class="tab-pane" id="defi">
-                {% bootstrap_field form.status layout='horizontal' size='small' %}
-                {% bootstrap_field form.formation layout='horizontal' size='small' %}
-                {% bootstrap_field form.formation_firstdate layout='horizontal' size='small' %}
-                {% bootstrap_field form.formation_lastdate layout='horizontal' size='small' %}
-                {% bootstrap_field form.actor_for layout='horizontal' size='small' %}
-                {% bootstrap_field form.pedagogical_experience layout='horizontal' size='small' %}
+                {% if form.status %}
+                    {% bootstrap_field form.status layout='horizontal' size='small' %}
+                {% endif %}
+                {% if form.formation %}
+                    {% bootstrap_field form.formation layout='horizontal' size='small' %}
+                {% endif %}
+                {% if form.formation_firstdate %}
+                    {% bootstrap_field form.formation_firstdate layout='horizontal' size='small' %}
+                {% endif %}
+                {% if form.formation_lastdate %}
+                    {% bootstrap_field form.formation_lastdate layout='horizontal' size='small' %}
+                {% endif %}
+                {% if form.actor_for %}
+                    {% bootstrap_field form.actor_for layout='horizontal' size='small' %}
+                {% endif %}
+                {% if form.pedagogical_experience %}
+                    {% bootstrap_field form.pedagogical_experience layout='horizontal' size='small' %}
+                {% endif %}
+                {% if form.firstmed_course %}
                 <div class="form-group form-group-sm">
                     {% bootstrap_label form.firstmed_course.label label_class='col-md-3 control-label' %}
                     <div class="col-md-1">
@@ -83,11 +116,18 @@
                     </div>
                     {% bootstrap_field form.firstmed_course_comm field_class='col-md-8' form_group_class='none' show_label=False %}
                 </div>
-                {% bootstrap_field form.bagstatus layout='horizontal' size='small' %}
+                {% endif %}
+                {% if form.bagstatus %}
+                    {% bootstrap_field form.bagstatus layout='horizontal' size='small' %}
+                {% endif %}
             </div>
             <div role="tabpanel" class="tab-pane" id="cantons">
-                {% bootstrap_field form.affiliation_canton layout='horizontal' size='small' %}
-                {% bootstrap_field form.activity_cantons layout='horizontal' size='small' %}
+                {% if form.affiliation_canton %}
+                    {% bootstrap_field form.affiliation_canton layout='horizontal' size='small' %}
+                {% endif %}
+                {% if form.activity_cantons %}
+                    {% bootstrap_field form.activity_cantons layout='horizontal' size='small' %}
+                {% endif %}
             </div>
             {% if request.user|can:'user_crud_dv_private_fields' %}
                 <div role="tabpanel" class="tab-pane" id="notes">
