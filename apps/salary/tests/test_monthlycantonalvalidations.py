@@ -4,11 +4,14 @@ from django.db import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
 
+from apps.challenge.tests.factories import QualificationFactory, SessionFactory
 from apps.common import DV_STATES
+from apps.user.tests.factories import UserFactory
 from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient
 
-from ..models import MonthlyCantonalValidation
-from .factories import MonthlyCantonalValidationFactory
+from .. import timesheets_overview
+from ..models import MonthlyCantonalValidation, MonthlyCantonalValidationUrl
+from .factories import MonthlyCantonalValidationFactory, TimesheetFactory
 
 
 class MCVTestCase(TestCase):
@@ -52,6 +55,8 @@ class AuthUserTest(TestCase):
 class StateManagerUserTest(TestCase):
     def setUp(self):
         self.client = StateManagerAuthClient()
+        # Our migrations create two for us
+        self.urls = MonthlyCantonalValidationUrl.objects.all()
         super().setUp()
 
     def test_access_to_mcvs_lists(self):
@@ -81,20 +86,58 @@ class StateManagerUserTest(TestCase):
                 self.assertEqual(response.status_code, 200, url)
                 # We looked at it, it exists now
                 self.assertTrue(mcv_gs.exists())
-                for validated in [False, True]:
-                    # Now try to update without validating first; then validate
-                    initial = {}
-                    if validated:
-                        initial["validated"] = True
-                    response = self.client.post(url, initial)
-                    self.assertEqual(response.status_code, 302, url)
+                # Try to validate without ticking anything
+                response = self.client.post(url, {})
+                self.assertEqual(response.status_code, 302, url)
 
-                    # Get the object, and assert that it got validated (or not) for real
-                    mcv = mcv_gs.first()
-                    self.assertEqual(mcv.validated, validated)
-                    if validated:
-                        self.assertEqual(mcv.validated_by, self.client.user, mcv)
-                        self.assertTrue(mcv.validated_at is not None, mcv)
+                # Get the object, and assert that it didn't get validated for real
+                mcv = mcv_gs.first()
+                self.assertFalse(mcv.validated, mcv)
+
+                # Try to validate with the urls ticked only
+                initial = {}
+                for u in self.urls:
+                    initial[f"url_{u.pk}"] = True
+                response = self.client.post(url, initial)
+                self.assertEqual(response.status_code, 302, url)
+
+                # Get the object, and assert that it didn't get validated for real
+                mcv = mcv_gs.first()
+                self.assertFalse(mcv.validated, mcv)
+                # But the URLs are now present
+                self.assertEqual(
+                    set(mcv.validated_urls.all().values_list("pk", flat=True)),
+                    set(self.urls.values_list("pk", flat=True)),
+                )
+
+                # Now also make sure the timesheets of the month are all valid
+                actor = UserFactory(profile__affiliation_canton=canton,)
+                QualificationFactory(
+                    actor=actor, session=SessionFactory(day=today.replace(day=12),),
+                )
+                # For now there is no timesheet
+                initial["validated"] = True
+                response = self.client.post(url, initial)
+                self.assertEqual(response.status_code, 200, url)
+                # The error code is a 200, as the post failed
+
+                TimesheetFactory(
+                    user=actor,
+                    date=today.replace(day=12),
+                    validated_at=today.replace(day=13),
+                    validated_by=actor,
+                )
+                # Clear the cache
+                timesheets_overview.timesheets_validation_status.all_users = {}
+                # So post with all ticks ticked
+                initial["timesheets_checked"] = True
+                response = self.client.post(url, initial)
+                self.assertEqual(response.status_code, 302, url)
+                # The error code is a 302, as the post succeeded
+                mcv = mcv_gs.first()
+                self.assertTrue(mcv.validated, mcv)
+                self.assertEqual(mcv.validated_by, self.client.user, mcv)
+                self.assertTrue(mcv.validated_at is not None, mcv)
                 # Now that it's validated, assert it can't be unvalidated
                 initial["validated"] = False
                 response = self.client.post(url, initial)
