@@ -77,15 +77,6 @@ class ValidationsMixin(HasPermissionsMixin, MenuView):
         context[
             "mcv_urls"
         ] = MonthlyCantonalValidationUrl.objects.all().prefetch_related("translations")
-        visible_users = timesheets_overview.get_visible_users(self.request.user)
-        context[
-            "timesheets_validation_status"
-        ] = timesheets_overview.timesheets_validation_status(
-            year=self.year,
-            month=self.month,
-            users=visible_users,
-            cantons=(self.canton if self.canton else self.managed_cantons),
-        )
         return context
 
 
@@ -96,6 +87,25 @@ class ValidationsMonthView(ValidationsMixin, MonthArchiveView):
     @cached_property
     def existing_cantons(self):
         return super().get_queryset().values_list("canton", flat=True)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        visible_users = timesheets_overview.get_visible_users(self.request.user)
+        context[
+            "timesheets_validation_status"
+        ] = timesheets_overview.timesheets_validation_status(
+            year=self.year,
+            month=self.month,
+            users=visible_users,
+            cantons=([self.canton] if self.canton else self.managed_cantons),
+        )
+        context["nothing_to_do"] = all(
+            [
+                status is None
+                for canton, status in context["timesheets_validation_status"].items()
+            ]
+        )
+        return context
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -122,6 +132,17 @@ class ValidationUpdate(ValidationsMixin, UpdateView):
         fk = super().get_form_kwargs()
         fk["validator"] = self.request.user
         fk["urls"] = MonthlyCantonalValidationUrl.objects.all()
+        visible_users = timesheets_overview.get_visible_users(self.request.user)
+        fk[
+            "timesheets_validation_status"
+        ] = timesheets_overview.timesheets_validation_status(
+            year=self.year,
+            month=self.month,
+            users=visible_users,
+            cantons=[self.canton],
+        )[
+            self.canton
+        ]
         return fk
 
     def get_initial(self):

@@ -27,7 +27,10 @@
         </ul>
     </nav>
 
-    {% for mcv in mcvs %}
+    {% if nothing_to_do %}
+      <p>{% trans "Rien à valider"%}</p>
+    {% else %}
+      {% for mcv in mcvs %}
         {% if forloop.first %}<table class="table">
         <tr>
             <th>{% trans "Canton" %}</th>
@@ -42,11 +45,11 @@
             <td>{{ mcv.canton|canton_abbr:False }}</td>
             <td align="center" class="text-center">
                 {% for canton, status in timesheets_validation_status.items %}
-                {% if canton == mcv.canton and status is not None %}
-                  <a href="{% url 'salary:timesheets-overview' year=month.year%}?canton={{ canton }}">
-                    {% if status %}{% include "ok.html" %}{% else %}{% include "ko.html" %}{% endif %}
-                  </a>
-                {% endif %}
+                  {% if canton == mcv.canton and status is not None %}
+                    <a href="{% url 'salary:timesheets-overview' year=month.year %}?canton={{ canton }}">
+                      {% if status %}{% include "ok.html" %}{% else %}{% include "ko.html" %}{% endif %}
+                    </a>
+                  {% endif %}
                 {% endfor %}
             </td>
             {% for mcv_url in mcv_urls %}
@@ -60,10 +63,15 @@
               {% if mcv.validated %}
                 {% include "ok.html" %} {% blocktrans with by=mcv.validated_by.get_full_name at=mcv.validated_at %}par {{ by }}, le {{ at }}{% endblocktrans %}
               {% else %}
-                <a class="btn btn-xs btn-primary" href="{% url 'salary:validation-update' year=mcv.date.year month=mcv.date.month canton=mcv.canton %}" title="{% trans "Éditer" %}"><span class="glyphicon glyphicon-pencil"></span></a>
+               {% for canton, status in timesheets_validation_status.items %}
+                  {% if canton == mcv.canton and status is not None %}
+                    <a class="btn btn-xs btn-primary" href="{% url 'salary:validation-update' year=mcv.date.year month=mcv.date.month canton=mcv.canton %}" title="{% trans "Éditer" %}"><span class="glyphicon glyphicon-pencil"></span></a>
+                  {% endif %}
+                {% endfor %}
               {% endif %}
             </td>
         </tr>
         {% if forloop.last %}</table>{% endif %}
-    {% endfor %}
+      {% endfor %}
+    {% endif %}
 {% endblock %}
