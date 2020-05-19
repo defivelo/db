@@ -30,6 +30,7 @@ from apps.common import DV_STATES
 from apps.user import FORMATION_M1, FORMATION_M2
 from apps.user.models import (
     BAGSTATUS_LOAN,
+    BAGSTATUS_NONE,
     BAGSTATUS_PAID,
     STD_PROFILE_FIELDS,
     USERSTATUS_ACTIVE,
@@ -38,6 +39,7 @@ from apps.user.models import (
 from apps.user.tests.factories import UserFactory
 from defivelo.tests.utils import (
     AuthClient,
+    CoordinatorAuthClient,
     PowerUserAuthClient,
     StateManagerAuthClient,
     SuperUserAuthClient,
@@ -376,6 +378,129 @@ class PowerUserTest(ProfileTestCase):
             url = "%s?q=test" % reverse("user-%s-ac" % al)
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200, url)
+
+
+class CoordinatorUserTest(ProfileTestCase):
+    def setUp(self):
+        super().setUp()
+        self.client = CoordinatorAuthClient()
+        for user in self.users:
+            user.profile.save()
+
+    def test_my_allowances(self):
+        for symbolicurl in myurlsforall:
+            for exportformat in ["csv", "ods", "xls"]:
+                url = tryurl(symbolicurl, self.client.user, exportformat)
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 200, url)
+
+    def test_my_profile_access(self):
+        # Pre-update profile and user
+        self.client.user.profile.formation = FORMATION_M1
+        self.client.user.profile.affiliation_canton = "GE"
+        self.client.user.profile.bagstatus = BAGSTATUS_LOAN
+        self.client.user.profile.status = USERSTATUS_ACTIVE
+        self.client.user.profile.language = "fr"
+        self.client.user.profile.cresus_employee_number = "poor"
+        self.client.user.profile.save()
+        url = reverse("user-update", kwargs={"pk": self.client.user.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200, url)
+
+        initial = self.getprofileinitial(self.client.user)
+        # Test some update, that must go through
+        initial["first_name"] = "newfirstname"
+        initial["activity_cantons"] = [
+            "JU",
+            "GE",
+            "VD",
+        ]
+        initial["language"] = "de"
+        initial["languages_challenges"] = [
+            "de",
+            "fr",
+        ]
+        initial["status"] = USERSTATUS_INACTIVE
+        initial["bank_name"] = "Banque Alternative Suisse, succursale de Lausanne"
+
+        # And some that mustn't
+        initial["formation"] = FORMATION_M2
+        initial["affiliation_canton"] = "VD"
+        initial["bagstatus"] = BAGSTATUS_PAID
+        initial["cresus_employee_number"] = "I want to be rich"
+
+        response = self.client.post(url, initial)
+        self.assertEqual(response.status_code, 302, url)
+
+        # Get our user from DB
+        me = get_user_model().objects.get(pk=self.client.user.pk)
+
+        # Updated
+        self.assertEqual(me.first_name, "newfirstname")
+        self.assertEqual(me.profile.activity_cantons, ["JU", "VD",])
+        self.assertEqual(me.profile.language, "de")
+        self.assertEqual(me.profile.languages_challenges, ["fr",])
+        self.assertEqual(me.profile.status, USERSTATUS_INACTIVE)
+        self.assertEqual(
+            me.profile.bank_name, "Banque Alternative Suisse, succursale de Lausanne"
+        )
+
+        # Not updated
+        self.assertEqual(me.profile.cresus_employee_number, "poor")
+        self.assertEqual(me.profile.formation, FORMATION_M1)
+        self.assertEqual(me.profile.bagstatus, BAGSTATUS_LOAN)
+        self.assertEqual(me.profile.affiliation_canton, "GE")
+
+    def test_my_simple_profile_access(self):
+        # Pre-update profile and user
+        self.client.user.profile.status = USERSTATUS_ACTIVE
+        self.client.user.profile.language = "fr"
+        self.client.user.profile.save()
+        url = reverse("user-update", kwargs={"pk": self.client.user.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200, url)
+
+        initial = self.getprofileinitial(self.client.user)
+        # Test some update, that must go through
+        initial["first_name"] = "newfirstname"
+        initial["activity_cantons"] = [
+            "JU",
+            "GE",
+            "VD",
+        ]
+        initial["language"] = "de"
+        initial["languages_challenges"] = [
+            "de",
+            "fr",
+        ]
+        initial["status"] = USERSTATUS_INACTIVE
+        initial["bank_name"] = "Banque Alternative Suisse, succursale de Lausanne"
+
+        # And some that mustn't
+        initial["formation"] = FORMATION_M2
+        initial["affiliation_canton"] = "VD"
+        initial["bagstatus"] = BAGSTATUS_PAID
+        initial["cresus_employee_number"] = "I want to be rich"
+
+        response = self.client.post(url, initial)
+        self.assertEqual(response.status_code, 302, url)
+
+        # Get our user from DB
+        me = get_user_model().objects.get(pk=self.client.user.pk)
+
+        # Updated
+        self.assertEqual(me.first_name, "newfirstname")
+        self.assertEqual(me.profile.language, "de")
+
+        # Not updated
+        self.assertEqual(me.profile.bank_name, "")
+        self.assertEqual(me.profile.languages_challenges, [])
+        self.assertEqual(me.profile.activity_cantons, [])
+        self.assertEqual(me.profile.cresus_employee_number, "")
+        self.assertEqual(me.profile.status, USERSTATUS_ACTIVE)
+        self.assertEqual(me.profile.formation, "")
+        self.assertEqual(me.profile.bagstatus, BAGSTATUS_NONE)
+        self.assertEqual(me.profile.affiliation_canton, "")
 
 
 class StateManagerUserTest(ProfileTestCase):

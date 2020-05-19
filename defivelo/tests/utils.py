@@ -76,6 +76,10 @@ class PowerUserAuthClient(AuthClient):
     role = "power_user"
 
 
+class CoordinatorAuthClient(AuthClient):
+    role = "coordinator"
+
+
 class SuperUserAuthClient(AuthClient):
     def __init__(self):
         super(SuperUserAuthClient, self).__init__()
