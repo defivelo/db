@@ -1,14 +1,10 @@
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.db import models
-from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from parler.models import TranslatableModel, TranslatedFields
 
 from apps.common import DV_STATE_CHOICES
-
-from .. import timesheets_overview
 
 
 class MonthlyCantonalValidationUrl(TranslatableModel):
