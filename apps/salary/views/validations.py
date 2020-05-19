@@ -20,8 +20,9 @@ from datetime import date
 
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
+from django.utils.dates import MONTHS_3
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic.dates import MonthArchiveView
+from django.views.generic.dates import MonthArchiveView, YearArchiveView
 from django.views.generic.edit import UpdateView
 
 from rolepermissions.mixins import HasPermissionsMixin
@@ -42,9 +43,13 @@ class ValidationsMixin(HasPermissionsMixin, MenuView):
 
     def dispatch(self, request, *args, **kwargs):
         self.year = int(kwargs.pop("year"))
-        self.month = int(kwargs.pop("month"))
+        try:
+            self.month = int(kwargs.pop("month"))
+        except KeyError:
+            self.month = None
         try:
             self.managed_cantons = user_cantons(request.user)
+            self.managed_cantons.sort()
         except LookupError:
             self.managed_cantons = []
         self.canton = kwargs.get("canton", None)
@@ -63,25 +68,60 @@ class ValidationsMixin(HasPermissionsMixin, MenuView):
         Get the list of validations
         … but also make sure all the validations exist for that month and my cantons
         """
+        kwargs = {"date__year": self.year, "canton__in": self.managed_cantons}
+        if self.month:
+            kwargs["date__month"] = self.month
         return (
-            super()
-            .get_queryset()
-            .filter(
-                date__year=self.year,
-                date__month=self.month,
-                canton__in=self.managed_cantons,
-            )
-            .order_by("canton")
+            super().get_queryset().filter(**kwargs).order_by("canton", "date")
         ).prefetch_related("validated_urls")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Add our menu_category context
         context["menu_category"] = "finance"
+        context["timesheets_statuses"] = self.timesheets_statuses
         context[
             "mcv_urls"
         ] = MonthlyCantonalValidationUrl.objects.all().prefetch_related("translations")
         return context
+
+
+class ValidationsYearView(ValidationsMixin, YearArchiveView):
+    allow_future = True
+    allow_empty = True
+    make_object_list = True
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Swap the array to get a canton: dict entry with 12 entries
+        context["timesheets_statuses_by_canton"] = {}
+        for canton in self.managed_cantons:
+            context["timesheets_statuses_by_canton"][canton] = {}
+            for m in MONTHS_3.keys():
+                context["timesheets_statuses_by_canton"][canton][m] = context[
+                    "timesheets_statuses"
+                ][m].get(canton, None)
+        context["months"] = MONTHS_3
+        return context
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        for month in MONTHS_3.keys():
+            existing_cantons = qs.filter(date__month=month).values_list(
+                "canton", flat=True
+            )
+            missing_cantons = [
+                c for c in self.managed_cantons if c not in existing_cantons
+            ]
+            # Create the MCVs for the cantons' we're about to see (if needed)
+            MonthlyCantonalValidation.objects.bulk_create(
+                [
+                    MonthlyCantonalValidation(canton=c, date=date(self.year, month, 1))
+                    for c in missing_cantons
+                ]
+            )
+        # Return the qs, that'll get the newly created ones.
+        return qs
 
 
 class ValidationsMonthView(ValidationsMixin, MonthArchiveView):
@@ -90,26 +130,10 @@ class ValidationsMonthView(ValidationsMixin, MonthArchiveView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["timesheets_statuses"] = self.timesheets_statuses
         context["nothing_to_do"] = all(
             [status is None for _, status in context["timesheets_statuses"].items()]
         )
-
         return context
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        existing_cantons = qs.values_list("canton", flat=True)
-        missing_cantons = [c for c in self.managed_cantons if c not in existing_cantons]
-        # Create the MCVs for the cantons' we're about to see (if needed)
-        MonthlyCantonalValidation.objects.bulk_create(
-            [
-                MonthlyCantonalValidation(canton=c, date=date(self.year, self.month, 1))
-                for c in missing_cantons
-            ]
-        )
-        # Return the qs, that'll get the newly created ones.
-        return qs
 
 
 class ValidationUpdate(ValidationsMixin, UpdateView):

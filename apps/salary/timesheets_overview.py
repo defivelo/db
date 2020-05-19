@@ -20,22 +20,19 @@ class TimesheetStatus(enum.IntFlag):
         return str(self.value)
 
 
-def timesheets_validation_status(year, month, cantons=DV_STATES):
+def timesheets_validation_status(year, month=None, cantons=DV_STATES):
     """
     Get timesheets validation status matrix, a {'canton': status} dict
+    if month is None, calculate for the full year
     The status is:
     - True for "all timesheets validated"
     - False for "missing timesheet validations"
     - None for "No sessions in that year-month, for that canton
     """
-    sessions = Session.objects.filter(
-        day__year=year, day__month=month
-    ).prefetch_related(
-        "qualifications",
-        "qualifications__leader",
-        "qualifications__helpers",
-        "qualifications__actor",
-    )
+    months = range(1, 13)
+    if month:
+        months = [month]
+
     user_cache_key = "-".join(cantons)
     if user_cache_key not in timesheets_validation_status.all_users:
         timesheets_validation_status.all_users[user_cache_key] = (
@@ -45,30 +42,49 @@ def timesheets_validation_status(year, month, cantons=DV_STATES):
         )
 
     users = timesheets_validation_status.all_users[user_cache_key]
-    timesheets = get_timesheets(year=year, month=month, users=users)
 
-    sessions_by_user = regroup_sessions_by_user(sessions, users)
-    timesheets_by_user = regroup_timesheets_by_user(timesheets)
-    timesheets_statuses_by_canton = {
-        canton: [
-            get_timesheets_status_flags_for_user(
-                user=user,
-                sessions=sessions_by_user[user.pk],
-                timesheets=timesheets_by_user.get(user.pk, set()),
-                month_range=[month],
-            )[0]
-            for user in users
-            if user.profile.affiliation_canton == canton and user.pk in sessions_by_user
-        ]
-        for canton in cantons
-    }
-    are_all_timesheets_validated_in_month = {
-        canton: all([flag == TimesheetStatus.TIMESHEET_VALIDATED for flag in all_flags])
-        if len(all_flags)
-        else None
-        for canton, all_flags in timesheets_statuses_by_canton.items()
-    }
-    return are_all_timesheets_validated_in_month
+    statuses = {}
+
+    for month_in_loop in months:
+        sessions = Session.objects.filter(
+            day__year=year, day__month=month_in_loop
+        ).prefetch_related(
+            "qualifications",
+            "qualifications__leader",
+            "qualifications__helpers",
+            "qualifications__actor",
+        )
+        timesheets = get_timesheets(year=year, month=month_in_loop, users=users)
+
+        sessions_by_user = regroup_sessions_by_user(sessions, users)
+        timesheets_by_user = regroup_timesheets_by_user(timesheets)
+        timesheets_statuses_by_canton = {
+            canton: [
+                get_timesheets_status_flags_for_user(
+                    user=user,
+                    sessions=sessions_by_user[user.pk],
+                    timesheets=timesheets_by_user.get(user.pk, set()),
+                    month_range=[month_in_loop],
+                )[0]
+                for user in users
+                if user.profile.affiliation_canton == canton
+                and user.pk in sessions_by_user
+            ]
+            for canton in cantons
+        }
+        are_all_timesheets_validated_in_month = {
+            canton: all(
+                [flag == TimesheetStatus.TIMESHEET_VALIDATED for flag in all_flags]
+            )
+            if len(all_flags)
+            else None
+            for canton, all_flags in timesheets_statuses_by_canton.items()
+        }
+        statuses[month_in_loop] = are_all_timesheets_validated_in_month
+
+    if month:
+        return statuses[month_in_loop]
+    return statuses
 
 
 timesheets_validation_status.all_users = {}

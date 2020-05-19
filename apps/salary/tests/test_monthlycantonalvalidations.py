@@ -39,6 +39,10 @@ class AuthUserTest(TestCase):
         # Final URL is forbidden
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 403, url)
+        url = reverse("salary:validations-year", kwargs={"year": today.year},)
+        # Final URL is forbidden
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 403, url)
 
     def test_no_access_to_mcvs_updates(self):
         today = datetime.datetime.today()
@@ -65,6 +69,11 @@ class StateManagerUserTest(TestCase):
             "salary:validations-month",
             kwargs={"month": today.month, "year": today.year},
         )
+        # Final URL is accessible
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200, url)
+
+        url = reverse("salary:validations-year", kwargs={"year": today.year},)
         # Final URL is accessible
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200, url)
@@ -164,6 +173,11 @@ class PowerUserTest(TestCase):
             "salary:validations-month",
             kwargs={"month": today.month, "year": today.year},
         )
+        # Final URL is accessible
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200, url)
+
+        url = reverse("salary:validations-year", kwargs={"year": today.year},)
         # Final URL is accessible
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200, url)

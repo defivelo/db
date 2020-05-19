@@ -94,7 +94,7 @@
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Finances" %}<span class="caret"></span></a>
                       <ul class="dropdown-menu">
                         <li{% if 'validations' in menu_category  %} class="active" {% endif %}>
-                         <a href="{% url 'salary:validations-month' year=year month=now|date:'m' %}">{% trans "Validations mensuelles" %}</a>
+                         <a href="{% url 'salary:validations-year' year=year %}">{% trans "Validations mensuelles" %}</a>
                         </li>
               {% endif %}
                         <li{% if 'timesheet' in menu_category  %} class="active" {% endif %}>
