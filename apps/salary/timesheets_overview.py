@@ -36,11 +36,15 @@ def timesheets_validation_status(year, month, cantons=DV_STATES):
         "qualifications__helpers",
         "qualifications__actor",
     )
-    users = (
-        get_user_model()
-        .objects.filter(profile__affiliation_canton__in=cantons)
-        .prefetch_related("profile")
-    )
+    user_cache_key = "-".join(cantons)
+    if user_cache_key not in timesheets_validation_status.all_users:
+        timesheets_validation_status.all_users[user_cache_key] = (
+            get_user_model()
+            .objects.filter(profile__affiliation_canton__in=cantons)
+            .prefetch_related("profile")
+        )
+
+    users = timesheets_validation_status.all_users[user_cache_key]
     timesheets = get_timesheets(year=year, month=month, users=users)
 
     sessions_by_user = regroup_sessions_by_user(sessions, users)
@@ -65,6 +69,9 @@ def timesheets_validation_status(year, month, cantons=DV_STATES):
         for canton, all_flags in timesheets_statuses_by_canton.items()
     }
     return are_all_timesheets_validated_in_month
+
+
+timesheets_validation_status.all_users = {}
 
 
 def get_timesheets_status_matrix(year, users):
