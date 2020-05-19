@@ -40,9 +40,13 @@
         {% endif %}
         <tr>
             <td>{{ mcv.canton|canton_abbr:False }}</td>
-            <td>
+            <td align="center" class="text-center">
                 {% for canton, status in timesheets_validation_status.items %}
-                {% if canton == mcv.canton %}{% if status is True %}{% include "ok.html" %}{% elif status is False %}{% include "ko.html" %}{% endif %}{% endif %}
+                {% if canton == mcv.canton and status is not None %}
+                  <a href="{% url 'salary:timesheets-overview' year=month.year%}?canton={{ canton }}">
+                    {% if status %}{% include "ok.html" %}{% else %}{% include "ko.html" %}{% endif %}
+                  </a>
+                {% endif %}
                 {% endfor %}
             </td>
             {% for mcv_url in mcv_urls %}
