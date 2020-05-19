@@ -31,6 +31,7 @@
         {% if forloop.first %}<table class="table">
         <tr>
             <th>{% trans "Canton" %}</th>
+            <th>{% trans "Contrôle des heures effectué" %}</th>
             {% for mcv_url in mcv_urls %}
               <th>{{ mcv_url.name }}</th>
             {% endfor %}
@@ -39,6 +40,11 @@
         {% endif %}
         <tr>
             <td>{{ mcv.canton|canton_abbr:False }}</td>
+            <td>
+                {% for canton, status in timesheets_validation_status.items %}
+                {% if canton == mcv.canton %}{% if status is True %}{% include "ok.html" %}{% elif status is False %}{% include "ko.html" %}{% endif %}{% endif %}
+                {% endfor %}
+            </td>
             {% for mcv_url in mcv_urls %}
               <td>
                 {% for validated_url in mcv.validated_urls.all %}

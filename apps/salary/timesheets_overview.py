@@ -6,6 +6,7 @@ from django.db.models import Q
 from rolepermissions.checkers import has_permission
 
 from apps.challenge.models.session import Session
+from apps.common import DV_STATES
 from apps.salary.models import Timesheet
 from defivelo.roles import user_cantons
 
@@ -17,6 +18,39 @@ class TimesheetStatus(enum.IntFlag):
 
     def __str__(self):
         return str(self.value)
+
+
+def timesheets_validation_status(year, month, users, cantons=DV_STATES):
+    """
+    Insert a meaningful comment
+    """
+    sessions = Session.objects.filter(
+        day__year=year, day__month=month
+    ).prefetch_related("qualifications", "qualifications__helpers")
+    timesheets = get_timesheets(year=year, month=month, users=users)
+
+    sessions_by_user = regroup_sessions_by_user(sessions, users)
+    timesheets_by_user = regroup_timesheets_by_user(timesheets)
+    timesheets_statuses_by_canton = {
+        canton: [
+            get_timesheets_status_flags_for_user(
+                user=user,
+                sessions=sessions_by_user[user.pk],
+                timesheets=timesheets_by_user.get(user.pk, set()),
+                month_range=[month],
+            )[0]
+            for user in users
+            if user.profile.affiliation_canton == canton and user.pk in sessions_by_user
+        ]
+        for canton in cantons
+    }
+    are_all_timesheets_validated_in_month = {
+        canton: all([flag == TimesheetStatus.TIMESHEET_VALIDATED for flag in all_flags])
+        if len(all_flags)
+        else None
+        for canton, all_flags in timesheets_statuses_by_canton.items()
+    }
+    return are_all_timesheets_validated_in_month
 
 
 def get_timesheets_status_matrix(year, users):
@@ -45,10 +79,12 @@ def get_timesheets_status_matrix(year, users):
     return timesheets_status_matrix
 
 
-def get_timesheets_status_flags_for_user(user, sessions, timesheets):
+def get_timesheets_status_flags_for_user(
+    user, sessions, timesheets, month_range=range(1, 13)
+):
     """
     Return a list of `TimesheetStatus` for the given `user`, `sessions` and
-    `timesheets`. The list always contains 12 elements, one for each month.
+    `timesheets`. The list always contains 12 elements, one for each month (or for a selection of months)
     """
     months_with_missing_timesheets = get_months_without_timesheets(sessions, timesheets)
     timesheets_by_month = regroup_timesheets_by_month(timesheets)
@@ -67,7 +103,7 @@ def get_timesheets_status_flags_for_user(user, sessions, timesheets):
 
         return flags
 
-    return [_get_flags(month) for month in range(1, 13)]
+    return [_get_flags(month) for month in month_range]
 
 
 def regroup_sessions_by_user(sessions, users):
@@ -131,11 +167,14 @@ def get_months_without_timesheets(sessions, timesheets):
     return {date.month for date in days_with_missing_timesheets}
 
 
-def get_timesheets(year, users):
+def get_timesheets(year, users, month=None):
     """
-    Return the timesheets of the given `users` for the given `year`.
+    Return the timesheets of the given `users` for the given `year` (and eventually `month`).
     """
-    return Timesheet.objects.filter(date__year=year, user__in=users)
+    kwargs = {"date__year": year, "user__in": users}
+    if month:
+        kwargs["date__month"] = month
+    return Timesheet.objects.filter(**kwargs)
 
 
 def get_timesheets_amount_by_month(year, users):

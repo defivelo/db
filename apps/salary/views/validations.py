@@ -30,6 +30,7 @@ from rolepermissions.mixins import HasPermissionsMixin
 from defivelo.roles import user_cantons
 from defivelo.views import MenuView
 
+from .. import timesheets_overview
 from ..forms import MonthlyCantonalValidationForm
 from ..models import MonthlyCantonalValidation, MonthlyCantonalValidationUrl
 
@@ -74,6 +75,15 @@ class ValidationsMixin(HasPermissionsMixin, MenuView):
         # Add our menu_category context
         context["menu_category"] = "finance"
         context["mcv_urls"] = MonthlyCantonalValidationUrl.objects.all()
+        visible_users = timesheets_overview.get_visible_users(self.request.user)
+        context[
+            "timesheets_validation_status"
+        ] = timesheets_overview.timesheets_validation_status(
+            year=self.year,
+            month=self.month,
+            users=visible_users,
+            cantons=(self.canton if self.canton else self.managed_cantons),
+        )
         return context
 
 
