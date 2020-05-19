@@ -20,6 +20,7 @@ from datetime import date
 
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
+from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.dates import MonthArchiveView
 from django.views.generic.edit import UpdateView
@@ -80,12 +81,14 @@ class ValidationsMonthView(ValidationsMixin, MonthArchiveView):
     allow_future = True
     allow_empty = True
 
+    @cached_property
+    def existing_cantons(self):
+        return super().get_queryset().values_list("canton", flat=True)
+
     def get_queryset(self):
         qs = super().get_queryset()
         missing_cantons = [
-            c
-            for c in self.managed_cantons
-            if c not in qs.values_list("canton", flat=True)
+            c for c in self.managed_cantons if c not in self.existing_cantons
         ]
         # Create the MCVs for the cantons' we're about to see (if needed)
         MonthlyCantonalValidation.objects.bulk_create(
