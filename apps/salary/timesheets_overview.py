@@ -212,7 +212,7 @@ def get_visible_users(user):
     else:
         qs = User.objects.filter(pk=user.pk)
 
-    return qs
+    return qs.prefetch_related("profile")
 
 
 def get_users_with_missing_timesheets(year: int, month: int, users):

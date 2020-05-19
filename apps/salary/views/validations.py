@@ -68,13 +68,15 @@ class ValidationsMixin(HasPermissionsMixin, MenuView):
                 canton__in=self.managed_cantons,
             )
             .order_by("canton")
-        )
+        ).prefetch_related("validated_urls")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Add our menu_category context
         context["menu_category"] = "finance"
-        context["mcv_urls"] = MonthlyCantonalValidationUrl.objects.all()
+        context[
+            "mcv_urls"
+        ] = MonthlyCantonalValidationUrl.objects.all().prefetch_related("translations")
         visible_users = timesheets_overview.get_visible_users(self.request.user)
         context[
             "timesheets_validation_status"
