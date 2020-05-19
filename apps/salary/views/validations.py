@@ -131,13 +131,16 @@ class ValidationUpdate(ValidationsMixin, UpdateView):
     def get_object(self, queryset=None):
         """
         Extrait l'objet à partir de l'URL plutôt que du pk
+        Permet toujours une mise à jour; en créant l'objet si nécessaire
         """
-        return (
+        p, _ = (
             super()
             .get_queryset()
-            .prefetch_related("validated_urls")
-            .get(canton=self.canton, date__year=self.year, date__month=self.month)
+            .get_or_create(
+                canton=self.canton, defaults={"date": date(self.year, self.month, 1)}
+            )
         )
+        return p
 
     def get_success_url(self):
         return reverse_lazy(
