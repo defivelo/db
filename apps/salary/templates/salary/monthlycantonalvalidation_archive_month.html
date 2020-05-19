@@ -48,7 +48,7 @@
             <tr>
               <td>{{ mcv.canton|canton_abbr:False }}</td>
               <td align="center" class="text-center">
-                <a href="{% url 'salary:timesheets-overview' year=month.year %}?canton={{ canton }}">
+                <a href="{% url 'salary:timesheets-overview' year=month.year %}?canton={{ mcv.canton }}">
                   {% if mcv|get_timesheet_status_for_canton:timesheets_statuses %}{% include "ok.html" %}{% else %}{% include "ko.html" %}{% endif %}
                 </a>
               </td>

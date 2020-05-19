@@ -92,8 +92,9 @@ class ValidationsMonthView(ValidationsMixin, MonthArchiveView):
         context = super().get_context_data(**kwargs)
         context["timesheets_statuses"] = self.timesheets_statuses
         context["nothing_to_do"] = all(
-            [status is None for status in context["timesheets_statuses"]]
+            [status is None for _, status in context["timesheets_statuses"].items()]
         )
+
         return context
 
     def get_queryset(self):
