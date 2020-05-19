@@ -172,13 +172,20 @@ class UserProfileForm(SimpleUserProfileForm):
             if field in self.fields:
                 self.fields[field].required = True
 
-        if cantons:
+        if cantons and "affiliation_canton" in self.fields:
+            # if we edit a user from a other canton we cannot move him
+            if (
+                "affiliation_canton" in self.initial
+                and self.initial["affiliation_canton"]
+                and self.initial["affiliation_canton"] not in cantons
+            ):
+                self.fields["affiliation_canton"].disabled = True
             # Only permit edition within the allowed cantons
             choices = self.fields["affiliation_canton"].choices
             choices = (
                 (k, v)
                 for (k, v) in choices
-                if k in cantons or (not affiliation_canton_required and k == "")
+                if k in cantons or k == "" or k == self.initial["affiliation_canton"]
             )
             self.fields["affiliation_canton"].required = affiliation_canton_required
             self.fields["affiliation_canton"].choices = choices
