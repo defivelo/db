@@ -4,9 +4,8 @@ from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
 from parler.admin import TranslatableAdmin
-from simple_history.admin import SimpleHistoryAdmin
 
-from .models import MonthlyCantonalValidation, MonthlyCantonalValidationUrl
+from .models import MonthlyCantonalValidationUrl
 
 
 class MonthlyCantonalValidationUrlAdmin(TranslatableAdmin):
@@ -27,9 +26,4 @@ class MonthlyCantonalValidationUrlAdmin(TranslatableAdmin):
             return mark_safe('<img src="%s" />' % static("admin/img/icon-yes.svg"))
 
 
-class MonthlyCantonalValidationAdmin(SimpleHistoryAdmin):
-    pass
-
-
-admin.site.register(MonthlyCantonalValidation, MonthlyCantonalValidationAdmin)
 admin.site.register(MonthlyCantonalValidationUrl, MonthlyCantonalValidationUrlAdmin)

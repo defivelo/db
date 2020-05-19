@@ -179,10 +179,10 @@ class MonthlyCantonalValidationForm(forms.ModelForm):
         model = MonthlyCantonalValidation
         fields = ["validated"]
 
-    def __init__(self, validator, urls, timesheets_validation_status, *args, **kwargs):
+    def __init__(self, validator, urls, timesheets_statuses, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.validator = validator
-        self.timesheets_validation_status = timesheets_validation_status
+        self.timesheets_are_validated = timesheets_statuses[self.instance.canton]
         # Add the urls as checkboxes, but first; so:
         # Store away the fields
         fields = self.fields.copy()
@@ -202,7 +202,7 @@ class MonthlyCantonalValidationForm(forms.ModelForm):
                     text=_("Contrôle des heures"),
                 )
             ),
-            initial=self.timesheets_validation_status,
+            initial=self.timesheets_are_validated,
             disabled=True,
         )
         # urls are MonthlyCantonalValidationUrl
@@ -242,7 +242,7 @@ class MonthlyCantonalValidationForm(forms.ModelForm):
                             ),
                         )
                         all_urls_ticked = False
-            if not self.timesheets_validation_status:
+            if not self.timesheets_are_validated:
                 self.add_error(
                     "timesheets_checked",
                     ValidationError(_("Les heures doivent être vérifiées")),

@@ -20,13 +20,27 @@ class TimesheetStatus(enum.IntFlag):
         return str(self.value)
 
 
-def timesheets_validation_status(year, month, users, cantons=DV_STATES):
+def timesheets_validation_status(year, month, cantons=DV_STATES):
     """
-    Insert a meaningful comment
+    Get timesheets validation status matrix, a {'canton': status} dict
+    The status is:
+    - True for "all timesheets validated"
+    - False for "missing timesheet validations"
+    - None for "No sessions in that year-month, for that canton
     """
     sessions = Session.objects.filter(
         day__year=year, day__month=month
-    ).prefetch_related("qualifications", "qualifications__helpers")
+    ).prefetch_related(
+        "qualifications",
+        "qualifications__leader",
+        "qualifications__helpers",
+        "qualifications__actor",
+    )
+    users = (
+        get_user_model()
+        .objects.filter(profile__affiliation_canton__in=cantons)
+        .prefetch_related("profile")
+    )
     timesheets = get_timesheets(year=year, month=month, users=users)
 
     sessions_by_user = regroup_sessions_by_user(sessions, users)

@@ -20,7 +20,6 @@ from datetime import date
 
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
-from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.dates import MonthArchiveView
 from django.views.generic.edit import UpdateView
@@ -52,6 +51,11 @@ class ValidationsMixin(HasPermissionsMixin, MenuView):
         if self.canton and self.canton not in self.managed_cantons:
             # Vue individuelle, mais pas dans nos cantons
             raise PermissionDenied
+        self.timesheets_statuses = timesheets_overview.timesheets_validation_status(
+            year=self.year,
+            month=self.month,
+            cantons=([self.canton] if self.canton else self.managed_cantons),
+        )
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -84,34 +88,18 @@ class ValidationsMonthView(ValidationsMixin, MonthArchiveView):
     allow_future = True
     allow_empty = True
 
-    @cached_property
-    def existing_cantons(self):
-        return super().get_queryset().values_list("canton", flat=True)
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        visible_users = timesheets_overview.get_visible_users(self.request.user)
-        context[
-            "timesheets_validation_status"
-        ] = timesheets_overview.timesheets_validation_status(
-            year=self.year,
-            month=self.month,
-            users=visible_users,
-            cantons=([self.canton] if self.canton else self.managed_cantons),
-        )
+        context["timesheets_statuses"] = self.timesheets_statuses
         context["nothing_to_do"] = all(
-            [
-                status is None
-                for canton, status in context["timesheets_validation_status"].items()
-            ]
+            [status is None for status in context["timesheets_statuses"]]
         )
         return context
 
     def get_queryset(self):
         qs = super().get_queryset()
-        missing_cantons = [
-            c for c in self.managed_cantons if c not in self.existing_cantons
-        ]
+        existing_cantons = qs.values_list("canton", flat=True)
+        missing_cantons = [c for c in self.managed_cantons if c not in existing_cantons]
         # Create the MCVs for the cantons' we're about to see (if needed)
         MonthlyCantonalValidation.objects.bulk_create(
             [
@@ -132,17 +120,7 @@ class ValidationUpdate(ValidationsMixin, UpdateView):
         fk = super().get_form_kwargs()
         fk["validator"] = self.request.user
         fk["urls"] = MonthlyCantonalValidationUrl.objects.all()
-        visible_users = timesheets_overview.get_visible_users(self.request.user)
-        fk[
-            "timesheets_validation_status"
-        ] = timesheets_overview.timesheets_validation_status(
-            year=self.year,
-            month=self.month,
-            users=visible_users,
-            cantons=[self.canton],
-        )[
-            self.canton
-        ]
+        fk["timesheets_statuses"] = self.timesheets_statuses
         return fk
 
     def get_initial(self):
@@ -153,16 +131,13 @@ class ValidationUpdate(ValidationsMixin, UpdateView):
     def get_object(self, queryset=None):
         """
         Extrait l'objet à partir de l'URL plutôt que du pk
-        Permet toujours une mise à jour; en créant l'objet si nécessaire
         """
-        p, _ = (
+        return (
             super()
             .get_queryset()
-            .get_or_create(
-                canton=self.canton, defaults={"date": date(self.year, self.month, 1)}
-            )
+            .prefetch_related("validated_urls")
+            .get(canton=self.canton, date__year=self.year, date__month=self.month)
         )
-        return p
 
     def get_success_url(self):
         return reverse_lazy(

@@ -57,6 +57,7 @@ from apps.common import (
     DV_STATES_REAL_FALLBACKS,
     STDGLYPHICON,
 )
+from apps.salary import timesheets_overview
 from apps.user import FORMATION_M1, FORMATION_M2, formation_short
 from defivelo.roles import has_permission, user_cantons
 
@@ -496,3 +497,12 @@ def add_qs(url, **kwargs):
     new_qs_encoded = urllib.parse.urlencode(new_qs)
 
     return urllib.parse.urlunparse(parsed_url._replace(query=new_qs_encoded))
+
+
+@register.filter
+def get_timesheet_status_for_canton(mcv, timesheets_status):
+    """
+    mcv is the object
+    timesheets_status is the canton's array of timesheet statuses
+    """
+    return timesheets_status[mcv.canton]
