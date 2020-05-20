@@ -73,6 +73,6 @@
     {% endif %}
 
     {% buttons %}
-        <a class="btn btn-default" href="{% url  'salary:validations-year' year=month.year %}">{{ month.year }}</a>
+      <a class="btn btn-default" href="{% url  'salary:validations-year' year=month.year %}">{% blocktrans with year=month.year %}Année {{ year }}{% endblocktrans %}</a>
     {% endbuttons %}
 {% endblock %}
