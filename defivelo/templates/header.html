@@ -60,7 +60,22 @@
                     {% endif %}
                     </ul>
             </li>
-            {% if user|can:'user_view_list' or user|can:'orga_crud' %}
+            {% if user|can:"orga_show" and user.managed_organizations.count %}
+              <li{% if 'organization' in menu_category %} class="active" {% endif %}>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                  aria-haspopup="true" aria-expanded="false">{% trans "Établissements" %}<span
+                    class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  {% if user|can:'orga_detail_all' %}
+                  <li{% if 'organization' in menu_category  %} class="active" {% endif %}><a
+                      href="{% url 'organization-list' %}">{% trans "Tous" %}</a></li>
+                    {% endif %}
+                    {% for orga in user.managed_organizations.all %}
+                    <li><a href="{% url 'organization-detail' pk=orga.pk %}">{{ orga }}</a></li>
+                    {% endfor %}
+                </ul>
+              </li>
+            {% elif user|can:'user_view_list' or user|can:'orga_crud' %}
                 <li>
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                       {% trans "Base de données" %}<span class="caret"></span>
