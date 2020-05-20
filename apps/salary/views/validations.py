@@ -19,6 +19,7 @@
 from datetime import date
 
 from django.core.exceptions import PermissionDenied
+from django.db import transaction
 from django.urls import reverse_lazy
 from django.utils.dates import MONTHS_3
 from django.utils.translation import ugettext_lazy as _
@@ -85,6 +86,31 @@ class ValidationsMixin(HasPermissionsMixin, MenuView):
         ] = MonthlyCantonalValidationUrl.objects.all().prefetch_related("translations")
         return context
 
+    def queryset_all_mcvs_in_month(self, queryset, year, month):
+        """
+        Using a given queryset, make sure that for a given year/month, all "my" cantons
+        have created MonthlyCantonalValidation objects
+        """
+        # Make sure we won't get any outsiders
+        qs = queryset.filter(canton__in=self.managed_cantons, date__year=year)
+
+        # At this point, make extra sure we have all the needed ones
+        with transaction.atomic():
+            existing_cantons = list(
+                qs.filter(date__month=month).values_list("canton", flat=True)
+            )
+            missing_cantons = [
+                c for c in self.managed_cantons if c not in existing_cantons
+            ]
+            # Create the MCVs for the cantons' we're about to see (if needed)
+            MonthlyCantonalValidation.objects.bulk_create(
+                [
+                    MonthlyCantonalValidation(canton=c, date=date(year, month, 1))
+                    for c in missing_cantons
+                ]
+            )
+        return qs
+
 
 class ValidationsYearView(ValidationsMixin, YearArchiveView):
     allow_future = True
@@ -105,21 +131,12 @@ class ValidationsYearView(ValidationsMixin, YearArchiveView):
         return context
 
     def get_queryset(self):
+        """
+        Make sure all the MonthlyCantonalValidation objects exist in this year, so in all months
+        """
         qs = super().get_queryset()
         for month in MONTHS_3.keys():
-            existing_cantons = list(
-                qs.filter(date__month=month).values_list("canton", flat=True)
-            )
-            missing_cantons = [
-                c for c in self.managed_cantons if c not in existing_cantons
-            ]
-            # Create the MCVs for the cantons' we're about to see (if needed)
-            MonthlyCantonalValidation.objects.bulk_create(
-                [
-                    MonthlyCantonalValidation(canton=c, date=date(self.year, month, 1))
-                    for c in missing_cantons
-                ]
-            )
+            qs = self.queryset_all_mcvs_in_month(qs, self.year, month)
         # Return the qs, that'll get the newly created ones.
         return qs
 
@@ -134,6 +151,14 @@ class ValidationsMonthView(ValidationsMixin, MonthArchiveView):
             [status is None for _, status in context["timesheets_statuses"].items()]
         )
         return context
+
+    def get_queryset(self):
+        """
+        Make sure all the MonthlyCantonalValidation objects exist in this month
+        """
+        return self.queryset_all_mcvs_in_month(
+            super().get_queryset(), self.year, self.month
+        )
 
 
 class ValidationUpdate(ValidationsMixin, UpdateView):
