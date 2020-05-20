@@ -107,8 +107,8 @@ class ValidationsYearView(ValidationsMixin, YearArchiveView):
     def get_queryset(self):
         qs = super().get_queryset()
         for month in MONTHS_3.keys():
-            existing_cantons = qs.filter(date__month=month).values_list(
-                "canton", flat=True
+            existing_cantons = list(
+                qs.filter(date__month=month).values_list("canton", flat=True)
             )
             missing_cantons = [
                 c for c in self.managed_cantons if c not in existing_cantons
