@@ -64,7 +64,8 @@
                     <dl class="dl-horizontal">
                         <dt>{% trans "Nom" %}</dt>
                             <dd>{{ userprofile.get_full_name }}</dd>
-                        <dt>{% trans "Adresse" %}</dt>
+                        {% if userprofile.profile.has_address %}
+                          <dt>{% trans "Adresse" %}</dt>
                             <dd>
                                 <div class="street-address">{{ userprofile.profile.address_street }} {{ userprofile.profile.address_no }}</div>
                                 <div>
@@ -73,7 +74,8 @@
                                     ({{ userprofile.profile.address_canton }})
                                     {% endif %}
                                 </div>
-                        </dd>
+                            </dd>
+                        {% endif %}
                     </dl>
                 </div>
                 <div role="tabpane" class="tab-pane" id="contacts">

@@ -385,6 +385,15 @@ class UserProfile(Address, models.Model):
     def actor(self):
         return self.actor_for.exists()
 
+    def has_address(self):
+        """
+        Whether we have any address field set
+        """
+        address_fields = [
+            f.name for f in Address._meta.get_fields() if f.name.startswith("address_")
+        ]
+        return any([getattr(self, field, False) != "" for field in address_fields])
+
     @cached_property
     def actor_inline(self):
         return " - ".join([smart_text(a) for a in self.actor_for.all()])
