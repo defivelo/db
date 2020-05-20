@@ -107,6 +107,7 @@ PERSONAL_FIELDS = [
     "language",
     "languages_challenges",
     "natel",
+    "phone",
     "birthdate",
     "address_street",
     "address_no",
@@ -182,6 +183,7 @@ class UserProfile(Address, models.Model):
     )
     social_security = models.CharField(_("N° AVS"), max_length=16, blank=True)
     natel = models.CharField(max_length=13, blank=True)
+    phone = models.CharField(_("Téléphone"), max_length=13, blank=True)
     affiliation_canton = models.CharField(
         _("Canton d'affiliation"),
         choices=DV_STATE_CHOICES_WITH_DEFAULT,
@@ -438,7 +440,7 @@ class UserProfile(Address, models.Model):
                     title = _("Chargé·e de projet")
                     icon = "bishop"
                 elif has_role(self.user, "coordinator"):
-                    title = _("Coordinateur")
+                    title = _("Coordina·teur·trice")
                     icon = "pawn"
         if title and textonly:
             return title

@@ -110,6 +110,6 @@ class Coordinator(AbstractUserRole):
 DV_AVAILABLE_ROLES = (
     (None, _("Aucun rôle")),
     ("state_manager", _("Chargé·e de projet")),
-    ("coordinator", _("Coordinateur")),
+    ("coordinator", _("Coordina·teur·trice")),
     ("power_user", _("Super-utilisa·teur·trice")),  # Bureau
 )

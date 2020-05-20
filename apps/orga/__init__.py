@@ -28,6 +28,7 @@ ORGA_FIELDS = [
     "website",
     "coordinator_fullname",
     "coordinator_email",
+    "coordinator_phone",
     "coordinator_natel",
     "status",
     "comments",

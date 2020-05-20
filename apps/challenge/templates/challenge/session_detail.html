@@ -48,6 +48,10 @@
                         <br class="hidden-print"/><span class="visible-print-inline"> |</span>
                         {{ session.orga.coordinator.profile.natel|tel_link }}
                     {% endif %}
+                    {% if session.orga.coordinator.profile.phone %}
+                        <br class="hidden-print"/><span class="visible-print-inline"> |</span>
+                        {{ session.orga.coordinator.profile.phone|tel_link }}
+                    {% endif %}
                 </small>
             {% endif %}
         </td>

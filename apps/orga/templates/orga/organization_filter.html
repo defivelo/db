@@ -61,7 +61,7 @@
             <th>{% trans "Nom" %}</th>
             <th>{% trans "Ville" %}</th>
             <th>{% trans "Canton" %}</th>
-            <th>{% trans "Coordinateur" %}</th>
+            <th>{% trans "Coordina·teur·trice" %}</th>
             <th>{% trans "Natel" %}</th>
             <th>{% trans "Email" %}</th>
             <th>{# Boutons #}</th>
@@ -85,7 +85,7 @@
                 {% endif %}</td>
             <td>{% if orga.coordinator.email %}
                 <a class="email"
-                  href="mailto:{{ orga.coordinator.mailtolink|urlencode }}">{{ orga.coordinator.email }}</a>
+                  href="mailto:{{ orga.coordinator.profile.mailtolink|urlencode }}">{{ orga.coordinator.email }}</a>
                 {% endif %}</td>
             <td>
                 {% if request.user|can:'orga_crud' and request.user|inusercantons:orga.address_canton %}

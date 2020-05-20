@@ -49,7 +49,7 @@ class OrganizationForm(forms.ModelForm):
     address_zip = CHZipCodeField(label=_("NPA"), max_length=4, required=False)
 
     coordinator = UserAutoComplete(
-        label=_("Coordinateur"),
+        label=_("Coordina·teur·trice"),
         queryset=(
             get_user_model().objects.exclude(profile__status=USERSTATUS_DELETED)
         ).filter(groups__name="coordinator"),

@@ -209,6 +209,8 @@ class OrgaStateManagerUserTest(TestCase):
         initial["address_canton"] = self.foreignorga.address_canton
 
         response = self.client.post(url, initial)
+        # Code 302 because silent update failed
+        self.assertEqual(response.status_code, 302, url)
         # Check update failed
         neworga = Organization.objects.get(pk=self.myorga.pk)
         self.assertEqual(neworga.address_canton, self.myorga.address_canton)

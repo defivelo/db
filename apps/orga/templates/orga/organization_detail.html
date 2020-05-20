@@ -36,18 +36,22 @@
                         <dd>{{ organization.address_canton|canton_abbr:False }}</dd>
                 {% endif %}
                 {% if organization.coordinator.get_full_name %}
-                    <dt>{% trans "Coordinateur" %}</dt>
+                    <dt>{% trans "Coordina·teur·trice" %}</dt>
                         <dd>{{ organization.coordinator.get_full_name }}</dd>
                 {% endif %}
                 {% if organization.coordinator.email %}
                     <dt>{% trans "Courriel" %}</dt>
                         <dd><a class="email"
-                            href="mailto:{{ organization.coordinator.mailtolink|urlencode }}">{{ organization.coordinator.email }}</a>
+                            href="mailto:{{ organization.coordinator.profile.mailtolink|urlencode }}">{{ organization.coordinator.email }}</a>
                         </dd>
                 {% endif %}
                 {% if organization.coordinator.profile.natel %}
                     <dt>{% trans "Natel" %}</dt>
                         <dd>{{ organization.coordinator.profile.natel|tel_link }}</a></dd>
+                {% endif %}
+                {% if organization.coordinator.profile.phone %}
+                    <dt>{% trans "Téléphone" %}</dt>
+                        <dd>{{ organization.coordinator.profile.phone|tel_link }}</a></dd>
                 {% endif %}
                 {% if organization.status > 0 %}
                 <dt>{% trans "État" %}</dt>

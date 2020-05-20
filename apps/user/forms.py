@@ -47,7 +47,7 @@ class SimpleUserProfileForm(forms.ModelForm):
         allow_email = kwargs.pop("allow_email", False)
         kwargs.pop("affiliation_canton_required", None)
         kwargs.pop("cantons", None)
-        profile_fields = ["natel", "language", "comments"]
+        profile_fields = ["natel", "phone", "language", "comments"]
         if kwargs.pop("affiliation_canton", False):
             profile_fields.append("activity_cantons")
             profile_fields.append("affiliation_canton")
@@ -59,6 +59,7 @@ class SimpleUserProfileForm(forms.ModelForm):
         # Some manual fixes lost by importing UserProfile
         for fieldname, fieldclass in {
             "natel": CHPhoneNumberField(required=False),
+            "phone": CHPhoneNumberField(required=False),
         }.items():
             label = self.fields[fieldname].label
             self.fields[fieldname] = fieldclass
@@ -132,15 +133,14 @@ class UserProfileForm(SimpleUserProfileForm):
         affiliation_canton_required = kwargs.pop("affiliation_canton_required", True)
         cantons = kwargs.pop("cantons", None)
         super().__init__(*args, **kwargs)
-
         # Import all generated fields from UserProfile
         self.fields.update(modelform_factory(UserProfile, exclude=("user",))().fields)
-
         # Some manual fixes lost by importing UserProfile
         for fieldname, fieldclass in {
             "address_zip": CHZipCodeField(required=False),
             "birthdate": SwissDateField(required=False),
             "natel": CHPhoneNumberField(required=False),
+            "phone": CHPhoneNumberField(required=False),
             "nationality": BS3CountriesField(required=False),
             "social_security": CHSocialSecurityNumberField(required=False),
             "address_canton": forms.ChoiceField(

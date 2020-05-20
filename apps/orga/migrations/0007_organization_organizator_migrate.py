@@ -30,6 +30,7 @@ def migrate_organization(apps, schema_editor):
                 up = UserProfile.objects.create(
                     user_id=user.id,
                     natel=orga.coordinator_natel,
+                    phone=orga.coordinator_phone,
                     status=10,  # USERSTATUS_ACTIVE
                     address_ptr_id=address_ptr.id
 
@@ -57,14 +58,14 @@ class Migration(migrations.Migration):
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('orga', '0006_auto_20170831_1201'),
-        ('user', '0055_data_remove_email_from_deleted_users'),
+        ('user', '0059_userprofile_phone'),
     ]
 
     operations = [
         migrations.AddField(
             model_name='organization',
             name='coordinator',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='managed_organizations', to=settings.AUTH_USER_MODEL, verbose_name='Coordinateur'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='managed_organizations', to=settings.AUTH_USER_MODEL, verbose_name='Coordina·teur·trice'),
         ),
         migrations.RunPython(migrate_organization),
     ]

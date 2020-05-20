@@ -44,8 +44,7 @@ from apps.common import (
     MULTISELECTFIELD_REGEXP,
 )
 from apps.common.views import ExportMixin, PaginatorMixin
-from defivelo.roles import DV_AVAILABLE_ROLES
-from defivelo.roles import user_cantons
+from defivelo.roles import DV_AVAILABLE_ROLES, user_cantons
 
 from .. import FORMATION_KEYS
 from ..export import UserResource

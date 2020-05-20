@@ -53,7 +53,7 @@ class Organization(Address, models.Model):
     coordinator = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name="managed_organizations",
-        verbose_name=_("Coordinateur"),
+        verbose_name=_("Coordina·teur·trice"),
         null=True,
         on_delete=models.SET_NULL,
     )

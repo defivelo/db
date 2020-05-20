@@ -90,6 +90,10 @@
                             <dt>{% trans "Natel" %}</dt>
                                 <dd>{{ userprofile.profile.natel|tel_link }}</dd>
                         {% endif %}
+                        {% if userprofile.profile.phone %}
+                            <dt>{% trans "Téléphone" %}</dt>
+                                <dd>{{ userprofile.profile.phone|tel_link }}</dd>
+                        {% endif %}
                     </dl>
                 </div>
                 <div role="tabpane" class="tab-pane" id="administrativia">
