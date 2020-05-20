@@ -394,6 +394,12 @@ class UserProfile(Address, models.Model):
         ]
         return any([getattr(self, field, False) != "" for field in address_fields])
 
+    def is_paid_staff(self):
+        """
+        Whether a UserProfile is probably a paid staff
+        """
+        return self.affiliation_canton and (self.actor or self.formation)
+
     @cached_property
     def actor_inline(self):
         return " - ".join([smart_text(a) for a in self.actor_for.all()])

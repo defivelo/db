@@ -98,7 +98,8 @@
                         {% endif %}
                     </dl>
                 </div>
-                <div role="tabpane" class="tab-pane" id="administrativia">
+                {% if userprofile.profile.is_paid_staff %}
+                  <div role="tabpane" class="tab-pane" id="administrativia">
                     <dl class="dl-horizontal">
                         {% if userprofile.profile.nationality %}
                             <dt>{% trans "Nationalité" %}</dt>
@@ -137,9 +138,11 @@
                                 <dd>{{ userprofile.profile.marital_status_full }}</dd>
                         {% endif %}
                     </dl>
-                </div>
+                  </div>
+                {% endif %}
                 <div role="tabpane" class="tab-pane" id="defi">
                     <dl class="dl-horizontal">
+                      {% if userprofile.profile.is_paid_staff %}
                         {% if userprofile.profile.formation %}
                             <dt>{% trans "Formation" %}</dt><dd>{{ userprofile.profile.formation_full }}
                             {% if userprofile.profile.formation_firstdate %}
@@ -152,6 +155,7 @@
                         {% if userprofile.profile.actor %}
                             <dt>{% trans "Intervenant" %}</dt><dd>{{ userprofile.profile.actor_for.all|join:'<br />' }}</dd>
                         {% endif %}
+                      {% endif %}
                         {% if userprofile.profile.status > 0 %}
                         <dt>{% trans "État" %}</dt>
                             <dd class="text-{{ userprofile.profile.status_class }}">
@@ -162,6 +166,7 @@
                                     {% endif %}
                             </dd>
                         {% endif %}
+                      {% if userprofile.profile.is_paid_staff %}
                         {% if userprofile.profile.bagstatus > 0 %}
                             <dt>{% trans "Sac Défi Vélo" %}</dt>
                                 <dd>
@@ -178,18 +183,21 @@
                         {% if userprofile.profile.affiliation_canton %}
                             <dt>{% trans "Cours samaritain" %}</dt><dd><span class="glyphicon glyphicon-{% if userprofile.profile.firstmed_course %}check{% else %}unchecked{% endif %}"></span> {{ userprofile.profile.firstmed_course_comm }}</dd>
                         {% endif %}
+                      {% endif %}
                     </dl>
                 </div>
                     <div role="tabpane" class="tab-pane" id="cantons">
                         <dl class="dl-horizontal">
-                        {% if userprofile.profile.affiliation_canton %}
+                        {% if userprofile.profile.is_paid_staff %}
+                          {% if userprofile.profile.affiliation_canton %}
                             <dt>{% trans "Canton d'affiliation" %}</dt>
                             <dd>{{ userprofile.profile.affiliation_canton|canton_abbr:False }}</dd>
-                        {% endif %}
-                        {% if userprofile.profile.activity_cantons %}
+                          {% endif %}
+                          {% if userprofile.profile.activity_cantons %}
                             <dt>{% trans "Défi Vélo Mobile" %}</dt>
                             <dd>{{ userprofile.profile.activity_cantons|cantons_abbr:False|join:"<br />" }}
                             </dd>
+                          {% endif %}
                         {% endif %}
                         {% if userprofile.profile.can_login %}
                             <dt>{% trans "Niveau d'accès" %}</dt>
