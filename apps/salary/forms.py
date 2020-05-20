@@ -38,7 +38,7 @@ class TimesheetFormBase(forms.ModelForm):
             % dict(price=HOURLY_RATE_HELPER),
             "actor_count": _("Intervention(s) (%(price)s.-/Qualif')")
             % dict(price=RATE_ACTOR),
-            "leader_count": _("Participation(s) comme moniteur 2 (%(price)s.-/Qualif')")
+            "leader_count": _("Participation(s) comme moni·teur·trice 2 (%(price)s.-/Qualif')")
             % dict(price=BONUS_LEADER),
             "overtime": _("Heures supplémentaires (%(price)s.-/h)")
             % dict(price=HOURLY_RATE_HELPER),
