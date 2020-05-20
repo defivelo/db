@@ -76,7 +76,7 @@
         </div>
     </div>
     {% buttons %}
-        {% if request.user|can:'orga_crud' and request.user|inusercantons:organization.address_canton or request.user|can:'orga_edit' %}
+        {% if request.user|can:'orga_crud' and request.user|inusercantons:organization.address_canton or request.user|can:'orga_edit' and  organization in user.managed_organizations.all %}
             <a class="btn btn-primary pull-right" href="{% url 'organization-update' pk=organization.pk %}">{% trans "Éditer" %}</a>
         {% endif %}
         {% if request.user|can:'orga_detail_all' %}
