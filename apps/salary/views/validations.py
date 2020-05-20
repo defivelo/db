@@ -99,16 +99,13 @@ class ValidationsMixin(HasPermissionsMixin, MenuView):
             existing_cantons = list(
                 qs.filter(date__month=month).values_list("canton", flat=True)
             )
-            missing_cantons = [
-                c for c in self.managed_cantons if c not in existing_cantons
+            missing_objects = [
+                MonthlyCantonalValidation(canton=c, date=date(year, month, 1))
+                for c in self.managed_cantons
+                if c not in existing_cantons
             ]
             # Create the MCVs for the cantons' we're about to see (if needed)
-            MonthlyCantonalValidation.objects.bulk_create(
-                [
-                    MonthlyCantonalValidation(canton=c, date=date(year, month, 1))
-                    for c in missing_cantons
-                ]
-            )
+            MonthlyCantonalValidation.objects.bulk_create(missing_objects)
         return qs
 
 
