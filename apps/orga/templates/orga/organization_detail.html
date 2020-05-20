@@ -37,7 +37,10 @@
                 {% endif %}
                 {% if organization.coordinator.get_full_name %}
                     <dt>{% trans "Coordina·teur·trice" %}</dt>
-                        <dd>{{ organization.coordinator.get_full_name }}</dd>
+                        <dd>
+                          <a
+                            href="{% url 'user-detail' pk=organization.coordinator.pk %}">{{ organization.coordinator.get_full_name }}</a>
+                        </dd>
                 {% endif %}
                 {% if organization.coordinator.email %}
                     <dt>{% trans "Courriel" %}</dt>
