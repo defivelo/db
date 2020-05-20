@@ -41,7 +41,7 @@
             {% else %}
               {{ session.orga }}
             {% endif %}
-            {% if session.orga.coordinator_fullname %}
+            {% if session.orga.coordinator.get_full_name %}
                 <br />
                 <small>{{ session.orga.coordinator.get_full_name }}
                     {% if session.orga.coordinator.profile.natel %}
