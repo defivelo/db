@@ -17,7 +17,7 @@
                 {% if userprofile.profile.actor %}
                     <span class="badge pull-right">{{ userprofile.profile.actor_inline }} {{ userprofile.profile.actor_icon }}</span>
                 {% endif %}
-                {% if request.user|inusercantons:userprofile.profile.affiliation_canton %}
+                {% if request.user|inusercantons:userprofile.profile.affiliation_canton or request.user|inusercantons:userprofilecanton %}
                     {% if userprofile.profile.can_login %}
                         <span class="badge pull-right">{{ userprofile.profile.access_level_icon }}</span>
                         {% if request.user|can:"user_can_resend_credentials" %}
@@ -89,6 +89,10 @@
                         {% if userprofile.profile.natel %}
                             <dt>{% trans "Natel" %}</dt>
                                 <dd>{{ userprofile.profile.natel|tel_link }}</dd>
+                        {% endif %}
+                        {% if userprofile.profile.phone %}
+                            <dt>{% trans "Téléphone" %}</dt>
+                                <dd>{{ userprofile.profile.phone|tel_link }}</dd>
                         {% endif %}
                     </dl>
                 </div>
@@ -169,7 +173,9 @@
                         {% if userprofile.profile.pedagogical_experience %}
                             <dt>{% trans "Exp. pédagogique" %}</dt><dd>{{ userprofile.profile.pedagogical_experience }}</dd>
                         {% endif %}
-                        <dt>{% trans "Cours samaritain" %}</dt><dd><span class="glyphicon glyphicon-{% if userprofile.profile.firstmed_course %}check{% else %}unchecked{% endif %}"></span> {{ userprofile.profile.firstmed_course_comm }}</dd>
+                        {% if userprofile.profile.affiliation_canton %}
+                            <dt>{% trans "Cours samaritain" %}</dt><dd><span class="glyphicon glyphicon-{% if userprofile.profile.firstmed_course %}check{% else %}unchecked{% endif %}"></span> {{ userprofile.profile.firstmed_course_comm }}</dd>
+                        {% endif %}
                     </dl>
                 </div>
                     <div role="tabpane" class="tab-pane" id="cantons">
@@ -190,6 +196,14 @@
                         {% if userprofile.profile.managed_cantons %}
                             <dt>{% trans "Cantons gérés" %}</dt>
                             <dd>{{ userprofile.profile.managed_cantons|cantons_abbr:False|join:"<br />" }}</dd>
+                        {% endif %}
+                        {% if userprofile.managed_organizations %}
+                            <dt>{% trans "Établissements" %}</dt>
+                            <dd>{% for orga in userprofile.managed_organizations.all %}
+                                  <a href="{% url 'organization-detail' pk=orga.pk %}">{{ orga.name }}</a> ({{ orga.address_canton|canton_abbr:False }})
+                                  {% if not forloop.last %}</br>{% endif %}
+                                {% endfor %}
+                            </dd>
                         {% endif %}
                         </dl>
                     </div>
@@ -218,7 +232,7 @@
     </div>
     {% buttons %}
     <div class="hidden-print">
-        {% if request.user.pk == userprofile.pk or request.user|can:"cantons_all" or request.user|can:"user_edit_other" and request.user|inusercantons:userprofile.profile.affiliation_canton %}
+        {% if request.user.pk == userprofile.pk or request.user|can:"cantons_all" or request.user|can:"user_edit_other" and request.user|inusercantons:userprofile.profile.affiliation_canton or request.user|can:"user_edit_other" and request.user|inusercantons:userprofilecanton %}
             <a class="btn btn-primary pull-right" href="{% url 'user-update' pk=userprofile.pk %}">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="{% trans "Éditer" %}"></span>
                 {% trans "Éditer" %}

@@ -43,10 +43,14 @@
             {% endif %}
             {% if session.orga.coordinator_fullname %}
                 <br />
-                <small>{{ session.orga.coordinator_fullname }}
-                    {% if session.orga.coordinator_natel %}
+                <small>{{ session.orga.coordinator.get_full_name }}
+                    {% if session.orga.coordinator.profile.natel %}
                         <br class="hidden-print"/><span class="visible-print-inline"> |</span>
-                        {{ session.orga.coordinator_natel|tel_link }}
+                        {{ session.orga.coordinator.profile.natel|tel_link }}
+                    {% endif %}
+                    {% if session.orga.coordinator.profile.phone %}
+                        <br class="hidden-print"/><span class="visible-print-inline"> |</span>
+                        {{ session.orga.coordinator.profile.phone|tel_link }}
                     {% endif %}
                 </small>
             {% endif %}

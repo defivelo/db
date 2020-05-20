@@ -30,6 +30,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from dal_select2.views import Select2QuerySetView
 from django_filters import CharFilter, FilterSet, MultipleChoiceFilter
 from django_filters.views import FilterView
+from rolepermissions.checkers import has_role
 from rolepermissions.mixins import HasPermissionsMixin
 
 from apps.common import DV_STATE_CHOICES_WITH_DEFAULT
@@ -87,7 +88,7 @@ class OrganizationFilterSet(FilterSet):
 
 
 class OrganizationDetailMixin(HasPermissionsMixin, MenuView):
-    required_permission = "orga_detail_all"
+    required_permission = "orga_show"
     model = Organization
     context_object_name = "organization"
 
@@ -130,6 +131,8 @@ class OrganizationCrudMixin(OrganizationDetailMixin):
     form_class = OrganizationForm
 
     def get_queryset(self):
+        if self.request.user.managed_organizations.count():
+            return self.request.user.managed_organizations
         qs = self.model.objects
         try:
             usercantons = user_cantons(self.request.user)
@@ -141,12 +144,31 @@ class OrganizationCrudMixin(OrganizationDetailMixin):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["cantons"] = user_cantons(self.request.user)
+        try:
+            kwargs["cantons"] = user_cantons(self.request.user)
+        except LookupError:
+            kwargs["cantons"] = [
+                orga.address_canton
+                for orga in self.request.user.managed_organizations.all()
+            ]
         return kwargs
+
+    def get_form(self, *args, **kwargs):
+        form = super().get_form(*args, **kwargs)
+        if has_role(self.request.user, "coordinator") and not has_role(
+            self.request.user, "power_user"
+        ):
+            form.fields["status"].disabled = True
+            form.fields["coordinator"].disabled = True
+            del form.fields["comments"]
+        if not has_role(self.request.user, "power_user"):
+            form.fields["address_canton"].disabled = True
+        return form
 
 
 class OrganizationUpdateView(OrganizationCrudMixin, SuccessMessageMixin, UpdateView):
     success_message = _("Établissement mis à jour")
+    required_permission = "orga_edit"
 
 
 class OrganizationCreateView(OrganizationCrudMixin, SuccessMessageMixin, CreateView):

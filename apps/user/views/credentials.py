@@ -23,7 +23,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic.edit import FormView
 
 from rolepermissions.mixins import HasPermissionsMixin
-from rolepermissions.roles import get_user_roles
 
 from defivelo.roles import has_permission, user_cantons
 
@@ -38,9 +37,15 @@ class UserCredentials(ProfileMixin, FormView):
     initial_send = True
 
     def dispatch(self, request, *args, **kwargs):
-        managed_cantons = user_cantons(self.request.user)
+        self.managed_cantons = user_cantons(self.request.user)
+        self.user_cantons_intersection = [
+            orga.address_canton
+            for orga in self.get_object().managed_organizations.all()
+            if orga.address_canton in self.managed_cantons
+        ]
         if (
-            self.get_object().profile.affiliation_canton in managed_cantons
+            self.get_object().profile.affiliation_canton in self.managed_cantons
+            or self.user_cantons_intersection
             # Useful when the edited user has no canton (affiliation_canton == '')
             or has_permission(self.request.user, "cantons_all")
         ):
@@ -50,7 +55,12 @@ class UserCredentials(ProfileMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super(UserCredentials, self).get_context_data(**kwargs)
+
+        user_cantons_intersection = self.user_cantons_intersection + [
+            self.get_object().profile.affiliation_canton
+        ]
         context["userprofile"] = self.get_object()
+        context["userprofilecanton"] = user_cantons_intersection
         context["initial_send"] = self.initial_send
         return context
 
@@ -108,23 +118,11 @@ class UserAssignRole(ProfileMixin, HasPermissionsMixin, FormView):
         context["userprofile"] = self.get_object()
         return context
 
-    def get_initial(self):
-        user = self.get_object()
-        roles = get_user_roles(user)
-        initial = {}
-        if len(roles) >= 1:
-            initial["role"] = roles[0].get_name()
-        initial["managed_states"] = list(
-            user.managedstates.all().values_list("canton", flat=True)
-        )
-        return initial
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs.update({"user": self.get_object()})
+        return form_kwargs
 
     def form_valid(self, form):
-        user = self.get_object()
-        role = form.cleaned_data["role"]
-        managed_states = form.cleaned_data["managed_states"]
-        if role != "state_manager":
-            managed_states = []
-        user.profile.set_statemanager_for(managed_states)
-        user.profile.set_role(role)
+        form.save()
         return super(UserAssignRole, self).form_valid(form)

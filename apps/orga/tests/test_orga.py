@@ -25,6 +25,7 @@ from django.urls import reverse
 from apps.common import DV_STATES
 from defivelo.tests.utils import (
     AuthClient,
+    CoordinatorAuthClient,
     PowerUserAuthClient,
     StateManagerAuthClient,
     SuperUserAuthClient,
@@ -103,6 +104,9 @@ class OrgaPowerUserTest(OrgaBasicTest):
 
         # Test some update, that must go through
         initial["address_canton"] = "JU"
+
+        for key in initial:
+            initial[key] = "" if initial[key] == None else initial[key]
 
         response = self.client.post(url, initial)
         self.assertEqual(response.status_code, self.expected_save_code, url)
@@ -191,6 +195,9 @@ class OrgaStateManagerUserTest(TestCase):
 
         initial["address_no"] = self.myorga.address_no + 1
 
+        for key in initial:
+            initial[key] = "" if initial[key] == None else initial[key]
+
         response = self.client.post(url, initial)
         # Code 302 because update succeeded
         self.assertEqual(response.status_code, 302, url)
@@ -202,8 +209,8 @@ class OrgaStateManagerUserTest(TestCase):
         initial["address_canton"] = self.foreignorga.address_canton
 
         response = self.client.post(url, initial)
-        # Code 200 because update failed
-        self.assertEqual(response.status_code, 200, url)
+        # Code 302 because silent update failed
+        self.assertEqual(response.status_code, 302, url)
         # Check update failed
         neworga = Organization.objects.get(pk=self.myorga.pk)
         self.assertEqual(neworga.address_canton, self.myorga.address_canton)
@@ -222,3 +229,77 @@ class OrgaStateManagerUserTest(TestCase):
         entries = re.findall(r'"id": "(\d+)"', str(response.content))
         expected_entries = set(str(o.id) for o in Organization.objects.all())
         self.assertEqual(set(entries), expected_entries)
+
+
+class OrgaCoordinatorUserTest(TestCase):
+    expected_code = 200
+
+    def setUp(self):
+        self.client = CoordinatorAuthClient()
+        self.myorga = OrganizationFactory(coordinator=self.client.user)
+        self.myorga.save()
+
+        self.foreignorga = OrganizationFactory()
+        self.foreignorga.save()
+
+    def test_access_to_orga_list(self):
+        response = self.client.get(reverse("organization-list"))
+        self.assertTemplateUsed(response, "orga/organization_filter.html")
+        self.assertEqual(response.status_code, self.expected_code)
+
+        response = self.client.get(
+            reverse("organization-list-export", kwargs={"format": "csv"})
+        )
+        self.assertEqual(response.status_code, self.expected_code)
+
+    def test_access_to_orga_detail(self):
+        response = self.client.get(
+            reverse("organization-detail", kwargs={"pk": self.myorga.pk})
+        )
+        self.assertTemplateUsed(response, "orga/organization_detail.html")
+        self.assertEqual(response.status_code, self.expected_code)
+
+        # The other orga can also be accessed
+        response = self.client.get(
+            reverse("organization-detail", kwargs={"pk": self.foreignorga.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_access_to_orga_edit(self):
+        url = reverse("organization-update", kwargs={"pk": self.myorga.pk})
+        response = self.client.get(url)
+        self.assertTemplateUsed(response, "orga/organization_form.html")
+        self.assertEqual(response.status_code, self.expected_code)
+
+        # Our orga cannot be edited away from my cantons
+        initial = self.myorga.__dict__.copy()
+        del initial["id"]
+        del initial["created_on"]
+        del initial["address_ptr_id"]
+        del initial["_state"]
+
+        initial["address_no"] = self.myorga.address_no + 1
+
+        for key in initial:
+            initial[key] = "" if initial[key] == None else initial[key]
+
+        response = self.client.post(url, initial)
+        # Code 302 because update succeeded
+        self.assertEqual(response.status_code, 302, url)
+        # Check update succeeded
+        neworga = Organization.objects.get(pk=self.myorga.pk)
+        self.assertEqual(neworga.address_no, str(self.myorga.address_no + 1))
+
+        # Test some update, that must go through
+        initial["coordinator"] = self.client.user
+
+        response = self.client.post(url, initial)
+        # Check update failed
+        neworga = Organization.objects.get(pk=self.myorga.pk)
+        self.assertEqual(neworga.coordinator, self.myorga.coordinator)
+
+        # The other orga cannot be accessed
+        response = self.client.get(
+            reverse("organization-update", kwargs={"pk": self.foreignorga.pk})
+        )
+        self.assertEqual(response.status_code, 404)

@@ -33,6 +33,7 @@ from .views import (
 from .views.actions import MarkInactive
 from .views.autocomplete import (
     Actors,
+    AllCoordinators,
     AllPersons,
     Helpers,
     Leaders,
@@ -84,6 +85,7 @@ urlpatterns = [
     ),
     url(r"^(?P<pk>[0-9]+)/update/$", UserUpdate.as_view(), name="user-update"),
     url(r"^ac/all/$", AllPersons.as_view(), name="user-AllPersons-ac"),
+    url(r"^ac/coordinator/$", AllCoordinators.as_view(), name="user-coordinators"),
     url(
         r"^ac/prfs/$",
         PersonsRelevantForSessions.as_view(),
