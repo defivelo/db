@@ -44,6 +44,7 @@ from apps.common import (
     MULTISELECTFIELD_REGEXP,
 )
 from apps.common.views import ExportMixin, PaginatorMixin
+from defivelo.roles import DV_AVAILABLE_ROLES
 
 from .. import FORMATION_KEYS
 from ..export import UserResource
@@ -147,6 +148,9 @@ class UserProfileFilterSet(FilterSet):
             return queryset.filter(reduce(operator.or_, allfields_filter))
         return queryset
 
+    def filter_roles(queryset, name, value):
+        return queryset.filter(reduce(operator.or_, [Q(groups__name=r) for r in value]))
+
     profile__language = MultipleChoiceFilter(
         label=_("Langue"),
         choices=DV_LANGUAGES_WITH_DEFAULT,
@@ -183,6 +187,9 @@ class UserProfileFilterSet(FilterSet):
                 "translations"
             )
         ),
+    )
+    roles = MultipleChoiceFilter(
+        label=_("Rôle"), choices=DV_AVAILABLE_ROLES, method=filter_roles
     )
     q = CharFilter(label=_("Recherche"), method=filter_wide)
 
