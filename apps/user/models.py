@@ -170,15 +170,17 @@ class UserProfile(Address, models.Model):
     )
     birthdate = models.DateField(_("Date de naissance"), blank=True, null=True)
     nationality = CountryField(_("Nationalité"), default="CH")
-    work_permit = models.CharField(
-        _("Permis de travail (si pas suisse)"), max_length=255, blank=True
-    )
+    work_permit = models.CharField(_("Permis de travail"), max_length=255, blank=True)
     tax_jurisdiction = models.CharField(
-        _("Lieu d'imposition (si pas en Suisse)"), max_length=511, blank=True
+        _("Lieu d'imposition"), max_length=511, blank=True
     )
     bank_name = models.CharField(_("Nom de la banque"), max_length=511, blank=True)
-    iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)
-    social_security = models.CharField(max_length=16, blank=True)
+    iban = IBANField(
+        _("Coordonnées bancaires (IBAN)"),
+        include_countries=IBAN_SEPA_COUNTRIES,
+        blank=True,
+    )
+    social_security = models.CharField(_("N° AVS"), max_length=16, blank=True)
     natel = models.CharField(max_length=13, blank=True)
     affiliation_canton = models.CharField(
         _("Canton d'affiliation"),

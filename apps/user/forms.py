@@ -23,11 +23,20 @@ from django.core.exceptions import ValidationError
 from django.forms import modelform_factory
 from django.utils.translation import ugettext_lazy as _
 
+from localflavor.ch.forms import (
+    CHSocialSecurityNumberField,
+    CHStateSelect,
+    CHZipCodeField,
+)
+from localflavor.generic import forms as localforms
+from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from multiselectfield.forms.fields import MultiSelectFormField
 
 from apps.common import DV_STATE_CHOICES
+from apps.common.forms import BS3CountriesField, CHPhoneNumberField, SwissDateField
 from defivelo.roles import DV_AVAILABLE_ROLES
 
+from . import STATE_CHOICES_WITH_DEFAULT
 from .models import UserProfile
 
 
@@ -41,6 +50,31 @@ class UserProfileForm(forms.ModelForm):
 
         # Import all generated fields from UserProfile
         self.fields.update(modelform_factory(UserProfile, exclude=("user",))().fields)
+
+        # Some manual fixes lost by importing UserProfile
+        for fieldname, fieldclass in {
+            "address_zip": CHZipCodeField(required=False),
+            "birthdate": SwissDateField(required=False),
+            "natel": CHPhoneNumberField(required=False),
+            "nationality": BS3CountriesField(required=False),
+            "social_security": CHSocialSecurityNumberField(required=False),
+            "address_canton": forms.ChoiceField(
+                widget=CHStateSelect,
+                choices=STATE_CHOICES_WITH_DEFAULT,
+                required=False,
+            ),
+            "iban": localforms.IBANFormField(
+                include_countries=IBAN_SEPA_COUNTRIES, required=False,
+            ),
+        }.items():
+            label = self.fields[fieldname].label
+            self.fields[fieldname] = fieldclass
+            self.fields[fieldname].label = label
+        # Some precisions
+        self.fields["work_permit"].widget.attrs["placeholder"] = _("… si pas suisse")
+        self.fields["tax_jurisdiction"].widget.attrs["placeholder"] = _(
+            "… si pas en Suisse"
+        )
 
         if not allow_email and "email" in self.fields:
             del self.fields["email"]
