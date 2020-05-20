@@ -180,9 +180,7 @@
                         {% if userprofile.profile.pedagogical_experience %}
                             <dt>{% trans "Exp. pédagogique" %}</dt><dd>{{ userprofile.profile.pedagogical_experience }}</dd>
                         {% endif %}
-                        {% if userprofile.profile.affiliation_canton %}
-                            <dt>{% trans "Cours samaritain" %}</dt><dd><span class="glyphicon glyphicon-{% if userprofile.profile.firstmed_course %}check{% else %}unchecked{% endif %}"></span> {{ userprofile.profile.firstmed_course_comm }}</dd>
-                        {% endif %}
+                        <dt>{% trans "Cours samaritain" %}</dt><dd><span class="glyphicon glyphicon-{% if userprofile.profile.firstmed_course %}check{% else %}unchecked{% endif %}"></span> {{ userprofile.profile.firstmed_course_comm }}</dd>
                       {% endif %}
                     </dl>
                 </div>

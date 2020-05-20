@@ -385,6 +385,7 @@ class UserProfile(Address, models.Model):
     def actor(self):
         return self.actor_for.exists()
 
+    @cached_property
     def has_address(self):
         """
         Whether we have any address field set
@@ -394,11 +395,12 @@ class UserProfile(Address, models.Model):
         ]
         return any([getattr(self, field, False) != "" for field in address_fields])
 
+    @cached_property
     def is_paid_staff(self):
         """
         Whether a UserProfile is probably a paid staff
         """
-        return self.affiliation_canton and (self.actor or self.formation)
+        return self.affiliation_canton
 
     @cached_property
     def actor_inline(self):
