@@ -1,14 +1,21 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.forms import formset_factory
+from django.urls import reverse_lazy
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from rolepermissions.checkers import has_role
 
 from apps.challenge.models.session import Session
 from apps.common.fields import CheckboxInput, NumberInput, TimeNumberInput
-from apps.salary.models import Timesheet
+from apps.salary.models import (
+    MonthlyCantonalValidation,
+    MonthlyCantonalValidationUrl,
+    Timesheet,
+)
 
 from . import BONUS_LEADER, HOURLY_RATE_HELPER, RATE_ACTOR
 
@@ -161,3 +168,109 @@ class ControlTimesheetForm(TimesheetFormBase):
 
 ControlTimesheetFormSet = formset_factory(ControlTimesheetForm, max_num=0, extra=0)
 TimesheetFormSet = formset_factory(TimesheetForm, max_num=0, extra=0)
+
+
+class MonthlyCantonalValidationForm(forms.ModelForm):
+    validated = forms.BooleanField(
+        label=_("Valider"), required=False, widget=CheckboxInput()
+    )
+
+    class Meta:
+        model = MonthlyCantonalValidation
+        fields = ["validated"]
+
+    def __init__(self, validator, urls, timesheets_statuses, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.validator = validator
+        self.timesheets_are_validated = timesheets_statuses[self.instance.canton]
+        # Add the urls as checkboxes, but first; so:
+        # Store away the fields
+        fields = self.fields.copy()
+        # Empty it
+        self.fields = {}
+        # Add our fake validations status
+        self.fields["timesheets_checked"] = forms.BooleanField(
+            label=_("Contrôle des heures effectué"),
+            required=False,
+            widget=CheckboxInput,
+            help_text=mark_safe(
+                '<a href="{url}" target="_blank">{text}</a>'.format(
+                    url=reverse_lazy(
+                        "salary:timesheets-overview",
+                        kwargs={"year": self.instance.date.year},
+                    ),
+                    text=_("Contrôle des heures"),
+                )
+            ),
+            initial=self.timesheets_are_validated,
+            disabled=True,
+        )
+        # urls are MonthlyCantonalValidationUrl
+        for url in urls:
+            self.fields[f"url_{url.pk}"] = forms.BooleanField(
+                label=url.name,
+                required=False,
+                widget=CheckboxInput,
+                help_text=mark_safe(
+                    f'<a href="{url.url}" target="_blank">{url.url}</a>'
+                ),
+                initial=self.instance.validated_urls.filter(pk=url.pk).exists(),
+            )
+        # Refill it
+        for k, v in fields.items():
+            self.fields[k] = v
+        if self.initial.get("validated"):
+            for key in self.fields:
+                self.fields[key].widget.attrs["readonly"] = True
+                self.fields[key].disabled = True
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if self.initial["validated"] and not cleaned_data.get("validated"):
+            cleaned_data["validated_at"] = None
+            cleaned_data["validated_by"] = None
+        elif not self.initial["validated"] and cleaned_data.get("validated"):
+            # Verify that all URLs are ticked to allow validation
+            all_urls_ticked = True
+            for k, v in self.fields.items():
+                if k.startswith("url_"):
+                    if not cleaned_data.get(k):
+                        self.add_error(
+                            k,
+                            ValidationError(
+                                _("Toutes les URLs doivent être vérifiées")
+                            ),
+                        )
+                        all_urls_ticked = False
+            if not self.timesheets_are_validated:
+                self.add_error(
+                    "timesheets_checked",
+                    ValidationError(_("Les heures doivent être vérifiées")),
+                )
+                all_urls_ticked = False
+
+            if all_urls_ticked:
+                cleaned_data["validated_at"] = timezone.now()
+                cleaned_data["validated_by"] = self.validator
+        del cleaned_data["validated"]
+        return cleaned_data
+
+    def save(self, commit=True):
+        for val in ["validated_at", "validated_by"]:
+            try:
+                setattr(self.instance, val, self.cleaned_data[val])
+            except KeyError:
+                pass
+        for k, v in self.fields.items():
+            if k.startswith("url_"):
+                try:
+                    mcvu = MonthlyCantonalValidationUrl.objects.get(
+                        pk=int(k.split("_")[1])
+                    )
+                    if self.cleaned_data[k]:
+                        self.instance.validated_urls.add(mcvu)
+                    else:
+                        self.instance.validated_urls.remove(mcvu)
+                except ValueError:  # Conversion of k.split("_")[1] to int; it's not an url
+                    pass
+        return super().save(commit)

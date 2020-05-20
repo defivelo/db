@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load dv_filters %}
+{% block head_title %}{% blocktrans with month=month|date:'F Y' %}Validations cantonales mensuelles pour {{ month }}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+    <h1>{% blocktrans with month=month|date:'F Y' %}Validations cantonales mensuelles pour {{ month }}{% endblocktrans %}</h1>
+
+    <nav>
+        <ul class="pager">
+            <li class="previous btn-xs">
+                <a href="{% url 'salary:validations-month' year=previous_month.year month=previous_month.month %}">
+                    <span aria-hidden="true">&larr;</span> {{ previous_month|date:'F Y' }}
+                </a>
+            </li>
+            <li class="btn-xs">
+              <a href="{% url 'salary:validations-month' year=now.year month=now.month %}">
+                {% trans "Mois courant" %}
+              </a>
+            </li>
+            <li class="next btn-xs">
+                <a href="{% url 'salary:validations-month' year=next_month.year month=next_month.month %}">
+                    {{ next_month|date:'F Y' }} <span aria-hidden="true">&rarr;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    {% if nothing_to_do %}
+      <div class="alert alert-info" role="alert">
+        <p>{% trans "Rien à valider"%}</p>
+      </div>
+    {% else %}
+      <table class="table">
+        <thead>
+          <tr>
+              <th>{% trans "Canton" %}</th>
+              <th>{% trans "Contrôle des heures effectué" %}</th>
+              {% for mcv_url in mcv_urls %}
+                <th>{{ mcv_url.name }}</th>
+              {% endfor %}
+              <th>{% trans "Validé" %}</th>
+          </tr>
+        </thead>
+        {% for mcv in mcvs %}
+          {% if mcv|get_timesheet_status_for_canton:timesheets_statuses is not None %}
+            <tr>
+              <td>{{ mcv.canton|canton_abbr:False }}</td>
+              <td align="center" class="text-center">
+                <a href="{% url 'salary:timesheets-overview' year=month.year %}?canton={{ mcv.canton }}">
+                  {% if mcv|get_timesheet_status_for_canton:timesheets_statuses %}{% include "ok.html" %}{% else %}{% include "ko.html" %}{% endif %}
+                </a>
+              </td>
+              {% for mcv_url in mcv_urls %}
+                <td>
+                  {% for validated_url in mcv.validated_urls.all %}
+                  {% if validated_url.pk == mcv_url.pk %}{% include "ok.html" %}{% endif %}
+                  {% endfor %}
+                </td>
+              {% endfor %}
+              <td>
+                {% if mcv.validated %}
+                  {% include "ok.html" %} {% blocktrans with by=mcv.validated_by.get_full_name at=mcv.validated_at %}par {{ by }}, le {{ at }}{% endblocktrans %}
+                {% else %}
+                  <a class="btn btn-xs btn-primary" href="{% url 'salary:validation-update' year=mcv.date.year month=mcv.date.month canton=mcv.canton %}" title="{% trans "Éditer" %}"><span class="glyphicon glyphicon-pencil"></span></a>
+                {% endif %}
+              </td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+      </table>
+    {% endif %}
+{% endblock %}

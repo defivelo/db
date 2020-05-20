@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2015 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2015, 2020 Didier Raboud <me+defivelo@odyx.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -18,6 +18,7 @@
 from django.conf import settings
 from django.contrib import admin
 from django.templatetags.static import static
+from django.utils.safestring import mark_safe
 
 from parler.admin import TranslatableAdmin
 from simple_history.admin import SimpleHistoryAdmin
@@ -44,9 +45,7 @@ class QualificationActivityAdmin(TranslatableAdmin):
         if missing_languages:
             return " | ".join(missing_languages)
         else:
-            return '<img src="%s" />' % static("admin/img/icon-yes.gif")
-
-    missing_languages.allow_tags = True
+            return mark_safe('<img src="%s" />' % static("admin/img/icon-yes.svg"))
 
 
 class SeasonAdmin(SimpleHistoryAdmin):
