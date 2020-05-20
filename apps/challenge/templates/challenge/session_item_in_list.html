@@ -1,23 +1,38 @@
-{% load i18n %}
-<tr {% if session.errors %}class="warning"{% endif %} >
-    <th><a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">{{ session.day }} ({{ session.begin }}) {{ session.city }}</a></th>
+{% load i18n dv_filters %}
+<tr {% if session.errors and user|can:'challenge_session_crud' %}class="warning"{% endif %} >
+    {% if user|can:'challenge_session_crud' or session.visible %}
+      <th>
+        <a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">
+          {{ session.day }} ({{ session.begin }}) {{ session.city }}
+        </a>
+      </th>
+    {% else %}
+      <td>
+        {{ session.day }} ({{ session.begin }}) {{ session.city }}
+      </td>
+    {% endif %}
     <td>
-        {% if session.errors %}
-            <span class="glyphicon glyphicon-warning-sign"></span>
-            {% if session.qualifications.count == 0 %}
-                {% trans "Aucune Qualif'" %}
-            {% elif session.has_availability_incoherences %}
-                {% trans "Qualif' incohérente" %}
-            {% else %}
-                {% trans "Incomplet" %}
-            {% endif %}
-        {% else %}
-        {% include "ok.html" %}
+        {% if user|can:'challenge_session_crud' %}
+          {% if not session.visible %}
+            <span class="badge pull-right" title="{% trans "Session invisible" %}"><span class="glyphicon glyphicon-eye-close"></span> </span>
+          {% endif %}
+          {% if session.errors %}
+              <span class="glyphicon glyphicon-warning-sign"></span>
+              {% if session.qualifications.count == 0 %}
+                  {% trans "Aucune Qualif'" %}
+              {% elif session.has_availability_incoherences %}
+                  {% trans "Qualif' incohérente" %}
+              {% else %}
+                  {% trans "Incomplet" %}
+              {% endif %}
+          {% else %}
+            {% include "ok.html" %}
+          {% endif %}
         {% endif %}
     </td>
     <td>
-        {% if session.qualifications.count != 0 %}
-            <a href="{% url 'session-staff-choices'  seasonpk=season.pk pk=session.pk %}">{% trans "Présences" %}</a>
+        {% if session.qualifications.count != 0 and session.visible %}
+            <a href="{% url 'session-staff-choices' seasonpk=season.pk pk=session.pk %}">{% trans "Présences" %}</a>
         {% endif %}
     </td>
 </tr>

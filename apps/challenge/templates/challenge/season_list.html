@@ -35,7 +35,7 @@
         <tr class="{{ season.state_class }}">
             <td>{{ season.state_icon }}</td>
             <td>
-                {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons %}
+                {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons or user == season.leader %}
                     <a href="{% url 'season-detail' pk=season.pk %}">
                 {% elif season.staff_can_update_availability %}
                     <a href="{% url 'season-availabilities-update' pk=season.pk helperpk=request.user.pk %}"
@@ -51,7 +51,7 @@
                 {% endif %}
             </td>
             <td>
-                {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons %}
+                {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons or user == season.leader %}
                     <a class="btn btn-xs btn-primary" href="{% url 'season-availabilities' season.pk %}" title="{% trans "Planning" %}"><span class="glyphicon glyphicon-th"></span></a>
                 {% elif season.staff_can_update_availability %}
                     <a class="btn btn-xs btn-default" href="{% url 'season-availabilities-update' pk=season.pk helperpk=request.user.pk %}"

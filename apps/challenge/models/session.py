@@ -58,6 +58,7 @@ class Session(Address, models.Model):
     duration = models.DurationField(
         _("Durée"), default=timedelta(hours=DEFAULT_SESSION_DURATION_HOURS)
     )
+    visible = models.BooleanField(_("Visible pour les moniteurs"), default=False)
     orga = models.ForeignKey(
         Organization,
         verbose_name=_("Établissement"),
@@ -113,6 +114,8 @@ class Session(Address, models.Model):
     @property
     def errors(self):
         errors = []
+        if not self.visible:
+            errors.append(_("Visibilité"))
         if not self.begin or not self.duration:
             errors.append(_("Horaire"))
         if not self.fallback_plan:

@@ -177,7 +177,7 @@ class AuthUserTest(SeasonTestCaseMixin):
             self.season.save()
             response = self.client.get(urls["season-planning"])
             if state[0] == DV_SEASON_STATE_RUNNING:
-                # … so no access
+                # … We can see the season
                 self.assertEqual(response.status_code, 200, urls["season-planning"])
                 for exportformat in ["csv", "ods", "xls"]:
                     url = reverse(
@@ -208,39 +208,70 @@ class AuthUserTest(SeasonTestCaseMixin):
         for k, url in urls.items():
             self.assertEqual(self.client.get(url).status_code, 403, url)
 
-    def test_no_access_to_session(self):
-        for session in self.sessions:
-            urls = [
-                reverse(
+    def test_access_to_sessions(self):
+        # Make this user a M1 from this season's cantons
+        self.client.user.profile.formation = FORMATION_M1
+        self.client.user.profile.affiliation_canton = self.season.cantons[0]
+        self.client.user.profile.save()
+
+        # Test the access to the session on all season states
+        for state in DV_SEASON_STATES:
+            self.season.state = state[0]
+            self.season.save()
+            for session in self.sessions:
+                session_kwargs = {
+                    "seasonpk": self.season.pk,
+                    "pk": session.pk,
+                }
+                weeklysessionlist = reverse(
                     "session-list",
                     kwargs={
                         "seasonpk": self.season.pk,
                         "year": session.day.year,
                         "week": session.day.strftime("%W"),
                     },
-                ),
-                reverse("session-create", kwargs={"seasonpk": self.season.pk,}),
-                reverse(
-                    "session-detail",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
-                ),
-                reverse(
-                    "session-update",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
-                ),
-                reverse(
-                    "session-staff-choices",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
-                ),
-                reverse(
-                    "session-delete",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
-                ),
-            ]
-            for url in urls:
-                # Final URL is forbidden
-                response = self.client.get(url, follow=True)
-                self.assertEqual(response.status_code, 403, url)
+                )
+                urls = [
+                    weeklysessionlist,
+                    reverse("session-create", kwargs={"seasonpk": self.season.pk,}),
+                    reverse("session-detail", kwargs=session_kwargs,),
+                    reverse("session-update", kwargs=session_kwargs,),
+                    reverse("session-staff-choices", kwargs=session_kwargs,),
+                    reverse("session-delete", kwargs=session_kwargs,),
+                ]
+                for url in urls:
+                    # Final URL is forbidden
+                    response = self.client.get(url, follow=True)
+                    self.assertEqual(response.status_code, 403, url)
+                # Now add user to a Qualif of that Session
+                q = session.qualifications.first()
+                q.helpers.add(self.client.user)
+                # Recheck all URLs
+                for url in urls:
+                    # Loop through the two cases
+                    for visible in [True, False]:
+                        session.visible = visible
+                        session.save()
+                        response = self.client.get(url, follow=True)
+                        # When the season is running, we can access some stuff
+                        if state[0] == DV_SEASON_STATE_RUNNING and (
+                            url == weeklysessionlist
+                            or (
+                                visible
+                                and url
+                                in [
+                                    reverse("session-detail", kwargs=session_kwargs,),
+                                    reverse(
+                                        "session-staff-choices", kwargs=session_kwargs,
+                                    ),
+                                ]
+                            )
+                        ):
+                            self.assertEqual(response.status_code, 200, url)
+                        else:
+                            self.assertEqual(response.status_code, 403, url)
+                # Drop it from the Qualif
+                q.helpers.remove(self.client.user)
 
 
 class StateManagerUserTest(SeasonTestCaseMixin):
@@ -433,6 +464,7 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                 "season-actorlist",
                 "season-set-running",
                 "season-set-open",
+                "season-detail",
             ]:
                 self.assertEqual(response.status_code, 403, url)
             else:
