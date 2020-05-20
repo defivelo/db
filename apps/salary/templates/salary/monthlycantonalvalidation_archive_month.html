@@ -71,4 +71,8 @@
         {% endfor %}
       </table>
     {% endif %}
+
+    {% buttons %}
+        <a class="btn btn-default" href="{% url  'salary:validations-year' year=month.year %}">{{ month.year }}</a>
+    {% endbuttons %}
 {% endblock %}
