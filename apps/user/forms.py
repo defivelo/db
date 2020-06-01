@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.forms import modelform_factory
 from django.utils.translation import ugettext_lazy as _
 
@@ -207,7 +208,10 @@ class UserAssignRoleForm(forms.Form):
         super().__init__(*args, **kwargs)
         roles = get_user_roles(user)
         self.fields["managed_organizations"].choices = [
-            (orga.id, orga.name) for orga in Organization.objects.all()
+            (orga.id, orga.name)
+            for orga in Organization.objects.filter(
+                Q(coordinator__isnull=True) | Q(coordinator=user)
+            ).all()
         ]
         self.initial = {
             "role": roles[0].get_name() if len(roles) >= 1 else None,
@@ -231,4 +235,6 @@ class UserAssignRoleForm(forms.Form):
         managed_organizations = self.cleaned_data["managed_organizations"]
         if role != "coordinator":
             managed_organizations = []
-        self.user.managed_organizations.set(managed_organizations)
+        self.user.managed_organizations.set(
+            Organization.objects.filter(pk__in=managed_organizations)
+        )
