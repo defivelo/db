@@ -97,7 +97,9 @@ class ValidationsMixin(HasPermissionsMixin, MenuView):
         # At this point, make extra sure we have all the needed ones
         with transaction.atomic():
             existing_cantons = list(
-                qs.filter(date__month=month).values_list("canton", flat=True)
+                MonthlyCantonalValidation.objects.filter(date__month=month).values_list(
+                    "canton", flat=True
+                )
             )
             missing_objects = [
                 MonthlyCantonalValidation(canton=c, date=date(year, month, 1))
