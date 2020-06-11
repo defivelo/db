@@ -46,9 +46,12 @@ from .views import (
     SeasonHelperListView,
     SeasonListView,
     SeasonOrgaListView,
+    SeasonPersonalPlanningExportFeed,
+    SeasonPersonalPlanningExportView,
     SeasonPlanningExportView,
     SeasonPlanningView,
     SeasonStaffChoiceUpdateView,
+    SeasonToOpenView,
     SeasonToRunningView,
     SeasonUpdateView,
     SessionCreateView,
@@ -113,9 +116,14 @@ urlpatterns = [
             [
                 url(r"^update/$", SeasonUpdateView.as_view(), name="season-update"),
                 url(
-                    r"^openplanning/$",
+                    r"^running-planning/$",
                     SeasonToRunningView.as_view(),
                     name="season-set-running",
+                ),
+                url(
+                    r"^open-planning/$",
+                    SeasonToOpenView.as_view(),
+                    name="season-set-open",
                 ),
                 url(
                     r"^$",
@@ -153,9 +161,26 @@ urlpatterns = [
                     name="season-availabilities",
                 ),
                 url(
-                    r"^planning/(?P<helperpk>[0-9]+)/$",
-                    never_cache(SeasonPlanningView.as_view()),
-                    name="season-planning",
+                    r"^planning/(?P<helperpk>[0-9]+)/",
+                    include(
+                        [
+                            url(
+                                "^$",
+                                never_cache(SeasonPlanningView.as_view()),
+                                name="season-planning",
+                            ),
+                            url(
+                                "^(?P<format>[a-z]+)exportplanning$",
+                                never_cache(SeasonPersonalPlanningExportView.as_view()),
+                                name="season-personal-planning-export",
+                            ),
+                            url(
+                                r"^feed.ics$",
+                                SeasonPersonalPlanningExportFeed(),
+                                name="season-personal-calendar",
+                            ),
+                        ]
+                    ),
                 ),
                 url(
                     r"^availability/staff/$",

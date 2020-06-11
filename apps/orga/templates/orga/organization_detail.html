@@ -27,6 +27,13 @@
                     <dt>{% trans "Site web" %}</dt>
                         <dd><a href="{{ organization.website }}">{{ organization.website }}</a></dd>
                 {% endif %}
+                {% if organization.status > 0 %}
+                <dt>{% trans "État" %}</dt>
+                    <dd class="text-{{ organization.status_class }}">
+                            {{ organization.status_icon }}
+                            {{ organization.status_full }}
+                    </dd>
+                {% endif %}
             </dl>
           </div>
           <div role="tabpane" class="tab-pane" id="contacts">
@@ -35,28 +42,26 @@
                     <dt>{% trans "Canton d'affiliation" %}</dt>
                         <dd>{{ organization.address_canton|canton_abbr:False }}</dd>
                 {% endif %}
-                {% if organization.coordinator_fullname %}
-                    <dt>{% trans "Coordinateur" %}</dt>
-                        <dd>{{ organization.coordinator_fullname }}</dd>
+                {% if organization.coordinator.get_full_name %}
+                    <dt>{% trans "Coordina·teur·trice" %}</dt>
+                        <dd>
+                          <a
+                            href="{% url 'user-detail' pk=organization.coordinator.pk %}">{{ organization.coordinator.get_full_name }}</a>
+                        </dd>
                 {% endif %}
-                {% if organization.coordinator_email %}
+                {% if organization.coordinator.email %}
                     <dt>{% trans "Courriel" %}</dt>
-                        <dd><a class="email" href="mailto:{{ organization.mailtolink|urlencode }}">{{ organization.coordinator_email }}</a></dd>
+                        <dd><a class="email"
+                            href="mailto:{{ organization.coordinator.profile.mailtolink|urlencode }}">{{ organization.coordinator.email }}</a>
+                        </dd>
                 {% endif %}
-                {% if organization.coordinator_natel %}
+                {% if organization.coordinator.profile.natel %}
                     <dt>{% trans "Natel" %}</dt>
-                        <dd>{{ organization.coordinator_natel|tel_link }}</a></dd>
+                        <dd>{{ organization.coordinator.profile.natel|tel_link }}</a></dd>
                 {% endif %}
-                {% if organization.coordinator_phone %}
+                {% if organization.coordinator.profile.phone %}
                     <dt>{% trans "Téléphone" %}</dt>
-                        <dd>{{ organization.coordinator_phone|tel_link }}</dd>
-                {% endif %}
-                {% if organization.status > 0 %}
-                <dt>{% trans "État" %}</dt>
-                    <dd class="text-{{ organization.status_class }}">
-                            {{ organization.status_icon }}
-                            {{ organization.status_full }}
-                    </dd>
+                        <dd>{{ organization.coordinator.profile.phone|tel_link }}</a></dd>
                 {% endif %}
             </dl>
           </div>
@@ -71,7 +76,11 @@
         </div>
     </div>
     {% buttons %}
-        <a class="btn btn-primary pull-right" href="{% url 'organization-update' pk=organization.pk %}">{% trans "Éditer" %}</a>
-        <a class="btn btn-default" href="{% url 'organization-list' %}">{% trans "Retour à la liste des établissements" %}</a>
+        {% if request.user|can:'orga_crud' and request.user|inusercantons:organization.address_canton or request.user|can:'orga_edit' and  organization in user.managed_organizations.all %}
+            <a class="btn btn-primary pull-right" href="{% url 'organization-update' pk=organization.pk %}">{% trans "Éditer" %}</a>
+        {% endif %}
+        {% if request.user|can:'orga_detail_all' %}
+            <a class="btn btn-default" href="{% url 'organization-list' %}">{% trans "Retour à la liste des établissements" %}</a>
+        {% endif %}
     {% endbuttons %}
 {% endblock %}

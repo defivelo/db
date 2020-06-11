@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load dv_filters %}
+{% block head_title %}{% blocktrans with year=year|date:'Y' %}Validations cantonales mensuelles pour {{ year }}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+    <h1>{% blocktrans with year=year|date:'Y' %}Validations cantonales mensuelles pour {{ year }}{% endblocktrans %}</h1>
+
+    <nav>
+        <ul class="pager">
+            <li class="previous btn-xs">
+                <a href="{% url 'salary:validations-year' year=previous_year.year %}">
+                    <span aria-hidden="true">&larr;</span> {{ previous_year|date:'Y' }}
+                </a>
+            </li>
+            <li class="btn-xs">
+              <a href="{% url 'salary:validations-year' year=now.year %}">
+                {% trans "Année courante" %}
+              </a>
+            </li>
+            <li class="next btn-xs">
+                <a href="{% url 'salary:validations-year' year=next_year.year %}">
+                    {{ next_year|date:'Y' }} <span aria-hidden="true">&rarr;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <table class="table">
+      <thead>
+        <tr>
+            <th>{% trans "Canton" %}</th>
+            {% for m_i, month in months.items %}
+              <th><a href="{% url 'salary:validations-month' year=year.year month=m_i %}">{{ month }}</a></th>
+            {% endfor %}
+        </tr>
+      </thead>
+        {% for canton, statuses in timesheets_statuses_by_canton.items %}
+          <tr>
+              <td>{{ canton|canton_abbr:False }}</td>
+              {% for month, status in statuses.items %}
+                <td>
+                  {% if status is not None %}
+                    {% for mcv in mcvs %}
+                      {% if mcv.canton == canton and mcv.date.month == month %}
+                        {% if mcv.validated %}
+                          {% include "ok.html" %}
+                        {% else %}
+                          <a class="btn btn-xs btn-primary" href="{% url 'salary:validation-update' year=year.year month=month canton=canton %}" title="{% trans "Éditer" %}"><span class="glyphicon glyphicon-pencil"></span></a>
+                        {% endif %}
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                </td>
+              {% endfor %}
+          </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

@@ -17,24 +17,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-import operator
-from functools import reduce
-
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.core.exceptions import PermissionDenied
-from django.db.models import Q
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+
+from rolepermissions.checkers import has_role
 
 from defivelo.roles import has_permission, user_cantons
 from defivelo.views import MenuView
 
-from ..forms import UserProfileForm
+from ..forms import SimpleUserProfileForm, UserProfileForm
 from ..models import (
     DV_PRIVATE_FIELDS,
     DV_PUBLIC_FIELDS,
-    MULTISELECTFIELD_REGEXP,
     PERSONAL_FIELDS,
     STD_PROFILE_FIELDS,
     UserProfile,
@@ -47,6 +44,20 @@ class ProfileMixin(MenuView):
     context_object_name = "userprofile"
     form_class = UserProfileForm
     profile_fields = STD_PROFILE_FIELDS
+
+    def get_form_class(self):
+        try:
+            user = self.object
+        except AttributeError:
+            user = self.get_object()
+        if (
+            not user
+            or user.profile.affiliation_canton
+            or UserProfileForm != self.form_class
+        ):
+            return self.form_class
+        else:
+            return SimpleUserProfileForm
 
     def get_context_data(self, **kwargs):
         context = super(ProfileMixin, self).get_context_data(**kwargs)
@@ -70,27 +81,12 @@ class ProfileMixin(MenuView):
             qs = super(ProfileMixin, self).get_queryset()
         except AttributeError:
             qs = get_user_model().objects
-
-        qs = qs.prefetch_related(
+        return qs.prefetch_related(
             "groups",
             "profile",
             "profile__actor_for",
             "profile__actor_for__translations",
         ).order_by("first_name", "last_name")
-        try:
-            usercantons = user_cantons(self.request.user)
-        except LookupError:
-            raise PermissionDenied
-        if usercantons:
-            # S'il y au moins un canton en commun
-            cantons_regexp = MULTISELECTFIELD_REGEXP % "|".join(
-                [v for v in usercantons if v]
-            )
-            allcantons_filter = [Q(profile__activity_cantons__regex=cantons_regexp)] + [
-                Q(profile__affiliation_canton__in=usercantons)
-            ]
-            qs = qs.filter(reduce(operator.or_, allcantons_filter))
-        return qs
 
     def get_success_url(self):
         updatepk = self.get_object().pk
@@ -99,7 +95,7 @@ class ProfileMixin(MenuView):
         return reverse_lazy("user-detail", kwargs={"pk": updatepk})
 
     def get_form(self, *args, **kwargs):
-        form = super(ProfileMixin, self).get_form(*args, **kwargs)
+        form = super().get_form(*args, **kwargs)
         disabled_fields = []
         # if the edit user has access, extend the update_profile_fields
         if not has_permission(self.request.user, "user_crud_dv_public_fields"):
@@ -151,16 +147,23 @@ class ProfileMixin(MenuView):
         return ret
 
     def get_form_kwargs(self):
-        kwargs = super(ProfileMixin, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
+        if self.get_form_class() == SimpleUserProfileForm and (
+            self.request.user.is_superuser or has_role(self.request.user, "power_user")
+        ):
+            kwargs["affiliation_canton"] = True
+
         if self.cantons:
             try:
                 kwargs["cantons"] = user_cantons(self.request.user)
             except LookupError:
                 pass
         if self.form_class == UserProfileForm:
+            # Ne permet qu'au bureau de créer des utilisateurs sans canton d'affiliation
             kwargs["affiliation_canton_required"] = not has_permission(
                 self.request.user, "cantons_all"
             )
+
         return kwargs
 
 
@@ -172,34 +175,32 @@ class UserSelfAccessMixin(object):
         try:
             usercantons = user_cantons(request.user)
         except LookupError:
-            usercantons = False
-
+            usercantons = []
         user = self.get_object()
+        user_cantons_intersection = [
+            orga.address_canton
+            for orga in user.managed_organizations.all()
+            if orga.address_canton in usercantons
+        ]
         if (
             # Soit c'est moi
             request.user.pk == user.pk
             or
-            # Soit j'ai le droit sur tous les cantons
+            # Soit j'ai le droit de lecture/écriture sur tous les cantons
             has_permission(request.user, "cantons_all")
             or
-            # Soit il est dans mes cantons et j'ai droit
+            # Soit j'ai le droit de lecture sur tous les cantons,
+            # mais seulement le droit d'écriture sur mes cantons d'affiliation
             (
-                usercantons
+                has_permission(request.user, self.required_permission)
                 and (
+                    user_cantons_intersection
+                    or
                     # Il est dans mes cantons d'affiliation
                     user.profile.affiliation_canton in usercantons
-                    or (
-                        # Je ne fais que le consulter et il est dans mes
-                        # cantons d'activité
-                        not edit
-                        and user.profile.activity_cantons
-                        and len(
-                            set(user.profile.activity_cantons).intersection(usercantons)
-                        )
-                        != 0
-                    )
+                    # Je ne fais que le consulter
+                    or not edit
                 )
-                and has_permission(request.user, self.required_permission)
             )
         ):
             return super(UserSelfAccessMixin, self).dispatch(request, *args, **kwargs)

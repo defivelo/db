@@ -21,7 +21,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
-from django.db import models
+from django.db import models, transaction
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.forms import ValidationError
@@ -107,6 +107,7 @@ PERSONAL_FIELDS = [
     "language",
     "languages_challenges",
     "natel",
+    "phone",
     "birthdate",
     "address_street",
     "address_no",
@@ -168,18 +169,21 @@ class UserProfile(Address, models.Model):
     languages_challenges = MultiSelectField(
         _("Prêt à animer en"), choices=DV_LANGUAGES, blank=True
     )
-    birthdate = models.DateField(_("Date"), blank=True, null=True)
+    birthdate = models.DateField(_("Date de naissance"), blank=True, null=True)
     nationality = CountryField(_("Nationalité"), default="CH")
-    work_permit = models.CharField(
-        _("Permis de travail (si pas suisse)"), max_length=255, blank=True
-    )
+    work_permit = models.CharField(_("Permis de travail"), max_length=255, blank=True)
     tax_jurisdiction = models.CharField(
-        _("Lieu d'imposition (si pas en Suisse)"), max_length=511, blank=True
+        _("Lieu d'imposition"), max_length=511, blank=True
     )
     bank_name = models.CharField(_("Nom de la banque"), max_length=511, blank=True)
-    iban = IBANField(include_countries=IBAN_SEPA_COUNTRIES, blank=True)
-    social_security = models.CharField(max_length=16, blank=True)
+    iban = IBANField(
+        _("Coordonnées bancaires (IBAN)"),
+        include_countries=IBAN_SEPA_COUNTRIES,
+        blank=True,
+    )
+    social_security = models.CharField(_("N° AVS"), max_length=16, blank=True)
     natel = models.CharField(max_length=13, blank=True)
+    phone = models.CharField(_("Téléphone"), max_length=13, blank=True)
     affiliation_canton = models.CharField(
         _("Canton d'affiliation"),
         choices=DV_STATE_CHOICES_WITH_DEFAULT,
@@ -209,7 +213,7 @@ class UserProfile(Address, models.Model):
         _("État civil"), choices=MARITALSTATUS_CHOICES, default=MARITALSTATUS_UNDEF
     )
     status = models.PositiveSmallIntegerField(
-        _("Statut"), choices=USERSTATUS_CHOICES, default=USERSTATUS_UNDEF
+        _("Statut"), choices=USERSTATUS_CHOICES, default=USERSTATUS_ACTIVE
     )
     status_updatetime = models.DateTimeField(null=True, blank=True)
     pedagogical_experience = models.TextField(_("Expérience pédagogique"), blank=True)
@@ -292,10 +296,16 @@ class UserProfile(Address, models.Model):
             user=self.user, email=self.user.email, verified=True, primary=True
         )
 
+    @transaction.atomic
     def delete(self):
         self.user.is_active = False
+        email_comment = _("Email avant suppression: %s") % self.user.email
+        self.user.email = ""
         self.user.set_unusable_password()
         self.user.save()
+        self.comments = (
+            f"{self.comments}\n{email_comment}" if self.comments else email_comment
+        )
         self.status = USERSTATUS_DELETED
         self.save()
 
@@ -376,6 +386,23 @@ class UserProfile(Address, models.Model):
         return self.actor_for.exists()
 
     @cached_property
+    def has_address(self):
+        """
+        Whether we have any address field set
+        """
+        address_fields = [
+            f.name for f in Address._meta.get_fields() if f.name.startswith("address_")
+        ]
+        return any([getattr(self, field, False) != "" for field in address_fields])
+
+    @cached_property
+    def is_paid_staff(self):
+        """
+        Whether a UserProfile is probably a paid staff
+        """
+        return self.affiliation_canton
+
+    @cached_property
     def actor_inline(self):
         return " - ".join([smart_text(a) for a in self.actor_for.all()])
 
@@ -429,6 +456,9 @@ class UserProfile(Address, models.Model):
                 elif has_role(self.user, "state_manager"):
                     title = _("Chargé·e de projet")
                     icon = "bishop"
+                elif has_role(self.user, "coordinator"):
+                    title = _("Coordina·teur·trice")
+                    icon = "pawn"
         if title and textonly:
             return title
         if icon:
@@ -455,7 +485,7 @@ class UserProfile(Address, models.Model):
 
     @cached_property
     def can_login(self):
-        return self.user.is_active and self.user.has_usable_password
+        return self.user.is_active and self.user.has_usable_password()
 
     @memoize()
     def get_seasons(self, raise_without_cantons=False):
@@ -493,6 +523,7 @@ class UserProfile(Address, models.Model):
         return (
             self.status == USERSTATUS_DELETED
             and not self.user.is_active
+            and not self.user.email
             and not self.user.has_usable_password()
         )
 
@@ -500,9 +531,10 @@ class UserProfile(Address, models.Model):
         """
         Send an email to that user
         """
-        return send_mail(
-            subject, body, settings.DEFAULT_FROM_EMAIL, [self.mailtolink,],
-        )
+        if self.user.email:
+            return send_mail(
+                subject, body, settings.DEFAULT_FROM_EMAIL, [self.mailtolink,],
+            )
 
     def __str__(self):
         return self.user.get_full_name()

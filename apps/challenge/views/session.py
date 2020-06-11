@@ -28,7 +28,7 @@ from django.views.generic.dates import WeekArchiveView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from rolepermissions.mixins import HasPermissionsMixin
+from rolepermissions.checkers import has_permission
 from tablib import Dataset
 
 from apps.common.views import ExportMixin
@@ -47,22 +47,42 @@ from .mixins import CantonSeasonFormMixin
 EXPORT_NAMETEL = u("{name} - {tel}")
 
 
-class SessionMixin(CantonSeasonFormMixin, HasPermissionsMixin, MenuView):
+class SessionMixin(CantonSeasonFormMixin, MenuView):
     required_permission = "challenge_session_crud"
     model = Session
     context_object_name = "session"
     form_class = SessionForm
-    view_does_crud = True
+    view_does_cud = True
+    raise_without_cantons = False
 
     def dispatch(self, request, *args, **kwargs):
-        if (
-            # Si c'est le bon moment
-            not self.view_does_crud
-            or (self.season and self.season.manager_can_crud)
-        ):
-            return super(SessionMixin, self).dispatch(request, *args, **kwargs)
-        else:
-            raise PermissionDenied
+        """
+        Check allowances for access to view
+        """
+        allowed = False
+
+        if has_permission(request.user, self.required_permission):
+            if not self.view_does_cud:
+                allowed = True
+            if self.season and self.season.manager_can_crud:
+                allowed = True
+        elif not self.view_does_cud:
+            try:
+                list_or_single_session_visible = self.get_object().visible
+            except AttributeError:
+                list_or_single_session_visible = True
+
+            # Read-only view when session is visible
+            if (
+                self.season
+                and self.season.unprivileged_user_can_see(request.user)
+                and list_or_single_session_visible
+            ):
+                allowed = True
+
+        if allowed:
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
 
     def get_queryset(self):
         qs = super(SessionMixin, self).get_queryset()
@@ -121,11 +141,15 @@ class SessionsListView(SessionMixin, WeekArchiveView):
     allow_future = True
     week_format = "%W"
     ordering = ["day", "begin", "duration"]
-    view_does_crud = False
+    view_does_cud = False
+    # Allow season fetch even for non-state managers
+    allow_season_fetch = True
 
 
 class SessionDetailView(SessionMixin, DetailView):
-    view_does_crud = False
+    view_does_cud = False
+    # Allow season fetch even for non-state managers
+    allow_season_fetch = True
 
     def get_context_data(self, **kwargs):
         context = super(SessionDetailView, self).get_context_data(**kwargs)
@@ -180,8 +204,10 @@ class SessionStaffChoiceView(SessionDetailView):
     template_name = "challenge/session_availability.html"
 
 
-class SessionExportView(ExportMixin, SessionMixin, HasPermissionsMixin, DetailView):
-    view_does_crud = False
+class SessionExportView(ExportMixin, SessionMixin, DetailView):
+    view_does_cud = False
+    # Allow season fetch even for non-state managers
+    allow_season_fetch = True
 
     @property
     def export_filename(self):

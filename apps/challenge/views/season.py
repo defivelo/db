@@ -38,18 +38,20 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
+from django_ical.views import ICalFeed
 from rolepermissions.mixins import HasPermissionsMixin
 from tablib import Dataset
 
 from apps.common import (
+    DV_SEASON_STATE_OPEN,
     DV_SEASON_STATE_RUNNING,
     DV_SEASON_STATES,
     DV_STATES,
     MULTISELECTFIELD_REGEXP,
 )
 from apps.common.views import ExportMixin
-from apps.user import FORMATION_KEYS, FORMATION_M1, FORMATION_M2, formation_short
-from apps.user.models import USERSTATUS_DELETED
+from apps.user import FORMATION_KEYS, FORMATION_M1, FORMATION_M2
+from apps.user.models import USERSTATUS_ACTIVE, USERSTATUS_DELETED, USERSTATUS_RESERVE
 from apps.user.views import ActorsList, HelpersList
 from defivelo.roles import has_permission, user_cantons
 from defivelo.views import MenuView
@@ -61,7 +63,6 @@ from .. import (
     CHOSEN_AS_HELPER,
     CHOSEN_AS_LEADER,
     CHOSEN_AS_NOT,
-    CHOSEN_AS_REPLACEMENT,
     CHOSEN_KEYS,
     CONFLICT_FIELDKEY,
     SEASON_WORKWISH_FIELDKEY,
@@ -82,6 +83,7 @@ from ..models.qualification import (
     CATEGORY_CHOICE_B,
     CATEGORY_CHOICE_C,
 )
+from ..utils import get_users_roles_for_session
 from .mixins import CantonSeasonFormMixin
 
 EXPORT_NAMETEL = u("{name} - {tel}")
@@ -154,7 +156,24 @@ class SeasonListView(SeasonMixin, ListView):
         return context
 
 
-class SeasonDetailView(SeasonMixin, HasPermissionsMixin, DetailView):
+class SeasonDetailView(SeasonMixin, DetailView):
+    allow_season_fetch = True
+    raise_without_cantons = False
+
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Allow view by participants of the season if allowed
+        """
+        allowed = False
+        if self.season.unprivileged_user_can_see(request.user):
+            allowed = True
+        elif has_permission(request.user, self.required_permission):
+            allowed = True
+
+        if allowed:
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
     def get_context_data(self, **kwargs):
         context = super(SeasonDetailView, self).get_context_data(**kwargs)
         # Add our submenu_category context
@@ -370,7 +389,16 @@ class SeasonAvailabilityMixin(SeasonHelpersMixin):
             return initials
 
     def get_context_data(self, **kwargs):
-        context = super(SeasonAvailabilityMixin, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+        resolvermatch = self.request.resolver_match
+        try:
+            context["helperpk"] = resolvermatch.kwargs["helperpk"]
+        except (KeyError, TypeError):
+            pass
+
+        context["user_can_see_season"] = self.season.unprivileged_user_can_see(
+            self.request.user
+        )
         # Add our submenu_category context
         context["submenu_category"] = "season-availability"
         context["sessions"] = self.object.sessions_with_qualifs.annotate(
@@ -430,7 +458,7 @@ class SeasonToStateMixin(SeasonHelpersMixin, SeasonUpdateView):
         context["tostate"] = next(
             (v for (k, v) in DV_SEASON_STATES if k == self.season_to_state)
         )
-        context["helpers"] = self.season_helpers
+        context["recipients"] = self.season_helpers
         return context
 
     def get_initial(self):
@@ -492,6 +520,9 @@ class SeasonToRunningView(SeasonToStateMixin):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["some_recipients_cant_login"] = any(
+            not user.profile.can_login for user in context["recipients"]
+        )
         context["email"] = self.get_email()
         return context
 
@@ -503,6 +534,86 @@ class SeasonToRunningView(SeasonToStateMixin):
         form_result = super().form_valid(form)
         # Then send emails
         for helper in self.season_helpers:
+            email = self.get_email(helper)
+            helper.profile.send_mail(email["subject"], email["body"])
+        return form_result
+
+
+class SeasonToOpenView(SeasonToStateMixin):
+    season_to_state = DV_SEASON_STATE_OPEN
+
+    def get_email(self, profile=None):
+        """
+        Get a simple struct with the email we're sending at this step
+        """
+        if profile:
+            helperpk = profile.pk
+        else:
+            # Fake a profile that can be used in template
+            profile = {"get_full_name": _("{Prénom} {Nom}")}
+            helperpk = 0
+
+        planning_link = self.request.build_absolute_uri(
+            reverse(
+                "season-availabilities-update",
+                kwargs={"pk": self.season.pk, "helperpk": helperpk},
+            )
+        )
+
+        return {
+            "subject": settings.EMAIL_SUBJECT_PREFIX
+            + u("Planning {season}").format(season=self.season.desc()),
+            "body": render_to_string(
+                "challenge/season_email_to_state_open.txt",
+                {
+                    "profile": profile,
+                    "season": self.season,
+                    "planning_link": planning_link,
+                    "current_site": Site.objects.get_current(),
+                },
+            ),
+        }
+
+    def dispatch(self, request, bypassperm=False, *args, **kwargs):
+        """
+        Push away if we're not allowed to go to that state now
+        """
+        if self.season and self.season.can_set_state_open:
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
+    def get_email_recipients(self):
+        """
+        List of potential helpers/actors that we want to notify.
+        This might include users that can't login.
+        """
+        return (
+            self.potential_helpers_qs()
+            .filter(profile__status__in=(USERSTATUS_ACTIVE, USERSTATUS_RESERVE))
+            .exclude(Q(profile__formation="") & Q(profile__actor_for__isnull=True))
+            .distinct()
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        recipients = list(
+            self.get_email_recipients().order_by("first_name", "last_name", "id")
+        )
+        context["recipients"] = recipients
+        context["some_recipients_cant_login"] = any(
+            not user.profile.can_login for user in recipients
+        )
+        context["email"] = self.get_email()
+        return context
+
+    def form_valid(self, form):
+        """
+        Run our specific action here
+        """
+        #  Save first
+        form_result = super().form_valid(form)
+        # Then send emails
+        for helper in self.get_email_recipients():
             email = self.get_email(helper)
             helper.profile.send_mail(email["subject"], email["body"])
         return form_result
@@ -645,9 +756,13 @@ class SeasonExportView(
         return dataset
 
 
-class SeasonPlanningExportView(
-    ExportMixin, SeasonAvailabilityMixin, HasPermissionsMixin, DetailView
+class SeasonPersonalPlanningExportView(
+    ExportMixin, SeasonAvailabilityMixin, DetailView
 ):
+    allow_season_fetch = True
+    raise_without_cantons = False
+    view_is_planning = True
+
     @property
     def export_filename(self):
         return _("Planning_Saison") + "-" + "-".join(self.season.cantons)
@@ -681,6 +796,12 @@ class SeasonPlanningExportView(
             .distinct()
             .order_by("first_name", "last_name")
         )
+        resolvermatch = self.request.resolver_match
+        try:
+            qs = qs.filter(pk=int(resolvermatch.kwargs["helperpk"]))
+        except (KeyError, TypeError):
+            pass
+
         firstcol += [user.get_full_name() for user in qs]
         dataset.append_col(firstcol)
         # Ajoute le canton d'affiliation comme deuxième colonne
@@ -702,45 +823,14 @@ class SeasonPlanningExportView(
                 "%s - %s" % (time(session.begin), time(session.end)),
                 session.n_qualifications,
             ]
-            user_session_chosen_as = dict(
-                session.availability_statuses.exclude(
-                    chosen_as=CHOSEN_AS_NOT
-                ).values_list("helper_id", "chosen_as")
-            )
-            for user in qs:
-                label = ""
-                if user == session.superleader:
-                    # Translators: Nom court pour 'Moniteur +'
-                    label = u("M+")
-                else:
-                    for quali in session.qualifications.all():
-                        if user == quali.leader:
-                            label = formation_short(FORMATION_M2, True)
-                            break
-                        elif user in quali.helpers.all():
-                            label = formation_short(FORMATION_M1, True)
-                            break
-                        elif user == quali.actor:
-                            # Translators: Nom court pour 'Intervenant'
-                            label = u("Int.")
-                            break
-                    # Vérifie tout de même si l'utilisateur est déjà sélectionné
-                    if not label and user.id in user_session_chosen_as:
-                        if user_session_chosen_as[user.id] == CHOSEN_AS_LEADER:
-                            label = formation_short(FORMATION_M2, True)
-                        elif user_session_chosen_as[user.id] == CHOSEN_AS_HELPER:
-                            label = formation_short(FORMATION_M1, True)
-                        elif user_session_chosen_as[user.id] == CHOSEN_AS_ACTOR:
-                            # Translators: Nom court pour 'Intervenant'
-                            label = u("Int.")
-                        elif user_session_chosen_as[user.id] == CHOSEN_AS_REPLACEMENT:
-                            # Translators: Nom court pour 'Moniteur de secours'
-                            label = u("S")
-                        else:
-                            label = u("×")
-                col += [label]
+            users_roles = list(get_users_roles_for_session(qs, session).values())
+            col += users_roles
             dataset.append_col(col)
         return dataset
+
+
+class SeasonPlanningExportView(SeasonPersonalPlanningExportView, HasPermissionsMixin):
+    view_is_planning = False
 
 
 class SeasonAvailabilityView(SeasonAvailabilityMixin, DetailView):
@@ -1017,4 +1107,57 @@ class SeasonErrorsListView(HasPermissionsMixin, SeasonMixin, ListView):
             .get_queryset()
             .filter(pk__in=wrong_qualifs)
             .distinct()
+        )
+
+
+class SeasonPersonalPlanningExportFeed(ICalFeed):
+    timezone = settings.TIME_ZONE
+    file_name = "sessions.ics"
+
+    def __call__(self, request, *args, **kwargs):
+        self.object = self.season = Season.objects.get(pk=kwargs.get("pk"))
+        self.request = request
+        resolvermatch = self.request.resolver_match
+        self.user = get_user_model().objects.get(
+            pk=int(resolvermatch.kwargs["helperpk"])
+        )
+        return super().__call__(request)
+
+    def items(self):
+        return self.season.sessions_with_qualifs.filter(
+            Q(superleader=self.user)
+            | Q(qualifications__actor=self.user)
+            | Q(qualifications__helpers=self.user)
+            | Q(qualifications__leader=self.user)
+        )
+
+    def item_guid(self, session):
+        return "{}-{}".format(session.id, "session")
+
+    def item_title(self, session):
+        roles_by_user = get_users_roles_for_session([self.user], session)
+        role_label = roles_by_user[self.user]
+        return " ".join([role_label, session.orga.address_canton, session.orga.name])
+
+    def item_description(self, session):
+        session_place = session.place
+        if not session_place:
+            session_place = (
+                session.address_city
+                if session.address_city
+                else session.orga.address_city
+            )
+        return " ".join(
+            [session_place, "%s - %s" % (time(session.begin), time(session.end)),]
+        )
+
+    def item_start_datetime(self, session):
+        return session.start_datetime
+
+    def item_end_datetime(self, session):
+        return session.end_datetime
+
+    def item_link(self, session):
+        return reverse(
+            "season-planning", kwargs={"pk": self.season.pk, "helperpk": self.user.id}
         )

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% load dv_filters %}
+{% block head_title %}{% with canton=mcv.canton|canton_abbr:False monthyear=mcv.date|date:'F Y' %}{% blocktrans %}{{ canton }}: Validation pour {{ monthyear }}{% endblocktrans %}{% endwith %}{% endblock %}
+
+{% block bootstrap3_extra_head %}
+    {{ form.media.css }}
+{% endblock %}
+
+{% block content %}
+    <h1>{% with canton=mcv.canton|canton_abbr:False monthyear=mcv.date|date:'F Y' %}{% blocktrans %}{{ canton }}: Validation pour {{ monthyear }}{% endblocktrans %}{% endwith %}</h1>
+    <form method="POST" class="form-horizontal" id="urls-validator">
+        {% csrf_token %}
+        {% bootstrap_form form layout='horizontal' size='small' %}
+        {% buttons %}
+            <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
+            <a class="btn btn-default" href="{% url 'salary:validations-month' year=mcv.date.year month=mcv.date.month %}">{% trans "Annuler" %}</a>
+        {% endbuttons %}
+    </form>
+{% endblock %}
+
+{% block bootstrap3_extra_script %}
+{{ form.media.js }}
+<script type="text/javascript">
+function cannotValidateUnlessAllURlsTicked() {
+  var all_checked = true;
+
+  $('#urls-validator').find('input[type="checkbox"]:not(#id_validated)').each(function(i, obj) {
+    if(!$( this ).prop("checked")) {
+      all_checked = false;
+    }
+  })
+  $('#urls-validator').find('input[type="checkbox"]#id_validated').each(function(i, obj) {
+    $( this ).prop('disabled', !all_checked);
+    if (!all_checked) {
+      $( this ).prop('checked', false);
+    }
+  })
+}
+
+$('#urls-validator').find('input[type="checkbox"]').change( cannotValidateUnlessAllURlsTicked );
+
+cannotValidateUnlessAllURlsTicked();
+</script>
+{% endblock %}

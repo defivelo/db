@@ -30,7 +30,7 @@
         </div>
     {% endif %}
 
-    {% if request.user|can:"orga_crud" %}
+    {% if request.user|can:"orga_detail_all" %}
         <div class="btn-group" role="group" aria-label="exports">
             {% if request.user|can:"user_view_list" %}
                 {% include 'export_buttons.html' with exporturl='organization-list-export' filter_querystring=filter_querystring only %}
@@ -61,7 +61,7 @@
             <th>{% trans "Nom" %}</th>
             <th>{% trans "Ville" %}</th>
             <th>{% trans "Canton" %}</th>
-            <th>{% trans "Coordinateur" %}</th>
+            <th>{% trans "Coordina·teur·trice" %}</th>
             <th>{% trans "Natel" %}</th>
             <th>{% trans "Email" %}</th>
             <th>{# Boutons #}</th>
@@ -79,24 +79,27 @@
             <td><a href="{% url 'organization-detail' pk=orga.pk %}">{{ orga.name }}</a></td>
             <td>{{ orga.address_zip }} {{ orga.address_city }}</td>
             <td>{{ orga.address_canton|canton_abbr }}</td>
-            <td>{{ orga.coordinator_fullname }}</td>
-            <td>{% if orga.coordinator_natel %}
-                {{ orga.coordinator_natel|tel_link }}
+            <td>{{ orga.coordinator.get_full_name }}</td>
+            <td>{% if orga.coordinator.profile.natel %}
+                {{ orga.coordinator.profile.natel|tel_link }}
                 {% endif %}</td>
-            <td>{% if orga.coordinator_email %}
-                <a class="email" href="mailto:{{ orga.mailtolink|urlencode }}">{{ orga.coordinator_email }}</a>
+            <td>{% if orga.coordinator.email %}
+                <a class="email"
+                  href="mailto:{{ orga.coordinator.profile.mailtolink|urlencode }}">{{ orga.coordinator.email }}</a>
                 {% endif %}</td>
             <td>
-                <a class="btn btn-primary btn-xs" href="{% url 'organization-update' pk=orga.pk %}">
-                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-                    {% trans "Éditer" %}
-                </a>
+                {% if request.user|can:'orga_crud' and request.user|inusercantons:orga.address_canton %}
+                    <a class="btn btn-primary btn-xs" href="{% url 'organization-update' pk=orga.pk %}">
+                        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                        {% trans "Éditer" %}
+                    </a>
+                {% endif %}
             </td>
         </tr>
     {% endfor %}
     </tbody>
     </table>
-    
+
     {% include 'paginator.html' with page_obj=page_obj listurl='organization-list' filter_querystring=filter_querystring %}
 
     <a class="btn btn-primary pull-right" href="{% url 'organization-create' %}">{% trans "Créer un nouvel établissement" %}</a>

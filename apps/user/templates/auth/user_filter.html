@@ -65,7 +65,9 @@
             <td>{% if request.user|can:'user_detail_other' %}<a href="{% url 'user-detail' pk=user.pk %}">{{ user.first_name }}</a>{% else %}{{ user.first_name }}{% endif %}</td>
             <td>{% if request.user|can:'user_detail_other' %}<a href="{% url 'user-detail' pk=user.pk %}">{{ user.last_name }}{% else %}{{ user.last_name }}{% endif %}</a></td>
             <td><a href="mailto:{{ user.profile.mailtolink|urlencode }}">{{ user.email }}</a></td>
-            <td>{{ user.profile.natel|tel_link }}</td>
+            <td>
+              {% if user.profile.natel %}{{ user.profile.natel|tel_link }}{% elif user.profile.phone %}{{ user.profile.phone|tel_link }}{% endif %}
+            </td>
             <td class="{{ user.profile.status_class }}">
                 {{ user.profile.status_icon|safe }}
             </td>
@@ -89,7 +91,7 @@
                     {% if user.profile.can_login %}
                         <span class="btn btn-disabled btn-xs">{{ user.profile.access_level_icon }}</span>
                     {% else %}
-                        {% if request.user|can:"user_can_send_credentials" and request.user.pk != user.pk %}
+                        {% if request.user|can:"user_can_send_credentials" and request.user.pk != user.pk and request.user|inusercantons:user.profile.affiliation_canton %}
                         <a class="btn btn-default btn-xs" href="{% url 'user-sendcredentials' pk=user.pk %}">
                             <span class="glyphicon glyphicon-envelope" aria-hidden="true" title="{% trans "Envoyer les données de connexion" %}"></span>
                         </a>

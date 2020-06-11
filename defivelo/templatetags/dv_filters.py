@@ -58,7 +58,7 @@ from apps.common import (
     STDGLYPHICON,
 )
 from apps.user import FORMATION_M1, FORMATION_M2, formation_short
-from defivelo.roles import user_cantons
+from defivelo.roles import has_permission, user_cantons
 
 register = template.Library()
 
@@ -445,13 +445,15 @@ def anyofusercantons(user, cantons):
 
 @register.filter
 def inusercantons(user, canton):
+    if has_permission(user, "cantons_all"):
+        # Also True for `canton == ''`
+        return True
     try:
         usercantons = user_cantons(user)
-        if usercantons:
-            return canton in usercantons
-        return True
-    except PermissionDenied:
-        return
+    except LookupError:
+        return False
+    else:
+        return canton in usercantons
 
 
 @register.filter
@@ -494,3 +496,12 @@ def add_qs(url, **kwargs):
     new_qs_encoded = urllib.parse.urlencode(new_qs)
 
     return urllib.parse.urlunparse(parsed_url._replace(query=new_qs_encoded))
+
+
+@register.filter
+def get_timesheet_status_for_canton(mcv, timesheets_status):
+    """
+    mcv is the object
+    timesheets_status is the canton's array of timesheet statuses
+    """
+    return timesheets_status.get(mcv.canton, None)

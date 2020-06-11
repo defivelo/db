@@ -26,7 +26,7 @@ from apps.salary.forms import ControlTimesheetFormSet, TimesheetFormSet
 from apps.salary.models import Timesheet
 from defivelo.roles import has_permission
 
-from . import timesheets_overview
+from .. import timesheets_overview
 
 
 class RedirectUserMonthlyTimesheets(RedirectView):
@@ -252,6 +252,7 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
     month_format = "%m"
     allow_empty = False
     allow_future = False
+    model = Timesheet
 
     def get_queryset(self):
         active_canton = self.request.GET.get("canton")
@@ -260,7 +261,7 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
         )
         if active_canton:
             users = users.filter(profile__affiliation_canton=active_canton)
-        return Timesheet.objects.filter(validated_at__isnull=False, user__in=users)
+        return super().get_queryset().filter(validated_at__isnull=False, user__in=users)
 
     def get_dataset_title(self):
         return _("Export Crésus {month} {year}").format(
@@ -287,10 +288,10 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
                 u("interventions"),  # actor_count
             ]
         )
+        _, object_list, _ = self.get_dated_items()
 
         salary_details_list = (
-            self.get_queryset()
-            .values("user")
+            object_list.values("user")
             .annotate(
                 cresus_employee_number=F("user__profile__cresus_employee_number"),
                 user_id=F("user_id"),
@@ -300,6 +301,7 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
                 traveltime=Sum("traveltime"),
                 overtime=Sum("overtime"),
             )
+            .order_by()
         )
 
         for salary_details in salary_details_list:
@@ -353,8 +355,9 @@ class SendTimesheetsReminder(TemplateView):
         context["redirect_url"] = self.get_redirect_url()
         context["recipients"] = self.recipients
         context["period"] = formats.date_format(date(self.year, self.month, 1), "F Y")
-        _, email_text, *_ = self.render_email_for_user(self.request.user)
+        email_subject, email_text, *_ = self.render_email_for_user(self.request.user)
         context["email_text"] = email_text
+        context["email_subject"] = email_subject
         return context
 
     def post(self, request, *args, **kwargs):

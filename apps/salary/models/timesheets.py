@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from . import BONUS_LEADER, HOURLY_RATE_HELPER, RATE_ACTOR
+from .. import BONUS_LEADER, HOURLY_RATE_HELPER, RATE_ACTOR
 
 
 class Timesheet(models.Model):

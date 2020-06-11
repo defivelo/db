@@ -34,6 +34,9 @@ def has_permission(user, permission_name):
 
 @memoize()
 def user_cantons(user):
+    """
+    List of the cantons _managed_ by this user
+    """
     if has_permission(user, "cantons_all"):
         return DV_STATES
     elif has_permission(user, "cantons_mine"):
@@ -53,7 +56,10 @@ class StateManager(AbstractUserRole):
         "user_crud_dv_private_fields": True,
         "user_can_send_credentials": True,
         "user_create": True,
+        "orga_detail_all": True,
         "orga_crud": True,
+        "orga_show": True,
+        "orga_edit": True,
         "challenge_season_crud": True,
         "challenge_session_crud": True,
         "challenge_invoice_cru": True,
@@ -80,7 +86,10 @@ class PowerUser(AbstractUserRole):
         "user_set_role": True,
         "user_mark_inactive": True,
         "home_article_crud": True,
+        "orga_detail_all": True,
         "orga_crud": True,
+        "orga_show": True,
+        "orga_edit": True,
         "challenge_invoice_cru": True,
         "challenge_invoice_reset_to_draft": True,
         "challenge_session_crud": True,
@@ -91,8 +100,16 @@ class PowerUser(AbstractUserRole):
     }
 
 
+class Coordinator(AbstractUserRole):
+    available_permissions = {
+        "orga_show": True,
+        "orga_edit": True,
+    }
+
+
 DV_AVAILABLE_ROLES = (
     (None, _("Aucun rôle")),
     ("state_manager", _("Chargé·e de projet")),
+    ("coordinator", _("Coordina·teur·trice")),
     ("power_user", _("Super-utilisa·teur·trice")),  # Bureau
 )

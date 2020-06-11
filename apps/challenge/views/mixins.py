@@ -30,6 +30,9 @@ class CantonSeasonFormMixin(object):
 
     @cached_property
     def season(self):
+        """
+        self.season a Season object of the currently running season
+        """
         try:
             seasonpk = int(
                 self.kwargs["seasonpk"]
@@ -43,6 +46,9 @@ class CantonSeasonFormMixin(object):
             if usercantons and not list(
                 set(usercantons).intersection(set(season.cantons))
             ):
+                # If the user is marked as state manager for that season
+                if season.leader == self.request.user:
+                    return season
                 # Verify that this state manager can access that canton as mobile
                 if (
                     list(
@@ -56,7 +62,7 @@ class CantonSeasonFormMixin(object):
                     raise LookupError
                 raise PermissionDenied
         except LookupError:
-            # That user doesn't have allowed seasons
+            # That user doesn't manage cantons
             if self.allow_season_fetch:
                 season = Season.objects.prefetch_related("leader").get(pk=seasonpk)
             else:

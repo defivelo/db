@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 
 from django.conf import settings
 from django.db import models
@@ -58,6 +58,7 @@ class Session(Address, models.Model):
     duration = models.DurationField(
         _("Durée"), default=timedelta(hours=DEFAULT_SESSION_DURATION_HOURS)
     )
+    visible = models.BooleanField(_("Visible pour les moniteurs"), default=False)
     orga = models.ForeignKey(
         Organization,
         verbose_name=_("Établissement"),
@@ -113,6 +114,8 @@ class Session(Address, models.Model):
     @property
     def errors(self):
         errors = []
+        if not self.visible:
+            errors.append(_("Visibilité"))
         if not self.begin or not self.duration:
             errors.append(_("Horaire"))
         if not self.fallback_plan:
@@ -143,6 +146,16 @@ class Session(Address, models.Model):
                     ]
                 )
             )
+
+    @property
+    def start_datetime(self):
+        return datetime.combine(
+            self.day, self.begin if self.begin is not None else time.min
+        )
+
+    @property
+    def end_datetime(self):
+        return self.start_datetime + self.duration
 
     @cached_property
     def fallback(self):

@@ -24,14 +24,13 @@
                 {% bootstrap_field form.website layout='horizontal' size='small' %}
             </div>
             <div role="tabpanel" class="tab-pane active" id="coord">
-                {% bootstrap_field form.coordinator_fullname layout='horizontal' size='small' %}
-                {% bootstrap_field form.coordinator_phone layout='horizontal' size='small' %}
-                {% bootstrap_field form.coordinator_natel layout='horizontal' size='small' %}
-                {% bootstrap_field form.coordinator_email layout='horizontal' size='small' %}
+                {% bootstrap_field form.coordinator layout='horizontal' size='small' %}
             </div>
             <div role="tabpanel" class="tab-pane active" id="comments">
                 {% bootstrap_field form.status layout='horizontal' size='small' %}
-                {% bootstrap_field form.comments layout='horizontal' size='small' %}
+                {% if form.comments %}
+                    {% bootstrap_field form.comments layout='horizontal' size='small' %}
+                {% endif %}
             </div>
         </div>
 

@@ -61,7 +61,7 @@ class SwissTimeInput(DateTimePicker):
         super().__init__(
             attrs,
             icon_attrs={"class": "glyphicon glyphicon-time"},
-            options={"format": "HH:mm", "stepping": 15},
+            options={"format": "HH:mm", "stepping": 5},
             *args,
             **kwargs,
         )

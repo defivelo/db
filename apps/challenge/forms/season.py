@@ -26,7 +26,7 @@ from bootstrap3_datetime.widgets import DateTimePicker
 from dal.forward import Const as dal_const
 from dal_select2.widgets import ModelSelect2
 
-from apps.common import DV_SEASON_STATE_RUNNING, DV_SEASON_STATES
+from apps.common import DV_SEASON_STATE_OPEN, DV_SEASON_STATE_RUNNING, DV_SEASON_STATES
 from apps.user import FORMATION_KEYS, FORMATION_M2
 from apps.user.models import USERSTATUS_DELETED
 
@@ -62,7 +62,8 @@ class SeasonForm(forms.ModelForm):
             self.fields["state"].choices = (
                 (k, v)
                 for (k, v) in state_choices
-                if k == season.state or k not in [DV_SEASON_STATE_RUNNING]
+                if k == season.state
+                or k not in [DV_SEASON_STATE_RUNNING, DV_SEASON_STATE_OPEN]
             )
         except AttributeError:
             pass

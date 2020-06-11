@@ -22,7 +22,13 @@
         {% endfor %}</tr>
     <tr>{% for session in sessions %}
             <th class="text-center">
-            {% if can_crud %}<a id="sess{{session.pk}}" href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}" title="{% trans "Vers la session" %}">{% endif %}{% blocktrans count n=session.n_qualifs|add:'0' %}1 Qualif'{% plural %}{{ n }} Qualifs{% endblocktrans %}{% if can_crud %}</a>{% endif %}
+            {% if can_crud or user_can_see_season and session.visible %}
+              <a id="sess{{session.pk}}" href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}" title="{% trans "Vers la session" %}">
+            {% endif %}
+            {% blocktrans count n=session.n_qualifs|add:'0' %}1 Qualif'{% plural %}{{ n }} Qualifs{% endblocktrans %}
+            {% if can_crud or user_can_see_season and session.visible %}
+              </a>
+            {% endif %}
             </th>
         {% endfor %}</tr>
     {% if chosen_stats %}

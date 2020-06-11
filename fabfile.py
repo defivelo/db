@@ -5,12 +5,14 @@ import random
 import subprocess
 from datetime import datetime
 from io import StringIO
+from tempfile import NamedTemporaryFile
 
 import dj_database_url
 from dulwich import porcelain
 from fabric import task
 from fabric.connection import Connection
 from invoke import Exit
+from invoke.context import Context
 from invoke.exceptions import UnexpectedExit
 
 ENVIRONMENTS = {
@@ -34,6 +36,7 @@ ENVIRONMENTS = {
         "host": "wpy10809@onhp-python3.iron.bsa.oriented.ch:29992",
         "pid": "/run/uwsgi/app/staging.intranet.defi-velo.ch/pid",
         "ini": "/etc/uwsgi/apps-enabled/staging.intranet.defi-velo.ch.ini",
+        "requirements": "staging",
         "settings": {
             "ALLOWED_HOSTS": "\n".join(["staging.intranet.defi-velo.ch"]),
             "MEDIA_URL": "/media/",
@@ -43,11 +46,15 @@ ENVIRONMENTS = {
             "SITE_DOMAIN": "staging.intranet.defi-velo.ch",
             "VIRTUAL_ENV": "/var/www/intranet.defi-velo.ch/staging/venv",
             "USE_DB_EMAIL_BACKEND": "1",
+            "DJANGO_SETTINGS_MODULE": "defivelo.settings.staging",
         },
     },
 }
 
 project_name = "defivelo"
+project_name_verbose = "Intranet Défi Vélo"
+
+PRODUCTION_DB_NAME = "intranetdefiveloch001"
 
 
 def remote(task_func):
@@ -169,7 +176,7 @@ class CustomConnection(Connection):
         """
         return self.run_in_venv("python", args, **run_kwargs)
 
-    def manage_py(self, args, **run_kwargs):
+    def manage_py(self, args, debug=False, **run_kwargs):
         """
         manage.py with the python from the venv, in the project_root
         """
@@ -179,6 +186,8 @@ class CustomConnection(Connection):
             }
         except KeyError:
             env = {}
+        if debug:
+            env["DEBUG"] = 1
         return self.python("./manage.py {}".format(args), env=env, **run_kwargs)
 
     def set_setting(self, name, value=None, force: bool = True):
@@ -204,10 +213,9 @@ class CustomConnection(Connection):
                 value = "1" if value else ""
             self.put(StringIO("{}\n".format(value)), envfile_path)
 
-    def dump_db(self, destination):
+    def db_creds(self):
         """
-        Dump the database to the given directory and return the path to the file created.
-        This creates a gzipped SQL file.
+        Return DB dictionary of credentials from the DATABASE_URL envdir var
         """
         with self.cd(self.project_root):
             db_credentials = self.run(
@@ -219,6 +227,14 @@ class CustomConnection(Connection):
             raise NotImplementedError(
                 "The dump_db task doesn't support the remote database engine"
             )
+        return db_credentials_dict
+
+    def dump_db(self, destination):
+        """
+        Dump the database to the given directory and return the path to the file created.
+        This creates a gzipped SQL file.
+        """
+        db_credentials_dict = self.db_creds()
 
         outfile = os.path.join(
             destination, datetime.now().strftime("%Y-%m-%d_%H%M%S.sql.gz")
@@ -235,6 +251,42 @@ class CustomConnection(Connection):
         )
 
         return outfile
+
+    def drop_and_recreate_db(
+        self, production_db_name: str = PRODUCTION_DB_NAME, **kwargs
+    ):
+        """
+        Drop and recreate an empty DB for this environment
+        """
+        db_creds = self.db_creds()
+        try:
+            confirmed = kwargs.pop("confirm_that_this_is_really_what_I_want")
+        except KeyError:
+            confirmed = False
+
+        if not confirmed:
+            raise Exit("You need to pass the righteous argument to proceed with this")
+
+        if db_creds["NAME"] == production_db_name:
+            raise Exit("This is the production DB, abort.")
+        self.run(
+            f"dropdb -h '{db_creds['HOST']}' -U '{db_creds['USER']}' '{db_creds['NAME']}'",
+            env={"PGPASSWORD": db_creds["PASSWORD"].replace("$", "\$")},
+        )
+        self.run(
+            f"createdb -h '{db_creds['HOST']}' -U '{db_creds['USER']}' '{db_creds['NAME']}'",
+            env={"PGPASSWORD": db_creds["PASSWORD"].replace("$", "\$")},
+        )
+
+    def restore_dump(self, db_dump_gz):
+        """
+        Restore a gz DB dump to our database
+        """
+        db_creds = self.db_creds()
+        self.run(
+            f"gunzip -c {db_dump_gz} | psql -h '{db_creds['HOST']}' -U '{db_creds['USER']}' '{db_creds['NAME']}'",
+            env={"PGPASSWORD": db_creds["PASSWORD"].replace("$", "\$")},
+        )
 
     def create_structure(self):
         """
@@ -326,6 +378,84 @@ def fetch_db(c, destination="."):
     c.conn.run("rm %s" % dump_path)
 
     return os.path.join(destination, filename)
+
+
+@task
+@remote
+def reset_db_from_prod(c):
+    """
+    Restore the given database dump.
+
+    The dump must be a gzipped SQL dump. If the dump_file parameter is not set,
+    the database will be dumped and retrieved from the remote host.
+    """
+    if not c.environment == "staging":
+        raise Exit(
+            "reset_db_from_prod can only be executed for the staging environment"
+        )
+
+    # Get PROD connection information
+    try:
+        prod_conf = ENVIRONMENTS["prod"]
+    except KeyError:
+        raise Exit("reset_db_from_prod needs to access the 'prod' environment")
+
+    #  Do a pre-backup
+    c.conn.dump_db(c.conn.backups_root)
+
+    prod_ctx = Context(prod_conf)
+    prod_ctx.conn = CustomConnection(host=prod_conf["host"], inline_ssh_env=True)
+    prod_ctx.conn.config.load_overrides(prod_conf)
+
+    prod_dump_filename = None
+
+    with NamedTemporaryFile() as local_transit_file:
+
+        # Handle the production part:
+        with prod_ctx.conn as conn:
+            # Dump the PROD DB
+            prod_dump_path = conn.dump_db("~")
+
+            # Download it here, assuming PROD and STAGING can be on complete different servers (it's not the case I know)
+            subprocess.run(
+                [
+                    "scp",
+                    "-P",
+                    str(conn.port),
+                    f"{conn.user}@{conn.host}:{prod_dump_path}",
+                    local_transit_file.name,
+                ]
+            )
+
+            # Delete the PROD dump from the server
+            conn.run("rm %s" % prod_dump_path)
+
+        # Now push to staging
+        with c.conn as conn:
+            # Put it to ~
+            subprocess.run(
+                [
+                    "scp",
+                    "-P",
+                    str(conn.port),
+                    local_transit_file.name,
+                    f"{conn.user}@{conn.host}:{prod_dump_path}",
+                ]
+            )
+            # OK. Now we have a prod backup on the staging environment. Proceed to restoring it
+            conn.drop_and_recreate_db(confirm_that_this_is_really_what_I_want=True)
+            # Restore the dump there
+            conn.restore_dump(prod_dump_path)
+            # Now remove the dump from the remote path too
+            conn.run("rm %s" % prod_dump_path)
+
+    # Run what's needed to bring the target env to a working state
+    dj_migrate_database(c)
+    c.conn.manage_py(
+        f'set_default_site --name "{project_name_verbose} ({c.environment})" --domain "{c.config.settings["SITE_DOMAIN"]}"'
+    )
+    c.conn.manage_py(f"set_fake_passwords", debug=True)
+    restart_uwsgi(c)
 
 
 @task
@@ -452,7 +582,12 @@ def install_requirements(c):
     except UnexpectedExit:
         c.conn.mk_venv()
 
-    c.conn.pip("install -r requirements/base.txt")
+    try:
+        requirements_variant = c.config.requirements
+    except AttributeError:
+        requirements_variant = "base"
+
+    c.conn.pip(f"install -r requirements/{requirements_variant}.txt")
 
 
 @task
@@ -483,9 +618,7 @@ def sync_settings(c):
         c.conn.set_setting(setting, force=False)
 
     c.conn.set_setting(
-        "DJANGO_SETTINGS_MODULE",
-        value="%s.config.settings.base" % project_name,
-        force=False,
+        "DJANGO_SETTINGS_MODULE", value="%s.settings.base" % project_name, force=False,
     )
     c.conn.set_setting("SECRET_KEY", value=generate_secret_key(), force=False)
 

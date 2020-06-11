@@ -60,10 +60,36 @@
                     {% endif %}
                     </ul>
             </li>
-            {% if user|can:'user_view_list' %}
-                <li{% if 'user' in menu_category %} class="active"{% endif %}><a href="{% url 'user-list' %}">{% trans "Personnes" %}</a></li>
-            {% endif %}
-            {% if user|can:'orga_crud' %}
+            {% if user|can:"orga_show" and user.managed_organizations.count %}
+              <li{% if 'organization' in menu_category %} class="active" {% endif %}>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                  aria-haspopup="true" aria-expanded="false">{% trans "Établissements" %}<span
+                    class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  {% if user|can:'orga_detail_all' %}
+                  <li{% if 'organization' in menu_category  %} class="active" {% endif %}><a
+                      href="{% url 'organization-list' %}">{% trans "Tous" %}</a></li>
+                    {% endif %}
+                    {% for orga in user.managed_organizations.all %}
+                    <li><a href="{% url 'organization-detail' pk=orga.pk %}">{{ orga }}</a></li>
+                    {% endfor %}
+                </ul>
+              </li>
+            {% elif user|can:'user_view_list' or user|can:'orga_crud' %}
+                <li>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                      {% trans "Base de données" %}<span class="caret"></span>
+                      <ul class="dropdown-menu">
+                          {% if user|can:'user_view_list' %}
+                              <li{% if 'user' in menu_category %} class="active"{% endif %}><a href="{% url 'user-list' %}">{% trans "Personnes" %}</a></li>
+                          {% endif %}
+                          {% if user|can:'orga_detail_all' %}
+                              <li{% if 'organization' in menu_category  %} class="active"{% endif %}><a href="{% url 'organization-list' %}">{% trans "Établissements" %}</a></li>
+                          {% endif %}
+                      </ul>
+                    </a>
+                </li>
+            {% elif user|can:'orga_detail_all' %}
                 <li{% if 'organization' in menu_category  %} class="active"{% endif %}><a href="{% url 'organization-list' %}">{% trans "Établissements" %}</a></li>
             {% endif %}
             {% if user|can:'challenge_season_crud' %}
@@ -79,10 +105,25 @@
                 </li>
             {% endif %}
             {% with now|date:'Y' as year %}
-              <li{% if 'timesheet' in menu_category  %} class="active" {% endif %}><a
-                  href="{% url 'salary:timesheets-overview' year=year %}">{% trans "Contrôle des heures" %}</a>
-                  </li>
-              {% endwith %}
+              {% if user|can:'cantons_mine'%}
+                <li{% if 'finance' in menu_category  %} class="active"{% endif %}>
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Finances" %}<span class="caret"></span></a>
+                      <ul class="dropdown-menu">
+                        <li{% if 'validations' in menu_category  %} class="active" {% endif %}>
+                         <a href="{% url 'salary:validations-year' year=year %}">{% trans "Validations mensuelles" %}</a>
+                        </li>
+              {% endif %}
+                        <li{% if 'timesheet' in menu_category  %} class="active" {% endif %}>
+                          <a href="{% url 'salary:timesheets-overview' year=year %}">{% trans "Contrôle des heures" %}</a>
+                        </li>
+              {% if user|can:'cantons_mine'%}
+                      </ul>
+                  </a>
+                </li>
+              {% endif %}
+            {% endwith %}
+
+
             {% if user|can:'settings_crud' %}
                 <li{% if 'settings' in menu_category  %} class="active"{% endif %}>
                     <a href="{% url 'annualstatesettings-list' year=now.year %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Admin" %}<span class="caret"></span></a>

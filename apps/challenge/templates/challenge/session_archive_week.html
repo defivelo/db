@@ -31,7 +31,7 @@
     
     <table class="table">
     {% for session in sessions %}
-        {% include "challenge/session_item_in_list.html" with session=session season=season only %}
+        {% include "challenge/session_item_in_list.html" with session=session season=season user=request.user only %}
     {% endfor %}
     </table>
 

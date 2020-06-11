@@ -18,14 +18,27 @@
 {{ email.body }}</pre>
     </blockquote>
     <p>{% trans "Ce courriel sera envoyé à:" %}</p>
-    {% if helpers %}
+    {% if recipients %}
       <ul>
-      {% for helper in helpers %}
-        <li><a href="mailto:{{ helper.profile.mailtolink|urlencode }}">{{ helper.profile.mailtolink }}</a></li>
+      {% for recipient in recipients %}
+          <li>
+            {% if not recipient.profile.can_login %}
+                {% trans "Cet utilisateur ne peut pas se connecter à l’intranet (il n'a pas de mot de passe)." as label %}
+                <span class="glyphicon glyphicon-warning-sign" aria-label="{{ label }}" title="{{ label }}"></span>
+            {% endif %}
+            <a href="{% url 'user-detail' pk=recipient.pk %}">
+                {{ recipient.profile.mailtolink }}
+            </a>
+          </li>
       {% endfor %}
       </ul>
     {% endif %}
     {{ form.errors }}
+    {% if some_recipients_cant_login %}
+      <div class="alert alert-warning">
+        {% trans "Certains destinataires ne peuvent pas se connecter à l’intranet (ils n’ont pas de mot de passe)." %}
+      </div>
+    {% endif %}
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
         {% bootstrap_form form layout='horizontal' size='small' %}

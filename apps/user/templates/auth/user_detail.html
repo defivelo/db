@@ -17,24 +17,26 @@
                 {% if userprofile.profile.actor %}
                     <span class="badge pull-right">{{ userprofile.profile.actor_inline }} {{ userprofile.profile.actor_icon }}</span>
                 {% endif %}
-                {% if userprofile.profile.can_login %}
-                    <span class="badge pull-right">{{ userprofile.profile.access_level_icon }}</span>
-                    {% if request.user|can:"user_can_resend_credentials" %}
-                        <a class="badge pull-right" href="{% url 'user-resendcredentials' pk=userprofile.pk %}" title="{% trans "Réinitialiser les données de connexion" %}">
-                            <span class="glyphicon glyphicon-envelope" aria-hidden="true" title="{% trans "Réinitialiser les données de connexion" %}"></span>
+                {% if request.user|inusercantons:userprofile.profile.affiliation_canton or request.user|inusercantons:userprofilecanton %}
+                    {% if userprofile.profile.can_login %}
+                        <span class="badge pull-right">{{ userprofile.profile.access_level_icon }}</span>
+                        {% if request.user|can:"user_can_resend_credentials" %}
+                            <a class="badge pull-right" href="{% url 'user-resendcredentials' pk=userprofile.pk %}" title="{% trans "Réinitialiser les données de connexion" %}">
+                                <span class="glyphicon glyphicon-envelope" aria-hidden="true" title="{% trans "Réinitialiser les données de connexion" %}"></span>
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        {% if request.user|can:"user_can_send_credentials" and request.user.pk != userprofile.pk %}
+                            <a class="badge pull-right" href="{% url 'user-sendcredentials' pk=userprofile.pk %}" title="{% trans "Envoyer les données de connexion" %}">
+                                <span class="glyphicon glyphicon-envelope" aria-hidden="true" title="{% trans "Envoyer les données de connexion" %}"></span>
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                    {% if request.user|can:"user_deletions" and request.user.pk != userprofile.pk and not userprofile.profile.deleted %}
+                        <a class="badge pull-right" href="{% url 'user-delete' pk=userprofile.pk %}" title="{% trans "Supprimer" %}">
+                            <span class="glyphicon glyphicon-trash" aria-hidden="true" title="{% trans "Supprimer" %}"></span>
                         </a>
                     {% endif %}
-                {% else %}
-                    {% if request.user|can:"user_can_send_credentials" and request.user.pk != userprofile.pk %}
-                        <a class="badge pull-right" href="{% url 'user-sendcredentials' pk=userprofile.pk %}" title="{% trans "Envoyer les données de connexion" %}">
-                            <span class="glyphicon glyphicon-envelope" aria-hidden="true" title="{% trans "Envoyer les données de connexion" %}"></span>
-                        </a>
-                    {% endif %}
-                {% endif %}
-                {% if request.user|can:"user_deletions" and request.user.pk != userprofile.pk and not userprofile.profile.deleted %}
-                    <a class="badge pull-right" href="{% url 'user-delete' pk=userprofile.pk %}" title="{% trans "Supprimer" %}">
-                        <span class="glyphicon glyphicon-trash" aria-hidden="true" title="{% trans "Supprimer" %}"></span>
-                    </a>
                 {% endif %}
             </h2>
         </div>
@@ -62,7 +64,8 @@
                     <dl class="dl-horizontal">
                         <dt>{% trans "Nom" %}</dt>
                             <dd>{{ userprofile.get_full_name }}</dd>
-                        <dt>{% trans "Adresse" %}</dt>
+                        {% if userprofile.profile.has_address %}
+                          <dt>{% trans "Adresse" %}</dt>
                             <dd>
                                 <div class="street-address">{{ userprofile.profile.address_street }} {{ userprofile.profile.address_no }}</div>
                                 <div>
@@ -71,7 +74,8 @@
                                     ({{ userprofile.profile.address_canton }})
                                     {% endif %}
                                 </div>
-                        </dd>
+                            </dd>
+                        {% endif %}
                     </dl>
                 </div>
                 <div role="tabpane" class="tab-pane" id="contacts">
@@ -88,9 +92,14 @@
                             <dt>{% trans "Natel" %}</dt>
                                 <dd>{{ userprofile.profile.natel|tel_link }}</dd>
                         {% endif %}
+                        {% if userprofile.profile.phone %}
+                            <dt>{% trans "Téléphone" %}</dt>
+                                <dd>{{ userprofile.profile.phone|tel_link }}</dd>
+                        {% endif %}
                     </dl>
                 </div>
-                <div role="tabpane" class="tab-pane" id="administrativia">
+                {% if userprofile.profile.is_paid_staff %}
+                  <div role="tabpane" class="tab-pane" id="administrativia">
                     <dl class="dl-horizontal">
                         {% if userprofile.profile.nationality %}
                             <dt>{% trans "Nationalité" %}</dt>
@@ -129,9 +138,11 @@
                                 <dd>{{ userprofile.profile.marital_status_full }}</dd>
                         {% endif %}
                     </dl>
-                </div>
+                  </div>
+                {% endif %}
                 <div role="tabpane" class="tab-pane" id="defi">
                     <dl class="dl-horizontal">
+                      {% if userprofile.profile.is_paid_staff %}
                         {% if userprofile.profile.formation %}
                             <dt>{% trans "Formation" %}</dt><dd>{{ userprofile.profile.formation_full }}
                             {% if userprofile.profile.formation_firstdate %}
@@ -144,6 +155,7 @@
                         {% if userprofile.profile.actor %}
                             <dt>{% trans "Intervenant" %}</dt><dd>{{ userprofile.profile.actor_for.all|join:'<br />' }}</dd>
                         {% endif %}
+                      {% endif %}
                         {% if userprofile.profile.status > 0 %}
                         <dt>{% trans "État" %}</dt>
                             <dd class="text-{{ userprofile.profile.status_class }}">
@@ -154,6 +166,7 @@
                                     {% endif %}
                             </dd>
                         {% endif %}
+                      {% if userprofile.profile.is_paid_staff %}
                         {% if userprofile.profile.bagstatus > 0 %}
                             <dt>{% trans "Sac Défi Vélo" %}</dt>
                                 <dd>
@@ -168,18 +181,21 @@
                             <dt>{% trans "Exp. pédagogique" %}</dt><dd>{{ userprofile.profile.pedagogical_experience }}</dd>
                         {% endif %}
                         <dt>{% trans "Cours samaritain" %}</dt><dd><span class="glyphicon glyphicon-{% if userprofile.profile.firstmed_course %}check{% else %}unchecked{% endif %}"></span> {{ userprofile.profile.firstmed_course_comm }}</dd>
+                      {% endif %}
                     </dl>
                 </div>
                     <div role="tabpane" class="tab-pane" id="cantons">
                         <dl class="dl-horizontal">
-                        {% if userprofile.profile.affiliation_canton %}
+                        {% if userprofile.profile.is_paid_staff %}
+                          {% if userprofile.profile.affiliation_canton %}
                             <dt>{% trans "Canton d'affiliation" %}</dt>
                             <dd>{{ userprofile.profile.affiliation_canton|canton_abbr:False }}</dd>
-                        {% endif %}
-                        {% if userprofile.profile.activity_cantons %}
+                          {% endif %}
+                          {% if userprofile.profile.activity_cantons %}
                             <dt>{% trans "Défi Vélo Mobile" %}</dt>
                             <dd>{{ userprofile.profile.activity_cantons|cantons_abbr:False|join:"<br />" }}
                             </dd>
+                          {% endif %}
                         {% endif %}
                         {% if userprofile.profile.can_login %}
                             <dt>{% trans "Niveau d'accès" %}</dt>
@@ -188,6 +204,14 @@
                         {% if userprofile.profile.managed_cantons %}
                             <dt>{% trans "Cantons gérés" %}</dt>
                             <dd>{{ userprofile.profile.managed_cantons|cantons_abbr:False|join:"<br />" }}</dd>
+                        {% endif %}
+                        {% if userprofile.managed_organizations %}
+                            <dt>{% trans "Établissements" %}</dt>
+                            <dd>{% for orga in userprofile.managed_organizations.all %}
+                                  <a href="{% url 'organization-detail' pk=orga.pk %}">{{ orga.name }}</a> ({{ orga.address_canton|canton_abbr:False }})
+                                  {% if not forloop.last %}</br>{% endif %}
+                                {% endfor %}
+                            </dd>
                         {% endif %}
                         </dl>
                     </div>
@@ -207,7 +231,7 @@
                     <div role="tabpane" class="tab-pane panel panel-danger" id="notes">
                         <div class="panel-heading">{% trans "Remarques privées" %}</div>
                         <div class="panel-body">
-                        {{ userprofile.profile.comments }}
+                        {{ userprofile.profile.comments|linebreaksbr }}
                         </div>
                     </div>
                 {% endif %}
@@ -216,7 +240,7 @@
     </div>
     {% buttons %}
     <div class="hidden-print">
-        {% if request.user.pk == userprofile.pk or request.user|can:"user_edit_all" or request.user|can:"user_edit_other" and request.user|inusercantons:userprofile.profile.affiliation_canton %}
+        {% if request.user.pk == userprofile.pk or request.user|can:"cantons_all" or request.user|can:"user_edit_other" and request.user|inusercantons:userprofile.profile.affiliation_canton or request.user|can:"user_edit_other" and request.user|inusercantons:userprofilecanton %}
             <a class="btn btn-primary pull-right" href="{% url 'user-update' pk=userprofile.pk %}">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="{% trans "Éditer" %}"></span>
                 {% trans "Éditer" %}

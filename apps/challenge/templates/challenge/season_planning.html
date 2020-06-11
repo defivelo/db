@@ -8,7 +8,7 @@
     {% include "challenge/season_header.html" with season=season only %}
     <h4>{% trans "Planning" %}</h4>
         <table class="table text-center table-avail">
-        {% include "challenge/season_availability_thead.html" with sessions=sessions season=season user=request.user preamble_columns=3 only %}
+        {% include "challenge/season_availability_thead.html" with sessions=sessions season=season user=request.user preamble_columns=3 user_can_see_season=user_can_see_season only %}
         <tbody>
             {% for helper_category,helpers in potential_helpers %}
                 {% if helpers %}
@@ -28,6 +28,16 @@
         </table>
 
 <div class="hidden-print">
-    <a class="btn btn-default" href="{% url 'season-list' season.year %}">{% blocktrans with year=season.year %}Saisons {{ year }}{% endblocktrans %}</a>
+</div>
+<div class="hidden-print">
+  <a class="btn btn-default" href="{% url 'season-list' season.year %}">{% blocktrans with year=season.year %}Saisons {{ year }}{% endblocktrans %}</a>
+
+  <div class="btn-group" role="group" aria-label="exports">
+    {% include 'export_buttons.html' with exporturl='season-personal-planning-export' seasonpk=season.pk exportargs=helperpk filter_querystring=filter_querystring only %}
+    <a class="btn btn-info btn-sm" title="{% blocktrans %}Calendrier{% endblocktrans %}" href="{% url "season-personal-calendar" season.pk helperpk %}">
+      <span class=" glyphicon glyphicon-calendar" aria-hidden="true"></span>
+      {% trans "ics" %}
+    </a>
+  </div>
 </div>
 {% endblock %}

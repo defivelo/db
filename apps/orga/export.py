@@ -44,7 +44,7 @@ class OrganizationResource(resources.ModelResource):
     )
     website = fields.Field(column_name=_("Site web"), attribute="website")
     coordinator_fullname = fields.Field(
-        column_name=_("Coordinateur"), attribute="coordinator_fullname"
+        column_name=_("Coordina·teur·trice"), attribute="coordinator_fullname"
     )
     coordinator_phone = fields.Field(
         column_name=_("Téléphone"), attribute="coordinator_phone"
@@ -67,3 +67,23 @@ class OrganizationResource(resources.ModelResource):
         return canton_abbr(
             field.address_canton, abbr=False, long=True, fix_special=True
         )
+
+    def dehydrate_coordinator_fullname(self, field):
+        return field.coordinator.get_full_name() if field.coordinator else ""
+
+    def dehydrate_coordinator_natel(self, field):
+        return (
+            field.coordinator.profile.natel
+            if field.coordinator and field.coordinator.profile
+            else ""
+        )
+
+    def dehydrate_coordinator_phone(self, field):
+        return (
+            field.coordinator.profile.phone
+            if field.coordinator and field.coordinator.profile
+            else ""
+        )
+
+    def dehydrate_coordinator_email(self, field):
+        return field.coordinator.email if field.coordinator else ""

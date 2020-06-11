@@ -20,7 +20,9 @@ from __future__ import unicode_literals
 from datetime import date, timedelta
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models import Q
 from django.urls import reverse
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
@@ -136,9 +138,13 @@ class Season(models.Model):
     def staff_can_see_planning(self):
         return self.state == DV_SEASON_STATE_RUNNING
 
-    @cached_property
+    @property
+    def can_set_state_open(self):
+        return self.state == DV_SEASON_STATE_PLANNING
+
+    @property
     def can_set_state_running(self):
-        return self.state in [DV_SEASON_STATE_PLANNING, DV_SEASON_STATE_OPEN]
+        return self.state in [DV_SEASON_STATE_OPEN]
 
     @cached_property
     def manager_can_crud(self):
@@ -188,6 +194,25 @@ class Season(models.Model):
                 .order_by("day", "begin", "orga__name")
             )
         return self.sessions_with_q
+
+    @cached_property
+    def all_helpers_qs(self):
+        User = get_user_model()
+        return User.objects.filter(
+            Q(qualifs_mon2__session__in=self.sessions_with_qualifs)
+            | Q(qualifs_mon1__session__in=self.sessions_with_qualifs)
+            | Q(qualifs_actor__session__in=self.sessions_with_qualifs)
+        ).distinct()
+
+    def unprivileged_user_can_see(self, user):
+        """
+        Whether a user can consult this season;
+        All users selected in season can see all of this season's sessions
+        """
+        return (
+            self.state == DV_SEASON_STATE_RUNNING
+            and self.all_helpers_qs.filter(id=user.id).exists()
+        )
 
     def get_absolute_url(self):
         return reverse("season-detail", args=[self.pk])

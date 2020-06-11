@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.encoding import python_2_unicode_compatible
@@ -44,16 +45,18 @@ class Organization(Address, models.Model):
     abbr = models.CharField(_("Abréviation"), max_length=16, blank=True)
     name = models.CharField(_("Nom"), max_length=255)
     website = models.URLField(_("Site web"), blank=True)
-    coordinator_fullname = models.CharField(
-        _("Coordinateur"), max_length=512, blank=True
-    )
-    coordinator_phone = models.CharField(_("Téléphone"), max_length=13, blank=True)
-    coordinator_natel = models.CharField(_("Natel"), max_length=13, blank=True)
-    coordinator_email = models.EmailField(_("Courriel"), blank=True)
     status = models.PositiveSmallIntegerField(
         _("Statut"), choices=ORGASTATUS_CHOICES, default=ORGASTATUS_ACTIVE
     )
     comments = models.TextField(_("Remarques"), blank=True)
+
+    coordinator = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="managed_organizations",
+        verbose_name=_("Coordina·teur·trice"),
+        null=True,
+        on_delete=models.SET_NULL,
+    )
 
     @cached_property
     def abbr_verb(self):
@@ -89,12 +92,6 @@ class Organization(Address, models.Model):
         elif self.status == ORGASTATUS_INACTIVE:
             css_class = "danger"  # Red
         return css_class
-
-    @property
-    def mailtolink(self):
-        return "{name} <{email}>".format(
-            name=self.coordinator_fullname, email=self.coordinator_email
-        )
 
     def shortname(self):
         return "{abbr}{city}".format(

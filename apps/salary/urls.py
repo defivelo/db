@@ -1,6 +1,7 @@
 from django.conf.urls import include, url
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.views.decorators.cache import never_cache
 from django.views.generic import RedirectView
 
 from apps.salary.views import (
@@ -8,6 +9,9 @@ from apps.salary.views import (
     RedirectUserMonthlyTimesheets,
     SendTimesheetsReminder,
     UserMonthlyTimesheets,
+    ValidationsMonthView,
+    ValidationsYearView,
+    ValidationUpdate,
     YearlyTimesheets,
 )
 
@@ -57,6 +61,38 @@ urlpatterns = [
                                 r"^send_reminder/$",
                                 SendTimesheetsReminder.as_view(),
                                 name="send-timesheets-reminder",
+                            ),
+                        ]
+                    ),
+                ),
+            ]
+        ),
+    ),
+    # Validations
+    url(
+        r"^validations/(?P<year>[0-9]{4})/",
+        include(
+            [
+                url(
+                    r"^$",
+                    never_cache(ValidationsYearView.as_view()),
+                    name="validations-year",
+                ),
+                url(
+                    r"^(?P<month>[0-9]{1,2})/",
+                    include(
+                        [
+                            url(
+                                r"^$",
+                                never_cache(
+                                    ValidationsMonthView.as_view(month_format="%m")
+                                ),
+                                name="validations-month",
+                            ),
+                            url(
+                                r"^(?P<canton>[A-z]{2})/$",
+                                never_cache(ValidationUpdate.as_view()),
+                                name="validation-update",
                             ),
                         ]
                     ),

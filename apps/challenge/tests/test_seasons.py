@@ -24,6 +24,7 @@ from apps.common import (
     DV_SEASON_SPRING,
     DV_SEASON_STATE_ARCHIVED,
     DV_SEASON_STATE_OPEN,
+    DV_SEASON_STATE_PLANNING,
     DV_SEASON_STATE_RUNNING,
     DV_SEASON_STATES,
     DV_STATES,
@@ -47,6 +48,7 @@ restrictedspecificurls = [
     "season-staff-update",
     "season-delete",
     "season-set-running",
+    "season-set-open",
 ]
 restrictedhelperspecificurls = [
     "season-availabilities-update",
@@ -175,8 +177,25 @@ class AuthUserTest(SeasonTestCaseMixin):
             self.season.save()
             response = self.client.get(urls["season-planning"])
             if state[0] == DV_SEASON_STATE_RUNNING:
-                # … so no access
+                # … We can see the season
                 self.assertEqual(response.status_code, 200, urls["season-planning"])
+                for exportformat in ["csv", "ods", "xls"]:
+                    url = reverse(
+                        "season-personal-planning-export",
+                        kwargs={
+                            "pk": self.season.pk,
+                            "helperpk": self.client.user.pk,
+                            "format": exportformat,
+                        },
+                    )
+                    response = self.client.get(url, follow=True)
+                    self.assertEqual(response.status_code, 200, url)
+                url = reverse(
+                    "season-personal-calendar",
+                    kwargs={"pk": self.season.pk, "helperpk": self.client.user.pk},
+                )
+                response = self.client.get(url, follow=True)
+                self.assertEqual(response.status_code, 200, url)
             else:
                 self.assertEqual(response.status_code, 403, urls["season-planning"])
 
@@ -189,39 +208,70 @@ class AuthUserTest(SeasonTestCaseMixin):
         for k, url in urls.items():
             self.assertEqual(self.client.get(url).status_code, 403, url)
 
-    def test_no_access_to_session(self):
-        for session in self.sessions:
-            urls = [
-                reverse(
+    def test_access_to_sessions(self):
+        # Make this user a M1 from this season's cantons
+        self.client.user.profile.formation = FORMATION_M1
+        self.client.user.profile.affiliation_canton = self.season.cantons[0]
+        self.client.user.profile.save()
+
+        # Test the access to the session on all season states
+        for state in DV_SEASON_STATES:
+            self.season.state = state[0]
+            self.season.save()
+            for session in self.sessions:
+                session_kwargs = {
+                    "seasonpk": self.season.pk,
+                    "pk": session.pk,
+                }
+                weeklysessionlist = reverse(
                     "session-list",
                     kwargs={
                         "seasonpk": self.season.pk,
                         "year": session.day.year,
                         "week": session.day.strftime("%W"),
                     },
-                ),
-                reverse("session-create", kwargs={"seasonpk": self.season.pk,}),
-                reverse(
-                    "session-detail",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
-                ),
-                reverse(
-                    "session-update",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
-                ),
-                reverse(
-                    "session-staff-choices",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
-                ),
-                reverse(
-                    "session-delete",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
-                ),
-            ]
-            for url in urls:
-                # Final URL is forbidden
-                response = self.client.get(url, follow=True)
-                self.assertEqual(response.status_code, 403, url)
+                )
+                urls = [
+                    weeklysessionlist,
+                    reverse("session-create", kwargs={"seasonpk": self.season.pk,}),
+                    reverse("session-detail", kwargs=session_kwargs,),
+                    reverse("session-update", kwargs=session_kwargs,),
+                    reverse("session-staff-choices", kwargs=session_kwargs,),
+                    reverse("session-delete", kwargs=session_kwargs,),
+                ]
+                for url in urls:
+                    # Final URL is forbidden
+                    response = self.client.get(url, follow=True)
+                    self.assertEqual(response.status_code, 403, url)
+                # Now add user to a Qualif of that Session
+                q = session.qualifications.first()
+                q.helpers.add(self.client.user)
+                # Recheck all URLs
+                for url in urls:
+                    # Loop through the two cases
+                    for visible in [True, False]:
+                        session.visible = visible
+                        session.save()
+                        response = self.client.get(url, follow=True)
+                        # When the season is running, we can access some stuff
+                        if state[0] == DV_SEASON_STATE_RUNNING and (
+                            url == weeklysessionlist
+                            or (
+                                visible
+                                and url
+                                in [
+                                    reverse("session-detail", kwargs=session_kwargs,),
+                                    reverse(
+                                        "session-staff-choices", kwargs=session_kwargs,
+                                    ),
+                                ]
+                            )
+                        ):
+                            self.assertEqual(response.status_code, 200, url)
+                        else:
+                            self.assertEqual(response.status_code, 403, url)
+                # Drop it from the Qualif
+                q.helpers.remove(self.client.user)
 
 
 class StateManagerUserTest(SeasonTestCaseMixin):
@@ -241,7 +291,7 @@ class StateManagerUserTest(SeasonTestCaseMixin):
         for state in DV_SEASON_STATES:
             self.season.state = state[0]
             self.season.save()
-
+            self.season.refresh_from_db()
             if state[0] != DV_SEASON_STATE_ARCHIVED:
                 for symbolicurl in restrictedspecificurls:
                     url = reverse(symbolicurl, kwargs={"pk": self.season.pk})
@@ -254,7 +304,12 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                     ):
                         # There are only some states in which we cna set the state to running
                         expected_status_code = 403
-
+                    if (
+                        symbolicurl == "season-set-open"
+                        and not self.season.can_set_state_open
+                    ):
+                        # There are only some states in which we cna set the state to running
+                        expected_status_code = 403
                     self.assertEqual(response.status_code, expected_status_code, url)
 
                 for symbolicurl in restrictedhelperspecificurls:
@@ -275,7 +330,7 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                     response = self.client.get(url, follow=True)
                     self.assertEqual(response.status_code, 200, url)
 
-    def test_season_openplanning_accesses(self):
+    def test_season_runningplanning_accesses(self):
         # Loop over all states
         for state in DV_SEASON_STATES:
             self.season.state = state[0]
@@ -287,7 +342,7 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                 expected_status_code = 403
             self.assertEqual(response.status_code, expected_status_code, url)
 
-    def test_season_openplanning(self):
+    def test_season_runningplanning(self):
         url = reverse("season-set-running", kwargs={"pk": self.season.pk})
 
         # Test that anything put that state works
@@ -300,6 +355,35 @@ class StateManagerUserTest(SeasonTestCaseMixin):
             # 200 means that we're back on the page with an error
             expected_status_code = 200
             if state[0] == DV_SEASON_STATE_RUNNING:
+                # 302 means that the post succeeded; so we can only post this state
+                expected_status_code = 302
+            self.assertEqual(response.status_code, expected_status_code, url)
+
+    def test_season_openplanning_accesses(self):
+        # Loop over all states
+        for state in DV_SEASON_STATES:
+            self.season.state = state[0]
+            self.season.save()
+            url = reverse("season-set-open", kwargs={"pk": self.season.pk})
+            response = self.client.get(url, follow=True)
+            expected_status_code = 200
+            if not self.season.can_set_state_open:
+                expected_status_code = 403
+            self.assertEqual(response.status_code, expected_status_code, url)
+
+    def test_season_openplanning(self):
+        url = reverse("season-set-open", kwargs={"pk": self.season.pk})
+
+        # Test that anything put that state works
+        for state in DV_SEASON_STATES:
+            # Set the season to be in preparation
+            self.season.state = DV_SEASON_STATE_PLANNING
+            self.season.save()
+            # Test that we can post to set it running
+            response = self.client.post(url, {"state": state[0]})
+            # 200 means that we're back on the page with an error
+            expected_status_code = 200
+            if state[0] == DV_SEASON_STATE_OPEN:
                 # 302 means that the post succeeded; so we can only post this state
                 expected_status_code = 302
             self.assertEqual(response.status_code, expected_status_code, url)
@@ -379,6 +463,8 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                 "season-helperlist",
                 "season-actorlist",
                 "season-set-running",
+                "season-set-open",
+                "season-detail",
             ]:
                 self.assertEqual(response.status_code, 403, url)
             else:
@@ -554,7 +640,10 @@ class PowerUserTest(SeasonTestCaseMixin):
             url = reverse(symbolicurl, kwargs={"pk": self.season.pk})
             # Final URL is OK
             response = self.client.get(url, follow=True)
-            self.assertEqual(response.status_code, 200, url)
+            if "season-set-open" == symbolicurl and not self.season.can_set_state_open:
+                self.assertEqual(response.status_code, 403, url)
+            else:
+                self.assertEqual(response.status_code, 200, url)
         for symbolicurl in restrictedhelperspecificurls:
             for helper in self.users:
                 url = reverse(
