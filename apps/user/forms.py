@@ -186,7 +186,9 @@ class UserProfileForm(SimpleUserProfileForm):
             choices = (
                 (k, v)
                 for (k, v) in choices
-                if k in cantons or k == "" or k == self.initial["affiliation_canton"]
+                if k in cantons
+                or k == ""
+                or k == self.initial.get("affiliation_canton", "")
             )
             self.fields["affiliation_canton"].required = affiliation_canton_required
             self.fields["affiliation_canton"].choices = choices
