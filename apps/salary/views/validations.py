@@ -91,15 +91,12 @@ class ValidationsMixin(HasPermissionsMixin, MenuView):
         Using a given queryset, make sure that for a given year/month, all "my" cantons
         have created MonthlyCantonalValidation objects
         """
-        # Make sure we won't get any outsiders
-        qs = queryset.filter(canton__in=self.managed_cantons, date__year=year)
-
         # At this point, make extra sure we have all the needed ones
         with transaction.atomic():
             existing_cantons = list(
-                MonthlyCantonalValidation.objects.filter(date__month=month).values_list(
-                    "canton", flat=True
-                )
+                MonthlyCantonalValidation.objects.filter(
+                    date__year=year, date__month=month
+                ).values_list("canton", flat=True)
             )
             missing_objects = [
                 MonthlyCantonalValidation(canton=c, date=date(year, month, 1))
@@ -108,7 +105,7 @@ class ValidationsMixin(HasPermissionsMixin, MenuView):
             ]
             # Create the MCVs for the cantons' we're about to see (if needed)
             MonthlyCantonalValidation.objects.bulk_create(missing_objects)
-        return qs
+        return queryset.filter(canton__in=self.managed_cantons, date__year=year)
 
 
 class ValidationsYearView(ValidationsMixin, YearArchiveView):
