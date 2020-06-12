@@ -8,6 +8,7 @@ from io import StringIO
 from tempfile import NamedTemporaryFile
 
 import dj_database_url
+import time
 from dulwich import porcelain
 from fabric import task
 from fabric.connection import Connection
@@ -647,7 +648,9 @@ def restart_uwsgi(c):
     """
     Restart uWSGI processes
     """
-    c.conn.run(f"uwsgi --reload '{c.conn.config.pid}'")
+    c.conn.run(f"uwsgi --stop '{c.conn.config.pid}'")
+    time.sleep(2)
+    c.conn.run(f"uwsgi --start '{c.conn.config.ini}'")
 
 
 @task
