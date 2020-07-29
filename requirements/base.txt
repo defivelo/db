@@ -4,62 +4,64 @@
 #
 #    pip-compile requirements/base.in
 #
--e git+https://github.com/yourlabs/django-autocomplete-light@e46300d6085510#egg=django-autocomplete-light==3.5.0+jqfix  # via -r requirements/base.in (line 16)
--e git+https://github.com/mgrouchy/django-stronghold#egg=django-stronghold==0.3.0+django21  # via -r requirements/base.in (line 9)
+-e git+https://github.com/yourlabs/django-autocomplete-light@e46300d6085510#egg=django-autocomplete-light==3.5.0+jqfix  # via -r requirements/base.in
+-e git+https://github.com/mgrouchy/django-stronghold#egg=django-stronghold==0.3.0+django21  # via -r requirements/base.in
 babel==2.8.0              # via django-phonenumber-field
-certifi==2020.4.5.1       # via requests, sentry-sdk
+certifi==2020.6.20        # via requests, sentry-sdk
 chardet==3.0.4            # via requests
 defusedxml==0.6.0         # via odfpy, python3-openid
-diff-match-patch==20181111  # via django-import-export
-dj-database-url==0.5.0    # via -r requirements/base.in (line 1)
-django-agpl==4.0.0        # via -r requirements/base.in (line 22)
-django-allauth==0.41.0    # via -r requirements/base.in (line 10)
+diff-match-patch==20200713  # via django-import-export
+dj-database-url==0.5.0    # via -r requirements/base.in
+django-agpl==4.0.0        # via -r requirements/base.in
+django-allauth==0.42.0    # via -r requirements/base.in
 django-appconf==1.0.4     # via django-compressor
-django-bootstrap3-datetimepicker-2==2.8.2  # via -r requirements/base.in (line 14)
-django-bootstrap3==12.0.3  # via -r requirements/base.in (line 4)
-django-compressor==2.4    # via -r requirements/base.in (line 6)
-django-countries==6.1.2   # via -r requirements/base.in (line 29)
-django-db-email-backend==0.4.1  # via -r requirements/base.in (line 33)
+django-bootstrap3-datetimepicker-2==2.8.2  # via -r requirements/base.in
+django-bootstrap3==14.1.0  # via -r requirements/base.in
+django-compressor==2.4    # via -r requirements/base.in
+django-countries==6.1.2   # via -r requirements/base.in
+django-db-email-backend==0.4.1  # via -r requirements/base.in
 django-discover-runner==1.0  # via django-role-permissions
-django-filter==2.2.0      # via -r requirements/base.in (line 20)
-django-ical==1.7.0        # via -r requirements/base.in (line 34)
-django-import-export==2.0.2  # via -r requirements/base.in (line 21)
-django-localflavor==3.0.1  # via -r requirements/base.in (line 11)
-django-memoize==2.2.1     # via -r requirements/base.in (line 28)
-django-multiselectfield==0.1.12  # via -r requirements/base.in (line 19)
-django-parler==2.0.1      # via -r requirements/base.in (line 18)
-django-phonenumber-field==4.0.0  # via -r requirements/base.in (line 12)
-django-recurrence==1.10.2  # via django-ical
-django-role-permissions==2.2.1  # via -r requirements/base.in (line 26)
-django-simple-history==2.8.0  # via -r requirements/base.in (line 30)
-django-taggit==1.2.0      # via -r requirements/base.in (line 24)
-django-tinymce==3.0.1     # via -r requirements/base.in (line 27)
-django==2.2.12            # via -r requirements/base.in (line 2), django-agpl, django-allauth, django-appconf, django-db-email-backend, django-filter, django-ical, django-import-export, django-localflavor, django-memoize, django-multiselectfield, django-phonenumber-field, django-recurrence, django-role-permissions, django-taggit
+django-filter==2.3.0      # via -r requirements/base.in
+django-ical==1.7.1        # via -r requirements/base.in
+django-import-export==2.3.0  # via -r requirements/base.in
+django-localflavor==3.0.1  # via -r requirements/base.in
+django-memoize==2.3.1     # via -r requirements/base.in
+django-multiselectfield==0.1.12  # via -r requirements/base.in
+django-parler==2.0.1      # via -r requirements/base.in
+django-phonenumber-field==4.0.0  # via -r requirements/base.in
+django-recurrence==1.10.3  # via django-ical
+django-role-permissions==3.1.0  # via -r requirements/base.in
+django-simple-history==2.11.0  # via -r requirements/base.in
+django-taggit==1.3.0      # via -r requirements/base.in
+django-tinymce==3.0.2     # via -r requirements/base.in
+django==2.2.14            # via -r requirements/base.in, django-agpl, django-allauth, django-appconf, django-bootstrap3, django-db-email-backend, django-filter, django-ical, django-import-export, django-localflavor, django-memoize, django-multiselectfield, django-phonenumber-field, django-recurrence, django-role-permissions, django-taggit
 et-xmlfile==1.0.1         # via openpyxl
-icalendar==4.0.5          # via django-ical
-idna==2.9                 # via requests
+icalendar==4.0.6          # via django-ical
+idna==2.10                # via requests
+importlib-metadata==1.7.0  # via django-bootstrap3
 jdcal==1.4.1              # via openpyxl
-libsass==0.19.4           # via -r requirements/base.in (line 7)
+libsass==0.20.0           # via -r requirements/base.in
 markuppy==1.14            # via tablib
 oauthlib==3.1.0           # via requests-oauthlib
 odfpy==1.4.1              # via tablib
-openpyxl==3.0.3           # via tablib
-phonenumbers==8.12.1      # via -r requirements/base.in (line 13)
-pillow==7.1.1             # via -r requirements/base.in (line 25)
-psycopg2-binary==2.8.5    # via -r requirements/base.in (line 5)
+openpyxl==3.0.4           # via tablib
+phonenumbers==8.12.7      # via -r requirements/base.in
+pillow==7.2.0             # via -r requirements/base.in
+psycopg2-binary==2.8.5    # via -r requirements/base.in
 python-dateutil==2.8.1    # via django-recurrence, icalendar
 python-stdnum==1.13       # via django-localflavor
-python3-openid==3.1.0     # via django-allauth
-pytz==2019.3              # via -r requirements/base.in (line 3), babel, django, django-db-email-backend, django-recurrence, icalendar
+python3-openid==3.2.0     # via django-allauth
+pytz==2020.1              # via -r requirements/base.in, babel, django, django-db-email-backend, django-recurrence, icalendar
 pyyaml==5.3.1             # via tablib
 rcssmin==1.0.6            # via django-compressor
 requests-oauthlib==1.3.0  # via django-allauth
-requests==2.23.0          # via django-allauth, requests-oauthlib
+requests==2.24.0          # via django-allauth, requests-oauthlib
 rjsmin==1.1.0             # via django-compressor
-sentry-sdk==0.14.3        # via -r requirements/base.in (line 31)
-six==1.14.0               # via -r requirements/base.in (line 32), django-autocomplete-light, django-compressor, django-parler, django-role-permissions, django-simple-history, libsass, python-dateutil
+sentry-sdk==0.16.2        # via -r requirements/base.in
+six==1.15.0               # via -r requirements/base.in, django-autocomplete-light, django-compressor, django-parler, django-role-permissions, django-simple-history, libsass, python-dateutil
 sqlparse==0.3.1           # via django
-tablib[html,ods,xls,xlsx,yaml]==1.1.0  # via -r requirements/base.in (line 23), django-import-export
-urllib3==1.25.8           # via requests, sentry-sdk
+tablib[html,ods,xls,xlsx,yaml]==2.0.0  # via -r requirements/base.in, django-import-export
+urllib3==1.25.10          # via requests, sentry-sdk
 xlrd==1.2.0               # via tablib
 xlwt==1.3.0               # via tablib
+zipp==3.1.0               # via importlib-metadata
