@@ -34,7 +34,7 @@ django-role-permissions==3.1.0  # via -r requirements/base.in
 django-simple-history==2.11.0  # via -r requirements/base.in
 django-taggit==1.3.0      # via -r requirements/base.in
 django-tinymce==3.0.2     # via -r requirements/base.in
-django==2.2.14            # via -r requirements/base.in, django-agpl, django-allauth, django-appconf, django-bootstrap3, django-db-email-backend, django-filter, django-ical, django-import-export, django-localflavor, django-memoize, django-multiselectfield, django-phonenumber-field, django-recurrence, django-role-permissions, django-taggit
+django==2.2.15            # via -r requirements/base.in, django-agpl, django-allauth, django-appconf, django-bootstrap3, django-db-email-backend, django-filter, django-ical, django-import-export, django-localflavor, django-memoize, django-multiselectfield, django-phonenumber-field, django-recurrence, django-role-permissions, django-taggit
 et-xmlfile==1.0.1         # via openpyxl
 icalendar==4.0.6          # via django-ical
 idna==2.10                # via requests
@@ -57,7 +57,7 @@ rcssmin==1.0.6            # via django-compressor
 requests-oauthlib==1.3.0  # via django-allauth
 requests==2.24.0          # via django-allauth, requests-oauthlib
 rjsmin==1.1.0             # via django-compressor
-sentry-sdk==0.16.2        # via -r requirements/base.in
+sentry-sdk==0.16.3        # via -r requirements/base.in
 six==1.15.0               # via -r requirements/base.in, django-autocomplete-light, django-compressor, django-parler, django-role-permissions, django-simple-history, libsass, python-dateutil
 sqlparse==0.3.1           # via django
 tablib[html,ods,xls,xlsx,yaml]==2.0.0  # via -r requirements/base.in, django-import-export
