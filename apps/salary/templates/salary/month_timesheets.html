@@ -137,6 +137,7 @@
     $("table#table-with-sum").change(function (e) {
       $('table#table-with-sum > thead > tr > th:not(:last)').each(function (index) {
         var total = 0;
+        var total_editables = 0;
         var sum_salary = 0;
         $('table#table-with-sum > tbody > tr').each(function () {
           const input = $(this).children('td').eq(index).find("input[type=number]")
@@ -144,12 +145,16 @@
           if (!isNaN(value)) {
             if (input.data("customType") == "hours") {
               total += value;
+              if (input.attr("readonly") != "readonly") {
+                total_editables += value;
+              }
             }
             if (input.data("unitPrice")) {
               sum_salary += parseFloat(input.data("unitPrice")) * value;
             }
           }
         });
+        $('table#table-with-sum > tbody > tr > td textarea').eq(index).prop('required', total_editables != 0);
         $('table#table-with-sum > tfoot > tr:first > td').eq(index).data("floatValue", total).text(displayTime(total));
         $('table#table-with-sum > tfoot > tr:nth-child(2) > td').eq(index).data("floatValue", sum_salary)
           .text(sum_salary.toFixed(2))
