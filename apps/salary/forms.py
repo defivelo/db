@@ -109,8 +109,9 @@ class TimesheetFormBase(forms.ModelForm):
         ):
             raise forms.ValidationError(
                 _(
-                    "Vous ne pouvez pas rentrer des heures pour le {day}: aucune qualif ce jour-ci."
-                ).format(day=cleaned_data["date"])
+                    "Vous ne pouvez pas rentrer des heures pour le %(day)s: aucune qualif ce jour-ci."
+                ),
+                params={"day": cleaned_data["date"]},
             )
 
         if cleaned_data["overtime"] != 0.0 and not cleaned_data["comments"]:
