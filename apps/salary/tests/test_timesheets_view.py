@@ -40,7 +40,7 @@ def test_helper_can_see_his_timesheet(db):
     assert 1 == len(response.context["form"].forms)
 
 
-def test_helper_can_timesheet(db):
+def test_helper_cannot_timesheet_overtime_without_comments(db):
     client = AuthClient()
 
     SeasonFactory(
@@ -66,6 +66,44 @@ def test_helper_can_timesheet(db):
         "form-0-overtime": "0.25",
         "form-0-traveltime": "0.25",
         "form-0-comments": "",
+    }
+
+    client.post(
+        reverse(
+            "salary:user-timesheets",
+            kwargs={"year": 2019, "month": 4, "pk": client.user.pk},
+        ),
+        datas,
+    )
+    assert Timesheet.objects.count() == 0
+
+
+def test_helper_can_timesheet(db):
+    client = AuthClient()
+
+    SeasonFactory(
+        cantons=["VD"], year=2019, season=DV_SEASON_SPRING,
+    )
+    QualificationFactory(
+        actor=client.user,
+        session=SessionFactory(
+            day=datetime.date(2019, 4, 12),
+            orga=OrganizationFactory(address_canton="VD"),
+        ),
+    )
+
+    datas = {
+        "form-TOTAL_FORMS": "1",
+        "form-INITIAL_FORMS": "1",
+        "form-MIN_NUM_FORMS": "0",
+        "form-MAX_NUM_FORMS": "0",
+        "form-0-date": "2019-04-12",
+        "form-0-time_helper": "4.5",
+        "form-0-actor_count": "0",
+        "form-0-leader_count": "0",
+        "form-0-overtime": "0.25",
+        "form-0-traveltime": "0.25",
+        "form-0-comments": "I took longer",
     }
 
     client.post(
@@ -103,7 +141,7 @@ def test_helper_can_update_timesheet(db):
         "form-0-leader_count": "0",
         "form-0-overtime": "0.25",
         "form-0-traveltime": "0.25",
-        "form-0-comments": "",
+        "form-0-comments": "Initial comment",
     }
 
     client.post(
@@ -114,6 +152,7 @@ def test_helper_can_update_timesheet(db):
         datas,
     )
     datas["form-0-overtime"] = 1
+    datas["form-0-comments"] = "New comment"
     client.post(
         reverse(
             "salary:user-timesheets",
@@ -121,7 +160,11 @@ def test_helper_can_update_timesheet(db):
         ),
         datas,
     )
-    assert Timesheet.objects.count() == 1 and Timesheet.objects.first().overtime == 1
+    assert (
+        Timesheet.objects.count() == 1
+        and Timesheet.objects.first().overtime == 1
+        and Timesheet.objects.first().comments == "New comment"
+    )
 
 
 def test_helper_cannot_validate_timesheet(db):
@@ -149,7 +192,7 @@ def test_helper_cannot_validate_timesheet(db):
         "form-0-leader_count": "0",
         "form-0-overtime": "0.25",
         "form-0-traveltime": "0.25",
-        "form-0-comments": "",
+        "form-0-comments": "Comment",
         "form-0-validated": True,
     }
 
@@ -196,7 +239,7 @@ def test_state_manager_can_validate_timesheet(db):
         "form-0-leader_count": "0",
         "form-0-overtime": "0.25",
         "form-0-traveltime": "0.25",
-        "form-0-comments": "",
+        "form-0-comments": "Comment",
         "form-0-validated": True,
     }
 
@@ -222,7 +265,7 @@ def test_helper_cannot_timesheet_if_he_has_not_work(db):
         "form-0-leader_count": "0",
         "form-0-overtime": "0.25",
         "form-0-traveltime": "0.25",
-        "form-0-comments": "",
+        "form-0-comments": "Comment",
     }
 
     client.post(

@@ -113,6 +113,16 @@ class TimesheetFormBase(forms.ModelForm):
                 ).format(day=cleaned_data["date"])
             )
 
+        if cleaned_data["overtime"] != 0.0 and not cleaned_data["comments"]:
+            self.add_error(
+                "comments",
+                forms.ValidationError(
+                    _(
+                        "Les remarques doivent être renseignées pour tout prétention d'heures supplémentaires"
+                    )
+                ),
+            )
+
         return cleaned_data
 
     def save(self):
