@@ -33,12 +33,14 @@ from .models import Organization
 class OrganizationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         cantons = kwargs.pop("cantons", None)
-        super(OrganizationForm, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         if cantons:
             # Only permit edition within the allowed cantons
             choices = self.fields["address_canton"].choices
             choices = ((k, v) for (k, v) in choices if k in cantons)
             self.fields["address_canton"].choices = choices
+            self.fields["address_canton"].initial = cantons[0]
+            self.fields["address_canton"].required = True
 
     address_canton = forms.ChoiceField(
         label=_("Canton"),
