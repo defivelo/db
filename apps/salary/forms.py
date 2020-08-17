@@ -44,7 +44,7 @@ class TimesheetFormBase(forms.ModelForm):
             % dict(price=BONUS_LEADER),
             "overtime": _("Heures supplémentaires (%(price)s.-/h)")
             % dict(price=HOURLY_RATE_HELPER),
-            "traveltime": _("Heures de trajet (cf. règlement)"),
+            "traveltime": _("Heures de trajet (aller-retour)"),
         }
         widgets = {
             "date": forms.HiddenInput(),
