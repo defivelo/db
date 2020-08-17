@@ -251,18 +251,52 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 
 TINYMCE_DEFAULT_CONFIG = {
-    "theme": "advanced",
-    "theme_advanced_toolbar_location": "bottom",
-    "theme_advanced_toolbar_align": "center",
-    "theme_advanced_statusbar_location": "none",
-    "theme_advanced_buttons1": "bold,italic,underline,strikethrough,|,undo,redo,|,link,unlink,|,bullist,numlist,|,cleanup",
-    "theme_advanced_buttons2": "",
-    "theme_advanced_buttons3": "",
-    "plugins": "autolink,",
-    "cleanup_on_startup": True,
+    "theme": "silver",
+    "height": 500,
+    "menubar": False,
+    "plugins": ",".join(
+        [
+            "advlist",
+            "autolink",
+            "lists",
+            "link",
+            "image",
+            "charmap",
+            "print",
+            "preview",
+            "anchor",
+            "searchreplace",
+            "visualblocks",
+            "code",
+            "fullscreen",
+            "insertdatetime",
+            "media",
+            "table",
+            "paste",
+            "code",
+            "help",
+            "wordcount",
+        ]
+    ),
+    "toolbar": " | ".join(
+        [
+            " ".join(block)
+            for block in [
+                ["formatselect",],
+                ["bold", "italic", "underline", "strikethrough",],
+                ["undo", "redo",],
+                ["link", "unlink",],
+                ["alignleft", "aligncenter", "alignright", "alignjustify",],
+                ["bullist", "numlist"],
+                ["removeformat"],
+            ]
+        ]
+    ),
+    "branding": False,
 }
-TINYMCE_JS_URL = os.path.join(STATIC_URL, "tiny_mce/tiny_mce.js")
-TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, "tiny_mce")
+TINYMCE_JS_URL = os.path.join(STATIC_URL, "tinymce/tinymce.js")
+TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, "tinymce")
+TINYMCE_INCLUDE_JQUERY = False
 TINYMCE_COMPRESSOR = True
 
 
