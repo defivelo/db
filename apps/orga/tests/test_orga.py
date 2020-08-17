@@ -31,7 +31,7 @@ from defivelo.tests.utils import (
     SuperUserAuthClient,
 )
 
-from ..models import Organization
+from ..models import ORGASTATUS_ACTIVE, Organization
 from .factories import OrganizationFactory
 
 
@@ -67,6 +67,14 @@ class OrgaBasicTest(TestCase):
             self.assertTemplateUsed(response, "orga/organization_detail.html")
         self.assertEqual(response.status_code, self.expected_code)
 
+    def test_access_to_orga_create(self):
+        url = reverse("organization-create")
+        response = self.client.get(url)
+
+        if self.expect_templates:
+            self.assertTemplateUsed(response, "orga/organization_form.html")
+        self.assertEqual(response.status_code, self.expected_code)
+
     def test_access_to_orga_edit(self):
         url = reverse("organization-update", kwargs={"pk": self.orga.pk})
         response = self.client.get(url)
@@ -88,6 +96,27 @@ class OrgaPowerUserTest(OrgaBasicTest):
         self.expected_code = 200
         self.expected_save_code = 302
         self.expect_templates = True
+
+    def test_access_to_orga_create(self):
+        super().test_access_to_orga_create()
+
+        url = reverse("organization-create")
+        initial = {
+            "name": "Orga",
+            "status": ORGASTATUS_ACTIVE,
+        }
+
+        # Test without a canton, we expect an error, that's a return to the page (200)
+        response = self.client.post(url, initial)
+        self.assertEqual(response.status_code, 200, url)
+        self.assertEqual(Organization.objects.count(), 1)  # There is one in the setUp
+
+        # Test with a canton, that must work.
+        initial["address_canton"] = "VD"
+        response = self.client.post(url, initial)
+        self.assertEqual(response.status_code, self.expected_save_code, url)
+        self.assertEqual(Organization.objects.count(), 2)  # There is one in the setUp
+        self.assertEqual(Organization.objects.order_by("-id")[0].address_canton, "VD")
 
     def test_access_to_orga_edit(self):
         url = reverse("organization-update", kwargs={"pk": self.orga.pk})
@@ -179,6 +208,22 @@ class OrgaStateManagerUserTest(TestCase):
             reverse("organization-detail", kwargs={"pk": self.foreignorga.pk})
         )
         self.assertEqual(response.status_code, 200)
+
+    def test_access_to_orga_create(self):
+        url = reverse("organization-create")
+        initial = {
+            "name": "Orga",
+            "status": ORGASTATUS_ACTIVE,
+        }
+
+        # Test without a canton, we expect a success, with the canton being forced
+        response = self.client.post(url, initial)
+        self.assertEqual(response.status_code, 302, url)
+        self.assertEqual(Organization.objects.count(), 2)  # There is one in the setUp
+        self.assertEqual(
+            Organization.objects.order_by("-id")[0].address_canton,
+            self.client.user.managedstates.first().canton,
+        )
 
     def test_access_to_orga_edit(self):
         url = reverse("organization-update", kwargs={"pk": self.myorga.pk})
