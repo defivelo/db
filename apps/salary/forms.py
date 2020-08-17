@@ -80,9 +80,9 @@ class TimesheetFormBase(forms.ModelForm):
             ),
             "traveltime": TimeNumberInput(
                 attrs={
-                    "step": 0.5,
+                    "step": 1,
                     "min": 0,
-                    "max": 1,
+                    "max": 2,
                     "class": "hide",
                     "data-unit-price": HOURLY_RATE_HELPER,
                 }
