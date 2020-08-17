@@ -276,6 +276,8 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
         dataset = Dataset()
         dataset.append(
             [
+                u("Nom"),
+                u("Prénom"),
                 u("Année courante"),
                 u("Mois courant"),
                 u("Numéro d'employé Crésus"),
@@ -295,6 +297,8 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
             .annotate(
                 cresus_employee_number=F("user__profile__cresus_employee_number"),
                 user_id=F("user_id"),
+                last_name=F("user__last_name"),
+                first_name=F("user__first_name"),
                 actor_count=Sum("actor_count"),
                 leader_count=Sum("leader_count"),
                 time_helper=Sum("time_helper"),
@@ -307,6 +311,8 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
         for salary_details in salary_details_list:
             dataset.append(
                 [
+                    salary_details["last_name"],
+                    salary_details["first_name"],
                     self.get_year(),
                     self.get_month(),
                     salary_details["cresus_employee_number"],
