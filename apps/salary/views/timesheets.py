@@ -118,6 +118,20 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
         )
         context["in_the_future"] = date.today() < context["month"]
         context["is_current_month"] = date.today().replace(day=1) == context["month"]
+        all_sessions = (
+            Session.objects.filter(
+                Q(qualifications__actor=self.selected_user)
+                | Q(qualifications__helpers=self.selected_user)
+                | Q(qualifications__leader=self.selected_user)
+            )
+            .filter(day__in=[o["day"] for o in self.object_list])
+            .prefetch_related("orga")
+            .distinct()
+        )
+        context["all_sessions_by_day"] = {
+            o["day"]: [s for s in all_sessions if s.day == o["day"]]
+            for o in self.object_list
+        }
         return context
 
     def get_month(self):
