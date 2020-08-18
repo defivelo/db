@@ -169,33 +169,35 @@ class SessionDetailView(SessionMixin, DetailView):
             f"{s.helper.get_full_name()} <{s.helper.email}>"
             for s in mysession.chosen_staff
         ]
-        emailparts = {
-            "subject": (
-                settings.EMAIL_SUBJECT_PREFIX
-                + _("Qualifs {session}").format(session=mysession)
-            ),
-            "body": render_to_string(
-                "challenge/session_email_to_helpers.txt",
-                {
-                    "current_site": Site.objects.get_current(),
-                    "session": mysession,
-                    "session_url": self.request.build_absolute_uri(
-                        reverse(
-                            "session-detail",
-                            kwargs={
-                                "seasonpk": mysession.season.pk,
-                                "pk": mysession.pk,
-                            },
-                        )
-                    ),
-                },
-            ),
-        }
-        context["session_mailtoall"] = iri_to_uri(
-            "mailto:{emaillist}?{options}".format(
-                emaillist=", ".join(session_helpers), options=urlencode(emailparts)
-            ),
-        )
+        context["session_mailtoall"] = None
+        if session_helpers:
+            emailparts = {
+                "subject": (
+                    settings.EMAIL_SUBJECT_PREFIX
+                    + _("Qualifs {session}").format(session=mysession)
+                ),
+                "body": render_to_string(
+                    "challenge/session_email_to_helpers.txt",
+                    {
+                        "current_site": Site.objects.get_current(),
+                        "session": mysession,
+                        "session_url": self.request.build_absolute_uri(
+                            reverse(
+                                "session-detail",
+                                kwargs={
+                                    "seasonpk": mysession.season.pk,
+                                    "pk": mysession.pk,
+                                },
+                            )
+                        ),
+                    },
+                ),
+            }
+            context["session_mailtoall"] = iri_to_uri(
+                "mailto:{emaillist}?{options}".format(
+                    emaillist=", ".join(session_helpers), options=urlencode(emailparts)
+                ),
+            )
         return context
 
     def get_queryset(self):

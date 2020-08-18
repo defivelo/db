@@ -123,7 +123,9 @@
     {% if season.manager_can_crud and user|can:'challenge_session_crud' %}
       <div class="hidden-print pull-right">
           <a class="btn btn-primary" href="{% url 'season-availabilities' pk=season.pk %}#sess{{session.pk}}">{% trans "Planning" %}</a>
-          <a class="btn btn-info" href="{{ session_mailtoall }}" target="_blank"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> {% trans "Email à l'équipe des Qualif" %}</a>
+          {% if session_mailtoall %}
+              <a class="btn btn-info" href="{{ session_mailtoall }}" target="_blank"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> {% trans "Email à l'équipe des Qualif" %}</a>
+          {% endif %}
       </div>
     {% endif %}
     <h2 class="hidden-print">{% trans "Qualifs" %}</h2>
