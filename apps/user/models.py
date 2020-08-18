@@ -242,8 +242,20 @@ class UserProfile(Address, models.Model):
                 self.languages_challenges.remove(self.language)
             except (ValueError, AttributeError):
                 pass
+        # Assign the "collaborator" role automatically for "with formation" and "actors"
+        if not (
+            has_role(self.user, "power_user")
+            or has_role(self.user, "state_manager")
+            or has_role(self.user, "coordinator")
+        ):
+            if self.formation or self.actor:
+                self.set_role("collaborator")
+            else:
+                # Remove the role
+                self.set_role()
+
         self.reset_cache()
-        super(UserProfile, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def reset_cache(self):
         delete_memoized(has_permission)
@@ -456,6 +468,9 @@ class UserProfile(Address, models.Model):
                 elif has_role(self.user, "coordinator"):
                     title = _("Coordina·teur·trice")
                     icon = "pawn"
+                elif has_role(self.user, "collaborator"):
+                    title = _("Collabora·teur·trice")
+                    icon = "user"
         if title and textonly:
             return title
         if icon:

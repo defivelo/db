@@ -43,7 +43,19 @@ def user_cantons(user):
         raise LookupError("No user cantons")
 
 
+class Collaborator(AbstractUserRole):
+    """
+    Moniteur 1, 2 ou Intervenant
+    """
+
+    available_permissions = {}
+
+
 class StateManager(AbstractUserRole):
+    """
+    Chargé de projet, responsable d'un ou plusieurs cantons
+    """
+
     available_permissions = {
         "cantons_all": False,
         "cantons_mine": True,
@@ -68,6 +80,10 @@ class StateManager(AbstractUserRole):
 
 
 class PowerUser(AbstractUserRole):
+    """
+    Bureau
+    """
+
     available_permissions = {
         "cantons_all": True,
         "cantons_mine": True,
@@ -99,6 +115,10 @@ class PowerUser(AbstractUserRole):
 
 
 class Coordinator(AbstractUserRole):
+    """
+    Coordinateur d'établissement
+    """
+
     available_permissions = {
         "orga_show": True,
         "orga_edit": True,
@@ -107,6 +127,7 @@ class Coordinator(AbstractUserRole):
 
 DV_AVAILABLE_ROLES = (
     (None, _("Aucun rôle")),
+    #  ("collaborator", _("Collabora·teur·trice")), # Automatic, leave as comment
     ("state_manager", _("Chargé·e de projet")),
     ("coordinator", _("Coordina·teur·trice")),
     ("power_user", _("Super-utilisa·teur·trice")),  # Bureau
