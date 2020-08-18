@@ -1,0 +1,11 @@
+{% load i18n %}{% filter wordwrap:80 %}{% autoescape off %}{% blocktrans %}Salut,{% endblocktrans %}
+
+{% blocktrans with season_desc=season.desc %}Concernant les qualifs {{session }}, …
+
+Retrouvez la version à jour de la Qualif sur
+
+    {{ session_url }}
+
+{% endblocktrans %}{% endautoescape %}{% blocktrans with site_domain=current_site.domain %}Avec nos meilleures salutations,
+
+L’équipe DÉFI VÉLO - {{ site_domain }}{% endblocktrans %}{% endfilter %}
