@@ -663,9 +663,9 @@ class SeasonExportView(
                 u("Nombre d'élèves"),
                 u("Nombre de vélos"),
                 u("Nombre de casques"),
-                CATEGORY_CHOICE_A,
-                CATEGORY_CHOICE_B,
-                CATEGORY_CHOICE_C,
+                str(CATEGORY_CHOICE_A),
+                str(CATEGORY_CHOICE_B),
+                str(CATEGORY_CHOICE_C),
                 u("Intervenant"),
                 u("Remarques"),
             ]
