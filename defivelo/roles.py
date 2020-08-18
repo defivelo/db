@@ -48,7 +48,10 @@ class Collaborator(AbstractUserRole):
     Moniteur 1, 2 ou Intervenant
     """
 
-    available_permissions = {}
+    available_permissions = {
+        "user_view_list": True,
+        "user_view_list_non_collaborator": False,
+    }
 
 
 class StateManager(AbstractUserRole):
@@ -60,6 +63,7 @@ class StateManager(AbstractUserRole):
         "cantons_all": False,
         "cantons_mine": True,
         "user_view_list": True,
+        "user_view_list_non_collaborator": True,
         "user_detail_other": True,
         "user_edit_other": True,
         "user_crud_dv_public_fields": True,
@@ -88,6 +92,7 @@ class PowerUser(AbstractUserRole):
         "cantons_all": True,
         "cantons_mine": True,
         "user_view_list": True,
+        "user_view_list_non_collaborator": True,
         "user_detail_other": True,
         "user_edit_other": True,
         "user_create": True,
