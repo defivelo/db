@@ -47,7 +47,17 @@
           {% endfor %}
         </th>
         {% endfor %}
-        <th align="center" class="text-center">{% trans "Total" %}</th>
+        <th rowspan="2" align="center" class="text-center">{% trans "Total" %}</th>
+      </tr>
+      <tr>
+        <th>{% trans "Sessions" %}</th>
+        {% for day, sessions in all_sessions_by_day.items %}
+        <td align="left" class="text-left small">
+          {% for session in sessions %}
+              <a href="{% url 'session-detail' session.season.pk session.pk %}" target="_blank">{{ session.begin }} {{ session.orga.ifabbr }}</a><br />
+          {% endfor %}
+        </td>
+        {% endfor %}
       </tr>
     </thead>
 
@@ -127,6 +137,7 @@
     $("table#table-with-sum").change(function (e) {
       $('table#table-with-sum > thead > tr > th:not(:last)').each(function (index) {
         var total = 0;
+        var total_editables = 0;
         var sum_salary = 0;
         $('table#table-with-sum > tbody > tr').each(function () {
           const input = $(this).children('td').eq(index).find("input[type=number]")
@@ -134,12 +145,16 @@
           if (!isNaN(value)) {
             if (input.data("customType") == "hours") {
               total += value;
+              if (input.attr("readonly") != "readonly") {
+                total_editables += value;
+              }
             }
             if (input.data("unitPrice")) {
               sum_salary += parseFloat(input.data("unitPrice")) * value;
             }
           }
         });
+        $('table#table-with-sum > tbody > tr > td textarea').eq(index).prop('required', total_editables != 0);
         $('table#table-with-sum > tfoot > tr:first > td').eq(index).data("floatValue", total).text(displayTime(total));
         $('table#table-with-sum > tfoot > tr:nth-child(2) > td').eq(index).data("floatValue", sum_salary)
           .text(sum_salary.toFixed(2))

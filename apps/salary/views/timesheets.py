@@ -118,6 +118,20 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
         )
         context["in_the_future"] = date.today() < context["month"]
         context["is_current_month"] = date.today().replace(day=1) == context["month"]
+        all_sessions = (
+            Session.objects.filter(
+                Q(qualifications__actor=self.selected_user)
+                | Q(qualifications__helpers=self.selected_user)
+                | Q(qualifications__leader=self.selected_user)
+            )
+            .filter(day__in=[o["day"] for o in self.object_list])
+            .prefetch_related("orga")
+            .distinct()
+        )
+        context["all_sessions_by_day"] = {
+            o["day"]: [s for s in all_sessions if s.day == o["day"]]
+            for o in self.object_list
+        }
         return context
 
     def get_month(self):
@@ -276,6 +290,8 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
         dataset = Dataset()
         dataset.append(
             [
+                u("Nom"),
+                u("Prénom"),
                 u("Année courante"),
                 u("Mois courant"),
                 u("Numéro d'employé Crésus"),
@@ -295,6 +311,8 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
             .annotate(
                 cresus_employee_number=F("user__profile__cresus_employee_number"),
                 user_id=F("user_id"),
+                last_name=F("user__last_name"),
+                first_name=F("user__first_name"),
                 actor_count=Sum("actor_count"),
                 leader_count=Sum("leader_count"),
                 time_helper=Sum("time_helper"),
@@ -307,6 +325,8 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
         for salary_details in salary_details_list:
             dataset.append(
                 [
+                    salary_details["last_name"],
+                    salary_details["first_name"],
                     self.get_year(),
                     self.get_month(),
                     salary_details["cresus_employee_number"],

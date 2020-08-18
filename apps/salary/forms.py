@@ -44,7 +44,7 @@ class TimesheetFormBase(forms.ModelForm):
             % dict(price=BONUS_LEADER),
             "overtime": _("Heures supplémentaires (%(price)s.-/h)")
             % dict(price=HOURLY_RATE_HELPER),
-            "traveltime": _("Heures de trajet (cf. règlement)"),
+            "traveltime": _("Heures de trajet (aller-retour)"),
         }
         widgets = {
             "date": forms.HiddenInput(),
@@ -80,9 +80,9 @@ class TimesheetFormBase(forms.ModelForm):
             ),
             "traveltime": TimeNumberInput(
                 attrs={
-                    "step": 0.5,
+                    "step": 1,
                     "min": 0,
-                    "max": 1,
+                    "max": 2,
                     "class": "hide",
                     "data-unit-price": HOURLY_RATE_HELPER,
                 }
@@ -109,8 +109,19 @@ class TimesheetFormBase(forms.ModelForm):
         ):
             raise forms.ValidationError(
                 _(
-                    "Vous ne pouvez pas rentrer des heures pour le {day}: aucune qualif ce jour-ci."
-                ).format(day=cleaned_data["date"])
+                    "Vous ne pouvez pas rentrer des heures pour le %(day)s: aucune qualif ce jour-ci."
+                ),
+                params={"day": cleaned_data["date"]},
+            )
+
+        if cleaned_data["overtime"] != 0.0 and not cleaned_data["comments"]:
+            self.add_error(
+                "comments",
+                forms.ValidationError(
+                    _(
+                        "Les remarques doivent être renseignées pour tout prétention d'heures supplémentaires"
+                    )
+                ),
             )
 
         return cleaned_data
