@@ -1,14 +1,14 @@
-{% load i18n %}{% filter wordwrap:80 %}{% autoescape off %}{% blocktrans with full_name=profile.get_full_name season_desc=season.desc %}Bonjour {{ full_name }},
+{% load i18n %}{% filter wordwrap:80 %}{% autoescape off %}{% blocktrans with full_name=profile.get_full_name %}Salut {{ full_name }},{% endblocktrans %}
 
-Le planning DÉFI VÉLO définitif {{ season_desc }} est maintenant disponible sur l'Intranet. Merci d’aller le consulter et de prendre note des dates des Qualifs où tu dois être présent. En cas de questions, tu peux t’adresser à ton chargé de projet.
+{% blocktrans with season_desc=season.desc %}Le planning DÉFI VÉLO définitif {{ season_desc }} est maintenant disponible sur l'Intranet. Merci d’aller le consulter et de prendre note des dates des Qualifs où tu dois être présent. Dès à présent, tu es tenu·e d'être présent·e aux Qualifs auxquelles tu t'es engagé·e ou de trouver un·e remplaçant·e parmi les autres moniteurs·trices. En cas de questions, tu peux t’adresser à ton chargé de projet.
 
 Tu peux accéder au planning directement ici ou via ton compte personnel Intranet.
 
     {{ planning_link }}
 
-{% endblocktrans %}{% endautoescape %}{% blocktrans with site_domain=current_site.domain %}Salutations,
+{% endblocktrans %}{% endautoescape %}{% blocktrans with site_domain=current_site.domain %}Avec nos meilleures salutations,
 
 L’équipe DÉFI VÉLO - {{ site_domain }}{% endblocktrans %}
-{% autoescape off %}{% blocktrans %}
-PS : Tu reçois ce mail parce que tu as rempli au minimum une disponibilité en tant que « si besoin ». Si aucune date n’apparait dans le planning c’est que nous n’avons finalement pas besoin de toi. N'hésite pas à contacter ton chargé de projet régional si tu as des questions.
+{% autoescape off %}
+{% blocktrans %}PS : Tu reçois ce mail parce que tu as rempli au minimum une disponibilité en tant que « si besoin ». Si aucune date n’apparait dans le planning c’est que nous n’avons finalement pas besoin de toi. N'hésite pas à contacter ton chargé de projet régional si tu as des questions.
 {% endblocktrans %}{% endautoescape %}{% endfilter %}
