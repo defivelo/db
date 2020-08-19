@@ -30,9 +30,11 @@ from ..models import (
     Invoice,
     InvoiceLine,
     Qualification,
+    QualificationActivity,
     Season,
     Session,
 )
+from ..models.qualification import CATEGORY_CHOICES
 
 
 class SeasonFactory(DjangoModelFactory):
@@ -93,3 +95,11 @@ class InvoiceLineFactory(DjangoModelFactory):
     nb_participants = fuzzy.FuzzyInteger(0, 20)
     cost_bikes = fuzzy.FuzzyDecimal(0, 400)
     cost_participants = fuzzy.FuzzyDecimal(0, 400)
+
+
+class QualificationActivityFactory(DjangoModelFactory):
+    class Meta:
+        model = QualificationActivity
+
+    name = Faker("name")
+    category = fuzzy.FuzzyChoice([c[0] for c in CATEGORY_CHOICES])

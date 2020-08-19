@@ -248,6 +248,12 @@ class UserProfile(Address, models.Model):
             or has_role(self.user, "state_manager")
             or has_role(self.user, "coordinator")
         ):
+            # Make sure to use the uncached properties
+            try:
+                del self.actor
+            except AttributeError:
+                pass
+
             if self.formation or self.actor:
                 self.set_role("collaborator")
             else:
