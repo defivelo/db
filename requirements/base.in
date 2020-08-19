@@ -5,6 +5,7 @@ django-bootstrap3
 psycopg2-binary
 django-compressor
 libsass
+csscompressor
 # django-stronghold
 -e git+https://github.com/mgrouchy/django-stronghold#egg=django-stronghold==0.3.0+django21
 django-allauth
