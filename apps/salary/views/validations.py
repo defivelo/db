@@ -102,7 +102,9 @@ class ValidationsMixin(HasPermissionsMixin, MenuView):
                 if c not in existing_cantons
             ]
             # Create the MCVs for the cantons' we're about to see (if needed)
-            MonthlyCantonalValidation.objects.bulk_create(missing_objects)
+            MonthlyCantonalValidation.objects.bulk_create(
+                missing_objects, ignore_conflicts=True
+            )
         return queryset.filter(canton__in=self.managed_cantons, date__year=year)
 
 
