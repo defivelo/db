@@ -36,10 +36,8 @@ from defivelo.roles import user_cantons
 from defivelo.views.common import MenuView
 
 from .exports import (
-    ExpensesExport,
     LogisticsExport,
     OrgaInvoicesExport,
-    SalariesExport,
     SeasonSessionsMixin,
     SeasonStatsExport,
 )
@@ -78,38 +76,6 @@ class JSONNextQualifs(SessionsPublicView, TemplateView):
             }
             sessions.append(session_representation)
         return JsonResponse({"sessions": sessions}, **response_kwargs)
-
-
-class MonthExportsMixin(HasPermissionsMixin, MenuView, MonthArchiveView):
-    required_permission = "challenge_season_crud"
-    date_field = "day"
-    month_format = "%m"
-    allow_empty = True
-    allow_future = True
-
-    def get_queryset(self):
-        return (
-            Session.objects.filter(
-                orga__address_canton__in=user_cantons(self.request.user)
-            )
-            .order_by("day", "orga", "begin")
-            .prefetch_related("orga", "qualifications", "qualifications__helpers",)
-        )
-
-    def get_month(self):
-        month = super(MonthExportsMixin, self).get_month()
-        return month if month is not None else str(date.today().month)
-
-    def get_year(self):
-        year = super(MonthExportsMixin, self).get_year()
-        return year if year is not None else str(date.today().year)
-
-    def get_context_data(self, **kwargs):
-        context = super(MonthExportsMixin, self).get_context_data(**kwargs)
-        context["nav_url"] = resolve(self.request.path).url_name
-        context["dataset_exporturl"] = context["nav_url"] + "-export"
-        context["menu_category"] = "exports"
-        return context
 
 
 class SeasonExportsMixin(MenuView):
@@ -206,31 +172,6 @@ class IfDatasetExportMixin(object):
         except AttributeError:
             pass
         return context
-
-
-class MonthExports(IfDatasetExportMixin, MonthExportsMixin):
-    template_name = "info/month_exports.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(MonthExports, self).get_context_data(**kwargs)
-        context["submenu_category"] = "exports-month"
-        return context
-
-
-class SalariesView(SalariesExport, MonthExports):
-    pass
-
-
-class SalariesExportView(SalariesExport, MonthExports, ExportMixin, ListView):
-    pass
-
-
-class ExpensesView(ExpensesExport, MonthExports):
-    pass
-
-
-class ExpensesExportView(ExpensesExport, MonthExports, ExportMixin, ListView):
-    pass
 
 
 class SeasonExports(

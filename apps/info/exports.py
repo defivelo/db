@@ -31,9 +31,8 @@ from tablib import Dataset
 from apps.challenge.models.session import Session
 from apps.common import DV_SEASON_AUTUMN, DV_SEASON_LAST_SPRING_MONTH, DV_STATE_CHOICES
 from apps.orga.models import Organization
-from apps.user import FORMATION_M1, FORMATION_M2, formation_short
 from defivelo.roles import user_cantons
-from defivelo.templatetags.dv_filters import canton_abbr_short, season_verb
+from defivelo.templatetags.dv_filters import season_verb
 
 linktxt = '<a href="{url}">{content}</a>'
 
@@ -265,139 +264,6 @@ class OrgaInvoicesExport(SeasonSessionsMixin):
                     ]
                 )
         return dataset
-
-
-class SalariesExport(object):
-    # Seulement les _salaires_ (moniteurs)
-    salaries_not_expenses = True
-
-    def export_month(self):
-        return date(int(self.get_year()), int(self.get_month()), 1)
-
-    def get_dataset_title(self):
-        return "{title} - {date}".format(
-            title=u("Salaires") if self.salaries_not_expenses else u("Défraiements"),
-            date=datefilter(self.export_month(), "F Y"),
-        )
-
-    @property
-    def export_filename(self):
-        return "%s-%s-%s-%s" % (
-            u("Salaires") if self.salaries_not_expenses else u("Défraiements"),
-            u("Mois"),
-            self.export_month().month,
-            self.export_month().year,
-        )
-
-    def get_dataset(self, html=False):
-        dataset = Dataset()
-        # Cases en haut à gauche
-        session_cols = ["" for i in range(2)]
-
-        def bolden(s):
-            return mark_safe("<b>%s</b>" % s) if html else s
-
-        dataset.append_col(session_cols + [bolden(u("Nom"))])
-        dataset.append_col(session_cols + [bolden(u("N° d'employé Crésus"))])
-        dataset.append_col(session_cols + [bolden(u("Adresse"))])
-        dataset.append_col(session_cols + [bolden(u("NPA"))])
-        dataset.append_col(session_cols + [bolden(u("Ville"))])
-        dataset.append_col(session_cols + [bolden(u("N° AVS"))])
-        dataset.append_col(session_cols + [bolden(u("Nom de la banque"))])
-        dataset.append_col(session_cols + [bolden(u("IBAN"))])
-        dataset.append_col(session_cols + [bolden(u("Canton d'affiliation"))])
-
-        for session in self.object_list:
-            orga = session.orga.ifabbr if html else session.orga.name
-            season = session.season
-            link = None
-            if season and html:
-                link = mark_safe(
-                    linktxt.format(
-                        url=reverse(
-                            "session-detail",
-                            kwargs={"seasonpk": season.pk, "pk": session.pk},
-                        ),
-                        content=orga,
-                    )
-                )
-            dataset.append_col(
-                [
-                    link if link else orga,
-                    bolden(datefilter(session.day, "j.m")),
-                    bolden(datefilter(session.begin, settings.TIME_FORMAT)),
-                ]
-            )
-        sessions_pks = self.object_list.values_list("id", flat=True)
-        everyone = get_user_model().objects
-        if self.salaries_not_expenses:
-            # All helpers in these sessions
-            everyone = everyone.filter(
-                Q(qualifs_mon1__session__in=sessions_pks)
-                | Q(qualifs_mon2__session__in=sessions_pks)
-            )
-        else:
-            # All actors in these sessions
-            everyone = everyone.filter(qualifs_actor__session__in=sessions_pks)
-        everyone = (
-            everyone.filter(
-                profile__affiliation_canton__in=user_cantons(self.request.user)
-            )
-            .prefetch_related("profile")
-            .order_by("profile__affiliation_canton", "last_name")
-            .distinct()
-        )
-        for user in everyone:
-            fullname = user.get_full_name()
-            url = reverse("user-detail", kwargs={"pk": user.pk})
-            row = [
-                (
-                    mark_safe(linktxt.format(url=url, content=fullname))
-                    if html
-                    else fullname
-                ),
-                user.profile.cresus_employee_number,
-                "%s %s" % (user.profile.address_street, user.profile.address_no),
-                user.profile.address_zip,
-                user.profile.address_city,
-                (
-                    (
-                        user.profile.social_security[:5] + "…"
-                        if len(user.profile.social_security) > 0
-                        else ""
-                    )
-                    if html
-                    else user.profile.social_security
-                ),
-                user.profile.bank_name,
-                (
-                    (user.profile.iban[:5] + "…" if len(user.profile.iban) > 0 else "")
-                    if html
-                    else user.profile.iban_nice
-                ),
-                canton_abbr_short(user.profile.affiliation_canton, abbr=False),
-            ]
-            for session in self.object_list:
-                label = ""
-                for quali in session.qualifications.all():
-                    if self.salaries_not_expenses:
-                        if user.id == quali.leader_id:
-                            label = formation_short(FORMATION_M2, True)
-                            break
-                        elif user in quali.helpers.all():
-                            label = formation_short(FORMATION_M1, True)
-                            break
-                    elif user.id == quali.actor_id:
-                        label = u("Int.")
-                        break
-                row.append(label)
-            dataset.append(row)
-        return dataset
-
-
-class ExpensesExport(SalariesExport):
-    # Seulement les _défraiments_ (intervenants)
-    salaries_not_expenses = False
 
 
 class LogisticsExport(OrgaInvoicesExport):
