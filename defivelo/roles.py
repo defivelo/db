@@ -51,6 +51,7 @@ class Collaborator(AbstractUserRole):
     available_permissions = {
         "user_view_list": True,
         "user_view_list_non_collaborator": False,
+        "user_export_all_fields": False,
     }
 
 
@@ -64,6 +65,7 @@ class StateManager(AbstractUserRole):
         "cantons_mine": True,
         "user_view_list": True,
         "user_view_list_non_collaborator": True,
+        "user_export_all_fields": True,
         "user_detail_other": True,
         "user_edit_other": True,
         "user_crud_dv_public_fields": True,
@@ -93,6 +95,7 @@ class PowerUser(AbstractUserRole):
         "cantons_mine": True,
         "user_view_list": True,
         "user_view_list_non_collaborator": True,
+        "user_export_all_fields": True,
         "user_detail_other": True,
         "user_edit_other": True,
         "user_create": True,

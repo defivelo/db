@@ -23,7 +23,7 @@ from import_export import fields, resources, widgets
 
 from defivelo.templatetags.dv_filters import canton_abbr, cantons_abbr
 
-from .models import STD_PROFILE_FIELDS
+from .models import COLLABORATOR_FIELDS, STD_PROFILE_FIELDS
 
 
 class MultipleSelectWidget(widgets.Widget):
@@ -60,6 +60,10 @@ ALL_PROFILE_FIELDS = tuple(
         for field in STD_PROFILE_FIELDS
         if field not in ["firstmed_course_comm"]
     ]
+)
+ALL_COLLABORATOR_FIELDS = tuple(
+    ["first_name", "last_name", "email"]
+    + ["profile__%s" % field for field in COLLABORATOR_FIELDS]
 )
 
 
@@ -187,6 +191,24 @@ class UserResource(resources.ModelResource):
         model = get_user_model()
         fields = ALL_PROFILE_FIELDS
         export_order = ALL_PROFILE_FIELDS
+
+    def export_only_collaborator_fields(self):
+        """
+        Additional interface to limit the fields's list at runtime
+        """
+        self.only_collaborator_fields = True
+
+    def get_fields(self, **kwargs):
+        """
+        Override get_fields if we have a limit
+        """
+        try:
+            if self.only_collaborator_fields:
+                return [self.fields[f] for f in ALL_COLLABORATOR_FIELDS]
+        except AttributeError:
+            pass
+
+        return super().get_fields(**kwargs)
 
     def dehydrate_profile__address_canton(self, field):
         return canton_abbr(

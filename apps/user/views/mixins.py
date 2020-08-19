@@ -32,6 +32,8 @@ from ..models import (
     DV_PUBLIC_FIELDS,
     PERSONAL_FIELDS,
     STD_PROFILE_FIELDS,
+    USERSTATUS_ARCHIVE,
+    USERSTATUS_DELETED,
     UserProfile,
 )
 
@@ -83,6 +85,9 @@ class ProfileMixin(MenuView):
         if not has_permission(self.request.user, "user_view_list_non_collaborator"):
             qs = qs.exclude(
                 Q(profile__formation="") & Q(profile__actor_for__isnull=True)
+            ).exclude(
+                Q(profile__status=USERSTATUS_DELETED)
+                | Q(profile__status=USERSTATUS_ARCHIVE)
             )
         return qs.prefetch_related(
             "groups",

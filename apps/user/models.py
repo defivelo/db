@@ -138,6 +138,16 @@ DV_PUBLIC_FIELDS = [
 
 DV_PRIVATE_FIELDS = ["comments"]
 
+COLLABORATOR_FIELDS = [
+    "natel",
+    "status",
+    "affiliation_canton",
+    "activity_cantons",
+    "language",
+    "formation",
+    "actor_for",
+]
+
 STD_PROFILE_FIELDS = PERSONAL_FIELDS + DV_PUBLIC_FIELDS + DV_PRIVATE_FIELDS
 
 

@@ -42,7 +42,7 @@ from apps.common import (
     MULTISELECTFIELD_REGEXP,
 )
 from apps.common.views import ExportMixin, PaginatorMixin
-from defivelo.roles import DV_AVAILABLE_ROLES, user_cantons
+from defivelo.roles import DV_AVAILABLE_ROLES, has_permission, user_cantons
 
 from .. import FORMATION_KEYS
 from ..export import UserResource
@@ -226,6 +226,14 @@ class UserList(HasPermissionsMixin, ProfileMixin, PaginatorMixin, FilterView):
 class UserListExport(ExportMixin, UserList):
     export_class = UserResource()
     export_filename = _("Utilisateurs")
+
+    def before_dataset_export(self):
+        """
+        From ExportMixin
+        Allows mixin-using classes to specify what to do to the export_class before exporting
+        """
+        if not has_permission(self.request.user, "user_export_all_fields"):
+            (self.export_class).export_only_collaborator_fields()
 
 
 class UserDetailedList(UserList):
