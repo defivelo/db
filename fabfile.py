@@ -3,12 +3,12 @@ import inspect
 import os
 import random
 import subprocess
+import time
 from datetime import datetime
 from io import StringIO
 from tempfile import NamedTemporaryFile
 
 import dj_database_url
-import time
 from dulwich import porcelain
 from fabric import task
 from fabric.connection import Connection
@@ -407,8 +407,6 @@ def reset_db_from_prod(c):
     prod_ctx = Context(prod_conf)
     prod_ctx.conn = CustomConnection(host=prod_conf["host"], inline_ssh_env=True)
     prod_ctx.conn.config.load_overrides(prod_conf)
-
-    prod_dump_filename = None
 
     with NamedTemporaryFile() as local_transit_file:
 
