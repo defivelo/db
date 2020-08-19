@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
 # Copyright (C) 2015 Didier Raboud <me+defivelo@odyx.org>
 #
@@ -27,7 +25,7 @@ from django.dispatch import receiver
 from django.forms import ValidationError
 from django.template.loader import render_to_string
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible, smart_text
+from django.utils.encoding import smart_text
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as u
@@ -152,7 +150,6 @@ class ExistingUserProfileManager(models.Manager):
         )
 
 
-@python_2_unicode_compatible
 class UserProfile(Address, models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -555,7 +552,6 @@ def User_pre_save(sender, **kwargs):
         kwargs["instance"].is_active = False
 
 
-@python_2_unicode_compatible
 class UserManagedState(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,

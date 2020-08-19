@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
 # Copyright (C) 2015 Didier Raboud <me+defivelo@odyx.org>
 #
@@ -24,7 +22,6 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import Q
 from django.urls import reverse
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -49,7 +46,6 @@ from apps.common import (
 from defivelo.templatetags.dv_filters import cantons_abbr
 
 
-@python_2_unicode_compatible
 class Season(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     year = models.PositiveSmallIntegerField(_("Année"))

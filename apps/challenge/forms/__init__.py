@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
 # Copyright (C) 2020 Didier Raboud <didier.raboud@liip.ch>
 #

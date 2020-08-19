@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
 # Copyright (C) 2015 Didier Raboud <me+defivelo@odyx.org>
 #
@@ -23,7 +21,6 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.template.defaultfilters import date
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -48,7 +45,6 @@ DEFAULT_SESSION_DURATION_HOURS = 3
 DEFAULT_EARLY_MINUTES_FOR_HELPERS_MEETINGS = 60
 
 
-@python_2_unicode_compatible
 class Session(Address, models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
 

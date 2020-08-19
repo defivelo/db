@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
 # Copyright (C) 2015 Didier Raboud <me+defivelo@odyx.org>
 #
@@ -20,7 +18,6 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as u
@@ -47,7 +44,6 @@ CATEGORY_CHOICES = (
 )
 
 
-@python_2_unicode_compatible
 class QualificationActivity(TranslatableModel):
 
     translations = TranslatedFields(name=models.CharField(_("Nom"), max_length=255))
@@ -65,7 +61,6 @@ class QualificationActivity(TranslatableModel):
         return self.name
 
 
-@python_2_unicode_compatible
 class Qualification(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     # TODO: Replace with automated or classes objects

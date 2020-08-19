@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
 # Copyright (C) 2015 Didier Raboud <me+defivelo@odyx.org>
 #
@@ -19,7 +17,6 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -42,7 +39,6 @@ from .season import Season
 from .session import Session
 
 
-@python_2_unicode_compatible
 class HelperSeasonWorkWish(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     season = models.ForeignKey(
@@ -69,7 +65,6 @@ class HelperSeasonWorkWish(models.Model):
         )
 
 
-@python_2_unicode_compatible
 class HelperSessionAvailability(models.Model):
     AVAILABILITY_CHOICES = (
         ("y", _("Oui")),
