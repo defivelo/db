@@ -141,16 +141,9 @@ class SeasonStatsExport(SeasonSessionsMixin):
 
 
 class LogisticsExport(SeasonSessionsMixin):
-    # Saison dans l'ordre avec les besoins de vélos, pas par Qualif'
-    canton_orga_not_sessions = False
-
     def get_dataset_title(self):
         return "{title} - {season} {year}".format(
-            title=(
-                u("Facturation établissements dans la saison")
-                if self.canton_orga_not_sessions
-                else u("Planification logistique")
-            ),
+            title=(u("Planification logistique")),
             season=season_verb(self.export_season),
             year=self.export_year,
         )
@@ -158,7 +151,7 @@ class LogisticsExport(SeasonSessionsMixin):
     @property
     def export_filename(self):
         return "%s-%s-%s-%s" % (
-            u("Établissements") if self.canton_orga_not_sessions else u("Logistique"),
+            u("Logistique"),
             u("Saison"),
             self.export_year,
             season_verb(self.export_season),
@@ -170,97 +163,51 @@ class LogisticsExport(SeasonSessionsMixin):
         row = [
             u("Canton"),
             u("Établissement"),
-        ]
-        if not self.canton_orga_not_sessions:
-            row = row + [u("Lieu")]
-        row = row + [
+            u("Lieu"),
             u("Date"),
             u("Heure"),
-            u("Classe") if self.canton_orga_not_sessions else u("Classes"),
+            u("Classes"),
             u("Participants"),
             u("Vélos loués"),
             u("Casques loués"),
+            u("Logistique vélos"),
+            u("N° de contact vélos"),
         ]
-        if not self.canton_orga_not_sessions:
-            row = row + [u("Logistique vélos"), u("N° de contact vélos")]
         dataset.append(row)
         sessions = self.get_queryset()
-        if not self.canton_orga_not_sessions:
-            sessions = sessions.annotate(
-                n_qualifs=Count("qualifications"),
-                n_participants=Sum("qualifications__n_participants"),
-                n_bikes=Sum("qualifications__n_bikes"),
-                n_helmets=Sum("qualifications__n_helmets"),
-            )
-        sessions_pks = sessions.values_list("id", flat=True)
-        orgas = (
-            Organization.objects.filter(sessions__in=sessions_pks)
-            .order_by("address_canton", "abbr", "name")
-            .distinct()
-            .prefetch_related("sessions", "sessions__qualifications",)
+        sessions = sessions.annotate(
+            n_qualifs=Count("qualifications"),
+            n_participants=Sum("qualifications__n_participants"),
+            n_bikes=Sum("qualifications__n_bikes"),
+            n_helmets=Sum("qualifications__n_helmets"),
         )
         row = []
-        if self.canton_orga_not_sessions:
-            for orga in orgas:
-                orga_row = list(row)
-                orga_row.append(orga.address_canton)
-                orga_row.append(orga.ifabbr if html else orga.name)
-                for orga_session in sessions.filter(orga=orga):
-                    session_row = list(orga_row)
-                    season = orga_session.season
-                    url = None
-                    if season and html:
-                        url = reverse(
-                            "session-detail",
-                            kwargs={"seasonpk": season.pk, "pk": orga_session.id},
-                        )
-                    datetxt = datefilter(orga_session.day, settings.DATE_FORMAT_COMPACT)
-                    timetxt = datefilter(orga_session.begin, settings.TIME_FORMAT_SHORT)
-                    session_row.append(
-                        mark_safe(linktxt.format(url=url, content=datetxt))
-                        if url
-                        else datetxt
-                    )
-                    session_row.append(
-                        mark_safe(linktxt.format(url=url, content=timetxt))
-                        if url
-                        else timetxt
-                    )
-                    for qualif in orga_session.qualifications.all():
-                        qualif_row = list(session_row)
-                        qualif_row.append(qualif.name)
-                        qualif_row.append(qualif.n_participants)
-                        qualif_row.append(qualif.n_bikes)
-                        qualif_row.append(qualif.n_helmets)
-                        dataset.append(qualif_row)
-        else:
-            for session in sessions:
-                season = session.season
-                url = None
-                if season and html:
-                    url = reverse(
-                        "session-detail",
-                        kwargs={"seasonpk": season.pk, "pk": session.id},
-                    )
-                datetxt = datefilter(session.day, settings.DATE_FORMAT_COMPACT)
-                timetxt = datefilter(session.begin, settings.TIME_FORMAT_SHORT)
-                dataset.append(
-                    [
-                        session.orga.address_canton,
-                        session.orga.ifabbr if html else session.orga.name,
-                        session.city,
-                        mark_safe(linktxt.format(url=url, content=datetxt))
-                        if url
-                        else datetxt,
-                        mark_safe(linktxt.format(url=url, content=timetxt))
-                        if url
-                        else timetxt,
-                        session.n_qualifs,
-                        session.n_participants,
-                        session.n_bikes,
-                        session.n_helmets,
-                        session.bikes_concept,
-                        session.bikes_phone,
-                    ]
+        for session in sessions:
+            season = session.season
+            url = None
+            if season and html:
+                url = reverse(
+                    "session-detail", kwargs={"seasonpk": season.pk, "pk": session.id},
                 )
+            datetxt = datefilter(session.day, settings.DATE_FORMAT_COMPACT)
+            timetxt = datefilter(session.begin, settings.TIME_FORMAT_SHORT)
+            dataset.append(
+                [
+                    session.orga.address_canton,
+                    session.orga.ifabbr if html else session.orga.name,
+                    session.city,
+                    mark_safe(linktxt.format(url=url, content=datetxt))
+                    if url
+                    else datetxt,
+                    mark_safe(linktxt.format(url=url, content=timetxt))
+                    if url
+                    else timetxt,
+                    session.n_qualifs,
+                    session.n_participants,
+                    session.n_bikes,
+                    session.n_helmets,
+                    session.bikes_concept,
+                    session.bikes_phone,
+                ]
+            )
         return dataset
