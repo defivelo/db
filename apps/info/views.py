@@ -22,7 +22,6 @@ from django.urls import resolve
 from django.utils.decorators import method_decorator
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.generic.base import TemplateView
-from django.views.generic.dates import MonthArchiveView
 from django.views.generic.list import ListView
 
 from rolepermissions.mixins import HasPermissionsMixin
@@ -32,15 +31,9 @@ from stronghold.views import StrongholdPublicMixin
 from apps.challenge.models.session import Session
 from apps.common import DV_SEASON_AUTUMN, DV_SEASON_SPRING
 from apps.common.views import ExportMixin, PaginatorMixin
-from defivelo.roles import user_cantons
 from defivelo.views.common import MenuView
 
-from .exports import (
-    LogisticsExport,
-    OrgaInvoicesExport,
-    SeasonSessionsMixin,
-    SeasonStatsExport,
-)
+from .exports import LogisticsExport, SeasonSessionsMixin, SeasonStatsExport
 from .forms import CantonFilterForm
 
 
@@ -192,16 +185,6 @@ class SeasonStatsView(SeasonStatsExport, SeasonExports):
 
 class SeasonStatsExportView(
     SeasonStatsExport, SeasonExportsMixin, ExportMixin, ListView
-):
-    pass
-
-
-class OrgaInvoicesView(OrgaInvoicesExport, SeasonExports):
-    pass
-
-
-class OrgaInvoicesExportView(
-    OrgaInvoicesExport, SeasonExportsMixin, ExportMixin, ListView
 ):
     pass
 

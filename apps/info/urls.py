@@ -23,8 +23,6 @@ from .views import (
     LogisticsExportView,
     LogisticsView,
     NextQualifs,
-    OrgaInvoicesExportView,
-    OrgaInvoicesView,
     QualifsCalendar,
     SeasonExports,
     SeasonStatsExportView,
@@ -58,17 +56,6 @@ urlpatterns = [
                     r"^stats-(?P<format>[a-z]+)$",
                     never_cache(SeasonStatsExportView.as_view()),
                     name="season-stats-export",
-                ),
-                # Facturation établissements
-                url(
-                    r"^orgas/$",
-                    never_cache(OrgaInvoicesView.as_view()),
-                    name="orga-invoices",
-                ),
-                url(
-                    r"^orgas-(?P<format>[a-z]+)$",
-                    never_cache(OrgaInvoicesExportView.as_view()),
-                    name="orga-invoices-export",
                 ),
                 # Planification Logistique
                 url(

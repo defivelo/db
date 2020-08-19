@@ -140,9 +140,9 @@ class SeasonStatsExport(SeasonSessionsMixin):
         return dataset
 
 
-class OrgaInvoicesExport(SeasonSessionsMixin):
-    # Saison par canton puis qualif par établissement
-    canton_orga_not_sessions = True
+class LogisticsExport(SeasonSessionsMixin):
+    # Saison dans l'ordre avec les besoins de vélos, pas par Qualif'
+    canton_orga_not_sessions = False
 
     def get_dataset_title(self):
         return "{title} - {season} {year}".format(
@@ -264,8 +264,3 @@ class OrgaInvoicesExport(SeasonSessionsMixin):
                     ]
                 )
         return dataset
-
-
-class LogisticsExport(OrgaInvoicesExport):
-    # Saison dans l'ordre avec les besoins de vélos, pas par Qualif'
-    canton_orga_not_sessions = False
