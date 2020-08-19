@@ -152,8 +152,16 @@ COMPRESS_PRECOMPILERS = (
         + " {infile} {outfile}",
     ),
 )
+COMPRESS_FILTERS = {
+    "css": [
+        "compressor.filters.css_default.CssAbsoluteFilter",
+        "compressor.filters.cssmin.CSSCompressorFilter",
+    ],
+    "js": ["compressor.filters.jsmin.JSMinFilter"],
+}
 # Allow online compression because we are not able to pre-compress some dynamic assets
-COMPRESS_OFFLINE = False
+COMPRESS_OFFLINE = True
+COMPRESS_ENABLED = True
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
