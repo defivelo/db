@@ -321,6 +321,11 @@ class PowerUserTest(ProfileTestCase):
 
         # But I can change any other role
         user = self.users[0]
+        # Make this user a without-role user
+        user.profile.formation = ""
+        user.profile.actor_for.clear()
+        user.profile.save()
+
         url = reverse("user-assign-role", kwargs={"pk": user.pk})
         response = self.client.get(url)
         # That user has no login
