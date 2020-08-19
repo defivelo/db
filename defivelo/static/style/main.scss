@@ -1,42 +1,41 @@
 /* Bootstrap variables */
 $icon-font-path: "https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/fonts/";
+/* DEFIVELO-188: Larger mobile view */
+$screen-sm-min: 992px;
 
 /* Import all of bootstrap */
 @import "bootstrap-sass-3.4.1/assets/stylesheets/bootstrap";
 
 /* /!\ Divisible par 3 ! */
-
 $global-footer-height: 30px;
 html {
-    position: relative;
-    min-height: 100%;
+  position: relative;
+  min-height: 100%;
 }
 
 body {
-    padding-top: 70px;
-    /* Margin bottom by footer height */
-    margin-bottom: ($global-footer-height + 20px);
+  padding-top: 70px;
+  /* Margin bottom by footer height */
+  margin-bottom: ($global-footer-height + 20px);
 }
 
 #dv-navbar-logo {
-    margin-top: -15px;
-    padding-left: 0;
-    padding-right: 0;
+  margin-top: -15px;
 }
 
 .required-field label:after {
-    content: " *";
+  content: " *";
 }
 
-@import 'partials/bootstrap-fixes';
-@import 'partials/variables';
-@import 'partials/footer';
-@import 'partials/flags';
-@import 'partials/select2';
-@import 'partials/articles';
-@import 'partials/challenge';
-@import 'partials/availtable';
-@import 'partials/calendar';
-@import 'partials/public';
-@import 'partials/invoices';
-@import 'partials/timesheets';
+@import "partials/bootstrap-fixes";
+@import "partials/variables";
+@import "partials/footer";
+@import "partials/flags";
+@import "partials/select2";
+@import "partials/articles";
+@import "partials/challenge";
+@import "partials/availtable";
+@import "partials/calendar";
+@import "partials/public";
+@import "partials/invoices";
+@import "partials/timesheets";
