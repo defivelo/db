@@ -23,7 +23,7 @@ from import_export import fields, resources, widgets
 
 from defivelo.templatetags.dv_filters import canton_abbr, cantons_abbr
 
-from .models import STD_PROFILE_FIELDS
+from .models import COLLABORATOR_FIELDS, STD_PROFILE_FIELDS
 
 
 class MultipleSelectWidget(widgets.Widget):
@@ -60,6 +60,10 @@ ALL_PROFILE_FIELDS = tuple(
         for field in STD_PROFILE_FIELDS
         if field not in ["firstmed_course_comm"]
     ]
+)
+ALL_COLLABORATOR_FIELDS = tuple(
+    ["first_name", "last_name", "email"]
+    + ["profile__%s" % field for field in COLLABORATOR_FIELDS]
 )
 
 
@@ -204,3 +208,12 @@ class UserResource(resources.ModelResource):
                 field.profile.activity_cantons, abbr=False, long=True, fix_special=True
             )
         )
+
+
+class CollaboratorUserResource(UserResource):
+    """
+    Restricted UserResource
+    """
+
+    def get_fields(self, **kwargs):
+        return [self.fields[f] for f in ALL_COLLABORATOR_FIELDS]

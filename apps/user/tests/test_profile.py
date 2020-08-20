@@ -37,6 +37,7 @@ from apps.user.models import (
 from apps.user.tests.factories import UserFactory
 from defivelo.tests.utils import (
     AuthClient,
+    CollaboratorAuthClient,
     CoordinatorAuthClient,
     PowerUserAuthClient,
     StateManagerAuthClient,
@@ -50,7 +51,7 @@ myurlsforall = [
     "user-update",
     "profile-detail",
 ]
-myurlsforoffice = [
+myurls_for_office_and_collaborators = [
     "user-list",
     "user-list-export",
 ]
@@ -125,7 +126,7 @@ class AuthUserTest(ProfileTestCase):
             self.assertEqual(response.status_code, 200, url)
 
     def test_my_restrictions(self):
-        for symbolicurl in myurlsforoffice + [
+        for symbolicurl in myurls_for_office_and_collaborators + [
             "user-assign-role",
         ]:
             for exportformat in ["csv", "ods", "xls"]:
@@ -207,13 +208,39 @@ class AuthUserTest(ProfileTestCase):
             self.assertEqual(response.status_code, 403, url)
 
 
+class CollaboratorUserTest(AuthUserTest):
+    def setUp(self):
+        super().setUp()
+        self.client = CollaboratorAuthClient()
+
+    def test_my_allowances(self):
+        for symbolicurl in myurlsforall + myurls_for_office_and_collaborators:
+            for exportformat in ["csv", "ods", "xls"]:
+                url = tryurl(symbolicurl, self.client.user, exportformat)
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 200, url)
+
+    def test_my_restrictions(self):
+        # Collaborators can't assign roles.
+        url = tryurl("user-assign-role", self.client.user,)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403, url)
+
+    def test_autocompletes(self):
+        # Autocompletes are OK for collaborators, they have access to the user list.
+        for al in profile_autocompletes:
+            url = "%s?q=test" % reverse("user-%s-ac" % al)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, url)
+
+
 class PowerUserTest(ProfileTestCase):
     def setUp(self):
         super(PowerUserTest, self).setUp()
         self.client = PowerUserAuthClient()
 
     def test_my_allowances(self):
-        for symbolicurl in myurlsforall + myurlsforoffice:
+        for symbolicurl in myurlsforall + myurls_for_office_and_collaborators:
             for exportformat in ["csv", "ods", "xls"]:
                 url = tryurl(symbolicurl, self.client.user, exportformat)
                 response = self.client.get(url)
@@ -321,6 +348,11 @@ class PowerUserTest(ProfileTestCase):
 
         # But I can change any other role
         user = self.users[0]
+        # Make this user a without-role user
+        user.profile.formation = ""
+        user.profile.actor_for.clear()
+        user.profile.save()
+
         url = reverse("user-assign-role", kwargs={"pk": user.pk})
         response = self.client.get(url)
         # That user has no login
@@ -526,7 +558,7 @@ class StateManagerUserTest(ProfileTestCase):
         self.assertContains(response, "Joël")
 
     def test_my_allowances(self):
-        for symbolicurl in myurlsforall + myurlsforoffice:
+        for symbolicurl in myurlsforall + myurls_for_office_and_collaborators:
             for exportformat in ["csv", "ods", "xls"]:
                 url = tryurl(symbolicurl, self.client.user, exportformat)
                 response = self.client.get(url)

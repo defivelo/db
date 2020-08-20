@@ -138,6 +138,16 @@ DV_PUBLIC_FIELDS = [
 
 DV_PRIVATE_FIELDS = ["comments"]
 
+COLLABORATOR_FIELDS = [
+    "natel",
+    "status",
+    "affiliation_canton",
+    "activity_cantons",
+    "language",
+    "formation",
+    "actor_for",
+]
+
 STD_PROFILE_FIELDS = PERSONAL_FIELDS + DV_PUBLIC_FIELDS + DV_PRIVATE_FIELDS
 
 
@@ -242,8 +252,21 @@ class UserProfile(Address, models.Model):
                 self.languages_challenges.remove(self.language)
             except (ValueError, AttributeError):
                 pass
+        # Assign the "collaborator" role automatically for "with formation" and "actors"
+        if not (
+            has_role(self.user, "power_user")
+            or has_role(self.user, "state_manager")
+            or has_role(self.user, "coordinator")
+        ):
+            # self.actor is a cached property, so access the ManyToMany directly
+            if self.formation or self.actor_for.exists():
+                self.set_role("collaborator")
+            else:
+                # Remove the role
+                self.set_role()
+
         self.reset_cache()
-        super(UserProfile, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def reset_cache(self):
         delete_memoized(has_permission)
@@ -456,6 +479,9 @@ class UserProfile(Address, models.Model):
                 elif has_role(self.user, "coordinator"):
                     title = _("Coordina·teur·trice")
                     icon = "pawn"
+                elif has_role(self.user, "collaborator"):
+                    title = _("Collabora·teur·trice")
+                    icon = "user"
         if title and textonly:
             return title
         if icon:

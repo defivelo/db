@@ -21,10 +21,11 @@ from django.utils.translation import activate
 
 from allauth.account.models import EmailAddress
 from faker import Faker
+from rolepermissions.checkers import has_role
 from rolepermissions.roles import assign_role
 
 from apps.common import DV_STATES
-from apps.user import get_new_username
+from apps.user import FORMATION_M1, get_new_username
 from apps.user.models import UserManagedState, UserProfile
 
 fake = Faker()
@@ -59,6 +60,14 @@ class AuthClient(Client):
 
         if self.role:
             assign_role(self.user, self.role)
+
+
+class CollaboratorAuthClient(AuthClient):
+    def __init__(self):
+        super().__init__()
+        self.user.profile.formation = FORMATION_M1
+        self.user.profile.save()
+        assert has_role(self.user, "collaborator")
 
 
 class StateManagerAuthClient(AuthClient):

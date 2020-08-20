@@ -13,11 +13,11 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from __future__ import unicode_literals
 
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.core.exceptions import PermissionDenied
+from django.db.models import Q
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 
@@ -32,6 +32,8 @@ from ..models import (
     DV_PUBLIC_FIELDS,
     PERSONAL_FIELDS,
     STD_PROFILE_FIELDS,
+    USERSTATUS_ARCHIVE,
+    USERSTATUS_DELETED,
     UserProfile,
 )
 
@@ -79,6 +81,12 @@ class ProfileMixin(MenuView):
             qs = super(ProfileMixin, self).get_queryset()
         except AttributeError:
             qs = get_user_model().objects
+        # Exclude any non-actor or non-formation without the permission
+        if not has_permission(self.request.user, "user_view_list_non_collaborator"):
+            qs = qs.exclude(
+                (Q(profile__formation="") & Q(profile__actor_for__isnull=True))
+                | Q(profile__status__in=[USERSTATUS_DELETED, USERSTATUS_ARCHIVE])
+            )
         return qs.prefetch_related(
             "groups",
             "profile",
