@@ -175,6 +175,12 @@ class UserProfileFilterSet(FilterSet):
         return queryset
 
     def filter_roles(queryset, name, value):
+        try:
+            # Use the '0' special value (see definition of the role filter) to specially filter the absence of any role
+            if int(value[0]) == 0:
+                return queryset.filter(groups__isnull=True)
+        except (KeyError, ValueError):
+            pass
         return queryset.filter(reduce(operator.or_, [Q(groups__name=r) for r in value]))
 
     profile__language = MultipleChoiceFilter(
@@ -215,7 +221,9 @@ class UserProfileFilterSet(FilterSet):
         ),
     )
     roles = MultipleChoiceFilter(
-        label=_("Rôle"), choices=DV_AVAILABLE_ROLES, method=filter_roles
+        label=_("Rôle"),
+        choices=tuple((t[0] if t[0] else 0, t[1]) for t in DV_AVAILABLE_ROLES),
+        method=filter_roles,
     )
     q = CharFilter(label=_("Recherche"), method=filter_wide)
 
