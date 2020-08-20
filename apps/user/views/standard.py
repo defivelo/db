@@ -47,7 +47,9 @@ from ..export import CollaboratorUserResource, UserResource
 from ..models import (
     FORMATION_CHOICES,
     USERSTATUS_ACTIVE,
+    USERSTATUS_ARCHIVE,
     USERSTATUS_CHOICES,
+    USERSTATUS_DELETED,
     USERSTATUS_RESERVE,
 )
 from .mixins import ProfileMixin, UserSelfAccessMixin
@@ -109,7 +111,7 @@ class UserCreate(HasPermissionsMixin, ProfileMixin, SuccessMessageMixin, CreateV
 
 
 class UserProfileFilterSet(FilterSet):
-    def __init__(self, data=None, *args, **kwargs):
+    def __init__(self, data=None, *args, request=None, **kwargs):
         any_filter_is_set = bool(set(self.base_filters) & set(data or {}))
         if not any_filter_is_set:
             data = {}
@@ -118,7 +120,19 @@ class UserProfileFilterSet(FilterSet):
                 # filter param is either missing or empty, use initial as default
                 if not data.get(name) and initial:
                     data[name] = initial
-        super(UserProfileFilterSet, self).__init__(data, *args, **kwargs)
+        super().__init__(data=data, *args, request=request, **kwargs)
+
+        if not has_permission(request.user, "user_export_all_fields"):
+            # That user only has a limited amount of choices available, amend them
+            # Remove the inaccessible statuses
+            status_choices = self.filters["profile__status"].extra["choices"]
+            self.filters["profile__status"].extra["choices"] = (
+                t
+                for t in status_choices
+                if t[0] not in [USERSTATUS_ARCHIVE, USERSTATUS_DELETED,]
+            )
+            # Remove roles' filter, there's no reason for a collaborator to filter on roles
+            del self.filters["roles"]
 
     def filter_multi_nonempty(queryset, name, values):
         if values:
@@ -161,6 +175,12 @@ class UserProfileFilterSet(FilterSet):
         return queryset
 
     def filter_roles(queryset, name, value):
+        try:
+            # Use the '0' special value (see definition of the role filter) to specially filter the absence of any role
+            if int(value[0]) == 0:
+                return queryset.filter(groups__isnull=True)
+        except (KeyError, ValueError):
+            pass
         return queryset.filter(reduce(operator.or_, [Q(groups__name=r) for r in value]))
 
     profile__language = MultipleChoiceFilter(
@@ -201,7 +221,9 @@ class UserProfileFilterSet(FilterSet):
         ),
     )
     roles = MultipleChoiceFilter(
-        label=_("Rôle"), choices=DV_AVAILABLE_ROLES, method=filter_roles
+        label=_("Rôle"),
+        choices=tuple((t[0] if t[0] else 0, t[1]) for t in DV_AVAILABLE_ROLES),
+        method=filter_roles,
     )
     q = CharFilter(label=_("Recherche"), method=filter_wide)
 
