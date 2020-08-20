@@ -28,12 +28,6 @@ def user_set_collaborator_and_reset_roles(apps, schema_editor):
             assign_role(user, "collaborator")
 
 
-def reverse_noop(apps, schema_editor):
-    # We can't import the Person model directly as it may be a newer
-    # version than this migration expects. We use the historical version.
-    pass
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -41,5 +35,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(user_set_collaborator_and_reset_roles, reverse_noop),
+        migrations.RunPython(
+            user_set_collaborator_and_reset_roles, migrations.RunPython.noop
+        ),
     ]
