@@ -51,7 +51,7 @@ myurlsforall = [
     "user-update",
     "profile-detail",
 ]
-myurlsforofficeandcollaborators = [
+myurls_for_office_and_collaborators = [
     "user-list",
     "user-list-export",
 ]
@@ -126,7 +126,7 @@ class AuthUserTest(ProfileTestCase):
             self.assertEqual(response.status_code, 200, url)
 
     def test_my_restrictions(self):
-        for symbolicurl in myurlsforofficeandcollaborators + [
+        for symbolicurl in myurls_for_office_and_collaborators + [
             "user-assign-role",
         ]:
             for exportformat in ["csv", "ods", "xls"]:
@@ -214,7 +214,7 @@ class CollaboratorUserTest(AuthUserTest):
         self.client = CollaboratorAuthClient()
 
     def test_my_allowances(self):
-        for symbolicurl in myurlsforall + myurlsforofficeandcollaborators:
+        for symbolicurl in myurlsforall + myurls_for_office_and_collaborators:
             for exportformat in ["csv", "ods", "xls"]:
                 url = tryurl(symbolicurl, self.client.user, exportformat)
                 response = self.client.get(url)
@@ -240,7 +240,7 @@ class PowerUserTest(ProfileTestCase):
         self.client = PowerUserAuthClient()
 
     def test_my_allowances(self):
-        for symbolicurl in myurlsforall + myurlsforofficeandcollaborators:
+        for symbolicurl in myurlsforall + myurls_for_office_and_collaborators:
             for exportformat in ["csv", "ods", "xls"]:
                 url = tryurl(symbolicurl, self.client.user, exportformat)
                 response = self.client.get(url)
@@ -558,7 +558,7 @@ class StateManagerUserTest(ProfileTestCase):
         self.assertContains(response, "Joël")
 
     def test_my_allowances(self):
-        for symbolicurl in myurlsforall + myurlsforofficeandcollaborators:
+        for symbolicurl in myurlsforall + myurls_for_office_and_collaborators:
             for exportformat in ["csv", "ods", "xls"]:
                 url = tryurl(symbolicurl, self.client.user, exportformat)
                 response = self.client.get(url)
