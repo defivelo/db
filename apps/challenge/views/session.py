@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from urllib.parse import urlencode
+from urllib.parse import quote
 
 from django.conf import settings
 from django.contrib.messages.views import SuccessMessageMixin
@@ -22,7 +22,8 @@ from django.core.exceptions import FieldError, PermissionDenied
 from django.template.defaultfilters import date, time
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
-from django.utils.encoding import force_text, iri_to_uri
+from django.utils.encoding import force_text
+from django.utils.html import escape, urlencode
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.dates import WeekArchiveView
@@ -193,11 +194,11 @@ class SessionDetailView(SessionMixin, DetailView):
                     },
                 ),
             }
-            context["session_mailtoall"] = iri_to_uri(
-                "mailto:{emaillist}?{options}".format(
-                    emaillist=", ".join(session_helpers), options=urlencode(emailparts)
-                ),
+            context["session_mailtoall"] = "mailto:{emaillist}?{options}".format(
+                emaillist=escape(", ".join(session_helpers)),
+                options=urlencode(emailparts, quote_via=quote),
             )
+
         return context
 
     def get_queryset(self):
