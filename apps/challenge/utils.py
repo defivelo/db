@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from typing import Mapping
 
 from django.contrib.auth import get_user_model
