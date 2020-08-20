@@ -13,8 +13,6 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from __future__ import unicode_literals
-
 import operator
 from functools import reduce
 
@@ -45,7 +43,7 @@ from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.roles import DV_AVAILABLE_ROLES, has_permission, user_cantons
 
 from .. import FORMATION_KEYS
-from ..export import UserResource
+from ..export import CollaboratorUserResource, UserResource
 from ..models import (
     FORMATION_CHOICES,
     USERSTATUS_ACTIVE,
@@ -227,13 +225,14 @@ class UserListExport(ExportMixin, UserList):
     export_class = UserResource()
     export_filename = _("Utilisateurs")
 
-    def before_dataset_export(self):
+    def get_export_class(self, request):
         """
         From ExportMixin
-        Allows mixin-using classes to specify what to do to the export_class before exporting
+        Override export_class when User has no permission
         """
         if not has_permission(self.request.user, "user_export_all_fields"):
-            (self.export_class).export_only_collaborator_fields()
+            return CollaboratorUserResource()
+        return super().get_export_class(request)
 
 
 class UserDetailedList(UserList):

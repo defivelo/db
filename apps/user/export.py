@@ -192,24 +192,6 @@ class UserResource(resources.ModelResource):
         fields = ALL_PROFILE_FIELDS
         export_order = ALL_PROFILE_FIELDS
 
-    def export_only_collaborator_fields(self):
-        """
-        Additional interface to limit the fields's list at runtime
-        """
-        self.only_collaborator_fields = True
-
-    def get_fields(self, **kwargs):
-        """
-        Override get_fields if we have a limit
-        """
-        try:
-            if self.only_collaborator_fields:
-                return [self.fields[f] for f in ALL_COLLABORATOR_FIELDS]
-        except AttributeError:
-            pass
-
-        return super().get_fields(**kwargs)
-
     def dehydrate_profile__address_canton(self, field):
         return canton_abbr(
             field.profile.address_canton, abbr=False, long=True, fix_special=True
@@ -226,3 +208,12 @@ class UserResource(resources.ModelResource):
                 field.profile.activity_cantons, abbr=False, long=True, fix_special=True
             )
         )
+
+
+class CollaboratorUserResource(UserResource):
+    """
+    Restricted UserResource
+    """
+
+    def get_fields(self, **kwargs):
+        return [self.fields[f] for f in ALL_COLLABORATOR_FIELDS]

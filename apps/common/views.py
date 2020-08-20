@@ -36,8 +36,7 @@ class ExportMixin(object):
             format = base_formats.CSV()
 
         try:
-            self.before_dataset_export()
-            dataset = (self.export_class).export(self.object_list)
+            dataset = (self.get_export_class(self.request)).export(self.object_list)
         except AttributeError:
             dataset = self.get_dataset()
 
@@ -55,12 +54,11 @@ class ExportMixin(object):
         )
         return response
 
-    def before_dataset_export(self):
+    def get_export_class(self, request):
         """
-        Allows mixin-using classes to specify what to do to the export_class before exporting
-        It's a noop by default
+        Allow a dynamic export_class setting
         """
-        pass
+        return self.export_class
 
 
 class PaginatorMixin(object):
