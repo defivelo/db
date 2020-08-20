@@ -12,7 +12,18 @@
     <h1>{% with canton=mcv.canton|canton_abbr:False monthyear=mcv.date|date:'F Y' %}{% blocktrans %}{{ canton }}: Validation pour {{ monthyear }}{% endblocktrans %}{% endwith %}</h1>
     <form method="POST" class="form-horizontal" id="urls-validator">
         {% csrf_token %}
-        {% bootstrap_form form layout='horizontal' size='small' %}
+        {% for field in form %}
+            {% if field.name != 'validated' %}
+                {% bootstrap_field field layout='horizontal' size='small' %}
+            {% endif %}
+        {% endfor %}
+        <div class="form-group form-group-sm">
+          <b class="col-md-3 control-label">{% trans "N'oubliez pas de valider vos factures d'établissement" %}</b>
+          <div class="col-md-9">
+              <div class="help-block"><a href="{% url 'invoices-yearly-list' year=mcv.date.year %}" target="_blank">{% blocktrans with year=mcv.date.year %}Factures {{ year }}{% endblocktrans %}</a></div>
+          </div>
+        </div>
+        {% bootstrap_field form.validated layout='horizontal' size='small' %}
         {% buttons %}
             <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
             <a class="btn btn-default" href="{% url 'salary:validations-month' year=mcv.date.year month=mcv.date.month %}">{% trans "Annuler" %}</a>
