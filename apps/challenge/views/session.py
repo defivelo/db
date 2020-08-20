@@ -13,13 +13,16 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from __future__ import unicode_literals
+from urllib.parse import urlencode
 
+from django.conf import settings
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.sites.models import Site
 from django.core.exceptions import FieldError, PermissionDenied
 from django.template.defaultfilters import date, time
-from django.urls import reverse_lazy
-from django.utils.encoding import force_text
+from django.template.loader import render_to_string
+from django.urls import reverse, reverse_lazy
+from django.utils.encoding import force_text, iri_to_uri
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.dates import WeekArchiveView
@@ -161,6 +164,40 @@ class SessionDetailView(SessionMixin, DetailView):
                 "name": _("Classe %s") % lettercounter(mysession.n_qualifications + 1),
             }
         )
+        # Build a meaningful mailto: link towards all session available emails, with meaningful subject and body.
+        session_helpers = [
+            f"{s.helper.get_full_name()} <{s.helper.email}>"
+            for s in mysession.chosen_staff
+        ]
+        context["session_mailtoall"] = None
+        if session_helpers:
+            emailparts = {
+                "subject": (
+                    settings.EMAIL_SUBJECT_PREFIX
+                    + _("Qualifs {session}").format(session=mysession)
+                ),
+                "body": render_to_string(
+                    "challenge/session_email_to_helpers.txt",
+                    {
+                        "current_site": Site.objects.get_current(),
+                        "session": mysession,
+                        "session_url": self.request.build_absolute_uri(
+                            reverse(
+                                "session-detail",
+                                kwargs={
+                                    "seasonpk": mysession.season.pk,
+                                    "pk": mysession.pk,
+                                },
+                            )
+                        ),
+                    },
+                ),
+            }
+            context["session_mailtoall"] = iri_to_uri(
+                "mailto:{emaillist}?{options}".format(
+                    emaillist=", ".join(session_helpers), options=urlencode(emailparts)
+                ),
+            )
         return context
 
     def get_queryset(self):
