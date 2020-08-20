@@ -5,6 +5,7 @@ from django.forms import formset_factory
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
+from django.utils.text import format_lazy
 from django.utils.translation import ugettext_lazy as _
 
 from rolepermissions.checkers import has_role
@@ -34,16 +35,19 @@ class TimesheetFormBase(forms.ModelForm):
             "comments",
         ]
         labels = {
-            "time_helper": _("Heures moni·teur·trice (%(price)s.-/h)")
-            % dict(price=HOURLY_RATE_HELPER),
-            "actor_count": _("Intervention(s) (%(price)s.-/Qualif')")
-            % dict(price=RATE_ACTOR),
-            "leader_count": _(
-                "Participation(s) comme moni·teur·trice 2 (%(price)s.-/Qualif')"
-            )
-            % dict(price=BONUS_LEADER),
-            "overtime": _("Heures supplémentaires (%(price)s.-/h)")
-            % dict(price=HOURLY_RATE_HELPER),
+            "time_helper": format_lazy(
+                _("Heures moni·teur·trice ({price}.-/h)"), price=HOURLY_RATE_HELPER
+            ),
+            "actor_count": format_lazy(
+                _("Intervention(s) ({price}.-/Qualif')"), price=RATE_ACTOR
+            ),
+            "leader_count": format_lazy(
+                _("Participation(s) comme moni·teur·trice 2 ({price}.-/Qualif')"),
+                price=BONUS_LEADER,
+            ),
+            "overtime": format_lazy(
+                _("Heures supplémentaires ({price}.-/h)"), price=HOURLY_RATE_HELPER
+            ),
             "traveltime": _("Heures de trajet (aller-retour)"),
         }
         widgets = {
