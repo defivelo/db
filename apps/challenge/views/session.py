@@ -23,7 +23,7 @@ from django.template.defaultfilters import date, time
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils.encoding import force_text
-from django.utils.html import escape, urlencode
+from django.utils.html import urlencode
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.dates import WeekArchiveView
@@ -195,7 +195,7 @@ class SessionDetailView(SessionMixin, DetailView):
                 ),
             }
             context["session_mailtoall"] = "mailto:{emaillist}?{options}".format(
-                emaillist=escape(", ".join(session_helpers)),
+                emaillist=", ".join(session_helpers),
                 options=urlencode(emailparts, quote_via=quote),
             )
 
