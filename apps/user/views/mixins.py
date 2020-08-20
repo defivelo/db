@@ -84,10 +84,8 @@ class ProfileMixin(MenuView):
         # Exclude any non-actor or non-formation without the permission
         if not has_permission(self.request.user, "user_view_list_non_collaborator"):
             qs = qs.exclude(
-                Q(profile__formation="") & Q(profile__actor_for__isnull=True)
-            ).exclude(
-                Q(profile__status=USERSTATUS_DELETED)
-                | Q(profile__status=USERSTATUS_ARCHIVE)
+                (Q(profile__formation="") & Q(profile__actor_for__isnull=True))
+                | Q(profile__status__in=[USERSTATUS_DELETED, USERSTATUS_ARCHIVE])
             )
         return qs.prefetch_related(
             "groups",
