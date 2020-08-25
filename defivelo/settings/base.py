@@ -159,8 +159,8 @@ COMPRESS_FILTERS = {
     ],
     "js": ["compressor.filters.jsmin.JSMinFilter"],
 }
-# Allow online compression because we are not able to pre-compress some dynamic assets
-COMPRESS_OFFLINE = True
+# Only allow online compression because we are not able to pre-compress some dynamic assets
+COMPRESS_OFFLINE = False
 COMPRESS_ENABLED = True
 
 # Database
