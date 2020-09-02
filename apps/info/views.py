@@ -60,7 +60,7 @@ class NextQualifs(SessionsPublicView, PaginatorMixin, ListView):
 class JSONNextQualifs(SessionsPublicView, TemplateView):
     def render_to_response(self, context, **response_kwargs):
         sessions = []
-        for session in self.queryset.all():
+        for session in self.get_queryset().all():
             session_representation = {
                 "canton": session.orga.address_canton,
                 "date": session.day,
