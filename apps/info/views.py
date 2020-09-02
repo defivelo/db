@@ -37,11 +37,13 @@ from .forms import CantonFilterForm
 
 
 class SessionsPublicView(StrongholdPublicMixin):
-    queryset = (
-        Session.objects.filter(day__gte=date.today())
-        .order_by("day", "orga")
-        .prefetch_related("orga")
-    )
+    def get_queryset(self):
+        # This needs to be a get_queryset to make sure the date.today() is evaluated at view time, not at start time.
+        return (
+            Session.objects.filter(day__gte=date.today())
+            .order_by("day", "orga")
+            .prefetch_related("orga")
+        )
 
     @method_decorator(public)
     @method_decorator(xframe_options_exempt)
