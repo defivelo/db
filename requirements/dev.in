@@ -7,4 +7,4 @@ Werkzeug
 
 # Deployment requirements
 fabric
-dulwich
+dulwich==0.19.15
