@@ -123,15 +123,15 @@
                         {% endif %}
                         {% if userprofile.profile.iban %}
                             <dt>{% trans "N° IBAN" %}</dt>
-                                <dd><tt>{{ userprofile.profile.iban_nice }}</tt></dd>
+                                <dd><span style="font-family: monospace">{{ userprofile.profile.iban_nice }}</span></dd>
                         {% endif %}
                         {% if userprofile.profile.cresus_employee_number %}
                             <dt>{% trans "N° d'employé Crésus" %}</dt>
-                                <dd><tt>{{ userprofile.profile.cresus_employee_number }}</tt></dd>
+                                <dd><span style="font-family: monospace">{{ userprofile.profile.cresus_employee_number }}</span></dd>
                         {% endif %}
                         {% if userprofile.profile.social_security %}
                             <dt>{% trans "N° AVS" %}</dt>
-                                <dd><tt>{{ userprofile.profile.social_security }}</tt></dd>
+                                <dd><span style="font-family: monospace">{{ userprofile.profile.social_security }}</span></dd>
                         {% endif %}
                         {% if userprofile.profile.marital_status %}
                             <dt>{% trans "État civil" %}</dt>
