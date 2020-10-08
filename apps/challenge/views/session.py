@@ -168,7 +168,9 @@ class SessionDetailView(SessionMixin, DetailView):
         # Build a meaningful mailto: link towards all session available emails, with meaningful subject and body.
         session_helpers = [
             f"{s.helper.get_full_name()} <{s.helper.email}>"
-            for s in mysession.chosen_staff
+            for s in mysession.chosen_staff.order_by(
+                "helper__first_name", "helper__last_name"
+            )
         ]
         context["session_mailtoall"] = None
         if session_helpers:
