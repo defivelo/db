@@ -103,6 +103,10 @@ def test_invoice_out_of_date(db):
             nth_in_sequence = 1
             sequence_max = sequence_max + 1
 
+    # Test that removing any Session will make the Invoice not up_to_date
+    invoicelines[0].session.delete()
+    assert not invoice.is_up_to_date
+
 
 def test_bikes_are_accounted_once_per_day(db):
     invoice = InvoiceFactory()
