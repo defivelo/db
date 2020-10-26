@@ -37,6 +37,16 @@ def test_invoiceline_out_of_date(db):
     assert invoiceline.is_up_to_date
 
 
+def test_invoiceline_without_session_is_always_out_of_date(db):
+    invoiceline = InvoiceLineFactory()
+    # Make sure it is not up-to-date by deleting its Session
+    invoiceline.session = None
+    assert not invoiceline.is_up_to_date
+    invoiceline.refresh()
+    # It can't become up_to_date
+    assert not invoiceline.is_up_to_date
+
+
 def test_invoice_out_of_date(db):
     invoice = InvoiceFactory()
     # Create 1+2+3+4+5 invoicelines to test all possible sequences

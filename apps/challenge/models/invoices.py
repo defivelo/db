@@ -280,13 +280,14 @@ class InvoiceLine(models.Model):
         """
         Align the invoiceline's attributes
         """
-        self.historical_session = self.most_recent_historical_session()
-        self.nb_bikes = self.session.n_bikes
-        self.nb_participants = self.session.n_participants
-        self.cost_bikes = self.invoice.settings.cost_per_bike * self.session.n_bikes
-        self.cost_participants = (
-            self.invoice.settings.cost_per_participant * self.session.n_participants
-        )
+        if self.session:
+            self.historical_session = self.most_recent_historical_session()
+            self.nb_bikes = self.session.n_bikes
+            self.nb_participants = self.session.n_participants
+            self.cost_bikes = self.invoice.settings.cost_per_bike * self.session.n_bikes
+            self.cost_participants = (
+                self.invoice.settings.cost_per_participant * self.session.n_participants
+            )
         # Clear the cached is_up_to_date if possible
         try:
             del self.is_up_to_date
