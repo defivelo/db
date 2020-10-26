@@ -209,7 +209,10 @@ class InvoiceLine(models.Model):
         """
         Provide a shortcut to getting the latest historical copy of the session
         """
-        return self.session.history.latest("history_date")
+        try:
+            return self.session.history.latest("history_date")
+        except AttributeError:  # Without a self.session (deleted ?)
+            return None
 
     def save(self, *args, **kwargs):
         """
@@ -224,6 +227,9 @@ class InvoiceLine(models.Model):
         """
         Check if that invoice line is up-to-date by comparing the historical session, number and costs
         """
+        if not self.session:
+            return False
+
         if (
             self.historical_session.history_id
             != self.most_recent_historical_session().history_id

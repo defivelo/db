@@ -104,6 +104,10 @@ class InvoiceFormMixin(forms.ModelForm):
                         "historical_session": session.history.latest("history_date"),
                     },
                 )
+            # Also delete superfluous lines
+            InvoiceLine.objects.filter(invoice=invoice).exclude(
+                session__in=sessions
+            ).delete()
         return invoice
 
 
