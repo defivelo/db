@@ -78,7 +78,8 @@ class QualificationForm(forms.ModelForm):
         self.fields["leader"] = LeaderChoiceField(
             label=_("Moniteur 2"),
             queryset=available_staff.filter(
-                pk__in=leaders, profile__formation=FORMATION_M2,
+                pk__in=leaders,
+                profile__formation=FORMATION_M2,
             ),
             required=False,
             session=session,

@@ -83,8 +83,7 @@ def vcs_commit():
 
 @register.filter
 def setlang(request, newlang):
-    """ Replace language code in request.path with the new language code
-    """
+    """Replace language code in request.path with the new language code"""
     return sub("^/(%s)/" % request.LANGUAGE_CODE, "/%s/" % newlang, request.path)
 
 

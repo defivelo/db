@@ -288,11 +288,29 @@ TINYMCE_DEFAULT_CONFIG = {
         [
             " ".join(block)
             for block in [
-                ["formatselect",],
-                ["bold", "italic", "underline", "strikethrough",],
-                ["undo", "redo",],
-                ["link", "unlink",],
-                ["alignleft", "aligncenter", "alignright", "alignjustify",],
+                [
+                    "formatselect",
+                ],
+                [
+                    "bold",
+                    "italic",
+                    "underline",
+                    "strikethrough",
+                ],
+                [
+                    "undo",
+                    "redo",
+                ],
+                [
+                    "link",
+                    "unlink",
+                ],
+                [
+                    "alignleft",
+                    "aligncenter",
+                    "alignright",
+                    "alignjustify",
+                ],
                 ["bullist", "numlist"],
                 ["removeformat"],
             ]

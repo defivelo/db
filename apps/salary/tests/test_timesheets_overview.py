@@ -59,7 +59,8 @@ def test_helper_can_only_see_own_entries(db):
         session=SessionFactory(day=datetime.date(2019, 4, 11)),
     )
     QualificationFactory(
-        actor=client.user, session=SessionFactory(day=datetime.date(2019, 4, 12)),
+        actor=client.user,
+        session=SessionFactory(day=datetime.date(2019, 4, 12)),
     )
 
     response = client.get(reverse("salary:timesheets-overview", kwargs={"year": 2019}))
@@ -77,7 +78,8 @@ def test_helper_can_only_see_own_entries(db):
 def test_matrix_shows_months_with_missing_timesheets(db):
     user = UserFactory(first_name="Jen", last_name="Barber")
     QualificationFactory(
-        actor=user, session=SessionFactory(day=datetime.date(2019, 4, 11)),
+        actor=user,
+        session=SessionFactory(day=datetime.date(2019, 4, 11)),
     )
 
     matrix = timesheets_overview.get_timesheets_status_matrix(2019, [user])
@@ -95,7 +97,8 @@ def test_matrix_shows_months_with_non_validated_timesheets(db):
     user = UserFactory(first_name="Jen", last_name="Barber")
     date = datetime.date(2019, 4, 11)
     QualificationFactory(
-        actor=user, session=SessionFactory(day=date),
+        actor=user,
+        session=SessionFactory(day=date),
     )
     TimesheetFactory(date=date, user=user)
 
@@ -116,10 +119,12 @@ def test_matrix_shows_months_with_validated_timesheets(db):
     user = UserFactory(first_name="Jen", last_name="Barber")
     date = datetime.date(2019, 4, 11)
     QualificationFactory(
-        actor=user, session=SessionFactory(day=date),
+        actor=user,
+        session=SessionFactory(day=date),
     )
     ValidatedTimesheetFactory(
-        date=date, user=user,
+        date=date,
+        user=user,
     )
 
     matrix = timesheets_overview.get_timesheets_status_matrix(2019, [user])
@@ -136,7 +141,8 @@ def test_matrix_shows_timesheets_total(db):
     user = UserFactory(first_name="Jen", last_name="Barber")
     date = datetime.date(2019, 4, 11)
     QualificationFactory(
-        actor=user, session=SessionFactory(day=date),
+        actor=user,
+        session=SessionFactory(day=date),
     )
     TimesheetFactory(date=date, user=user, overtime=5)
 
@@ -158,15 +164,18 @@ def test_state_manager_sees_reminder_button_for_month_with_missing_timesheets(db
 
     date_validated = datetime.date(2019, 2, 11)
     QualificationFactory(
-        actor=helper, session=SessionFactory(day=date_validated),
+        actor=helper,
+        session=SessionFactory(day=date_validated),
     )
     TimesheetFactory(
-        date=date_validated, user=helper,
+        date=date_validated,
+        user=helper,
     )
 
     date_missing = datetime.date(2019, 3, 11)
     QualificationFactory(
-        actor=helper, session=SessionFactory(day=date_missing),
+        actor=helper,
+        session=SessionFactory(day=date_missing),
     )
 
     response = client.get(reverse("salary:timesheets-overview", kwargs={"year": 2019}))
@@ -179,7 +188,8 @@ def test_state_manager_sees_reminder_button_for_month_with_missing_timesheets(db
 def test_helper_doesnt_see_reminder_button(db):
     client = AuthClient()
     QualificationFactory(
-        actor=client.user, session=SessionFactory(day=datetime.date(2019, 3, 11)),
+        actor=client.user,
+        session=SessionFactory(day=datetime.date(2019, 3, 11)),
     )
     response = client.get(reverse("salary:timesheets-overview", kwargs={"year": 2019}))
     assert response.status_code == 200

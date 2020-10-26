@@ -230,11 +230,28 @@ class AuthUserTest(SeasonTestCaseMixin):
                 )
                 urls = [
                     weeklysessionlist,
-                    reverse("session-create", kwargs={"seasonpk": self.season.pk,}),
-                    reverse("session-detail", kwargs=session_kwargs,),
-                    reverse("session-update", kwargs=session_kwargs,),
-                    reverse("session-staff-choices", kwargs=session_kwargs,),
-                    reverse("session-delete", kwargs=session_kwargs,),
+                    reverse(
+                        "session-create",
+                        kwargs={
+                            "seasonpk": self.season.pk,
+                        },
+                    ),
+                    reverse(
+                        "session-detail",
+                        kwargs=session_kwargs,
+                    ),
+                    reverse(
+                        "session-update",
+                        kwargs=session_kwargs,
+                    ),
+                    reverse(
+                        "session-staff-choices",
+                        kwargs=session_kwargs,
+                    ),
+                    reverse(
+                        "session-delete",
+                        kwargs=session_kwargs,
+                    ),
                 ]
                 for url in urls:
                     # Final URL is forbidden
@@ -257,9 +274,13 @@ class AuthUserTest(SeasonTestCaseMixin):
                                 visible
                                 and url
                                 in [
-                                    reverse("session-detail", kwargs=session_kwargs,),
                                     reverse(
-                                        "session-staff-choices", kwargs=session_kwargs,
+                                        "session-detail",
+                                        kwargs=session_kwargs,
+                                    ),
+                                    reverse(
+                                        "session-staff-choices",
+                                        kwargs=session_kwargs,
                                     ),
                                 ]
                             )
@@ -478,22 +499,39 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                         "week": session.day.strftime("%W"),
                     },
                 ),
-                reverse("session-create", kwargs={"seasonpk": self.foreignseason.pk,}),
+                reverse(
+                    "session-create",
+                    kwargs={
+                        "seasonpk": self.foreignseason.pk,
+                    },
+                ),
                 reverse(
                     "session-detail",
-                    kwargs={"seasonpk": self.foreignseason.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.foreignseason.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-update",
-                    kwargs={"seasonpk": self.foreignseason.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.foreignseason.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-staff-choices",
-                    kwargs={"seasonpk": self.foreignseason.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.foreignseason.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-delete",
-                    kwargs={"seasonpk": self.foreignseason.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.foreignseason.pk,
+                        "pk": session.pk,
+                    },
                 ),
             ]
             for url in urls:
@@ -517,22 +555,39 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                                 "week": session.day.strftime("%W"),
                             },
                         ),
-                        reverse("session-create", kwargs={"seasonpk": self.season.pk,}),
+                        reverse(
+                            "session-create",
+                            kwargs={
+                                "seasonpk": self.season.pk,
+                            },
+                        ),
                         reverse(
                             "session-detail",
-                            kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                            kwargs={
+                                "seasonpk": self.season.pk,
+                                "pk": session.pk,
+                            },
                         ),
                         reverse(
                             "session-update",
-                            kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                            kwargs={
+                                "seasonpk": self.season.pk,
+                                "pk": session.pk,
+                            },
                         ),
                         reverse(
                             "session-staff-choices",
-                            kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                            kwargs={
+                                "seasonpk": self.season.pk,
+                                "pk": session.pk,
+                            },
                         ),
                         reverse(
                             "session-delete",
-                            kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                            kwargs={
+                                "seasonpk": self.season.pk,
+                                "pk": session.pk,
+                            },
                         ),
                     ]
                     for url in urls:
@@ -556,11 +611,17 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                 ),
                 reverse(
                     "session-detail",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-staff-choices",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                        "pk": session.pk,
+                    },
                 ),
             ]
             for url in urls:
@@ -570,14 +631,25 @@ class StateManagerUserTest(SeasonTestCaseMixin):
         # Test the forbidden ones
         for session in self.sessions:
             urls = [
-                reverse("session-create", kwargs={"seasonpk": self.season.pk,}),
+                reverse(
+                    "session-create",
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                    },
+                ),
                 reverse(
                     "session-update",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-delete",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                        "pk": session.pk,
+                    },
                 ),
             ]
             for url in urls:
@@ -590,14 +662,20 @@ class StateManagerUserTest(SeasonTestCaseMixin):
         # Test the Qualification creation for a session
         url = reverse(
             "quali-create",
-            kwargs={"seasonpk": session.season.pk, "sessionpk": session.pk,},
+            kwargs={
+                "seasonpk": session.season.pk,
+                "sessionpk": session.pk,
+            },
         )
         initial = {
             "session": session.pk,
             "name": "Classe A",
             "class_teacher_natel": "",
         }
-        response = self.client.post(url, initial,)
+        response = self.client.post(
+            url,
+            initial,
+        )
         self.assertEqual(response.status_code, 302, url)
 
         qualification = session.qualifications.first()
@@ -661,22 +739,39 @@ class PowerUserTest(SeasonTestCaseMixin):
                         "week": session.day.strftime("%W"),
                     },
                 ),
-                reverse("session-create", kwargs={"seasonpk": self.foreignseason.pk,}),
+                reverse(
+                    "session-create",
+                    kwargs={
+                        "seasonpk": self.foreignseason.pk,
+                    },
+                ),
                 reverse(
                     "session-detail",
-                    kwargs={"seasonpk": self.foreignseason.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.foreignseason.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-update",
-                    kwargs={"seasonpk": self.foreignseason.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.foreignseason.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-staff-choices",
-                    kwargs={"seasonpk": self.foreignseason.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.foreignseason.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-delete",
-                    kwargs={"seasonpk": self.foreignseason.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.foreignseason.pk,
+                        "pk": session.pk,
+                    },
                 ),
             ]
             for url in urls:
@@ -695,22 +790,39 @@ class PowerUserTest(SeasonTestCaseMixin):
                         "week": session.day.strftime("%W"),
                     },
                 ),
-                reverse("session-create", kwargs={"seasonpk": self.season.pk,}),
+                reverse(
+                    "session-create",
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                    },
+                ),
                 reverse(
                     "session-detail",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-update",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-staff-choices",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-delete",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                        "pk": session.pk,
+                    },
                 ),
             ]
             for url in urls:

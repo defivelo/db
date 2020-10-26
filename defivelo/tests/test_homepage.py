@@ -53,7 +53,10 @@ class HomePageRedirectTest(TestCase):
     def test_login_with_username_fails(self):
         response = self.client.post(
             reverse("account_login"),
-            {"login": self.user.username, "password": self.userpassword,},
+            {
+                "login": self.user.username,
+                "password": self.userpassword,
+            },
         )
         # The login failed, we're back on the same page
         self.assertTemplateUsed(response, "account/login.html")
@@ -62,7 +65,10 @@ class HomePageRedirectTest(TestCase):
     def test_login_process_with_uncertified_email(self):
         response = self.client.post(
             reverse("account_login"),
-            {"login": self.user.email, "password": self.userpassword,},
+            {
+                "login": self.user.email,
+                "password": self.userpassword,
+            },
         )
         # This triggered a mail sending to confirm that email
         self.assertEqual(EmailAddress.objects.count(), 1)
@@ -76,7 +82,10 @@ class HomePageRedirectTest(TestCase):
         # And retry login:
         response = self.client.post(
             reverse("account_login"),
-            {"login": self.user.email, "password": self.userpassword,},
+            {
+                "login": self.user.email,
+                "password": self.userpassword,
+            },
         )
         # This time, login worked
         self.assertTemplateUsed(response, "account/messages/logged_in.txt")

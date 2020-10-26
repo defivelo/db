@@ -46,6 +46,8 @@ urlpatterns += i18n_patterns(
 if settings.DEBUG:
     import debug_toolbar
 
-    urlpatterns = [url(r"^__debug__/", include(debug_toolbar.urls)),] + urlpatterns
+    urlpatterns = [
+        url(r"^__debug__/", include(debug_toolbar.urls)),
+    ] + urlpatterns
 
 admin.site.site_header = _("Intranet DÉFI VÉLO")

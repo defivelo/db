@@ -118,7 +118,8 @@ class Invoice(models.Model):
     def settings(self):
         try:
             return AnnualStateSetting.objects.get(
-                canton=self.organization.address_canton, year=self.season.year,
+                canton=self.organization.address_canton,
+                year=self.season.year,
             )
         except AnnualStateSetting.DoesNotExist:
             return AnnualStateSetting()
@@ -156,10 +157,14 @@ class InvoiceLine(models.Model):
     nb_bikes = models.PositiveSmallIntegerField()
     nb_participants = models.PositiveSmallIntegerField()
     cost_bikes = models.DecimalField(
-        max_digits=8, decimal_places=2, validators=[MinValueValidator(0)],
+        max_digits=8,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
     )
     cost_participants = models.DecimalField(
-        max_digits=8, decimal_places=2, validators=[MinValueValidator(0)],
+        max_digits=8,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
     )
 
     class Meta:

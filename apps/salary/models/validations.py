@@ -38,7 +38,12 @@ class MonthlyCantonalValidation(models.Model):
     validated_urls = models.ManyToManyField(MonthlyCantonalValidationUrl)
 
     class Meta:
-        unique_together = (("canton", "date",),)
+        unique_together = (
+            (
+                "canton",
+                "date",
+            ),
+        )
         verbose_name = _("Validation mensuelle cantonale")
         verbose_name_plural = _("Validations mensuelles cantonales")
         ordering = ["date", "canton"]

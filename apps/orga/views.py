@@ -66,11 +66,16 @@ class OrganizationFilterSet(FilterSet):
         return queryset
 
     address_canton = MultipleChoiceFilter(
-        label=_("Cantons"), choices=DV_STATE_CHOICES_WITH_DEFAULT,
+        label=_("Cantons"),
+        choices=DV_STATE_CHOICES_WITH_DEFAULT,
     )
 
     status = MultipleChoiceFilter(
-        label=_("Statut"), choices=ORGASTATUS_CHOICES, initial=[ORGASTATUS_ACTIVE,]
+        label=_("Statut"),
+        choices=ORGASTATUS_CHOICES,
+        initial=[
+            ORGASTATUS_ACTIVE,
+        ],
     )
 
     q = CharFilter(label=_("Recherche"), method=filter_wide)

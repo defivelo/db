@@ -129,7 +129,11 @@ class UserProfileFilterSet(FilterSet):
             self.filters["profile__status"].extra["choices"] = (
                 t
                 for t in status_choices
-                if t[0] not in [USERSTATUS_ARCHIVE, USERSTATUS_DELETED,]
+                if t[0]
+                not in [
+                    USERSTATUS_ARCHIVE,
+                    USERSTATUS_DELETED,
+                ]
             )
             # Remove roles' filter, there's no reason for a collaborator to filter on roles
             del self.filters["roles"]
@@ -207,7 +211,10 @@ class UserProfileFilterSet(FilterSet):
     profile__status = MultipleChoiceFilter(
         label=_("Statut"),
         choices=USERSTATUS_CHOICES,
-        initial=[USERSTATUS_ACTIVE, USERSTATUS_RESERVE,],
+        initial=[
+            USERSTATUS_ACTIVE,
+            USERSTATUS_RESERVE,
+        ],
     )
     profile__formation = MultipleChoiceFilter(
         label=_("Formation"), choices=FORMATION_CHOICES, method=filter_multi_nonempty

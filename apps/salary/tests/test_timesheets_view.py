@@ -19,7 +19,9 @@ def test_helper_can_see_his_timesheet(db):
     client = AuthClient()
 
     SeasonFactory(
-        cantons=["VD"], year=2019, season=DV_SEASON_SPRING,
+        cantons=["VD"],
+        year=2019,
+        season=DV_SEASON_SPRING,
     )
     QualificationFactory(
         actor=client.user,
@@ -44,7 +46,9 @@ def test_helper_cannot_timesheet_overtime_without_comments(db):
     client = AuthClient()
 
     SeasonFactory(
-        cantons=["VD"], year=2019, season=DV_SEASON_SPRING,
+        cantons=["VD"],
+        year=2019,
+        season=DV_SEASON_SPRING,
     )
     QualificationFactory(
         actor=client.user,
@@ -82,7 +86,9 @@ def test_helper_can_timesheet(db):
     client = AuthClient()
 
     SeasonFactory(
-        cantons=["VD"], year=2019, season=DV_SEASON_SPRING,
+        cantons=["VD"],
+        year=2019,
+        season=DV_SEASON_SPRING,
     )
     QualificationFactory(
         actor=client.user,
@@ -120,7 +126,9 @@ def test_helper_can_update_timesheet(db):
     client = AuthClient()
 
     SeasonFactory(
-        cantons=["VD"], year=2019, season=DV_SEASON_SPRING,
+        cantons=["VD"],
+        year=2019,
+        season=DV_SEASON_SPRING,
     )
     QualificationFactory(
         actor=client.user,
@@ -171,7 +179,9 @@ def test_helper_cannot_validate_timesheet(db):
     client = AuthClient()
 
     SeasonFactory(
-        cantons=["VD"], year=2019, season=DV_SEASON_SPRING,
+        cantons=["VD"],
+        year=2019,
+        season=DV_SEASON_SPRING,
     )
     QualificationFactory(
         actor=client.user,
@@ -218,7 +228,9 @@ def test_state_manager_can_validate_timesheet(db):
         profile__affiliation_canton=managed_cantons[0],
     )
     SeasonFactory(
-        cantons=[managed_cantons[0]], year=2019, season=DV_SEASON_SPRING,
+        cantons=[managed_cantons[0]],
+        year=2019,
+        season=DV_SEASON_SPRING,
     )
     QualificationFactory(
         actor=actor,
@@ -245,7 +257,8 @@ def test_state_manager_can_validate_timesheet(db):
 
     client.post(
         reverse(
-            "salary:user-timesheets", kwargs={"year": 2019, "month": 4, "pk": actor.pk},
+            "salary:user-timesheets",
+            kwargs={"year": 2019, "month": 4, "pk": actor.pk},
         ),
         datas,
     )

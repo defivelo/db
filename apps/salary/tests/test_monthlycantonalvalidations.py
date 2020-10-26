@@ -39,7 +39,10 @@ class AuthUserTest(TestCase):
         # Final URL is forbidden
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 403, url)
-        url = reverse("salary:validations-year", kwargs={"year": today.year},)
+        url = reverse(
+            "salary:validations-year",
+            kwargs={"year": today.year},
+        )
         # Final URL is forbidden
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 403, url)
@@ -73,7 +76,10 @@ class StateManagerUserTest(TestCase):
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200, url)
 
-        url = reverse("salary:validations-year", kwargs={"year": today.year},)
+        url = reverse(
+            "salary:validations-year",
+            kwargs={"year": today.year},
+        )
         # Final URL is accessible
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200, url)
@@ -120,9 +126,14 @@ class StateManagerUserTest(TestCase):
                 )
 
                 # Now also make sure the timesheets of the month are all valid
-                actor = UserFactory(profile__affiliation_canton=canton,)
+                actor = UserFactory(
+                    profile__affiliation_canton=canton,
+                )
                 QualificationFactory(
-                    actor=actor, session=SessionFactory(day=today.replace(day=12),),
+                    actor=actor,
+                    session=SessionFactory(
+                        day=today.replace(day=12),
+                    ),
                 )
                 # For now there is no timesheet
                 initial["validated"] = True
@@ -177,7 +188,10 @@ class PowerUserTest(TestCase):
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200, url)
 
-        url = reverse("salary:validations-year", kwargs={"year": today.year},)
+        url = reverse(
+            "salary:validations-year",
+            kwargs={"year": today.year},
+        )
         # Final URL is accessible
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200, url)

@@ -7,7 +7,9 @@ from .. import BONUS_LEADER, HOURLY_RATE_HELPER, RATE_ACTOR
 
 class Timesheet(models.Model):
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name="timesheets", on_delete=models.CASCADE,
+        settings.AUTH_USER_MODEL,
+        related_name="timesheets",
+        on_delete=models.CASCADE,
     )
     date = models.DateField(_("Date"), blank=True, null=True)
 
@@ -30,7 +32,12 @@ class Timesheet(models.Model):
     )
 
     class Meta:
-        unique_together = (("user", "date",),)
+        unique_together = (
+            (
+                "user",
+                "date",
+            ),
+        )
 
     def get_total_amount_helper(self):
         return (

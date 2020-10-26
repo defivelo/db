@@ -241,14 +241,19 @@ class StateManagerUserTest(InvoiceTestCaseMixin):
             "seasonpk": self.season.pk,
             "orgapk": self.canton_orgas[0].pk,
         }
-        url = reverse("invoice-create", kwargs=kwargs,)
+        url = reverse(
+            "invoice-create",
+            kwargs=kwargs,
+        )
         initial = {"title": "Titolo", "status": Invoice.STATUS_DRAFT}
 
         response = self.client.post(url, initial)
         i = Invoice.objects.get(**initial)
         kwargs.update({"invoiceref": i.ref})
         self.assertRedirects(
-            response, reverse("invoice-detail", kwargs=kwargs), target_status_code=200,
+            response,
+            reverse("invoice-detail", kwargs=kwargs),
+            target_status_code=200,
         )
 
     def test_invoice_update_title_only(self):
@@ -317,7 +322,8 @@ class StateManagerUserTest(InvoiceTestCaseMixin):
 
         # Iel peut encore la voir
         self.assertEqual(
-            self.client.get(self.invoice_detail_url).status_code, 200,
+            self.client.get(self.invoice_detail_url).status_code,
+            200,
         )
 
 
@@ -365,14 +371,19 @@ class PowerUserTest(InvoiceTestCaseMixin):
             "seasonpk": self.season.pk,
             "orgapk": self.canton_orgas[0].pk,
         }
-        url = reverse("invoice-create", kwargs=kwargs,)
+        url = reverse(
+            "invoice-create",
+            kwargs=kwargs,
+        )
         initial = {"title": "Titolo", "status": Invoice.STATUS_DRAFT}
 
         response = self.client.post(url, initial)
         i = Invoice.objects.get(**initial)
         kwargs.update({"invoiceref": i.ref})
         self.assertRedirects(
-            response, reverse("invoice-detail", kwargs=kwargs), target_status_code=200,
+            response,
+            reverse("invoice-detail", kwargs=kwargs),
+            target_status_code=200,
         )
 
     def test_invoice_update_title_only(self):
@@ -440,5 +451,6 @@ class PowerUserTest(InvoiceTestCaseMixin):
 
         # Iel peut encore la voir
         self.assertEqual(
-            self.client.get(self.invoice_detail_url).status_code, 200,
+            self.client.get(self.invoice_detail_url).status_code,
+            200,
         )
