@@ -151,7 +151,7 @@ def round_CHF(n: D):
 
 
 class InvoiceLine(models.Model):
-    session = models.ForeignKey(Session, on_delete=models.PROTECT)
+    session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True)
     historical_session = models.ForeignKey(HistoricalSession, on_delete=models.PROTECT)
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="lines")
     nb_bikes = models.PositiveSmallIntegerField()
