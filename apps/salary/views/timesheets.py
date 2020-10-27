@@ -378,7 +378,7 @@ class SendTimesheetsReminder(TemplateView):
         context["redirect_url"] = self.get_redirect_url()
         context["recipients"] = self.recipients
         context["period"] = formats.date_format(date(self.year, self.month, 1), "F Y")
-        email_subject, email_text, *_ = self.render_email_for_user(self.request.user)
+        email_subject, email_text, *_ = self.render_email_for_user()
         context["email_text"] = email_text
         context["email_subject"] = email_subject
         return context
@@ -389,8 +389,12 @@ class SendTimesheetsReminder(TemplateView):
         messages.success(request, _("Rappel de soumission des heures expédié."))
         return redirect(self.get_redirect_url())
 
-    def render_email_for_user(self, user):
-        email_lang = user.profile.language or translation.get_language()
+    def render_email_for_user(self, user=None):
+        try:
+            email_lang = user.profile.language or translation.get_language()
+        except AttributeError:
+            email_lang = translation.get_language()
+
         with translation.override(email_lang):
             timesheets_url = self.request.build_absolute_uri(
                 reverse(
@@ -411,5 +415,5 @@ class SendTimesheetsReminder(TemplateView):
                 settings.EMAIL_SUBJECT_PREFIX + u("Soumission des heures"),
                 message,
                 settings.DEFAULT_FROM_EMAIL,
-                [user.email],
+                [user.email if user else None],
             )
