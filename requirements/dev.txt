@@ -11,65 +11,64 @@ attrs==19.3.0             # via black, pytest
 babel==2.8.0              # via django-phonenumber-field
 backcall==0.2.0           # via ipython
 bcrypt==3.1.7             # via paramiko
-black==19.10b0            # via -r requirements/test.in, flake8-black
+black==19.10b0            # via -r test.in, flake8-black
 certifi==2020.6.20        # via dulwich, requests, sentry-sdk
 cffi==1.14.1              # via bcrypt, cryptography, pynacl
 chardet==3.0.4            # via requests
 click==7.1.2              # via black, pip-tools
 coverage==5.2.1           # via pytest-cov
-cryptography==3.0         # via paramiko
-csscompressor==0.9.5      # via -r requirements/base.in
+cryptography==3.2         # via paramiko
+csscompressor==0.9.5      # via -r base.in
 decorator==4.4.2          # via ipython, traitlets
 defusedxml==0.6.0         # via odfpy, python3-openid
 diff-match-patch==20200713  # via django-import-export
 distlib==0.3.1            # via virtualenv
-dj-database-url==0.5.0    # via -r requirements/base.in
-django-agpl==4.0.0        # via -r requirements/base.in
-django-allauth==0.42.0    # via -r requirements/base.in
+dj-database-url==0.5.0    # via -r base.in
+django-agpl==4.0.0        # via -r base.in
+django-allauth==0.42.0    # via -r base.in
 django-appconf==1.0.4     # via django-compressor
-django-bootstrap3-datetimepicker-2==2.8.2  # via -r requirements/base.in
-django-bootstrap3==14.1.0  # via -r requirements/base.in
-django-compressor==2.4    # via -r requirements/base.in
-django-countries==6.1.2   # via -r requirements/base.in
-django-db-email-backend==0.4.1  # via -r requirements/base.in
-django-debug-toolbar==2.2  # via -r requirements/dev.in
+django-bootstrap3-datetimepicker-2==2.8.2  # via -r base.in
+django-bootstrap3==14.1.0  # via -r base.in
+django-compressor==2.4    # via -r base.in
+django-countries==6.1.2   # via -r base.in
+django-db-email-backend==0.4.1  # via -r base.in
+django-debug-toolbar==2.2  # via -r dev.in
 django-discover-runner==1.0  # via django-role-permissions
-django-extensions==3.0.3  # via -r requirements/dev.in
-django-filter==2.3.0      # via -r requirements/base.in
-django-ical==1.7.1        # via -r requirements/base.in
-django-import-export==2.3.0  # via -r requirements/base.in
-django-localflavor==3.0.1  # via -r requirements/base.in
-django-memoize==2.3.1     # via -r requirements/base.in
-django-multiselectfield==0.1.12  # via -r requirements/base.in
-django-parler==2.0.1      # via -r requirements/base.in
-django-phonenumber-field==4.0.0  # via -r requirements/base.in
+django-extensions==3.0.3  # via -r dev.in
+django-filter==2.3.0      # via -r base.in
+django-ical==1.7.1        # via -r base.in
+django-import-export==2.3.0  # via -r base.in
+django-localflavor==3.0.1  # via -r base.in
+django-memoize==2.3.1     # via -r base.in
+django-multiselectfield==0.1.12  # via -r base.in
+django-parler==2.0.1      # via -r base.in
+django-phonenumber-field==4.0.0  # via -r base.in
 django-recurrence==1.10.3  # via django-ical
-django-role-permissions==3.1.0  # via -r requirements/base.in
-django-simple-history==2.11.0  # via -r requirements/base.in
-django-taggit==1.3.0      # via -r requirements/base.in
-django-tinymce==3.0.2     # via -r requirements/base.in
-django==2.2.15            # via -r requirements/base.in, django-agpl, django-allauth, django-appconf, django-bootstrap3, django-db-email-backend, django-debug-toolbar, django-filter, django-ical, django-import-export, django-localflavor, django-memoize, django-multiselectfield, django-phonenumber-field, django-recurrence, django-role-permissions, django-taggit
-dulwich==0.19.15          # via -r requirements/dev.in
+django-role-permissions==3.1.0  # via -r base.in
+django-simple-history==2.11.0  # via -r base.in
+django-taggit==1.3.0      # via -r base.in
+django-tinymce==3.0.2     # via -r base.in
+django==2.2.15            # via -r base.in, django-agpl, django-allauth, django-appconf, django-bootstrap3, django-db-email-backend, django-debug-toolbar, django-filter, django-ical, django-import-export, django-localflavor, django-memoize, django-multiselectfield, django-phonenumber-field, django-recurrence, django-role-permissions, django-taggit
+dulwich==0.19.15          # via -r dev.in
 et-xmlfile==1.0.1         # via openpyxl
-fabric==2.5.0             # via -r requirements/dev.in
-factory-boy==2.12.0       # via -r requirements/test.in
+fabric==2.5.0             # via -r dev.in
+factory-boy==2.12.0       # via -r test.in
 faker==4.1.1              # via factory-boy
 filelock==3.0.12          # via tox, virtualenv
-flake8-black==0.2.1       # via -r requirements/test.in
-flake8-isort==3.0.1       # via -r requirements/test.in
-flake8==3.8.3             # via -r requirements/test.in, flake8-black, flake8-isort
+flake8-black==0.2.1       # via -r test.in
+flake8-isort==3.0.1       # via -r test.in
+flake8==3.8.3             # via -r test.in, flake8-black, flake8-isort
 icalendar==4.0.6          # via django-ical
 idna==2.10                # via requests
-importlib-metadata==1.7.0  # via django-bootstrap3, flake8, pluggy, pytest, tox, virtualenv
 iniconfig==1.0.1          # via pytest
 invoke==1.4.1             # via fabric
-ipdb==0.13.3              # via -r requirements/test.in
+ipdb==0.13.3              # via -r test.in
 ipython-genutils==0.2.0   # via traitlets
 ipython==7.17.0           # via ipdb
 isort[pyproject]==4.3.21  # via flake8-isort
 jdcal==1.4.1              # via openpyxl
 jedi==0.17.2              # via ipython
-libsass==0.20.0           # via -r requirements/base.in
+libsass==0.20.0           # via -r base.in
 markuppy==1.14            # via tablib
 mccabe==0.6.1             # via flake8
 more-itertools==8.4.0     # via pytest
@@ -81,13 +80,13 @@ paramiko==2.7.1           # via fabric
 parso==0.7.1              # via jedi
 pathspec==0.8.0           # via black
 pexpect==4.8.0            # via ipython
-phonenumbers==8.12.7      # via -r requirements/base.in
+phonenumbers==8.12.7      # via -r base.in
 pickleshare==0.7.5        # via ipython
-pillow==7.2.0             # via -r requirements/base.in
-pip-tools==5.3.1          # via -r requirements/dev.in
+pillow==7.2.0             # via -r base.in
+pip-tools==5.3.1          # via -r dev.in
 pluggy==0.13.1            # via pytest, tox
 prompt-toolkit==3.0.5     # via ipython
-psycopg2-binary==2.8.5    # via -r requirements/base.in
+psycopg2-binary==2.8.5    # via -r base.in
 ptyprocess==0.6.0         # via pexpect
 py==1.9.0                 # via pytest, tox
 pycodestyle==2.6.0        # via flake8
@@ -96,36 +95,35 @@ pyflakes==2.2.0           # via flake8
 pygments==2.6.1           # via ipython
 pynacl==1.4.0             # via paramiko
 pyparsing==2.4.7          # via packaging
-pytest-cov==2.10.0        # via -r requirements/test.in
-pytest-django==3.9.0      # via -r requirements/test.in
-pytest==6.0.1             # via -r requirements/test.in, pytest-cov, pytest-django
+pytest-cov==2.10.0        # via -r test.in
+pytest-django==3.9.0      # via -r test.in
+pytest==6.0.1             # via -r test.in, pytest-cov, pytest-django
 python-dateutil==2.8.1    # via django-recurrence, faker, icalendar
 python-stdnum==1.13       # via django-localflavor
 python3-openid==3.2.0     # via django-allauth
-pytz==2020.1              # via -r requirements/base.in, babel, django, django-db-email-backend, django-recurrence, icalendar
+pytz==2020.1              # via -r base.in, babel, django, django-db-email-backend, django-recurrence, icalendar
 pyyaml==5.3.1             # via tablib
 rcssmin==1.0.6            # via django-compressor
 regex==2020.7.14          # via black
 requests-oauthlib==1.3.0  # via django-allauth
 requests==2.24.0          # via django-allauth, requests-oauthlib
 rjsmin==1.1.0             # via django-compressor
-sentry-sdk==0.16.3        # via -r requirements/base.in
-six==1.15.0               # via -r requirements/base.in, bcrypt, cryptography, django-autocomplete-light, django-compressor, django-extensions, django-parler, django-role-permissions, django-simple-history, libsass, packaging, pip-tools, pynacl, python-dateutil, tox, traitlets, virtualenv
+sentry-sdk==0.16.3        # via -r base.in
+six==1.15.0               # via -r base.in, bcrypt, cryptography, django-autocomplete-light, django-compressor, django-extensions, django-parler, django-role-permissions, django-simple-history, libsass, packaging, pip-tools, pynacl, python-dateutil, tox, traitlets, virtualenv
 sqlparse==0.3.1           # via django, django-debug-toolbar
-tablib[html,ods,xls,xlsx,yaml]==2.0.0  # via -r requirements/base.in, django-import-export
+tablib[html,ods,xls,xlsx,yaml]==2.0.0  # via -r base.in, django-import-export
 testfixtures==6.14.1      # via flake8-isort
 text-unidecode==1.3       # via faker
 toml==0.10.1              # via black, isort, pytest, tox
-tox==3.18.1               # via -r requirements/dev.in
+tox==3.18.1               # via -r dev.in
 traitlets==4.3.3          # via ipython
 typed-ast==1.4.1          # via black
 urllib3==1.25.10          # via dulwich, requests, sentry-sdk
 virtualenv==20.0.29       # via tox
 wcwidth==0.2.5            # via prompt-toolkit
-werkzeug==1.0.1           # via -r requirements/dev.in
+werkzeug==1.0.1           # via -r dev.in
 xlrd==1.2.0               # via tablib
 xlwt==1.3.0               # via tablib
-zipp==3.1.0               # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
