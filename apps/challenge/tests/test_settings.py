@@ -81,7 +81,8 @@ class SettingsViewsTestCase(SeasonTestCaseMixin):
             "cost_per_participant": fuzzy.FuzzyInteger(0, 100).fuzz(),
         }
         self.url_create = reverse(
-            "annualstatesetting-create", kwargs={"year": self.create_initial["year"]},
+            "annualstatesetting-create",
+            kwargs={"year": self.create_initial["year"]},
         )
 
         self.setting = AnnualStateSettingFactory()
@@ -129,7 +130,10 @@ class PowerUserTest(SettingsViewsTestCase):
         initial["year"] = 1968
         self.assertRedirects(
             self.client.post(self.url_create, self.create_initial),
-            reverse("annualstatesettings-list", kwargs={"year": 1968},),
+            reverse(
+                "annualstatesettings-list",
+                kwargs={"year": 1968},
+            ),
             target_status_code=200,
         )
         initial = self.setting.__dict__
@@ -138,6 +142,9 @@ class PowerUserTest(SettingsViewsTestCase):
         # On update, ensure we return on the page that corresponds to our new year
         self.assertRedirects(
             self.client.post(self.url_update, initial),
-            reverse("annualstatesettings-list", kwargs={"year": 1968},),
+            reverse(
+                "annualstatesettings-list",
+                kwargs={"year": 1968},
+            ),
             target_status_code=200,
         )

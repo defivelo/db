@@ -214,7 +214,10 @@ class Season(models.Model):
 
     @cached_property
     def moment(self):
-        return _("{saison} {annee}").format(saison=self.season_full, annee=self.year,)
+        return _("{saison} {annee}").format(
+            saison=self.season_full,
+            annee=self.year,
+        )
 
     def save(self, *args, **kwargs):
         """
@@ -237,7 +240,8 @@ class Season(models.Model):
     def desc(self, abbr=False):
         return mark_safe(
             _("{cantons} - {moment}").format(
-                moment=self.moment, cantons=", ".join(cantons_abbr(self.cantons, abbr)),
+                moment=self.moment,
+                cantons=", ".join(cantons_abbr(self.cantons, abbr)),
             )
         )
 

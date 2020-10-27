@@ -529,7 +529,11 @@ class UserProfile(Address, models.Model):
                 usercantons += self.activity_cantons
             if not has_permission(self.user, "challenge_season_see_state_planning"):
                 # PLANNING seasons are invisible for these
-                qs = qs.exclude(state__in=[DV_SEASON_STATE_PLANNING,])
+                qs = qs.exclude(
+                    state__in=[
+                        DV_SEASON_STATE_PLANNING,
+                    ]
+                )
 
         # Unique'ify, discard empty values
         usercantons = set([c for c in usercantons if c])
@@ -555,7 +559,12 @@ class UserProfile(Address, models.Model):
         """
         if self.user.email:
             return send_mail(
-                subject, body, settings.DEFAULT_FROM_EMAIL, [self.mailtolink,],
+                subject,
+                body,
+                settings.DEFAULT_FROM_EMAIL,
+                [
+                    self.mailtolink,
+                ],
             )
 
     def __str__(self):

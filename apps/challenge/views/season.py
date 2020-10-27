@@ -220,7 +220,9 @@ class SeasonHelpersMixin(SeasonMixin):
             except (KeyError, TypeError):
                 pass
         return qs.prefetch_related(
-            "profile", "profile__actor_for", "profile__actor_for__translations",
+            "profile",
+            "profile__actor_for",
+            "profile__actor_for__translations",
         )
 
     def potential_helpers(self, qs=None):
@@ -489,7 +491,8 @@ class SeasonToRunningView(SeasonToStateMixin):
 
         planning_link = self.request.build_absolute_uri(
             reverse(
-                "season-planning", kwargs={"pk": self.season.pk, "helperpk": helperpk},
+                "season-planning",
+                kwargs={"pk": self.season.pk, "helperpk": helperpk},
             )
         )
 
@@ -913,7 +916,10 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
         else:
             return reverse_lazy(
                 "season-availabilities-update",
-                kwargs={"pk": self.season.pk, "helperpk": self.request.user.pk,},
+                kwargs={
+                    "pk": self.season.pk,
+                    "helperpk": self.request.user.pk,
+                },
             )
 
     def form_valid(self, form):
@@ -1145,7 +1151,10 @@ class SeasonPersonalPlanningExportFeed(ICalFeed):
                 else session.orga.address_city
             )
         return " ".join(
-            [session_place, "%s - %s" % (time(session.begin), time(session.end)),]
+            [
+                session_place,
+                "%s - %s" % (time(session.begin), time(session.end)),
+            ]
         )
 
     def item_start_datetime(self, session):

@@ -34,7 +34,10 @@ class RedirectUserMonthlyTimesheets(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         kwargs["pk"] = self.request.user.pk
-        return reverse("salary:user-timesheets", kwargs=kwargs,)
+        return reverse(
+            "salary:user-timesheets",
+            kwargs=kwargs,
+        )
 
 
 class UserMonthlyTimesheets(MonthArchiveView, FormView):
@@ -232,8 +235,8 @@ class YearlyTimesheets(TemplateView):
         users = timesheets_overview.get_visible_users(self.request.user).order_by(
             "first_name", "last_name"
         )
-        global_timesheets_status_matrix = timesheets_overview.get_timesheets_status_matrix(
-            year=year, users=users
+        global_timesheets_status_matrix = (
+            timesheets_overview.get_timesheets_status_matrix(year=year, users=users)
         )
         if active_canton:
             users = users.filter(profile__affiliation_canton=active_canton)

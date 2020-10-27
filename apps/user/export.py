@@ -168,7 +168,8 @@ class UserResource(resources.ModelResource):
         attribute="profile__cresus_employee_number",
     )
     profile__bank_name = fields.Field(
-        column_name=_("Nom de la banque"), attribute="profile__bank_name",
+        column_name=_("Nom de la banque"),
+        attribute="profile__bank_name",
     )
     profile__iban = fields.Field(
         column_name=_("IBAN"),

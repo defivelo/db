@@ -45,7 +45,10 @@ class MarkInactive(HasPermissionsMixin, FormView):
             # … tous les moniteurs actifs ou réserve
             .filter(
                 formation__in=FORMATION_KEYS,
-                status__in=[USERSTATUS_ACTIVE, USERSTATUS_RESERVE,],
+                status__in=[
+                    USERSTATUS_ACTIVE,
+                    USERSTATUS_RESERVE,
+                ],
             )
             # … qui n'ont pas de rôles
             .exclude(user__groups__isnull=False)

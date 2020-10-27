@@ -146,7 +146,12 @@ class HelperSessionAvailability(models.Model):
         verbose_name = _("Disponibilité par session")
         verbose_name_plural = _("Disponibilités par session")
         ordering = ["session", "helper", "availability"]
-        unique_together = (("session", "helper",),)
+        unique_together = (
+            (
+                "session",
+                "helper",
+            ),
+        )
 
     def __str__(self):
         is_available = _("n'est pas disponible")

@@ -25,7 +25,16 @@ from memoize import memoize
 from apps.common import DV_ADDITIONAL_STATES
 
 STATE_CHOICES_WITH_DEFAULT = tuple(
-    list((("", "---------",),)) + list(STATE_CHOICES) + list(DV_ADDITIONAL_STATES)
+    list(
+        (
+            (
+                "",
+                "---------",
+            ),
+        )
+    )
+    + list(STATE_CHOICES)
+    + list(DV_ADDITIONAL_STATES)
 )
 
 FORMATION_M1 = "M1"

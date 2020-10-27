@@ -91,7 +91,15 @@ DV_STATE_CHOICES = [
 ] + DV_ADDITIONAL_STATES
 
 DV_STATE_CHOICES_WITH_DEFAULT = tuple(
-    list((("", "---------",),)) + list(DV_STATE_CHOICES)
+    list(
+        (
+            (
+                "",
+                "---------",
+            ),
+        )
+    )
+    + list(DV_STATE_CHOICES)
 )
 
 MULTISELECTFIELD_REGEXP = "(^|,)%s(,|$)"
@@ -103,7 +111,17 @@ DV_LANGUAGES = LANGUAGES = (
     ("en", _("English")),
 )
 
-DV_LANGUAGES_WITH_DEFAULT = tuple(list((("", "---------",),)) + list(DV_LANGUAGES))
+DV_LANGUAGES_WITH_DEFAULT = tuple(
+    list(
+        (
+            (
+                "",
+                "---------",
+            ),
+        )
+    )
+    + list(DV_LANGUAGES)
+)
 
 DV_SEASON_SPRING = 1
 # DV_SEASON_SUMMER = 2

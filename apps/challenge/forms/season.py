@@ -91,7 +91,10 @@ class SeasonToSpecificStateForm(forms.ModelForm):
     """
 
     def __init__(
-        self, tostate: int, *args, **kwargs,
+        self,
+        tostate: int,
+        *args,
+        **kwargs,
     ):
         """
         Takes a tostate argument, an int of desired target state
@@ -127,7 +130,9 @@ class SeasonNewHelperAvailabilityForm(forms.Form):
             .distinct(),
             widget=ModelSelect2(
                 url="user-PersonsRelevantForSessions-ac",
-                forward=[dal_const(cantons, "cantons"),],
+                forward=[
+                    dal_const(cantons, "cantons"),
+                ],
             ),
         )
 
@@ -149,7 +154,9 @@ class SeasonAvailabilityForm(forms.Form):
                     except KeyError:
                         fieldinit = 0
                     self.fields[workwishkey] = forms.IntegerField(
-                        required=False, initial=fieldinit, min_value=0,
+                        required=False,
+                        initial=fieldinit,
+                        min_value=0,
                     )
 
                     for session in self.season.sessions_with_qualifs:

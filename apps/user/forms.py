@@ -147,7 +147,8 @@ class UserProfileForm(SimpleUserProfileForm):
                 required=False,
             ),
             "iban": localforms.IBANFormField(
-                include_countries=IBAN_SEPA_COUNTRIES, required=False,
+                include_countries=IBAN_SEPA_COUNTRIES,
+                required=False,
             ),
         }.items():
             label = self.fields[fieldname].label
@@ -199,7 +200,8 @@ class UserAssignRoleForm(forms.Form):
         label=_("Cantons gérés"), choices=sorted(DV_STATE_CHOICES), required=False
     )
     managed_organizations = MultiSelectFormField(
-        label=_("Établissements gérés"), required=False,
+        label=_("Établissements gérés"),
+        required=False,
     )
 
     def __init__(self, user, *args, **kwargs):
