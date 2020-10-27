@@ -42,6 +42,7 @@ DV_STATES = [
     "AG",
     "BL",
     "GR",
+    "SZ",
 ]
 
 # "faux" cantons pour DÉFI VÉLO
