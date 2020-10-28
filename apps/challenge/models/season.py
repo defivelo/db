@@ -18,9 +18,11 @@ from datetime import date, timedelta
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Q
 from django.urls import reverse
+from django.utils.dates import MONTHS
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -50,6 +52,14 @@ class Season(models.Model):
     year = models.PositiveSmallIntegerField(_("Année"))
     season = models.PositiveSmallIntegerField(
         _("Saison"), choices=DV_SEASON_CHOICES, default=DV_SEASON_SPRING
+    )
+    month_start = models.PositiveSmallIntegerField(
+        _("Mois de début"), choices=MONTHS.items(), null=True
+    )
+    n_months = models.PositiveSmallIntegerField(
+        _("Nombre de mois"),
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(24)],
     )
     cantons = MultiSelectField(_("Cantons"), choices=sorted(DV_STATE_CHOICES))
     leader = models.ForeignKey(
