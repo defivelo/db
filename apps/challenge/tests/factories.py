@@ -16,11 +16,13 @@
 
 from datetime import date
 
+from django.utils.dates import MONTHS
+
 import factory
 from factory import Faker, SubFactory, fuzzy
 from factory.django import DjangoModelFactory
 
-from apps.common import DV_SEASON_CHOICES, DV_SEASON_STATE_OPEN, DV_STATES
+from apps.common import DV_SEASON_STATE_OPEN, DV_STATES
 from apps.orga.tests.factories import OrganizationFactory
 from apps.user.tests.factories import UserFactory
 
@@ -41,7 +43,8 @@ class SeasonFactory(DjangoModelFactory):
         model = Season
 
     year = fuzzy.FuzzyInteger(1999, 2050)
-    season = fuzzy.FuzzyChoice([_s[0] for _s in DV_SEASON_CHOICES])
+    month_start = fuzzy.FuzzyChoice([k for k, v in MONTHS.items()])
+    n_months = fuzzy.FuzzyInteger(1, 15)
     # Juste un canton
     cantons = fuzzy.FuzzyChoice(DV_STATES)
     leader = factory.SubFactory(UserFactory)

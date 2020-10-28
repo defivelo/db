@@ -18,7 +18,6 @@ from django.test import TestCase
 from django.urls import reverse
 
 from apps.common import (
-    DV_SEASON_SPRING,
     DV_SEASON_STATE_ARCHIVED,
     DV_SEASON_STATE_OPEN,
     DV_SEASON_STATE_PLANNING,
@@ -414,7 +413,8 @@ class StateManagerUserTest(SeasonTestCaseMixin):
 
         initial = {
             "year": 2015,
-            "season": DV_SEASON_SPRING,
+            "month_start": 1,
+            "n_months": 6,
             "cantons": [],
             "leader": self.client.user.pk,
             "state": DV_SEASON_STATE_OPEN,
