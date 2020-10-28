@@ -1,5 +1,5 @@
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2015 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2015,2020 Didier Raboud <me+defivelo@odyx.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -26,7 +26,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from simple_history.models import HistoricalRecords
 
-from apps.common import DV_SEASON_AUTUMN, DV_SEASON_LAST_SPRING_MONTH, DV_SEASON_SPRING
 from apps.common.models import Address
 from apps.orga.models import ORGASTATUS_ACTIVE, Organization
 from apps.user import FORMATION_KEYS, FORMATION_M2
@@ -265,13 +264,34 @@ class Session(Address, models.Model):
     def season(self):
         from .season import Season
 
-        return Season.objects.filter(
+        seasons = Season.objects.filter(
             year=self.day.year,
-            season=DV_SEASON_SPRING
-            if self.day.month <= DV_SEASON_LAST_SPRING_MONTH
-            else DV_SEASON_AUTUMN,
+            month_start__lte=self.day.month,
             cantons__contains=self.orga.address_canton,
-        ).first()
+        )
+
+        for s in seasons.all():
+            if self.day.month == s.month_start:
+                # In first concerned month
+                return s
+            if s.month_start < self.day.month <= s.month_start + s.n_months - 1:
+                # In the following months of that year
+                return s
+
+        # Should only rarely happen, so afford an other request; look for Season objects in the past year, spanning to ours.
+        for offset in [1, 2]:
+            seasons = Season.objects.filter(
+                year=self.day.year - offset,
+                cantons__contains=self.orga.address_canton,
+            )
+            for s in seasons.all():
+                # See Season::end()
+                (add_years, final_month_0) = divmod(s.month_start + s.n_months - 1, 12)
+                if (
+                    self.day.year == s.year + add_years
+                    and self.day.month <= final_month_0 + 1
+                ):
+                    return s
 
     @cached_property
     def short(self):
