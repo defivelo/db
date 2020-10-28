@@ -7,7 +7,6 @@ from apps.challenge.tests.factories import (
     SeasonFactory,
     SessionFactory,
 )
-from apps.common import DV_SEASON_SPRING
 from apps.orga.tests.factories import OrganizationFactory
 from apps.salary.models import Timesheet
 from apps.user.tests.factories import UserFactory
@@ -21,7 +20,7 @@ def test_helper_can_see_his_timesheet(db):
     SeasonFactory(
         cantons=["VD"],
         year=2019,
-        season=DV_SEASON_SPRING,
+        month_start=1,
     )
     QualificationFactory(
         actor=client.user,
@@ -48,7 +47,7 @@ def test_helper_cannot_timesheet_overtime_without_comments(db):
     SeasonFactory(
         cantons=["VD"],
         year=2019,
-        season=DV_SEASON_SPRING,
+        month_start=1,
     )
     QualificationFactory(
         actor=client.user,
@@ -88,7 +87,7 @@ def test_helper_can_timesheet(db):
     SeasonFactory(
         cantons=["VD"],
         year=2019,
-        season=DV_SEASON_SPRING,
+        month_start=1,
     )
     QualificationFactory(
         actor=client.user,
@@ -128,7 +127,7 @@ def test_helper_can_update_timesheet(db):
     SeasonFactory(
         cantons=["VD"],
         year=2019,
-        season=DV_SEASON_SPRING,
+        month_start=1,
     )
     QualificationFactory(
         actor=client.user,
@@ -181,7 +180,7 @@ def test_helper_cannot_validate_timesheet(db):
     SeasonFactory(
         cantons=["VD"],
         year=2019,
-        season=DV_SEASON_SPRING,
+        month_start=1,
     )
     QualificationFactory(
         actor=client.user,
@@ -271,7 +270,7 @@ def test_state_manager_can_validate_timesheet(db):
     SeasonFactory(
         cantons=[managed_cantons[0]],
         year=2019,
-        season=DV_SEASON_SPRING,
+        month_start=1,
     )
     QualificationFactory(
         actor=actor,
