@@ -531,12 +531,12 @@ class SeasonToRunningView(SeasonToStateMixin):
         """
         Run our specific action here
         """
-        #  Save first
+        # Save first
         form_result = super().form_valid(form)
-        # Then send emails
-        for helper in self.season_helpers:
-            email = self.get_email(helper)
-            helper.profile.send_mail(email["subject"], email["body"])
+        if form.cleaned_data["sendemail"] == True:
+            for helper in self.season_helpers:
+                email = self.get_email(helper)
+                helper.profile.send_mail(email["subject"], email["body"])
         return form_result
 
 
