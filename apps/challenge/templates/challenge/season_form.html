@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
-{% block head_title %}{% if season %}{% trans "Édition de la saison" %}{% else %}{% trans "Nouvelle saison" %}{% endif %}{% endblock %}
+{% block head_title %}{% if season %}{% trans "Édition du mois" %}{% else %}{% trans "Nouveau mois" %}{% endif %}{% endblock %}
 
 {% block bootstrap3_extra_head %}
 {{ form.media.css }}
@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block content %}
-    <h1>{% if season %}{% trans "Édition de la saison" %}{% else %}{% trans "Nouvelle saison" %}{% endif %}</h1>
+    <h1>{% if season %}{% trans "Édition du mois" %}{% else %}{% trans "Nouveau mois" %}{% endif %}</h1>
 
 
     <form method="POST" action="" class="form-horizontal">

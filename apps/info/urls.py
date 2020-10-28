@@ -45,7 +45,7 @@ urlpatterns = [
                     never_cache(QualifsCalendar.as_view()),
                     name="qualifs-calendar",
                 ),
-                # Statistiques de Saison
+                # Statistiques de Mois
                 url(
                     r"^stats/$",
                     never_cache(SeasonStatsView.as_view()),

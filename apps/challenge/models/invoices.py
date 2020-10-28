@@ -23,6 +23,7 @@ from django.db.models import F, Sum
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.functional import cached_property
+from django.utils.translation import pgettext_lazy as _p
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 
@@ -59,7 +60,7 @@ class Invoice(models.Model):
     )
     season = models.ForeignKey(
         Season,
-        verbose_name=_("Saison"),
+        verbose_name=_p("Singular month", "Mois"),
         on_delete=models.PROTECT,
         related_name="invoices",
     )

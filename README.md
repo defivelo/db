@@ -4,7 +4,7 @@
 
 Ce dépôt contient tout ce qui est nécessaire à faire tourner l’Intranet Défi Vélo.
 
-Il a pour objectif de simplifier et améliorer la gestion des saisons, sessions,
+Il a pour objectif de simplifier et améliorer la gestion des mois, sessions,
 Qualifs, établissements, etc, et vise principalement à être utilisée par
 les collaborateurs du Défi Vélo, aux différents échelons cantonaux et
 inter-cantonaux.

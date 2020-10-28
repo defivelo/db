@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
-{% block head_title %}{% blocktrans %}Changer l’état de la saison{% endblocktrans %}{% endblock %}
+{% block head_title %}{% blocktrans %}Changer l’état du mois{% endblocktrans %}{% endblock %}
 
 {% block bootstrap3_extra_head %}{{ form.media.css }}{% endblock %}
 {% block bootstrap3_extra_script %}{{ form.media.js }}{% endblock %}
 
 {% block content %}
-    <h1>{% blocktrans %}Changer l’état de la saison{% endblocktrans %}<h1>
+    <h1>{% blocktrans %}Changer l’état du mois{% endblocktrans %}<h1>
 
     <h4>{% blocktrans with tostate=tostate %}Vers "{{ tostate }}"{% endblocktrans %}</h4>
 
-    <p>{% blocktrans with tostate=tostate %}Envoyer le courriel suivant et passer la saison vers "{{tostate}}" ?{% endblocktrans %}
+    <p>{% blocktrans with tostate=tostate %}Envoyer le courriel suivant et passer le mois vers "{{tostate}}" ?{% endblocktrans %}
     <blockquote>
       <pre style="white-space: pre-wrap;">{% trans "Sujet:" %} {{ email.subject }}
 
@@ -43,7 +43,7 @@
         {% csrf_token %}
         {% bootstrap_form form layout='horizontal' size='small' %}
         {% buttons %}
-            <button type="submit" class="btn btn-primary pull-right">{% trans "Changer l’état de la saison" %}</button>
+            <button type="submit" class="btn btn-primary pull-right">{% trans "Changer l’état du mois" %}</button>
             <a class="btn btn-default" href="{% url 'season-detail' pk=season.pk %}">{% trans "Annuler" %}</a>
         {% endbuttons %}
     </form>

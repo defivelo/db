@@ -65,14 +65,14 @@ class SeasonSessionsMixin(object):
 
 class SeasonStatsExport(SeasonSessionsMixin):
     def get_dataset_title(self):
-        return _("Statistiques de la saison {season} {year}").format(
+        return _("Statistiques du mois {season} {year}").format(
             season=season_verb(self.export_season), year=self.export_year
         )
 
     @property
     def export_filename(self):
         return "%s-%s-%s" % (
-            _("Stats_Saison"),
+            _("Stats_Mois"),
             self.export_year,
             season_verb(self.export_season),
         )
@@ -154,7 +154,7 @@ class LogisticsExport(SeasonSessionsMixin):
     def export_filename(self):
         return "%s-%s-%s-%s" % (
             u("Logistique"),
-            u("Saison"),
+            u("Mois"),
             self.export_year,
             season_verb(self.export_season),
         )

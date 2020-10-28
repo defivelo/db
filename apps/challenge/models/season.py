@@ -25,6 +25,7 @@ from django.urls import reverse
 from django.utils.dates import MONTHS
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
+from django.utils.translation import pgettext_lazy as _p
 from django.utils.translation import ugettext_lazy as _
 
 from multiselectfield import MultiSelectField
@@ -71,8 +72,8 @@ class Season(models.Model):
     history = HistoricalRecords()
 
     class Meta:
-        verbose_name = _("Saison")
-        verbose_name_plural = _("Saisons")
+        verbose_name = _p("Singular month", "Mois")
+        verbose_name_plural = _p("Plural months", "Mois")
         ordering = [
             "year",
             "month_start",

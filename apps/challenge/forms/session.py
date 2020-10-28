@@ -91,7 +91,7 @@ class SessionForm(forms.ModelForm):
         if self.season.begin <= day <= self.season.end:
             return day
         raise forms.ValidationError(
-            _("La session doit être dans la saison" " (entre {begin} et {end})").format(
+            _("La session doit être dans le mois" " (entre {begin} et {end})").format(
                 begin=date(self.season.begin, settings.DATE_FORMAT),
                 end=date(self.season.end, settings.DATE_FORMAT),
             )

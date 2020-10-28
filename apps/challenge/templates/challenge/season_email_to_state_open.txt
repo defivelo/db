@@ -1,6 +1,6 @@
 {% load i18n %}{% filter wordwrap:80 %}{% autoescape off %}{% blocktrans with full_name=profile.get_full_name %}Salut {{ full_name }},{% endblocktrans %}
 
-{% blocktrans with season_desc=season.desc %}Le planning DÉFI VÉLO du canton {{ season_desc }} est désormais disponible sur intranet. Merci de remplir tes disponibilités au plus vite afin qu’on puisse préparer la saison au mieux. En cas de questions, tu peux t’adresser à ton chargé de projet.
+{% blocktrans with season_desc=season.desc %}Le planning DÉFI VÉLO du canton {{ season_desc }} est désormais disponible sur intranet. Merci de remplir tes disponibilités au plus vite afin qu’on puisse préparer le mois au mieux. En cas de questions, tu peux t’adresser à ton chargé de projet.
 
 Tu peux accéder au planning directement ici ou via ton compte personnel intranet.
 

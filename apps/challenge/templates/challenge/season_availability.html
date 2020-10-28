@@ -32,7 +32,7 @@
 
 
 <div class="hidden-print">
-    <a class="btn btn-default" href="{% url 'season-detail' season.pk %}">{% trans "Retour à la saison" %}</a>
+    <a class="btn btn-default" href="{% url 'season-detail' season.pk %}">{% trans "Retour au mois" %}</a>
 
     <div class="btn-group" role="group" aria-label="exports">
         {% include 'export_buttons.html' with exporturl='season-planning-export' exportargs=season.pk filter_querystring=filter_querystring only %}

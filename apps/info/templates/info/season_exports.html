@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n dv_filters %}
 
-{% block head_title %}{% blocktrans with year=export_period.year season=export_period.season|season_verb %}Exports pour la saison {{ season }} {{year}}{% endblocktrans %}{% endblock %}
+{% block head_title %}{% blocktrans with year=export_period.year season=export_period.season|season_verb %}Exports pour le mois {{ season }} {{year}}{% endblocktrans %}{% endblock %}
 
 {% block content %}
 {% include 'info/_season_nav.html' with nav_url=nav_url previous_period=previous_period next_period=next_period only %}
@@ -24,10 +24,10 @@
     {% endfor %}
     </table>
 {% else %}
-    <h1>{% blocktrans with year=year season=season|season_verb %}Exports pour la saison {{ season }} {{year}}{% endblocktrans %}</h1>
+    <h1>{% blocktrans with year=year season=season|season_verb %}Exports pour le mois {{ season }} {{year}}{% endblocktrans %}</h1>
 
     <ul>
-        <li><a href="{% url 'season-stats' year=year dv_season=season %}">{% trans "Statistiques de la saison" %}</a></li>
+        <li><a href="{% url 'season-stats' year=year dv_season=season %}">{% trans "Statistiques du mois" %}</a></li>
         <li><a href="{% url 'logistics' year=year dv_season=season %}">{% trans "Logistique vélos" %}</a></li>
     </ul>
 {% endif %}
