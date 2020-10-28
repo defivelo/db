@@ -82,7 +82,7 @@ class SeasonForm(forms.ModelForm):
 
     class Meta:
         model = Season
-        fields = ["year", "season", "cantons", "state", "leader"]
+        fields = ["year", "month_start", "n_months", "cantons", "state", "leader"]
 
 
 class SeasonToSpecificStateForm(forms.ModelForm):

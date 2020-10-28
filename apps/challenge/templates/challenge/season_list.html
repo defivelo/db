@@ -27,7 +27,7 @@
     </nav>
     
     {% for season in seasons %}
-        {% ifchanged season.season %}
+        {% ifchanged season.season_full %}
             {% if not forloop.first %}</table>{% endif %}
             <h2>{{ season.season_full }}</h2>
             <table class="table">

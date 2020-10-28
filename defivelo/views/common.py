@@ -37,9 +37,21 @@ class MenuView(object):
         context = super(MenuView, self).get_context_data(**kwargs)
         today = date.today()
 
-        context["current_seasons"] = self.request.user.profile.get_seasons().filter(
-            year=today.year, season=self.current_season()
+        current_seasons = self.request.user.profile.get_seasons().filter(
+            year=today.year
         )
+        if date.today().month <= DV_SEASON_LAST_SPRING_MONTH:
+            # Demi-année "printemps"
+            current_seasons = current_seasons.filter(
+                month_start__lte=DV_SEASON_LAST_SPRING_MONTH
+            )
+        else:
+            # Demi-année "automne"
+            current_seasons = current_seasons.filter(
+                month_start__gt=DV_SEASON_LAST_SPRING_MONTH
+            )
+
+        context["current_seasons"] = current_seasons
         return context
 
 
