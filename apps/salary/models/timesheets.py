@@ -30,6 +30,7 @@ class Timesheet(models.Model):
         on_delete=models.SET_NULL,
         null=True,
     )
+    ignore = models.BooleanField(_("Ignorer"), default=False)
 
     class Meta:
         unique_together = (
@@ -40,17 +41,25 @@ class Timesheet(models.Model):
         )
 
     def get_total_amount_helper(self):
+        if self.ignore:
+            return 0
         return (
             (self.time_helper or 0) + self.overtime + self.traveltime
         ) * HOURLY_RATE_HELPER
 
     def get_total_amount_actor(self):
+        if self.ignore:
+            return 0
         return (self.actor_count or 0) * RATE_ACTOR
 
     def get_total_amount_leader(self):
+        if self.ignore:
+            return 0
         return (self.leader_count or 0) * BONUS_LEADER
 
     def get_total_amount(self):
+        if self.ignore:
+            return 0
         return (
             self.get_total_amount_actor()
             + self.get_total_amount_helper()
