@@ -129,6 +129,7 @@
       let link = $('<a href="#" class="btn btn-primary">{% trans "Tout sélectionner" %}</a>').click(function(e){
         e.preventDefault();
         $(this).closest('tr').find('input[type=checkbox]').each(function(){ $(this).prop('checked',true);});
+        $("table#table-with-sum").change();
         return false;
       });
       $(this).find(' > td:last').append(link);
@@ -139,6 +140,7 @@
         var total = 0;
         var total_editables = 0;
         var sum_salary = 0;
+        var ignore = false;
         $('table#table-with-sum > tbody > tr').each(function () {
           const input = $(this).children('td').eq(index).find("input[type=number]")
           let value = parseFloat(input.val());
@@ -153,7 +155,16 @@
               sum_salary += parseFloat(input.data("unitPrice")) * value;
             }
           }
+
+          const checkbox = $(this).children("td").eq(index).find("input[type=checkbox]")
+          if (checkbox.data("function") == "ignore" && checkbox.prop("checked")) {
+              ignore = true;
+          }
         });
+        if (ignore) {
+          total = 0;
+          sum_salary = 0;
+        }
         $('table#table-with-sum > tbody > tr > td textarea').eq(index).prop('required', total_editables != 0);
         $('table#table-with-sum > tfoot > tr:first > td').eq(index).data("floatValue", total).text(displayTime(total));
         $('table#table-with-sum > tfoot > tr:nth-child(2) > td').eq(index).data("floatValue", sum_salary)

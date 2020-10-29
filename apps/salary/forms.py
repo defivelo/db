@@ -157,12 +157,21 @@ class TimesheetForm(TimesheetFormBase):
 
 
 class ControlTimesheetForm(TimesheetFormBase):
+    ignore = forms.BooleanField(
+        label=_("Ne compter aucune heure de travail"),
+        required=False,
+        widget=CheckboxInput(
+            attrs={
+                "data-function": "ignore",
+            }
+        ),
+    )
     validated = forms.BooleanField(
         label=_("Valider"), required=False, widget=CheckboxInput()
     )
 
     class Meta(TimesheetFormBase.Meta):
-        fields = TimesheetFormBase.Meta.fields + ["validated"]
+        fields = TimesheetFormBase.Meta.fields + ["ignore", "validated"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

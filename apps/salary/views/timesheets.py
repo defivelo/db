@@ -167,6 +167,7 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
                 "overtime": timesheet.overtime if timesheet else 0,
                 "traveltime": timesheet.traveltime if timesheet else 0,
                 "validated": bool(timesheet.validated_at) if timesheet else False,
+                "ignore": timesheet.ignore if timesheet else False,
                 "comments": timesheet.comments if timesheet else "",
             }
             initial.append(attributes)
