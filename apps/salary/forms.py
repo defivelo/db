@@ -24,7 +24,7 @@ from . import BONUS_LEADER, HOURLY_RATE_HELPER, RATE_ACTOR
 class TimesheetFormBase(forms.ModelForm):
     class Meta:
         model = Timesheet
-        readonly = ("date", "time_helper", "actor_count", "leader_count")
+        readonly = ("date", "time_helper", "actor_count", "leader_count", "ignore")
         fields = [
             "date",
             "time_helper",
@@ -33,6 +33,7 @@ class TimesheetFormBase(forms.ModelForm):
             "overtime",
             "traveltime",
             "comments",
+            "ignore",
         ]
         labels = {
             "time_helper": format_lazy(
@@ -49,7 +50,9 @@ class TimesheetFormBase(forms.ModelForm):
                 _("Heures supplémentaires ({price}.-/h)"), price=HOURLY_RATE_HELPER
             ),
             "traveltime": _("Heures de trajet (aller-retour)"),
+            "ignore": _("Ne compter aucune heure de travail"),
         }
+
         widgets = {
             "date": forms.HiddenInput(),
             "time_helper": TimeNumberInput(
@@ -89,6 +92,13 @@ class TimesheetFormBase(forms.ModelForm):
                     "max": 2,
                     "class": "hide",
                     "data-unit-price": HOURLY_RATE_HELPER,
+                }
+            ),
+            "ignore": CheckboxInput(
+                attrs={
+                    "data-function": "ignore",
+                    "readonly": "readonly",
+                    "disabled": "disabled",
                 }
             ),
             "comments": forms.Textarea(attrs={"rows": 3, "cols": 20}),
@@ -155,23 +165,29 @@ class TimesheetForm(TimesheetFormBase):
                 self.fields[key].widget.attrs["readonly"] = True
                 self.fields[key].disabled = True
 
+        # Show restricted ignore checkboxes they were ticked by a StateManager.
+        if self.initial.get("ignore"):
+            self.fields["ignore"].widget.attrs["readonly"] = "readonly"
+            self.fields["ignore"].widget.attrs["disabled"] = "disabled"
+        else:
+            self.fields["ignore"].widget = forms.HiddenInput()
+
+    def clean(self):
+        """
+        Never allow ignore to be set through this one form
+        """
+        cleaned_data = super().clean()
+        del cleaned_data["ignore"]
+        return cleaned_data
+
 
 class ControlTimesheetForm(TimesheetFormBase):
-    ignore = forms.BooleanField(
-        label=_("Ne compter aucune heure de travail"),
-        required=False,
-        widget=CheckboxInput(
-            attrs={
-                "data-function": "ignore",
-            }
-        ),
-    )
     validated = forms.BooleanField(
         label=_("Valider"), required=False, widget=CheckboxInput()
     )
 
     class Meta(TimesheetFormBase.Meta):
-        fields = TimesheetFormBase.Meta.fields + ["ignore", "validated"]
+        fields = TimesheetFormBase.Meta.fields + ["validated"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -179,6 +195,10 @@ class ControlTimesheetForm(TimesheetFormBase):
             for key in self.fields:
                 self.fields[key].widget.attrs["readonly"] = True
                 self.fields[key].disabled = True
+
+        # StateManagers can fiddle with it
+        del self.fields["ignore"].widget.attrs["readonly"]
+        del self.fields["ignore"].widget.attrs["disabled"]
 
     def clean(self):
         cleaned_data = super().clean()
