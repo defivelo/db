@@ -5,7 +5,8 @@ from django.contrib import messages
 from django.contrib.sites.models import Site
 from django.core import mail
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count, F, Q, Sum
+from django.db.models import Count, F, FloatField, IntegerField, Q, Sum
+from django.db.models.functions import Cast
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -310,6 +311,11 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
         )
         _, object_list, _ = self.get_dated_items()
 
+        # Django queries to convert the ignore Bool (0 if not ignored, 1 if ignored)
+        # into an included Bool (1 if taken into account, 0 if ignored)
+        included = 1 - Cast(F("ignore"), IntegerField())
+        included_float = Cast(included, FloatField())
+
         salary_details_list = (
             object_list.values("user")
             .annotate(
@@ -317,11 +323,11 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
                 user_id=F("user_id"),
                 last_name=F("user__last_name"),
                 first_name=F("user__first_name"),
-                actor_count=Sum("actor_count"),
-                leader_count=Sum("leader_count"),
-                time_helper=Sum("time_helper"),
-                traveltime=Sum("traveltime"),
-                overtime=Sum("overtime"),
+                actor_count=Sum(F("actor_count") * included),
+                leader_count=Sum(F("leader_count") * included),
+                time_helper=Sum(F("time_helper") * included_float),
+                traveltime=Sum(F("traveltime") * included_float),
+                overtime=Sum(F("overtime") * included_float),
             )
             .order_by()
         )
