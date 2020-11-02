@@ -90,7 +90,7 @@ def timesheets_validation_status(year, month=None, cantons=DV_STATES):
 timesheets_validation_status.all_users = {}
 
 
-def get_orphaned_timesheets_per_month(year, month=None, cantons=DV_STATES):
+def get_orphaned_timesheets_per_month(year, users, month=None, cantons=DV_STATES):
     """
     Get orphaned timesheets validation status matrix, a {'canton': status} dict
     if month is None, calculate for the full year
@@ -101,16 +101,6 @@ def get_orphaned_timesheets_per_month(year, month=None, cantons=DV_STATES):
 
     if not cantons:
         cantons = DV_STATES
-
-    user_cache_key = "-".join(cantons)
-    if user_cache_key not in get_orphaned_timesheets_per_month.all_users:
-        get_orphaned_timesheets_per_month.all_users[user_cache_key] = (
-            get_user_model()
-            .objects.filter(profile__affiliation_canton__in=cantons)
-            .prefetch_related("profile")
-        )
-
-    users = get_orphaned_timesheets_per_month.all_users[user_cache_key]
 
     orphaned_timesheets_year = {}
 
@@ -142,9 +132,6 @@ def get_orphaned_timesheets_per_month(year, month=None, cantons=DV_STATES):
     if month:
         return orphaned_timesheets_year[month_in_loop]
     return orphaned_timesheets_year
-
-
-get_orphaned_timesheets_per_month.all_users = {}
 
 
 def get_timesheets_status_matrix(year, users):

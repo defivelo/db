@@ -278,6 +278,7 @@ class YearlyTimesheets(TemplateView):
             "orphaned_timesheets"
         ] = timesheets_overview.get_orphaned_timesheets_per_month(
             year=year,
+            users=users,
             cantons=[active_canton]
             if active_canton in dict(DV_STATE_CHOICES)
             else None,
@@ -391,6 +392,7 @@ class CleanupOrphanedTimesheets(TemplateView):
             timesheets_overview.get_orphaned_timesheets_per_month(
                 year=year,
                 month=self.month,
+                users=timesheets_overview.get_visible_users(self.request.user),
                 cantons=(active_canton if active_canton in DV_STATE_CHOICES else None),
             )
         )

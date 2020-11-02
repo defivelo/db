@@ -1,5 +1,6 @@
 import datetime
 
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 from apps.challenge.tests.factories import QualificationFactory, SessionFactory
@@ -148,7 +149,10 @@ def test_orphaned_timesheets_in_a_month(db):
     )
 
     orphaned_timesheets = timesheets_overview.get_orphaned_timesheets_per_month(
-        date.year, date.month, ["VD"]
+        date.year,
+        users=get_user_model().objects.all(),
+        month=date.month,
+        cantons=["VD"],
     )
 
     # Check that our timesheet without a matching Qualification is in the orphaned set
@@ -170,7 +174,10 @@ def test_non_orphaned_timesheets_in_a_month(db):
     )
 
     orphaned_timesheets = timesheets_overview.get_orphaned_timesheets_per_month(
-        date.year, date.month, ["VD"]
+        date.year,
+        users=get_user_model().objects.all(),
+        month=date.month,
+        cantons=["VD"],
     )
 
     # Check that our timesheet with a matching Qualification is not in the orphaned set
