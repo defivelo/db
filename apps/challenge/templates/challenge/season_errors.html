@@ -4,13 +4,13 @@
 
 {% block content %}
     {% include "challenge/season_header.html" with season=season only %}
-    <h4>{% trans "Toutes les sessions avec des Qualif's incohérentes" %}</h4>
+    <h4>{% trans "Toutes les sessions avec des Qualif’s incohérentes" %}</h4>
     
     <table class="table">
         <thead>
             <tr>
                 <td>{% trans "Session" %}</td>
-                <td>{% trans "Qualif' incohérente" %}</td>
+                <td>{% trans "Qualif’ incohérente" %}</td>
             </tr>
         </thead>
     {% for quali in qualifs %}

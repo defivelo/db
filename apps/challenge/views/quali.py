@@ -70,15 +70,15 @@ class QualiMixin(SessionMixin):
 
 
 class QualiCreateView(QualiMixin, SuccessMessageMixin, CreateView):
-    success_message = _("Qualif' créée")
+    success_message = _("Qualif’ créée")
 
     def get_initial(self):
         return {"session": self.get_session_pk()}
 
 
 class QualiUpdateView(QualiMixin, SuccessMessageMixin, UpdateView):
-    success_message = _("Qualif' mise à jour")
+    success_message = _("Qualif’ mise à jour")
 
 
 class QualiDeleteView(QualiMixin, DeleteView):
-    success_message = _("Qualif' supprimée")
+    success_message = _("Qualif’ supprimée")

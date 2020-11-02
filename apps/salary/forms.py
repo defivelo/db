@@ -40,10 +40,10 @@ class TimesheetFormBase(forms.ModelForm):
                 _("Heures moni·teur·trice ({price}.-/h)"), price=HOURLY_RATE_HELPER
             ),
             "actor_count": format_lazy(
-                _("Intervention(s) ({price}.-/Qualif')"), price=RATE_ACTOR
+                _("Intervention(s) ({price}.-/Qualif’)"), price=RATE_ACTOR
             ),
             "leader_count": format_lazy(
-                _("Participation(s) comme moni·teur·trice 2 ({price}.-/Qualif')"),
+                _("Participation(s) comme moni·teur·trice 2 ({price}.-/Qualif’)"),
                 price=BONUS_LEADER,
             ),
             "overtime": format_lazy(

@@ -241,7 +241,7 @@ class Qualification(models.Model):
         return super(Qualification, self).save(*args, **kwargs)
 
     class Meta:
-        verbose_name = _("Qualif'")
+        verbose_name = _("Qualif’")
         verbose_name_plural = _("Qualifs")
         ordering = ["session", "created_on", "name"]
 
