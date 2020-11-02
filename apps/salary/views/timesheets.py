@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import formats, timezone, translation
+from django.utils.datastructures import OrderedSet
 from django.utils.dates import MONTHS_3
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
@@ -107,12 +108,19 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
             },
         )
         context["formset"] = context["form"]
+
+        # Consider a field "visible" if it is visible in at least one of the forms
+        visible_fields = OrderedSet()
+        for form in context["form"].forms:
+            for field in form.visible_fields():
+                visible_fields.add(field)
+
         context["fields_grouped_by_field_name"] = (
             {
                 fieldname.label: [
                     form[fieldname.name] for form in context["form"].forms
                 ]
-                for fieldname in context["form"].forms[0].visible_fields()
+                for fieldname in visible_fields
             }
             if context["form"].forms
             else {}

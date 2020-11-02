@@ -165,11 +165,12 @@ class TimesheetForm(TimesheetFormBase):
                 self.fields[key].widget.attrs["readonly"] = True
                 self.fields[key].disabled = True
 
-        # Show restricted ignore checkboxes they were ticked by a StateManager.
-        if self.initial.get("ignore"):
-            self.fields["ignore"].widget.attrs["readonly"] = "readonly"
-            self.fields["ignore"].widget.attrs["disabled"] = "disabled"
-        else:
+        # The "ignore" field is disabled for non-editors
+        self.fields["ignore"].widget.attrs["readonly"] = "readonly"
+        self.fields["ignore"].widget.attrs["disabled"] = "disabled"
+
+        # Show the "ignore" field only if it was ticked by a StateManager.
+        if not self.initial.get("ignore"):
             self.fields["ignore"].widget = forms.HiddenInput()
 
     def clean(self):
