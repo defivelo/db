@@ -5,11 +5,13 @@ from django.contrib import messages
 from django.contrib.sites.models import Site
 from django.core import mail
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count, F, Q, Sum
+from django.db.models import Count, F, FloatField, IntegerField, Q, Sum
+from django.db.models.functions import Cast
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import formats, timezone, translation
+from django.utils.datastructures import OrderedSet
 from django.utils.dates import MONTHS_3
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
@@ -106,12 +108,19 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
             },
         )
         context["formset"] = context["form"]
+
+        # Consider a field "visible" if it is visible in at least one of the forms
+        visible_fields = OrderedSet()
+        for form in context["form"].forms:
+            for field in form.visible_fields():
+                visible_fields.add(field)
+
         context["fields_grouped_by_field_name"] = (
             {
                 fieldname.label: [
                     form[fieldname.name] for form in context["form"].forms
                 ]
-                for fieldname in context["form"].forms[0].visible_fields()
+                for fieldname in visible_fields
             }
             if context["form"].forms
             else {}
@@ -167,6 +176,7 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
                 "overtime": timesheet.overtime if timesheet else 0,
                 "traveltime": timesheet.traveltime if timesheet else 0,
                 "validated": bool(timesheet.validated_at) if timesheet else False,
+                "ignore": timesheet.ignore if timesheet else False,
                 "comments": timesheet.comments if timesheet else "",
             }
             initial.append(attributes)
@@ -309,6 +319,11 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
         )
         _, object_list, _ = self.get_dated_items()
 
+        # Django queries to convert the ignore Bool (0 if not ignored, 1 if ignored)
+        # into an included Bool (1 if taken into account, 0 if ignored)
+        included = 1 - Cast(F("ignore"), IntegerField())
+        included_float = Cast(included, FloatField())
+
         salary_details_list = (
             object_list.values("user")
             .annotate(
@@ -316,11 +331,11 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
                 user_id=F("user_id"),
                 last_name=F("user__last_name"),
                 first_name=F("user__first_name"),
-                actor_count=Sum("actor_count"),
-                leader_count=Sum("leader_count"),
-                time_helper=Sum("time_helper"),
-                traveltime=Sum("traveltime"),
-                overtime=Sum("overtime"),
+                actor_count=Sum(F("actor_count") * included),
+                leader_count=Sum(F("leader_count") * included),
+                time_helper=Sum(F("time_helper") * included_float),
+                traveltime=Sum(F("traveltime") * included_float),
+                overtime=Sum(F("overtime") * included_float),
             )
             .order_by()
         )

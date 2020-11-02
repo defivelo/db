@@ -182,7 +182,7 @@ def test_state_manager_sees_reminder_button_for_month_with_missing_timesheets(db
     assert response.status_code == 200
     show_jan, show_feb, show_march, *_ = response.context["show_reminder_button_months"]
     assert not show_jan and not show_feb and show_march
-    assert "Envoyer un rappel aux moniteurs" in response.content.decode()
+    assert "Envoyer un rappel aux collabora" in response.content.decode()
 
 
 def test_helper_doesnt_see_reminder_button(db):
@@ -193,4 +193,4 @@ def test_helper_doesnt_see_reminder_button(db):
     )
     response = client.get(reverse("salary:timesheets-overview", kwargs={"year": 2019}))
     assert response.status_code == 200
-    assert "Envoyer un rappel aux moniteurs" not in response.content.decode()
+    assert "Envoyer un rappel aux collabora" not in response.content.decode()
