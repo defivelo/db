@@ -137,6 +137,46 @@ def test_matrix_shows_months_with_validated_timesheets(db):
     )
 
 
+def test_orphaned_timesheets_in_a_month(db):
+    user = UserFactory(
+        first_name="Jen", last_name="Barber", profile__affiliation_canton="VD"
+    )
+    date = datetime.date(2019, 4, 11)
+    ts = ValidatedTimesheetFactory(
+        date=date,
+        user=user,
+    )
+
+    orphaned_timesheets = timesheets_overview.get_orphaned_timesheets_per_month(
+        date.year, date.month, ["VD"]
+    )
+
+    # Check that our timesheet without a matching Qualification is in the orphaned set
+    assert ts in orphaned_timesheets
+
+
+def test_non_orphaned_timesheets_in_a_month(db):
+    user = UserFactory(
+        first_name="Jen", last_name="Barber", profile__affiliation_canton="VD"
+    )
+    date = datetime.date(2019, 4, 11)
+    ts = ValidatedTimesheetFactory(
+        date=date,
+        user=user,
+    )
+    QualificationFactory(
+        actor=user,
+        session=SessionFactory(day=date),
+    )
+
+    orphaned_timesheets = timesheets_overview.get_orphaned_timesheets_per_month(
+        date.year, date.month, ["VD"]
+    )
+
+    # Check that our timesheet with a matching Qualification is not in the orphaned set
+    assert ts not in orphaned_timesheets
+
+
 def test_matrix_shows_timesheets_total(db):
     user = UserFactory(first_name="Jen", last_name="Barber")
     date = datetime.date(2019, 4, 11)
@@ -194,3 +234,37 @@ def test_helper_doesnt_see_reminder_button(db):
     response = client.get(reverse("salary:timesheets-overview", kwargs={"year": 2019}))
     assert response.status_code == 200
     assert "Envoyer un rappel aux collabora" not in response.content.decode()
+
+
+def test_state_manager_sees_orphanage_fix_button_for_month_with_orphaned_timesheets(db):
+    client = StateManagerAuthClient()
+    managed_cantons = user_cantons(client.user)
+
+    helper = UserFactory(
+        first_name="Maurice",
+        last_name="Moss",
+        profile__affiliation_canton=managed_cantons[0],
+    )
+    helper.profile.save()
+
+    date_ts = datetime.date(2019, 4, 11)
+    ts = TimesheetFactory(
+        date=date_ts,
+        user=helper,
+    )
+    # Create a Qualification, but at a different date
+    date_quali = datetime.date(2019, 4, 15)
+    QualificationFactory(
+        actor=helper,
+        session=SessionFactory(day=date_quali, orga__address_canton=managed_cantons[0]),
+    )
+
+    response = client.get(reverse("salary:timesheets-overview", kwargs={"year": 2019}))
+
+    assert response.status_code == 200
+    assert response.context["orphaned_timesheets"][1] == set()
+    assert response.context["orphaned_timesheets"][2] == set()
+    assert response.context["orphaned_timesheets"][3] == set()
+    assert ts in response.context["orphaned_timesheets"][4]
+
+    assert "1 entrée orpheline" in response.content.decode()

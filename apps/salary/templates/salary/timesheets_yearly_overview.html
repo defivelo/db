@@ -92,7 +92,7 @@
                   {% if forloop.parentloop.counter == forloop.counter %}
                     {% if timesheets|length > 0 %}
                       <a
-                        title="{% blocktrans with n=timesheets|length %}{{ n }} entrées orphelines{% endblocktrans %}"
+                        title="{% blocktrans count count=timesheets|length %}1 entrée orpheline{% plural %}{{  }} entrées orphelines{% endblocktrans %}"
                         class="btn btn-danger"
                         href="{% url "salary:cleanup-timesheets" year=year month=forloop.counter %}{% if canton %}?canton={{ canton }}{% endif %}">
                         <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
