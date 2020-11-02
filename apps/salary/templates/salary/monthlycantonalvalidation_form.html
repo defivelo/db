@@ -18,7 +18,7 @@
             {% endif %}
         {% endfor %}
         <div class="form-group form-group-sm">
-          <b class="col-md-3 control-label">{% trans "N'oubliez pas de valider vos factures d'établissement" %}</b>
+          <b class="col-md-3 control-label">{% trans "N’oubliez pas de valider vos factures d’établissement" %}</b>
           <div class="col-md-9">
               <div class="help-block"><a href="{% url 'invoices-yearly-list' year=mcv.date.year %}" target="_blank">{% blocktrans with year=mcv.date.year %}Factures {{ year }}{% endblocktrans %}</a></div>
           </div>

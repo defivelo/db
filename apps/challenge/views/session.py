@@ -277,7 +277,7 @@ class SessionExportView(ExportMixin, SessionMixin, DetailView):
                 u("Moniteur 2"),
                 u("Moniteur 1"),
                 u("Moniteur 1"),
-                u("Nombre d'élèves"),
+                u("Nombre d’élèves"),
                 u("Nombre de vélos"),
                 u("Nombre de casques"),
                 CATEGORY_CHOICE_A,

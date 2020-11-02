@@ -114,7 +114,7 @@
                                 <dd>{{ userprofile.profile.work_permit }}</dd>
                         {% endif %}
                         {% if userprofile.profile.tax_jurisdiction %}
-                            <dt>{% trans "Lieu d'imposition" %}</dt>
+                            <dt>{% trans "Lieu d’imposition" %}</dt>
                                 <dd>{{ userprofile.profile.tax_jurisdiction }}</dd>
                         {% endif %}
                         {% if userprofile.profile.bank_name %}
@@ -126,7 +126,7 @@
                                 <dd><span style="font-family: monospace">{{ userprofile.profile.iban_nice }}</span></dd>
                         {% endif %}
                         {% if userprofile.profile.cresus_employee_number %}
-                            <dt>{% trans "N° d'employé Crésus" %}</dt>
+                            <dt>{% trans "N° d’employé Crésus" %}</dt>
                                 <dd><span style="font-family: monospace">{{ userprofile.profile.cresus_employee_number }}</span></dd>
                         {% endif %}
                         {% if userprofile.profile.social_security %}
@@ -188,7 +188,7 @@
                         <dl class="dl-horizontal">
                         {% if userprofile.profile.is_paid_staff %}
                           {% if userprofile.profile.affiliation_canton %}
-                            <dt>{% trans "Canton d'affiliation" %}</dt>
+                            <dt>{% trans "Canton d’affiliation" %}</dt>
                             <dd>{{ userprofile.profile.affiliation_canton|canton_abbr:False }}</dd>
                           {% endif %}
                           {% if userprofile.profile.activity_cantons %}
@@ -198,7 +198,7 @@
                           {% endif %}
                         {% endif %}
                         {% if userprofile.profile.can_login %}
-                            <dt>{% trans "Niveau d'accès" %}</dt>
+                            <dt>{% trans "Niveau d’accès" %}</dt>
                             <dd>{{ userprofile.profile.access_level_icon }} {{ userprofile.profile.access_level }} </dd>
                         {% endif %}
                         {% if userprofile.profile.managed_cantons %}
@@ -248,8 +248,8 @@
         {% endif %}
         {% if request.user.pk != userprofile.pk and userprofile.profile.can_login and request.user|can:"user_set_role" %}
             <a class="btn btn-warning pull-right" href="{% url 'user-assign-role' pk=userprofile.pk %}">
-                <span class="glyphicon glyphicon-lock" aria-hidden="true" title="{% trans "Modifier le niveau d'accès" %}"></span>
-                {% trans "Modifier le niveau d'accès" %}
+                <span class="glyphicon glyphicon-lock" aria-hidden="true" title="{% trans "Modifier le niveau d’accès" %}"></span>
+                {% trans "Modifier le niveau d’accès" %}
             </a>
         {% endif %}
         {% if request.user|can:'user_view_list' %}

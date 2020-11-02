@@ -86,7 +86,7 @@
       <tr>
         <th>
         {% trans "Total CHF"%} <br/>
-        <small class="text-muted">{% trans "Attention : Ceci n'est pas le salaire net mais le décompte des heures et des indemmnités" %}</small>
+        <small class="text-muted">{% trans "Attention : Ceci n’est pas le salaire net mais le décompte des heures et des indemmnités" %}</small>
         </th>
         {% for form in formset.forms %}
         <td align="center" class="text-center">
@@ -112,9 +112,9 @@
 {% if in_the_future %}
   <p>{% trans "Vous ne pouvez pas entrer des heures dans le futur." %}</p>
 {% elif is_current_month %}
-  <p>{% trans "Vous n'avez pas encore d'heures à rentrer ce mois." %}</p>
+  <p>{% trans "Vous n’avez pas encore d’heures à rentrer ce mois." %}</p>
 {% else %}
-  <p>{% trans "Vous n'avez pas travaillé ce mois." %}</p>
+  <p>{% trans "Vous n’avez pas travaillé ce mois." %}</p>
 {% endif %}
 {% endif %}
 

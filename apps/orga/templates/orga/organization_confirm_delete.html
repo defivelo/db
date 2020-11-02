@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
-{% block head_title %}{% blocktrans with organization=organization %}Suppression de l'établissement {{ organization }}?{% endblocktrans %}{% endblock %}
+{% block head_title %}{% blocktrans with organization=organization %}Suppression de l’établissement {{ organization }}?{% endblocktrans %}{% endblock %}
 
 {% block content %}
-    <h1>{% blocktrans with organization=organization %}Suppression de l'établissement {{ organization }}?{% endblocktrans %}</h1>
+    <h1>{% blocktrans with organization=organization %}Suppression de l’établissement {{ organization }}?{% endblocktrans %}</h1>
 
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
-        <p>{% blocktrans with organization=organization %}Supprimer l'établissement {{ organization }} définitivement (y compris toutes les données y-relatives)?{% endblocktrans %}
+        <p>{% blocktrans with organization=organization %}Supprimer l’établissement {{ organization }} définitivement (y compris toutes les données y-relatives)?{% endblocktrans %}
         {% buttons %}
             <button type="submit" class="btn btn-danger pull-right">{% trans "Supprimer vraiment" %}</button>
             <a class="btn btn-default" href="{% url 'organization-list' %}">{% trans "Retour à la liste des établissements" %}</a>

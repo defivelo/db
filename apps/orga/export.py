@@ -32,12 +32,12 @@ class OrganizationResource(resources.ModelResource):
     address_street = fields.Field(column_name=_("Rue"), attribute="address_street")
     address_no = fields.Field(column_name=_("N°"), attribute="address_no")
     address_additional = fields.Field(
-        column_name=_("Complément d'adresse"), attribute="address_additional"
+        column_name=_("Complément d’adresse"), attribute="address_additional"
     )
     address_zip = fields.Field(column_name=_("NPA"), attribute="address_zip")
     address_city = fields.Field(column_name=_("Ville"), attribute="address_city")
     address_canton = fields.Field(
-        column_name=_("Canton d'affiliation"), attribute="address_canton"
+        column_name=_("Canton d’affiliation"), attribute="address_canton"
     )
     website = fields.Field(column_name=_("Site web"), attribute="website")
     coordinator_fullname = fields.Field(

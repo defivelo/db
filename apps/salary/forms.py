@@ -133,7 +133,7 @@ class TimesheetFormBase(forms.ModelForm):
                 "comments",
                 forms.ValidationError(
                     _(
-                        "Les remarques doivent être renseignées pour tout prétention d'heures supplémentaires"
+                        "Les remarques doivent être renseignées pour tout prétention d’heures supplémentaires"
                     )
                 ),
             )

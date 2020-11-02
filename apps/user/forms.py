@@ -119,7 +119,7 @@ class SimpleUserProfileForm(forms.ModelForm):
             self.add_error(
                 "affiliation_canton",
                 ValidationError(
-                    _("Moniteurs/intervenants ont besoin d'un canton d'affiliation.")
+                    _("Moniteurs/intervenants ont besoin d’un canton d’affiliation.")
                 ),
             )
         return cleaned_data
@@ -194,7 +194,7 @@ class UserProfileForm(SimpleUserProfileForm):
 
 class UserAssignRoleForm(forms.Form):
     role = forms.ChoiceField(
-        label=_("Niveau d'accès"), choices=DV_AVAILABLE_ROLES, required=False
+        label=_("Niveau d’accès"), choices=DV_AVAILABLE_ROLES, required=False
     )
     managed_states = MultiSelectFormField(
         label=_("Cantons gérés"), choices=sorted(DV_STATE_CHOICES), required=False

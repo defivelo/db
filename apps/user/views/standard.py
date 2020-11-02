@@ -194,13 +194,13 @@ class UserProfileFilterSet(FilterSet):
     )
 
     profile__languages_challenges = MultipleChoiceFilter(
-        label=_("Langues d'animation"),
+        label=_("Langues d’animation"),
         choices=DV_LANGUAGES_WITH_DEFAULT,
         method=filter_languages,
     )
 
     profile__affiliation_canton = MultipleChoiceFilter(
-        label=_("Canton d'affiliation"),
+        label=_("Canton d’affiliation"),
         choices=DV_STATE_CHOICES_WITH_DEFAULT,
         method=filter_multi_nonempty,
     )

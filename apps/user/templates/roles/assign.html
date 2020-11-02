@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load i18n bootstrap3 dv_filters %}
 
-{% block head_title %}{% blocktrans with name=userprofile.get_full_name %}Modifier le niveau d'accès de {{name}} ?{% endblocktrans %}{% endblock %}
+{% block head_title %}{% blocktrans with name=userprofile.get_full_name %}Modifier le niveau d’accès de {{name}} ?{% endblocktrans %}{% endblock %}
 {% block content %}
   <div class="panel panel-warning">
     <div class="panel-heading">
-      <h2 class="panel-title">{% blocktrans with name=userprofile.get_full_name %}Modifier le niveau d'accès de {{name}} ?{% endblocktrans %}</h2>
+      <h2 class="panel-title">{% blocktrans with name=userprofile.get_full_name %}Modifier le niveau d’accès de {{name}} ?{% endblocktrans %}</h2>
     </div>
     <div class="panel-body">
       <form method="POST" action="" class="form-horizontal">
@@ -24,7 +24,7 @@
 {{ form.media.js }}
 <script type="text/javascript">
 function onlyStatesIfStateManager() {
-    // Ne permet pas la coche dans le canton d'activité pour Défi Vélo Mobile
+    // Ne permet pas la coche dans le canton d’activité pour Défi Vélo Mobile
     [
     {role: 'state_manager', name: 'managed_states'},
     {role: 'coordinator', name: 'managed_organizations'},

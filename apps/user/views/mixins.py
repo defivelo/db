@@ -165,7 +165,7 @@ class ProfileMixin(MenuView):
             except LookupError:
                 pass
         if self.form_class == UserProfileForm:
-            # Ne permet qu'au bureau de créer des utilisateurs sans canton d'affiliation
+            # Ne permet qu'au bureau de créer des utilisateurs sans canton d’affiliation
             kwargs["affiliation_canton_required"] = not has_permission(
                 self.request.user, "cantons_all"
             )
@@ -196,13 +196,13 @@ class UserSelfAccessMixin(object):
             has_permission(request.user, "cantons_all")
             or
             # Soit j'ai le droit de lecture sur tous les cantons,
-            # mais seulement le droit d'écriture sur mes cantons d'affiliation
+            # mais seulement le droit d’écriture sur mes cantons d’affiliation
             (
                 has_permission(request.user, self.required_permission)
                 and (
                     user_cantons_intersection
                     or
-                    # Il est dans mes cantons d'affiliation
+                    # Il est dans mes cantons d’affiliation
                     user.profile.affiliation_canton in usercantons
                     # Je ne fais que le consulter
                     or not edit

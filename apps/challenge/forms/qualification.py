@@ -135,7 +135,7 @@ class QualificationForm(forms.ModelForm):
                 if not actor.profile.actor_for.filter(id=activity_C.id).exists():
                     raise ValidationError(
                         _(
-                            "L'intervenant n'est pas qualifié pour la rencontre "
+                            "L’intervenant n’est pas qualifié pour la rencontre "
                             "prévue !"
                         ),
                         code="unqualified-actor",
@@ -143,7 +143,7 @@ class QualificationForm(forms.ModelForm):
             helpers = self.cleaned_data.get("helpers")
             if helpers and helpers.filter(id=actor.id).exists():
                 raise ValidationError(
-                    _("L'intervenant ne peut pas aussi être moniteur !"),
+                    _("L’intervenant ne peut pas aussi être moniteur !"),
                     code="helper-actor",
                 )
         return actor

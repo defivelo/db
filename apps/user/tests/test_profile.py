@@ -345,7 +345,7 @@ class PowerUserTest(ProfileTestCase):
 
             # Updated
             self.assertEqual(her.first_name, "newfirstname")
-            # Pas de VD parce que le canton d'affiliation est 'VD'
+            # Pas de VD parce que le canton d’affiliation est 'VD'
             self.assertEqual(
                 her.profile.activity_cantons,
                 [
