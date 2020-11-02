@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+
+{% block head_title %}{% blocktrans with month_year=period %}Nettoyage des feuilles d'heures orphelines de {{ month_year }}
+{% endblocktrans %}{% endblock %}
+{% block content %}
+  <h1 class="page-header">
+    {% blocktrans with month_year=period %}Nettoyage des feuilles d'heures orphelines de {{ month_year }}{% endblocktrans %}
+  </h1>
+
+  <p>
+    {% blocktrans %}Les feuilles d'heures suivantes ne correspondent plus à aucune session et devraient être supprimées.{% endblocktrans %}
+  </p>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>{% trans "Qui" %}</th>
+        <th>{% trans "Quand" %}</th>
+        <th>{% trans "Heures moni·teur·trice" %}</th>
+        <th>{% trans "Intervention(s)" %}</th>
+        <th>{% trans "Participation(s) comme moniteur 2" %}</th>
+        <th>{% trans "Heures supplémentaires" %}</th>
+        <th>{% trans "Heures de trajet" %}</th>
+        <th>{% trans "Validée" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for timesheet in orphaned_timesheets %}
+      <tr>
+        <th>
+          <a href="{% url 'user-detail' pk=user.pk %}">
+            {{ timesheet.user.get_full_name }}
+          </a>
+        </th>
+        <td>{{ timesheet.date }}</td>
+        <td>{{ timesheet.time_helper }}</td>
+        <td>{{ timesheet.actor_count }}</td>
+        <td>{{ timesheet.leader_count }}</td>
+        <td>{{ timesheet.overtime }}</td>
+        <td>{{ timesheet.traveltime }}</td>
+        <td><span class="glyphicon glyphicon-{% if timesheet.validated_at %}check{% else %}unchecked{% endif %}"></span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <form method="POST" action="{{ request.get_full_path }}">
+    {% csrf_token %}
+    {% buttons %}
+      <button type="submit" class="btn btn-danger pull-right">{% trans "Supprimer toutes les feuilles d'heures" %}</button>
+      <a class="btn btn-default" href="{{ redirect_url }}">{% trans "Annuler" %}</a>
+    {% endbuttons %}
+  </form>
+{% endblock %}

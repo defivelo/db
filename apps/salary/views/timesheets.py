@@ -13,6 +13,7 @@ from django.urls import reverse
 from django.utils import formats, timezone, translation
 from django.utils.datastructures import OrderedSet
 from django.utils.dates import MONTHS_3
+from django.utils.translation import ngettext as n
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import RedirectView, TemplateView
@@ -273,6 +274,14 @@ class YearlyTimesheets(TemplateView):
         context[
             "timesheets_amount"
         ] = timesheets_overview.get_timesheets_amount_by_month(year=year, users=users)
+        context[
+            "orphaned_timesheets"
+        ] = timesheets_overview.get_orphaned_timesheets_per_month(
+            year=year,
+            cantons=[active_canton]
+            if active_canton in dict(DV_STATE_CHOICES)
+            else None,
+        )
         context["cantons"] = DV_STATE_CHOICES
         context["active_canton"] = (
             dict(DV_STATE_CHOICES)[active_canton] if active_canton else None
@@ -365,6 +374,57 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
                 ]
             )
         return dataset
+
+
+class CleanupOrphanedTimesheets(TemplateView):
+    template_name = "salary/cleanup_orphaned_timesheets.html"
+    required_permission = "timesheet_editor"
+
+    def dispatch(self, request, *args, month, year, **kwargs):
+        if not has_permission(request.user, self.required_permission):
+            raise PermissionDenied
+        self.month = int(month)
+        self.year = int(year)
+
+        active_canton = self.request.GET.get("canton")
+        self.orphaned_timesheets = (
+            timesheets_overview.get_orphaned_timesheets_per_month(
+                year=year,
+                month=self.month,
+                cantons=(active_canton if active_canton in DV_STATE_CHOICES else None),
+            )
+        )
+        if not self.orphaned_timesheets:
+            messages.success(
+                request,
+                _("Aucune feuille d'heure orpheline à supprimer; tout va bien."),
+            )
+            return redirect(self.get_redirect_url())
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_redirect_url(self):
+        return reverse("salary:timesheets-overview", kwargs={"year": self.year})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["redirect_url"] = self.get_redirect_url()
+        context["period"] = formats.date_format(date(self.year, self.month, 1), "F Y")
+        context["orphaned_timesheets"] = self.orphaned_timesheets
+        return context
+
+    def post(self, request, *args, **kwargs):
+        (deleted, _) = Timesheet.objects.filter(
+            id__in=[t.id for t in self.orphaned_timesheets]
+        ).delete()
+        messages.warning(
+            request,
+            n(
+                "{n} feuille d'heures orpheline supprimée.",
+                "{n} feuilles d'heures orphelines supprimées.",
+                deleted,
+            ).format(n=deleted),
+        )
+        return redirect(self.get_redirect_url())
 
 
 class SendTimesheetsReminder(TemplateView):

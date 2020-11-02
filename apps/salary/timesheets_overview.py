@@ -90,6 +90,63 @@ def timesheets_validation_status(year, month=None, cantons=DV_STATES):
 timesheets_validation_status.all_users = {}
 
 
+def get_orphaned_timesheets_per_month(year, month=None, cantons=DV_STATES):
+    """
+    Get orphaned timesheets validation status matrix, a {'canton': status} dict
+    if month is None, calculate for the full year
+    """
+    months = range(1, 13)
+    if month:
+        months = [month]
+
+    if not cantons:
+        cantons = DV_STATES
+
+    user_cache_key = "-".join(cantons)
+    if user_cache_key not in get_orphaned_timesheets_per_month.all_users:
+        get_orphaned_timesheets_per_month.all_users[user_cache_key] = (
+            get_user_model()
+            .objects.filter(profile__affiliation_canton__in=cantons)
+            .prefetch_related("profile")
+        )
+
+    users = get_orphaned_timesheets_per_month.all_users[user_cache_key]
+
+    orphaned_timesheets_year = {}
+
+    for month_in_loop in months:
+        sessions = Session.objects.filter(
+            day__year=year, day__month=month_in_loop
+        ).prefetch_related(
+            "qualifications",
+            "qualifications__leader",
+            "qualifications__helpers",
+            "qualifications__actor",
+        )
+        timesheets = get_timesheets(year=year, month=month_in_loop, users=users)
+
+        sessions_by_user = regroup_sessions_by_user(sessions, users)
+        timesheets_by_user = regroup_timesheets_by_user(timesheets)
+        orphaned_timesheets_month = set()
+        for user in users:
+            if user.profile.affiliation_canton in cantons:
+                orphaned_timesheets_month.update(
+                    get_timesheets_without_corresponding_session(
+                        sessions_by_user.get(user.pk, set()),
+                        timesheets_by_user.get(user.pk, set()),
+                    )
+                )
+
+        orphaned_timesheets_year[month_in_loop] = orphaned_timesheets_month
+
+    if month:
+        return orphaned_timesheets_year[month_in_loop]
+    return orphaned_timesheets_year
+
+
+get_orphaned_timesheets_per_month.all_users = {}
+
+
 def get_timesheets_status_matrix(year, users):
     """
     Return a dict of `{user: [TimesheetStatus]}` for all users who worked during the
@@ -202,6 +259,16 @@ def get_months_without_timesheets(sessions, timesheets):
     )
 
     return {date.month for date in days_with_missing_timesheets}
+
+
+def get_timesheets_without_corresponding_session(sessions, timesheets):
+    """
+    Return a set of timesheets without a session in the corresponding day
+    """
+    session_days = [session.day for session in sessions]
+    return set(
+        timesheet for timesheet in timesheets if timesheet.date not in session_days
+    )
 
 
 def get_timesheets(year, users, month=None):
