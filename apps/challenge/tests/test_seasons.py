@@ -1,5 +1,5 @@
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2016 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2016, 2020 Didier Raboud <me+defivelo@odyx.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,6 +13,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import datetime
 
 from django.test import TestCase
 from django.urls import reverse
@@ -829,3 +830,50 @@ class PowerUserTest(SeasonTestCaseMixin):
                 # Final URL is forbidden
                 response = self.client.get(url, follow=True)
                 self.assertEqual(response.status_code, 200, url)
+
+
+def test_session_to_season_all_months_in_year(db):
+    # A year full of seasons
+    [
+        SeasonFactory(cantons=["VD"], year=2019, month_start=month_start, n_months=1)
+        for month_start in range(1, 13)
+    ]
+
+    session = SessionFactory(
+        day=datetime.date(2019, 4, 12),
+        orga=OrganizationFactory(address_canton="VD"),
+    )
+
+    assert session.season.month_start == 4
+
+
+def test_session_to_season_any_month_in_year(db):
+    # A year full of 3 months seasons
+    SeasonFactory(cantons=["VD"], year=2019, month_start=1, n_months=3)
+    SeasonFactory(cantons=["VD"], year=2019, month_start=4, n_months=3)
+    SeasonFactory(cantons=["VD"], year=2019, month_start=7, n_months=3)
+    SeasonFactory(cantons=["VD"], year=2019, month_start=10, n_months=3)
+
+    for month in range(1, 13):
+        session = SessionFactory(
+            day=datetime.date(2019, month, 12),
+            orga=OrganizationFactory(address_canton="VD"),
+        )
+
+        assert session.season.begin <= session.day
+        assert session.season.end >= session.day
+
+
+def test_session_to_season_in_previous_year(db):
+    # Seasons crossing the year boundary
+    SeasonFactory(cantons=["VD"], year=2019, month_start=7, n_months=3)
+    SeasonFactory(cantons=["VD"], year=2019, month_start=10, n_months=6)
+    SeasonFactory(cantons=["VD"], year=2020, month_start=4, n_months=3)
+
+    session = SessionFactory(
+        day=datetime.date(2020, 2, 12),
+        orga=OrganizationFactory(address_canton="VD"),
+    )
+
+    assert session.season.begin <= session.day
+    assert session.season.end >= session.day
