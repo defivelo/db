@@ -18,7 +18,7 @@ from datetime import datetime, time, timedelta
 
 from django.conf import settings
 from django.db import models
-from django.db.models import Q
+from django.db.models import F, Q
 from django.template.defaultfilters import date
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
@@ -264,19 +264,15 @@ class Session(Address, models.Model):
     def season(self):
         from .season import Season
 
-        seasons = Season.objects.filter(
+        season = Season.objects.filter(
             year=self.day.year,
             month_start__lte=self.day.month,
+            n_months__gt=self.day.month - F("month_start"),
             cantons__contains=self.orga.address_canton,
-        )
+        ).first()
 
-        for s in seasons.all():
-            if self.day.month == s.month_start:
-                # In first concerned month
-                return s
-            if s.month_start < self.day.month <= s.month_start + s.n_months - 1:
-                # In the following months of that year
-                return s
+        if season:
+            return season
 
         # Should only rarely happen, so afford an other request; look for Season objects in the past year, spanning to ours.
         for offset in [1, 2]:
@@ -285,12 +281,7 @@ class Session(Address, models.Model):
                 cantons__contains=self.orga.address_canton,
             )
             for s in seasons.all():
-                # See Season::end()
-                (add_years, final_month_0) = divmod(s.month_start + s.n_months - 1, 12)
-                if (
-                    self.day.year == s.year + add_years
-                    and self.day.month <= final_month_0 + 1
-                ):
+                if s.begin <= self.day <= s.end:
                     return s
 
     @cached_property
