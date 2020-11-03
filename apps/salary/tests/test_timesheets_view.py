@@ -21,6 +21,7 @@ def test_helper_can_see_his_timesheet(db):
         cantons=["VD"],
         year=2019,
         month_start=1,
+        n_months=5,
     )
     QualificationFactory(
         actor=client.user,
@@ -48,6 +49,7 @@ def test_helper_cannot_timesheet_overtime_without_comments(db):
         cantons=["VD"],
         year=2019,
         month_start=1,
+        n_months=5,
     )
     QualificationFactory(
         actor=client.user,
@@ -88,6 +90,7 @@ def test_helper_can_timesheet(db):
         cantons=["VD"],
         year=2019,
         month_start=1,
+        n_months=5,
     )
     QualificationFactory(
         actor=client.user,
@@ -128,6 +131,7 @@ def test_helper_can_update_timesheet(db):
         cantons=["VD"],
         year=2019,
         month_start=1,
+        n_months=5,
     )
     QualificationFactory(
         actor=client.user,
@@ -181,6 +185,7 @@ def test_helper_cannot_validate_timesheet(db):
         cantons=["VD"],
         year=2019,
         month_start=1,
+        n_months=5,
     )
     QualificationFactory(
         actor=client.user,
@@ -221,11 +226,7 @@ def test_helper_cannot_validate_timesheet(db):
 def test_helper_cannot_set_timesheet_to_ignore(db):
     client = AuthClient()
 
-    SeasonFactory(
-        cantons=["VD"],
-        year=2019,
-        season=DV_SEASON_SPRING,
-    )
+    SeasonFactory(cantons=["VD"], year=2019, month_start=1, n_months=5)
     QualificationFactory(
         actor=client.user,
         session=SessionFactory(
@@ -271,6 +272,7 @@ def test_state_manager_can_validate_timesheet(db):
         cantons=[managed_cantons[0]],
         year=2019,
         month_start=1,
+        n_months=5,
     )
     QualificationFactory(
         actor=actor,
@@ -313,11 +315,7 @@ def test_state_manager_can_set_timesheet_to_ignore(db):
         last_name="Moss",
         profile__affiliation_canton=managed_cantons[0],
     )
-    SeasonFactory(
-        cantons=[managed_cantons[0]],
-        year=2019,
-        season=DV_SEASON_SPRING,
-    )
+    SeasonFactory(cantons=[managed_cantons[0]], year=2019, month_start=1, n_months=5)
     QualificationFactory(
         actor=actor,
         session=SessionFactory(
