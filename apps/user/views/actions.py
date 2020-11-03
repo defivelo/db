@@ -50,7 +50,7 @@ class MarkInactive(HasPermissionsMixin, FormView):
                     USERSTATUS_RESERVE,
                 ],
             )
-            # … qui n'ont pas de rôles
+            # … qui n’ont pas de rôles
             .exclude(user__groups__isnull=False)
             .order_by("user__first_name", "user__last_name")
             .prefetch_related("user")

@@ -124,7 +124,7 @@
       <div class="hidden-print pull-right">
           <a class="btn btn-primary" href="{% url 'season-availabilities' pk=season.pk %}#sess{{session.pk}}">{% trans "Planning" %}</a>
           {% if session_mailtoall %}
-              <a class="btn btn-info" href="{{ session_mailtoall }}" target="_blank"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> {% trans "Email à l'équipe des Qualif" %}</a>
+              <a class="btn btn-info" href="{{ session_mailtoall }}" target="_blank"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> {% trans "Email à l’équipe des Qualifs" %}</a>
           {% endif %}
       </div>
     {% endif %}
@@ -206,7 +206,7 @@
                 <form method="POST" action="{% url 'quali-create' seasonpk=season.pk sessionpk=session.pk %}" class="form-horizontal">
                     {% csrf_token %}
                     {{ quali_form_quick }}
-                    {% buttons %}<button type="submit" class="btn btn-primary pull-right">{% trans "Créer une Qualif'" %}</button>{% endbuttons %}
+                    {% buttons %}<button type="submit" class="btn btn-primary pull-right">{% trans "Créer une Qualif’" %}</button>{% endbuttons %}
                 </form>
             </td>
         </tr>

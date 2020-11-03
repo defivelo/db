@@ -86,7 +86,7 @@ class SeasonStatsExport(SeasonSessionsMixin):
                 u("Établissements"),
                 u("Sessions"),
                 u("Qualifs"),
-                u("Nombre d'élèves"),
+                u("Nombre d’élèves"),
                 u("Prêts de vélos"),
                 u("Prêts de casques"),
                 u("Nombre de personnes ayant exercé"),

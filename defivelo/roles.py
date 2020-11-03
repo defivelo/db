@@ -56,7 +56,7 @@ class Collaborator(AbstractUserRole):
 
 class StateManager(AbstractUserRole):
     """
-    Chargé de projet, responsable d'un ou plusieurs cantons
+    Chargé de projet, responsable d’un ou plusieurs cantons
     """
 
     available_permissions = {
@@ -123,7 +123,7 @@ class PowerUser(AbstractUserRole):
 
 class Coordinator(AbstractUserRole):
     """
-    Coordinateur d'établissement
+    Coordinateur d’établissement
     """
 
     available_permissions = {

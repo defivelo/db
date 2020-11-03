@@ -106,7 +106,7 @@ class UserResource(resources.ModelResource):
         column_name=_("Permis de travail"), attribute="profile__work_permit"
     )
     profile__tax_jurisdiction = fields.Field(
-        column_name=_("Lieu d'imposition"), attribute="profile__tax_jurisdiction"
+        column_name=_("Lieu d’imposition"), attribute="profile__tax_jurisdiction"
     )
     profile__social_security = fields.Field(
         column_name=_("N° AVS"), attribute="profile__social_security"
@@ -157,14 +157,14 @@ class UserResource(resources.ModelResource):
         attribute="profile__formation_lastdate",
         widget=widgets.DateWidget(format="%d.%m.%Y"),
     )
-    profile__affiliation_canton = fields.Field(column_name=_("Canton d'affiliation"))
+    profile__affiliation_canton = fields.Field(column_name=_("Canton d’affiliation"))
     profile__activity_cantons = fields.Field(
         column_name=_("Défi Vélo Mobile"),
         attribute="profile__activity_cantons",
         widget=MultipleSelectWidget(),
     )
     profile__cresus_employee_number = fields.Field(
-        column_name=_("Numéro d'employé Crésus"),
+        column_name=_("Numéro d’employé Crésus"),
         attribute="profile__cresus_employee_number",
     )
     profile__bank_name = fields.Field(
@@ -177,7 +177,7 @@ class UserResource(resources.ModelResource):
         widget=ObjectMethodWidget(method="iban_nice"),
     )
     profile__access_level = fields.Field(
-        column_name=_("Niveau d'accès"),
+        column_name=_("Niveau d’accès"),
         attribute="profile",
         widget=ObjectMethodWidget(method="access_level_text"),
     )

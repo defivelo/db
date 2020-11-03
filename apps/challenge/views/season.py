@@ -105,7 +105,7 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
         if has_permission(self.request.user, "cantons_all"):
             form_kwargs["cantons"] = DV_STATES
         else:
-            # Ne permet que l'édition et la création de saisons pour les cantons gérés
+            # Ne permet que l’édition et la création de saisons pour les cantons gérés
             form_kwargs["cantons"] = self.request.user.managedstates.all().values_list(
                 "canton", flat=True
             )
@@ -366,7 +366,7 @@ class SeasonAvailabilityMixin(SeasonHelpersMixin):
                             # Si un choix est fait _dans_ une session (qualif)
                             initials[staffkey] = session.user_assignment(helper)
                             initials[choicekey] = True
-                            # Le choix n'est fait qu'au niveau de la session
+                            # Le choix n’est fait qu'au niveau de la session
                             if not initials[staffkey]:
                                 initials[staffkey] = hsa.chosen_as
                                 initials[choicekey] = False
@@ -660,7 +660,7 @@ class SeasonExportView(
                 u("Moniteur 2"),
                 u("Moniteur 1"),
                 u("Moniteur 1"),
-                u("Nombre d'élèves"),
+                u("Nombre d’élèves"),
                 u("Nombre de vélos"),
                 u("Nombre de casques"),
                 str(CATEGORY_CHOICE_A),
@@ -804,7 +804,7 @@ class SeasonPersonalPlanningExportView(
 
         firstcol += [user.get_full_name() for user in qs]
         dataset.append_col(firstcol)
-        # Ajoute le canton d'affiliation comme deuxième colonne
+        # Ajoute le canton d’affiliation comme deuxième colonne
         user_cantons_col = [""] * 6 + [user.profile.affiliation_canton for user in qs]
         dataset.append_col(user_cantons_col)
         for session in self.season.sessions_with_qualifs:

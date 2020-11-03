@@ -316,10 +316,10 @@ class StateManagerUserTest(InvoiceTestCaseMixin):
         self.invoice.save()
         self.assertTrue(self.invoice.is_locked, self.invoice)
 
-        # Lea chargé de projet peut encore l'éditer
+        # Lea chargé de projet peut encore l’éditer
         self.assertEqual(self.client.get(self.invoice_update_url).status_code, 200)
         # Mais mettre à jour son statut échoue
-        # Enfin. Ça marche, mais rien n'a changé
+        # Enfin. Ça marche, mais rien n’a changé
         self.assertRedirects(
             self.client.post(
                 self.invoice_update_url,
@@ -329,7 +329,7 @@ class StateManagerUserTest(InvoiceTestCaseMixin):
             target_status_code=200,
         )
 
-        # Elle n'est bien pas mise à jour
+        # Elle n’est bien pas mise à jour
         i = Invoice.objects.get(ref=self.invoice.ref)
         self.assertNotEqual(i.title, "Titre 2 du CdP", i)
         self.assertEqual(i.status, Invoice.STATUS_VALIDATED)
@@ -446,7 +446,7 @@ class PowerUserTest(InvoiceTestCaseMixin):
         self.invoice.save()
         self.assertTrue(self.invoice.is_locked, self.invoice)
 
-        # Lea burea peut encore l'éditer
+        # Lea bureau peut encore l’éditer
         self.assertEqual(self.client.get(self.invoice_update_url).status_code, 200)
         # Et mettre à jour son statut, de retour vers Draft
         self.assertRedirects(

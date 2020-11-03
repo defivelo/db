@@ -96,7 +96,7 @@
             <th class="text-center">
               <a
                 class="btn btn-info"
-                title="{% trans "Envoyer un rappel aux collabora·teur·trices qui n'ont pas rempli leurs heures" %}"
+                title="{% trans "Envoyer un rappel aux collabora·teur·trices qui n’ont pas rempli leurs heures" %}"
                 {% if show_reminder_button %}
                   href="{% url "salary:send-timesheets-reminder" year=year month=forloop.counter %}"
                 {% else %}

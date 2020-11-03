@@ -61,7 +61,7 @@ class InvoiceFormMixin(forms.ModelForm):
                 # This should not happen.
                 raise ValidationError(
                     _(
-                        f"L'espace des factures établissements pour l'année {season.year} est épuisé avec l'identifiant {ref}."
+                        f"L’espace des factures établissements pour l’année {season.year} est épuisé avec l’identifiant {ref}."
                     )
                 )
         invoice = super().save(commit=commit)

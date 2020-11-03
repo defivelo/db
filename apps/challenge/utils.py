@@ -41,7 +41,7 @@ def get_users_roles_for_session(users, session) -> Mapping[User, str]:
                 # Translators: Nom court pour 'Intervenant'
                 label = u("Int.")
                 break
-        # Vérifie tout de même si l'utilisateur est déjà sélectionné
+        # Vérifie tout de même si l’utilisateur est déjà sélectionné
         if not label and user.id in user_session_chosen_as:
             if user_session_chosen_as[user.id] == CHOSEN_AS_LEADER:
                 label = formation_short(FORMATION_M2, True)

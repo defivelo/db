@@ -29,7 +29,7 @@
     </dl>
     {% if user_can_edit_invoice %}
         {% if refresh_form %}
-          <strong>{% trans "La facture n'est pas à jour."%}</strong>
+          <strong>{% trans "La facture n’est pas à jour."%}</strong>
           <form method="POST" action="{% url 'invoice-update' seasonpk=invoice.season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">
             {% csrf_token %}
             {{ refresh_form }}
@@ -100,7 +100,7 @@
 {% endif %}
 
 <div class="invoice-footer-text">
-  {% blocktrans %}La facture est établie selon les listes fournies par le·la coordinateur·trice de l'établissement.{% endblocktrans %}<br/>
+  {% blocktrans %}La facture est établie selon les listes fournies par le·la coordinateur·trice de l’établissement.{% endblocktrans %}<br/>
   {% blocktrans with ref=invoice.ref %}Paiement à 30 jours sur le compte de notre mandataire, avec la mention « DÉFI VÉLO {{ref}} »{% endblocktrans %}
 </div>
 

@@ -18,7 +18,7 @@
     {% endif %}
 
     {% if user|can:'challenge_session_crud' and season.has_availability_incoherences and season.manager_can_crud %}
-        <a class="btn btn-warning" href="{% url 'season-errorslist' season.pk %}" title="{% trans "Sessions avec Qualif' incohérente" %}"><span class="glyphicon glyphicon-warning-sign"></span></a>
+        <a class="btn btn-warning" href="{% url 'season-errorslist' season.pk %}" title="{% trans "Sessions avec Qualif’ incohérente" %}"><span class="glyphicon glyphicon-warning-sign"></span></a>
     {% endif %}
 
     {% if user|can:'challenge_season_crud' %}

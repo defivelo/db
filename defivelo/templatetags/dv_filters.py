@@ -208,7 +208,7 @@ def useravailsessions_readonly(
                     conflict = conflicts.pop()
 
                 # Si le choix des moniteurs est connu, remplace le label et
-                # la version verbeuse par l'état du choix
+                # la version verbeuse par l’état du choix
                 if not sesskey:
                     staffkey = STAFF_FIELDKEY.format(hpk=user.pk, spk=thissesskey)
                     if staffkey in struct:

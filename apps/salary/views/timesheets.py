@@ -307,7 +307,7 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
                 u("Prénom"),
                 u("Année courante"),
                 u("Mois courant"),
-                u("Numéro d'employé Crésus"),
+                u("Numéro d’employé Crésus"),
                 u("Salaire heure Formateur"),  # 0
                 u("Salaire heures moniteur"),  # time_helper
                 u("Prime moniteur 2"),  # leader_count

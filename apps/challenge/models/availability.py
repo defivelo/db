@@ -54,7 +54,7 @@ class HelperSeasonWorkWish(models.Model):
         on_delete=models.CASCADE,
     )
     amount = models.PositiveSmallIntegerField(
-        _("Quantité d'engagements souhaités"), default=0
+        _("Quantité d’engagements souhaités"), default=0
     )
     history = HistoricalRecords()
 

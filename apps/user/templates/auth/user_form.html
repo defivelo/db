@@ -12,7 +12,7 @@
         {% endif %}</h2>
     {% if not userprofile %}
     <div class="alert alert-warning row" role="alert">
-        <span class="col-xs-9">{% blocktrans %}Est-il certain que ce nouvel utilisateur n'existe pas déjà dans la base de données ?{% endblocktrans %}</span>
+        <span class="col-xs-9">{% blocktrans %}Est-il certain que ce nouvel utilisateur n’existe pas déjà dans la base de données ?{% endblocktrans %}</span>
         {% include 'user_search_form.html' %}
     </div>
     {% endif %}
@@ -21,7 +21,7 @@
         <div>
 
         {% comment %}
-        {# Pas pour l'instant #}
+        {# Pas pour l’instant #}
             <!-- Nav tabs -->
             <ul class="nav nav-tabs" role="tablist">
                 <li role="presentation" class="active"><a href="#addr" aria-controls="coord" role="tab" data-toggle="tab">{% trans "Adresse" %}</a></li>
@@ -142,7 +142,7 @@
         {% buttons %}
             <button type="submit" class="btn btn-primary pull-right">{% if userprofile %}{% trans 'Update' %}{% else %}{% trans 'Créer' %}{% endif %}</button>
             {% if userprofile == request.user %}
-                <a class="btn btn-default pull-right" href="{% url 'account_email' %}">{% blocktrans with email=request.user.email %}Changer d'email ({{ email }}){% endblocktrans %}</a>
+                <a class="btn btn-default pull-right" href="{% url 'account_email' %}">{% blocktrans with email=request.user.email %}Changer d’email ({{ email }}){% endblocktrans %}</a>
             {% else %}
                 <a class="btn btn-default" href="{% url 'user-list' %}">{% trans "Annuler" %}</a>
             {% endif %}
@@ -166,14 +166,14 @@ $(function () {
 })
 
 function dvCantonsNotAffiliatedToMobile() {
-    // Ne permet pas la coche dans le canton d'activité pour Défi Vélo Mobile
+    // Ne permet pas la coche dans le canton d’activité pour Défi Vélo Mobile
     homecanton = $( "#id_affiliation_canton" ).val();
     $( '#id_activity_cantons input[disabled]').prop("disabled", false);
     $( '#id_activity_cantons input[value="' + homecanton + '"]').prop("disabled", true);
 }
 
 function dvLanguagesCannotBeMain() {
-    // Ne permet pas la coche dans le canton d'activité pour Défi Vélo Mobile
+    // Ne permet pas la coche dans le canton d’activité pour Défi Vélo Mobile
     mainlanguage = $( "#id_language" ).val();
     $( '#id_languages_challenges input[disabled]').prop("disabled", false).prop('checked', false);
     $( '#id_languages_challenges input[value="' + mainlanguage + '"]').prop("disabled", true).prop('checked', true);
@@ -200,7 +200,7 @@ noWorkPermitForSwiss();
   <script>
     window.defivelo = window.defivelo || {};
 
-    {% trans "Vers le calculateur d'IBAN" as toiban %}
+    {% trans "Vers le calculateur d’IBAN" as toiban %}
     window.defivelo.ibanTooltipTitle = '{{ toiban|escapejs }}';
     {% trans 'https://www.postfinance.ch/fr/particuliers/assistance/outils-calculateurs/calculateur-iban.html' as toibanlink %}
     window.defivelo.ibanTooltipLink = '{{ toibanlink|escapejs }}';
