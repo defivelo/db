@@ -7,7 +7,6 @@ from apps.challenge.tests.factories import (
     SeasonFactory,
     SessionFactory,
 )
-from apps.common import DV_SEASON_SPRING
 from apps.orga.tests.factories import OrganizationFactory
 from apps.salary.models import Timesheet
 from apps.user.tests.factories import UserFactory
@@ -21,7 +20,8 @@ def test_helper_can_see_his_timesheet(db):
     SeasonFactory(
         cantons=["VD"],
         year=2019,
-        season=DV_SEASON_SPRING,
+        month_start=1,
+        n_months=5,
     )
     QualificationFactory(
         actor=client.user,
@@ -48,7 +48,8 @@ def test_helper_cannot_timesheet_overtime_without_comments(db):
     SeasonFactory(
         cantons=["VD"],
         year=2019,
-        season=DV_SEASON_SPRING,
+        month_start=1,
+        n_months=5,
     )
     QualificationFactory(
         actor=client.user,
@@ -88,7 +89,8 @@ def test_helper_can_timesheet(db):
     SeasonFactory(
         cantons=["VD"],
         year=2019,
-        season=DV_SEASON_SPRING,
+        month_start=1,
+        n_months=5,
     )
     QualificationFactory(
         actor=client.user,
@@ -128,7 +130,8 @@ def test_helper_can_update_timesheet(db):
     SeasonFactory(
         cantons=["VD"],
         year=2019,
-        season=DV_SEASON_SPRING,
+        month_start=1,
+        n_months=5,
     )
     QualificationFactory(
         actor=client.user,
@@ -181,7 +184,8 @@ def test_helper_cannot_validate_timesheet(db):
     SeasonFactory(
         cantons=["VD"],
         year=2019,
-        season=DV_SEASON_SPRING,
+        month_start=1,
+        n_months=5,
     )
     QualificationFactory(
         actor=client.user,
@@ -222,11 +226,7 @@ def test_helper_cannot_validate_timesheet(db):
 def test_helper_cannot_set_timesheet_to_ignore(db):
     client = AuthClient()
 
-    SeasonFactory(
-        cantons=["VD"],
-        year=2019,
-        season=DV_SEASON_SPRING,
-    )
+    SeasonFactory(cantons=["VD"], year=2019, month_start=1, n_months=5)
     QualificationFactory(
         actor=client.user,
         session=SessionFactory(
@@ -271,7 +271,8 @@ def test_state_manager_can_validate_timesheet(db):
     SeasonFactory(
         cantons=[managed_cantons[0]],
         year=2019,
-        season=DV_SEASON_SPRING,
+        month_start=1,
+        n_months=5,
     )
     QualificationFactory(
         actor=actor,
@@ -314,11 +315,7 @@ def test_state_manager_can_set_timesheet_to_ignore(db):
         last_name="Moss",
         profile__affiliation_canton=managed_cantons[0],
     )
-    SeasonFactory(
-        cantons=[managed_cantons[0]],
-        year=2019,
-        season=DV_SEASON_SPRING,
-    )
+    SeasonFactory(cantons=[managed_cantons[0]], year=2019, month_start=1, n_months=5)
     QualificationFactory(
         actor=actor,
         session=SessionFactory(

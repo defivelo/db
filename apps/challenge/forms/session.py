@@ -45,16 +45,16 @@ class SessionForm(forms.ModelForm):
                 address_canton__in=self.season.cantons
             )
             self.fields["orga"].queryset = qs
-        try:
-            self.fields["day"].widget.options["minDate"] = self.season.begin.strftime(
-                "%Y-%m-%d"
-            )
-            # Disable maxDate - DEFIVELO-98
-            # self.fields["day"].widget.options["maxDate"] = self.season.end.strftime(
-            #     "%Y-%m-%d"
-            # )
-        except Exception:
-            pass
+        # Disable minDate and maxDate - DEFIVELO-98
+        # try:
+        #     self.fields["day"].widget.options["minDate"] = self.season.begin.strftime(
+        #         "%Y-%m-%d"
+        #     )
+        #     self.fields["day"].widget.options["maxDate"] = self.season.end.strftime(
+        #         "%Y-%m-%d"
+        #     )
+        # except Exception:
+        #     pass
 
     day = SwissDateField(label=_("Date"))
     begin = SwissTimeField(label=_("Début"), required=False)
@@ -91,7 +91,7 @@ class SessionForm(forms.ModelForm):
         if self.season.begin <= day <= self.season.end:
             return day
         raise forms.ValidationError(
-            _("La session doit être dans la saison" " (entre {begin} et {end})").format(
+            _("La session doit être dans le mois" " (entre {begin} et {end})").format(
                 begin=date(self.season.begin, settings.DATE_FORMAT),
                 end=date(self.season.end, settings.DATE_FORMAT),
             )

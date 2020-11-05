@@ -18,11 +18,14 @@ from datetime import date, timedelta
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Q
 from django.urls import reverse
+from django.utils.dates import MONTHS
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
+from django.utils.translation import pgettext_lazy as _p
 from django.utils.translation import ugettext_lazy as _
 
 from multiselectfield import MultiSelectField
@@ -48,8 +51,13 @@ from defivelo.templatetags.dv_filters import cantons_abbr
 class Season(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     year = models.PositiveSmallIntegerField(_("Année"))
-    season = models.PositiveSmallIntegerField(
-        _("Saison"), choices=DV_SEASON_CHOICES, default=DV_SEASON_SPRING
+    month_start = models.PositiveSmallIntegerField(
+        _("Mois de début"), choices=MONTHS.items()
+    )
+    n_months = models.PositiveSmallIntegerField(
+        _("Nombre de mois"),
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(24)],
     )
     cantons = MultiSelectField(_("Cantons"), choices=sorted(DV_STATE_CHOICES))
     leader = models.ForeignKey(
@@ -64,29 +72,24 @@ class Season(models.Model):
     history = HistoricalRecords()
 
     class Meta:
-        verbose_name = _("Saison")
-        verbose_name_plural = _("Saisons")
+        verbose_name = _p("Singular month", "Mois")
+        verbose_name_plural = _p("Plural months", "Mois")
         ordering = [
             "year",
-            "-season",
+            "month_start",
             "cantons",
         ]
 
     @cached_property
     def begin(self):
-        if self.season == DV_SEASON_SPRING:
-            return date(self.year, 1, 1)
-        if self.season == DV_SEASON_AUTUMN:
-            return date(self.year, DV_SEASON_LAST_SPRING_MONTH + 1, 1)
+        return date(self.year, self.month_start, 1)
 
     @cached_property
     def end(self):
-        if self.season == DV_SEASON_SPRING:
-            return date(self.year, DV_SEASON_LAST_SPRING_MONTH + 1, 1) - timedelta(
-                days=1
-            )
-        if self.season == DV_SEASON_AUTUMN:
-            return date(self.year, 12, 31)
+        # divmod will put months from 0 to 11, so pad this away
+        add_years, final_month_0 = divmod(self.month_start + self.n_months - 1, 12)
+
+        return date(self.year + add_years, final_month_0 + 1, 1) - timedelta(days=1)
 
     @cached_property
     def state_full(self):
@@ -147,7 +150,39 @@ class Season(models.Model):
 
     @cached_property
     def season_full(self):
-        return dict(DV_SEASON_CHOICES)[self.season]
+        # Before November 2020 (DEFIVELO-48), the Season objects were either "Spring" or "Autumn"
+        # Check if the current Season=Months matches the legacy objects.
+        legacy_season = None
+        # Historical "Spring" season
+        if self.month_start == 1 and self.n_months == DV_SEASON_LAST_SPRING_MONTH:
+            legacy_season = DV_SEASON_SPRING
+        # Historical "Autumn" season
+        if self.month_start == DV_SEASON_LAST_SPRING_MONTH + 1 and self.n_months == (
+            12 - DV_SEASON_LAST_SPRING_MONTH
+        ):
+            legacy_season = DV_SEASON_AUTUMN
+
+        if legacy_season:
+            return _("{season} {year}").format(
+                season=dict(DV_SEASON_CHOICES)[legacy_season], year=self.year
+            )
+
+        if self.begin.year == self.end.year:
+            if self.begin.month == self.end.month:
+                return _("{month} {year}").format(
+                    month=MONTHS[self.begin.month].capitalize(), year=self.year
+                )
+            return _("{month_begin} - {month_end} {year}").format(
+                month_begin=MONTHS[self.begin.month].capitalize(),
+                month_end=MONTHS[self.end.month],
+                year=self.year,
+            )
+        return _("{month_begin} {year_begin} - {month_end} {year_end}").format(
+            month_begin=MONTHS[self.begin.month].capitalize(),
+            month_end=MONTHS[self.end.month],
+            year_begin=self.year,
+            year_end=self.end.year,
+        )
 
     @property
     def has_availability_incoherences(self):
@@ -212,13 +247,6 @@ class Season(models.Model):
     def get_absolute_url(self):
         return reverse("season-detail", args=[self.pk])
 
-    @cached_property
-    def moment(self):
-        return _("{saison} {annee}").format(
-            saison=self.season_full,
-            annee=self.year,
-        )
-
     def save(self, *args, **kwargs):
         """
         Override save to clear some cached properties
@@ -239,8 +267,8 @@ class Season(models.Model):
 
     def desc(self, abbr=False):
         return mark_safe(
-            _("{cantons} - {moment}").format(
-                moment=self.moment,
+            _("{cantons} - {season_full}").format(
+                season_full=self.season_full,
                 cantons=", ".join(cantons_abbr(self.cantons, abbr)),
             )
         )

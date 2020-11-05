@@ -2,10 +2,10 @@
 {% load i18n %}
 {% load bootstrap3 %}
 {% load dv_filters %}
-{% block head_title %}{% blocktrans with year=year %}Saisons {{ year }}{% endblocktrans %}{% endblock %}
+{% block head_title %}{% blocktrans with year=year %}Mois de {{ year }}{% endblocktrans %}{% endblock %}
 
 {% block content %}
-    <h1>{% blocktrans with year=year %}Saisons {{ year }}{% endblocktrans %}</h1>
+    <h1>{% blocktrans with year=year %}Mois de {{ year }}{% endblocktrans %}</h1>
 
     <nav>
         <ul class="pager">
@@ -27,7 +27,7 @@
     </nav>
     
     {% for season in seasons %}
-        {% ifchanged season.season %}
+        {% ifchanged season.season_full %}
             {% if not forloop.first %}</table>{% endif %}
             <h2>{{ season.season_full }}</h2>
             <table class="table">
@@ -64,7 +64,7 @@
 
     {% if user|can:'challenge_season_crud' %}
         <div>
-            <a class="btn btn-primary pull-right" href="{% url 'season-create' %}">{% trans "Créer une nouvelle saison" %}</a>
+            <a class="btn btn-primary pull-right" href="{% url 'season-create' %}">{% trans "Créer un nouveau mois" %}</a>
         </div>
     {% endif %}
 {% endblock %}

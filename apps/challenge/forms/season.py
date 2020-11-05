@@ -82,13 +82,17 @@ class SeasonForm(forms.ModelForm):
 
     class Meta:
         model = Season
-        fields = ["year", "season", "cantons", "state", "leader"]
+        fields = ["year", "month_start", "n_months", "cantons", "state", "leader"]
 
 
 class SeasonToSpecificStateForm(forms.ModelForm):
     """
-    A form with only hidden fields that will _only_ update a season to a specific season state
+    A form with hidden fields and a tickbox that will _only_ update a season to a specific season state
     """
+
+    sendemail = forms.BooleanField(
+        label=_("Envoyer le courriel suivant"), initial=True, required=False
+    )
 
     def __init__(
         self,
@@ -112,7 +116,7 @@ class SeasonToSpecificStateForm(forms.ModelForm):
 
     class Meta:
         model = Season
-        fields = ["state"]
+        fields = ["state", "sendemail"]
 
 
 class SeasonNewHelperAvailabilityForm(forms.Form):

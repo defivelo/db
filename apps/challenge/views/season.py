@@ -29,6 +29,7 @@ from django.template.defaultfilters import date, time
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils.functional import cached_property
+from django.utils.translation import pgettext_lazy as _p
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import ListView
@@ -105,7 +106,7 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
         if has_permission(self.request.user, "cantons_all"):
             form_kwargs["cantons"] = DV_STATES
         else:
-            # Ne permet que l’édition et la création de saisons pour les cantons gérés
+            # Ne permet que l’édition et la création de moiss pour les cantons gérés
             form_kwargs["cantons"] = self.request.user.managedstates.all().values_list(
                 "canton", flat=True
             )
@@ -179,7 +180,7 @@ class SeasonDetailView(SeasonMixin, DetailView):
 
 
 class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
-    success_message = _("Saison mise à jour")
+    success_message = _("Mois mis à jour")
 
     def dispatch(self, request, bypassperm=False, *args, **kwargs):
         if (
@@ -530,12 +531,12 @@ class SeasonToRunningView(SeasonToStateMixin):
         """
         Run our specific action here
         """
-        #  Save first
+        # Save first
         form_result = super().form_valid(form)
-        # Then send emails
-        for helper in self.season_helpers:
-            email = self.get_email(helper)
-            helper.profile.send_mail(email["subject"], email["body"])
+        if form.cleaned_data["sendemail"] == True:
+            for helper in self.season_helpers:
+                email = self.get_email(helper)
+                helper.profile.send_mail(email["subject"], email["body"])
         return form_result
 
 
@@ -624,7 +625,7 @@ class SeasonExportView(
 ):
     @property
     def export_filename(self):
-        return _("Saison") + "-" + "-".join(self.season.cantons)
+        return _p("Singular month", "Mois") + "-" + "-".join(self.season.cantons)
 
     def undetected_translations(self):
         return [
@@ -765,7 +766,7 @@ class SeasonPersonalPlanningExportView(
 
     @property
     def export_filename(self):
-        return _("Planning_Saison") + "-" + "-".join(self.season.cantons)
+        return _("Planning_Mois") + "-" + "-".join(self.season.cantons)
 
     def get_dataset(self):
         dataset = Dataset()
@@ -777,7 +778,7 @@ class SeasonPersonalPlanningExportView(
             u("Heures"),
             u("Nombre de qualifs"),
         ]
-        # Trouve toutes les personnes qui sont présentes dans cette saison
+        # Trouve toutes les personnes qui sont présentes dans ce mois
         qs = get_user_model().objects
         user_filter = [
             # Ceux qui ont répondu (quoi que ce soit)
@@ -1035,19 +1036,19 @@ class SeasonStaffChoiceUpdateView(
 class SeasonCreateView(
     SeasonMixin, HasPermissionsMixin, SuccessMessageMixin, CreateView
 ):
-    success_message = _("Saison créée")
+    success_message = _("Mois créé")
 
 
 class SeasonDeleteView(
     SeasonMixin, HasPermissionsMixin, SuccessMessageMixin, DeleteView
 ):
-    success_message = _("Saison supprimée")
+    success_message = _("Mois supprimé")
     success_url = reverse_lazy("season-list")
 
 
 class SeasonHelperListView(HelpersList, HasPermissionsMixin, SeasonMixin):
     model = get_user_model()
-    page_title = _("Moniteurs de la saison")
+    page_title = _("Moniteurs du mois")
 
     def get_context_data(self, **kwargs):
         context = super(SeasonHelperListView, self).get_context_data(**kwargs)
@@ -1069,7 +1070,7 @@ class SeasonHelperListView(HelpersList, HasPermissionsMixin, SeasonMixin):
 
 class SeasonActorListView(ActorsList, HasPermissionsMixin, SeasonMixin):
     model = get_user_model()
-    page_title = _("Intervenants de la saison")
+    page_title = _("Intervenants du mois")
 
     def get_context_data(self, **kwargs):
         context = super(SeasonActorListView, self).get_context_data(**kwargs)
@@ -1089,7 +1090,7 @@ class SeasonActorListView(ActorsList, HasPermissionsMixin, SeasonMixin):
 class SeasonErrorsListView(HasPermissionsMixin, SeasonMixin, ListView):
     required_permission = "challenge_season_crud"
     model = Qualification
-    page_title = _("Erreurs dans les qualifs de la saison")
+    page_title = _("Erreurs dans les qualifs du mois")
     template_name = "challenge/season_errors.html"
     context_object_name = "qualifs"
 

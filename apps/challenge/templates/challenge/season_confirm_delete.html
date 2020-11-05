@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
-{% block head_title %}{% blocktrans with season=season.desc %}Suppression de la saison {{ season }} ?{% endblocktrans %}{% endblock %}
+{% block head_title %}{% blocktrans with season=season.desc %}Suppression du mois {{ season }} ?{% endblocktrans %}{% endblock %}
 
 {% block content %}
-    <h1>{% blocktrans with season=season.desc %}Suppression de la saison {{ season }} ?{% endblocktrans %}</h1>
+    <h1>{% blocktrans with season=season.desc %}Suppression du mois {{ season }} ?{% endblocktrans %}</h1>
 
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
-        <p>{% blocktrans with season=season.desc %}Supprimer la saison {{ season }} définitivement ?{% endblocktrans %}</p>
+        <p>{% blocktrans with season=season.desc %}Supprimer le mois {{ season }} définitivement ?{% endblocktrans %}</p>
 
         {% buttons %}
             <button type="submit" class="btn btn-danger pull-right">{% trans "Supprimer vraiment" %}</button>
-            <a class="btn btn-default" href="{% url 'season-list' %}">{% trans "Retour à la liste des saisons" %}</a>
+            <a class="btn btn-default" href="{% url 'season-list' %}">{% trans "Retour à la liste des mois" %}</a>
         {% endbuttons %}
     </form>
 {% endblock %}
