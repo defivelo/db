@@ -28,6 +28,7 @@ from simple_history.models import HistoricalRecords
 
 from apps.common.models import Address
 from apps.orga.models import ORGASTATUS_ACTIVE, Organization
+from apps.salary.models import Timesheet
 from apps.user import FORMATION_KEYS, FORMATION_M2
 
 from .. import (
@@ -97,6 +98,19 @@ class Session(Address, models.Model):
         verbose_name = _("Session")
         verbose_name_plural = _("Sessions")
         ordering = ["day", "begin", "orga__name"]
+
+    def get_related_timesheets(self):
+        return Timesheet.objects.filter(
+            (
+                Q(user__qualifs_actor__in=self.qualifications.all())
+                | Q(user__qualifs_mon2__in=self.qualifications.all())
+                | Q(user__qualifs_mon1__in=self.qualifications.all())
+            )
+            & Q(date=self.day)
+        ).distinct()
+
+    def has_related_timesheets(self):
+        return self.get_related_timesheets().exists()
 
     @cached_property
     def has_availability_incoherences(self):

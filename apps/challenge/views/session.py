@@ -234,6 +234,10 @@ class SessionCreateView(SessionMixin, SuccessMessageMixin, CreateView):
 class SessionDeleteView(SessionMixin, SuccessMessageMixin, DeleteView):
     success_message = _("Session supprimée")
 
+    def post(self, request, *args, **kwargs):
+        self.get_object().get_related_timesheets().delete()
+        return super().post(request, *args, **kwargs)
+
     def get_success_url(self):
         return reverse_lazy("season-detail", kwargs={"pk": self.kwargs["seasonpk"]})
 

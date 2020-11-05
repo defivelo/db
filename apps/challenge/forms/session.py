@@ -56,6 +56,9 @@ class SessionForm(forms.ModelForm):
         # except Exception:
         #     pass
 
+        if self.instance.pk and self.instance.has_related_timesheets():
+            self.fields["day"].widget.attrs["readonly"] = True
+
     day = SwissDateField(label=_("Date"))
     begin = SwissTimeField(label=_("Début"), required=False)
     address_canton = forms.ChoiceField(
@@ -88,6 +91,15 @@ class SessionForm(forms.ModelForm):
 
     def clean_day(self):
         day = self.cleaned_data["day"]
+
+        if self.instance.day != day and self.instance.has_related_timesheets():
+            raise forms.ValidationError(
+                _(
+                    "La date ne peut plus être modifiée, car des heures ont déjà été "
+                    "saisies dans au moins une des Qualifs de cette session."
+                )
+            )
+
         if self.season.begin <= day <= self.season.end:
             return day
         raise forms.ValidationError(
