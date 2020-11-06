@@ -81,11 +81,8 @@ class QualiUpdateView(QualiMixin, SuccessMessageMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update({"timesheets": self.object.get_related_timesheets()})
+        context["timesheets"] = self.object.get_related_timesheets()
         return context
-
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
 
 
 class QualiDeleteView(QualiMixin, DeleteView):
@@ -93,7 +90,7 @@ class QualiDeleteView(QualiMixin, DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update({"timesheets": self.object.get_related_timesheets()})
+        context["timesheets"] = self.object.get_related_timesheets()
         return context
 
     def post(self, request, *args, **kwargs):

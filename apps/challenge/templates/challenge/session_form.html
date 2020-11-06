@@ -13,7 +13,6 @@ function updateHelpersTime() {
   var helpers_time = $( "#id_helpers_time" ).val();
   if ( begin_time != '') {
       begin_time_parsed = begin_time.split(":");
-
       if (typeof begin_time_parsed[1] === 'undefined') {
           begin_time_parsed[1] = 0;
       }
