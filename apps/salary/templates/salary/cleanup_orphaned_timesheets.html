@@ -30,11 +30,15 @@
       {% for timesheet in orphaned_timesheets %}
       <tr>
         <th>
-          <a href="{% url 'user-detail' pk=user.pk %}">
+          <a href="{% url 'salary:user-timesheets' year=timesheet.date.year month=timesheet.date.month pk=timesheet.user.pk %}">
             {{ timesheet.user.get_full_name }}
           </a>
         </th>
-        <td>{{ timesheet.date }}</td>
+        <td>
+          <a href="{% url 'salary:user-timesheets' year=timesheet.date.year month=timesheet.date.month pk=timesheet.user.pk %}">
+            {{ timesheet.date }}
+          </a>
+        </td>
         <td>{{ timesheet.time_helper }}</td>
         <td>{{ timesheet.actor_count }}</td>
         <td>{{ timesheet.leader_count }}</td>

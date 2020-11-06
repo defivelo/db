@@ -137,7 +137,11 @@
       <tbody>
         {% for timesheet in orphaned_timesheets %}
         <tr>
-          <td>{{ timesheet.date }}</td>
+          <td>
+            <a href="{% url 'salary:user-timesheets' year=timesheet.date.year month=timesheet.date.month pk=timesheet.user.pk %}">
+              {{ timesheet.date }}
+            </a>
+          </td>
           <td>{{ timesheet.time_helper }}</td>
           <td>{{ timesheet.actor_count }}</td>
           <td>{{ timesheet.leader_count }}</td>
