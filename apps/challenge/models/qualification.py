@@ -27,6 +27,7 @@ from sentry_sdk import capture_message as sentry_message
 from sentry_sdk import configure_scope as sentry_scope
 from simple_history.models import HistoricalRecords
 
+from apps.salary.models import Timesheet
 from apps.user import FORMATION_KEYS, FORMATION_M2
 
 from .. import CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, MAX_MONO1_PER_QUALI
@@ -218,6 +219,35 @@ class Qualification(models.Model):
                     ]
                 )
             )
+
+    @classmethod
+    def _get_label(cls, field):
+        return str(cls._meta.get_field(field).verbose_name)
+
+    @property
+    def helpers_label(self):
+        return self._get_label("helpers")
+
+    @property
+    def leader_label(self):
+        return self._get_label("leader")
+
+    @property
+    def actor_label(self):
+        return self._get_label("actor")
+
+    def get_related_timesheets(self):
+        return Timesheet.objects.filter(
+            (
+                Q(user__qualifs_actor=self)
+                | Q(user__qualifs_mon2=self)
+                | Q(user__qualifs_mon1=self)
+            )
+            & Q(date=self.session.day)
+        ).distinct()
+
+    def has_related_timesheets(self):
+        return self.get_related_timesheets().exsists()
 
     def save(self, *args, **kwargs):
         # Forcibly fix availability incoherences

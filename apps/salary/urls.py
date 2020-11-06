@@ -5,6 +5,7 @@ from django.views.decorators.cache import never_cache
 from django.views.generic import RedirectView
 
 from apps.salary.views import (
+    CleanupOrphanedTimesheets,
     ExportMonthlyTimesheets,
     RedirectUserMonthlyTimesheets,
     SendTimesheetsReminder,
@@ -46,6 +47,11 @@ urlpatterns = [
                                 r"^$",
                                 RedirectUserMonthlyTimesheets.as_view(),
                                 name="my-timesheets",
+                            ),
+                            url(
+                                r"^cleanup/$",
+                                CleanupOrphanedTimesheets.as_view(),
+                                name="cleanup-timesheets",
                             ),
                             url(
                                 r"(?P<format>[a-z]+)-export$",

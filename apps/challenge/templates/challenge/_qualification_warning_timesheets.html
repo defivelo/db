@@ -1,0 +1,17 @@
+{% load i18n %}
+<div class="panel panel-warning">
+    <div class="panel-heading">
+        {% blocktrans with helpers=qualification.helpers_label actor=qualification.actor_label leader=qualification.leader_label%}
+            <b>Attention:</b>
+            Si vous retirez un·e <b>{{ actor }}</b>, <b>{{ helpers }}</b>, ou <b>{{ leader }}</b>,
+            ses fiches d'heures seront définitevement supprimées. Fiches concernées:
+        {% endblocktrans %}
+    </div>
+    <div class="panel-body">
+        {% for timesheet in timesheets %}
+            <p><a href="{% url 'salary:user-timesheets' year=timesheet.date.year month=timesheet.date.month pk=timesheet.user.pk %}">
+                {{ timesheet.user.get_full_name }} - {{ timesheet.date }}
+            </a></p>
+        {% endfor %}
+    </div>
+</div>

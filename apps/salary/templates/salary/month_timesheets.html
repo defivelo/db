@@ -118,6 +118,49 @@
 {% endif %}
 {% endif %}
 
+{% if orphaned_timesheets and request.user|can:"timesheet_editor" %}
+<div class="panel panel-danger hidden-print">
+  <div class="panel-heading">{% blocktrans with n=orphaned_timesheets|length %}Il y a {{n}} feuilles d'heure orphelines ce mois.{% endblocktrans %}</div>
+  <div class="panel-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>{% trans "Quand" %}</th>
+          <th>{% trans "Heures moni·teur·trice" %}</th>
+          <th>{% trans "Intervention(s)" %}</th>
+          <th>{% trans "Participation(s) comme moniteur 2" %}</th>
+          <th>{% trans "Heures supplémentaires" %}</th>
+          <th>{% trans "Heures de trajet" %}</th>
+          <th>{% trans "Validée" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for timesheet in orphaned_timesheets %}
+        <tr>
+          <td>
+            <a href="{% url 'salary:user-timesheets' year=timesheet.date.year month=timesheet.date.month pk=timesheet.user.pk %}">
+              {{ timesheet.date }}
+            </a>
+          </td>
+          <td>{{ timesheet.time_helper }}</td>
+          <td>{{ timesheet.actor_count }}</td>
+          <td>{{ timesheet.leader_count }}</td>
+          <td>{{ timesheet.overtime }}</td>
+          <td>{{ timesheet.traveltime }}</td>
+          <td><span class="glyphicon glyphicon-{% if timesheet.validated_at %}check{% else %}unchecked{% endif %}"></span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <a
+      class="btn btn-default pull-right"
+      href="{% url "salary:cleanup-timesheets" year=year month=month.month %}?canton={{ user.profile.affiliation_canton }}">
+      {% blocktrans with n=orphaned_timesheets|length %}Examiner les entrées orphelines{% endblocktrans %}
+    </a>
+  </div>
+</div>
+{% endif %}
+
 <script type="text/javascript">
   document.addEventListener("DOMContentLoaded", function (event) {
     const displayTime = function(value){
