@@ -43,27 +43,42 @@ from ..models import Season
 from ..models.availability import HelperSessionAvailability
 
 
+class SelectWithDisabledValues(forms.Select):
+    """
+    Select widget allowing disabled values
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.disabled_values = kwargs.pop("disabled_values", [])
+        super().__init__(**kwargs)
+
+    def create_option(self, name, value, label, selected, *args, **kwargs):
+        """
+        Mark disabled_values as such (unless selected)
+        """
+        option = super().create_option(name, value, label, selected, *args, **kwargs)
+        if not option.get("value"):
+            option["attrs"]["disabled"] = "disabled"
+        if not selected and option.get("value") in self.disabled_values:
+            option["attrs"]["disabled"] = "disabled"
+        return option
+
+
 class SeasonForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         cantons = kwargs.pop("cantons", None)
-        season = kwargs.pop("season", None)
+        kwargs.pop("season", None)
         super().__init__(**kwargs)
+        self.fields["state"].widget = SelectWithDisabledValues(
+            choices=self.fields["state"].choices,
+            disabled_values=[DV_SEASON_STATE_RUNNING, DV_SEASON_STATE_OPEN],
+        )
+
         if cantons:
             # Only permit edition within the allowed cantons
             choices = self.fields["cantons"].choices
             choices = ((k, v) for (k, v) in choices if k in cantons)
             self.fields["cantons"].choices = choices
-        try:
-            # Drop the DV_SEASON_STATE_RUNNING from the states, we want a different process for that one
-            state_choices = self.fields["state"].choices
-            self.fields["state"].choices = (
-                (k, v)
-                for (k, v) in state_choices
-                if k == season.state
-                or k not in [DV_SEASON_STATE_RUNNING, DV_SEASON_STATE_OPEN]
-            )
-        except AttributeError:
-            pass
 
     year = forms.IntegerField(
         label=_("Année"),
