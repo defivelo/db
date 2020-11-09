@@ -33,6 +33,11 @@ from apps.user.models import USERSTATUS_DELETED
 
 from ..models import Session
 
+nodate_change_warning = _(
+    "La date ne peut plus être modifiée, car des heures ont déjà été "
+    "saisies dans au moins une des Qualifs de cette session."
+)
+
 
 class SessionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -57,6 +62,7 @@ class SessionForm(forms.ModelForm):
         #     pass
 
         if self.instance.pk and self.instance.has_related_timesheets():
+            self.fields["day"].help_text = nodate_change_warning
             self.fields["day"].widget.attrs["readonly"] = True
 
     day = SwissDateField(label=_("Date"))
@@ -93,12 +99,7 @@ class SessionForm(forms.ModelForm):
         day = self.cleaned_data["day"]
 
         if self.instance.day != day and self.instance.has_related_timesheets():
-            raise forms.ValidationError(
-                _(
-                    "La date ne peut plus être modifiée, car des heures ont déjà été "
-                    "saisies dans au moins une des Qualifs de cette session."
-                )
-            )
+            raise forms.ValidationError(nodate_change_warning)
 
         if self.season.begin <= day <= self.season.end:
             return day
