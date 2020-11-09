@@ -61,9 +61,7 @@ class OrganizationResource(resources.ModelResource):
         export_order = EXPORT_FIELDS
 
     def dehydrate_address_canton(self, field):
-        return canton_abbr(
-            field.address_canton, abbr=False, long=True, fix_special=True
-        )
+        return canton_abbr(field.address_canton, abbr=False, long=True)
 
     def dehydrate_coordinator_fullname(self, field):
         return field.coordinator.get_full_name() if field.coordinator else ""

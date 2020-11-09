@@ -37,22 +37,12 @@ DV_STATES = [
     "BE",
     "LU",
     "AR",
-    "WS",  # Haut-Valais
     "SO",
     "AG",
     "BL",
     "GR",
     "SZ",
 ]
-
-# "faux" cantons pour DÉFI VÉLO
-DV_ADDITIONAL_STATES = [
-    ("WS", _("Haut-Valais")),
-]
-
-DV_STATES_LONGER_ABBREVIATIONS = {"WS": "VS-OW"}
-
-DV_STATES_REAL_FALLBACKS = {"WS": "VS"}
 
 DV_STATE_COLORS = {
     None: "#000",
@@ -83,13 +73,9 @@ DV_STATE_COLORS = {
     "GR": "#E7206A",
     "SG": "#608A9B",
     "ZH": "#7ABEE4",
-    # Spéciale
-    "WS": "#EF86A1",
 }
 
-DV_STATE_CHOICES = [
-    c for c in STATE_CHOICES if c[0] in DV_STATES
-] + DV_ADDITIONAL_STATES
+DV_STATE_CHOICES = [c for c in STATE_CHOICES if c[0] in DV_STATES]
 
 DV_STATE_CHOICES_WITH_DEFAULT = tuple(
     list(

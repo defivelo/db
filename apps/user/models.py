@@ -193,7 +193,7 @@ class UserProfile(Address, models.Model):
     affiliation_canton = models.CharField(
         _("Canton d’affiliation"),
         choices=DV_STATE_CHOICES_WITH_DEFAULT,
-        max_length=5,
+        max_length=2,
         blank=True,
     )
     activity_cantons = MultiSelectField(
@@ -593,7 +593,7 @@ class UserManagedState(models.Model):
         limit_choices_to={"is_active": True},
         on_delete=models.CASCADE,
     )
-    canton = models.CharField(_("Canton"), max_length=5, choices=DV_STATE_CHOICES)
+    canton = models.CharField(_("Canton"), max_length=2, choices=DV_STATE_CHOICES)
 
     @property
     def canton_full(self):
