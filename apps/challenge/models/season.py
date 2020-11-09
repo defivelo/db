@@ -153,14 +153,16 @@ class Season(models.Model):
         # Before November 2020 (DEFIVELO-48), the Season objects were either "Spring" or "Autumn"
         # Check if the current Season=Months matches the legacy objects.
         legacy_season = None
-        # Historical "Spring" season
-        if self.month_start == 1 and self.n_months == DV_SEASON_LAST_SPRING_MONTH:
-            legacy_season = DV_SEASON_SPRING
-        # Historical "Autumn" season
-        if self.month_start == DV_SEASON_LAST_SPRING_MONTH + 1 and self.n_months == (
-            12 - DV_SEASON_LAST_SPRING_MONTH
-        ):
-            legacy_season = DV_SEASON_AUTUMN
+        if self.year < 2021:
+            # Historical "Spring" season
+            if self.month_start == 1 and self.n_months == DV_SEASON_LAST_SPRING_MONTH:
+                legacy_season = DV_SEASON_SPRING
+            # Historical "Autumn" season
+            if (
+                self.month_start == DV_SEASON_LAST_SPRING_MONTH + 1
+                and self.n_months == (12 - DV_SEASON_LAST_SPRING_MONTH)
+            ):
+                legacy_season = DV_SEASON_AUTUMN
 
         if legacy_season:
             return _("{season} {year}").format(
