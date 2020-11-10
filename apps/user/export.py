@@ -193,20 +193,14 @@ class UserResource(resources.ModelResource):
         export_order = ALL_PROFILE_FIELDS
 
     def dehydrate_profile__address_canton(self, field):
-        return canton_abbr(
-            field.profile.address_canton, abbr=False, long=True, fix_special=True
-        )
+        return canton_abbr(field.profile.address_canton, abbr=False, long=True)
 
     def dehydrate_profile__affiliation_canton(self, field):
-        return canton_abbr(
-            field.profile.affiliation_canton, abbr=False, long=True, fix_special=True
-        )
+        return canton_abbr(field.profile.affiliation_canton, abbr=False, long=True)
 
     def dehydrate_profile__activity_cantons(self, field):
         return ", ".join(
-            cantons_abbr(
-                field.profile.activity_cantons, abbr=False, long=True, fix_special=True
-            )
+            cantons_abbr(field.profile.activity_cantons, abbr=False, long=True)
         )
 
 
