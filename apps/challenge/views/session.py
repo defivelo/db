@@ -234,6 +234,10 @@ class SessionCreateView(SessionMixin, SuccessMessageMixin, CreateView):
 class SessionDeleteView(SessionMixin, SuccessMessageMixin, DeleteView):
     success_message = _("Session supprimée")
 
+    def post(self, request, *args, **kwargs):
+        self.get_object().get_related_timesheets().delete()
+        return super().post(request, *args, **kwargs)
+
     def get_success_url(self):
         return reverse_lazy("season-detail", kwargs={"pk": self.kwargs["seasonpk"]})
 
@@ -277,7 +281,7 @@ class SessionExportView(ExportMixin, SessionMixin, DetailView):
                 u("Moniteur 2"),
                 u("Moniteur 1"),
                 u("Moniteur 1"),
-                u("Nombre d'élèves"),
+                u("Nombre d’élèves"),
                 u("Nombre de vélos"),
                 u("Nombre de casques"),
                 CATEGORY_CHOICE_A,

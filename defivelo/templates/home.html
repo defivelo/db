@@ -24,10 +24,10 @@
                     <small><em>{{ article.modified }}</em></small>
                     {% if user|can:"home_article_crud" %}
                         <a class="btn {% if article.published %}btn-info{% else %}btn-default{% endif %}" href="{% url 'article-update' pk=article.pk %}">
-                            <span class="glyphicon glyphicon-pencil" title="{% trans "Éditer l'article" %}" aria-hidden="true"></span>
+                            <span class="glyphicon glyphicon-pencil" title="{% trans "Éditer l’article" %}" aria-hidden="true"></span>
                         </a>
                         <a class="btn btn-danger" href="{% url 'article-delete' pk=article.pk %}">
-                            <span class="glyphicon glyphicon-minus" aria-hidden="true" title="{% trans "Supprimer l'article" %}" aria-hidden="true"></span>
+                            <span class="glyphicon glyphicon-minus" aria-hidden="true" title="{% trans "Supprimer l’article" %}" aria-hidden="true"></span>
                         </a>
                     {% endif %}
                 </span>
@@ -38,6 +38,6 @@
         </div>
     {% endfor %}
     {% if not articles %}
-        <div class="alert alert-info">{% trans "Aucun article publié pour l'instant." %}</div>
+        <div class="alert alert-info">{% trans "Aucun article publié pour l’instant." %}</div>
     {% endif %}
 {% endblock %}

@@ -2,7 +2,7 @@
 
 {% blocktrans with season_desc=season.desc %}Concernant les qualifs {{session }}, …
 
-Retrouvez la version à jour de la Qualif sur
+Retrouvez la version à jour de la Qualif’ sur
 
     {{ session_url }}
 

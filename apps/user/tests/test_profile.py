@@ -185,9 +185,20 @@ class AuthUserTest(ProfileTestCase):
 
         # Updated
         self.assertEqual(me.first_name, "newfirstname")
-        self.assertEqual(me.profile.activity_cantons, ["JU", "VD",])
+        self.assertEqual(
+            me.profile.activity_cantons,
+            [
+                "JU",
+                "VD",
+            ],
+        )
         self.assertEqual(me.profile.language, "de")
-        self.assertEqual(me.profile.languages_challenges, ["fr",])
+        self.assertEqual(
+            me.profile.languages_challenges,
+            [
+                "fr",
+            ],
+        )
         self.assertEqual(me.profile.status, USERSTATUS_INACTIVE)
         self.assertEqual(
             me.profile.bank_name, "Banque Alternative Suisse, succursale de Lausanne"
@@ -221,7 +232,10 @@ class CollaboratorUserTest(AuthUserTest):
 
     def test_my_restrictions(self):
         # Collaborators can't assign roles.
-        url = tryurl("user-assign-role", self.client.user,)
+        url = tryurl(
+            "user-assign-role",
+            self.client.user,
+        )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 403, url)
 
@@ -331,8 +345,14 @@ class PowerUserTest(ProfileTestCase):
 
             # Updated
             self.assertEqual(her.first_name, "newfirstname")
-            # Pas de VD parce que le canton d'affiliation est 'VD'
-            self.assertEqual(her.profile.activity_cantons, ["JU", "GE",])
+            # Pas de VD parce que le canton d’affiliation est 'VD'
+            self.assertEqual(
+                her.profile.activity_cantons,
+                [
+                    "JU",
+                    "GE",
+                ],
+            )
 
             # Updated as well
             self.assertEqual(her.profile.formation, FORMATION_M2)
@@ -368,7 +388,13 @@ class PowerUserTest(ProfileTestCase):
         self.assertEqual(response.status_code, 200, response)
         self.assertEqual(get_user_roles(user), [], user)
         response = self.client.post(
-            url, {"role": "state_manager", "managed_states": ["VD",]}
+            url,
+            {
+                "role": "state_manager",
+                "managed_states": [
+                    "VD",
+                ],
+            },
         )
         self.assertEqual(response.status_code, 302, url)
         self.assertEqual(
@@ -381,7 +407,13 @@ class PowerUserTest(ProfileTestCase):
         )
 
         response = self.client.post(
-            url, {"role": "power_user", "managed_states": ["VD",]}
+            url,
+            {
+                "role": "power_user",
+                "managed_states": [
+                    "VD",
+                ],
+            },
         )
         self.assertEqual(response.status_code, 302, url)
         # No canton for non-state_manager
@@ -466,9 +498,20 @@ class CoordinatorUserTest(ProfileTestCase):
 
         # Updated
         self.assertEqual(me.first_name, "newfirstname")
-        self.assertEqual(me.profile.activity_cantons, ["JU", "VD",])
+        self.assertEqual(
+            me.profile.activity_cantons,
+            [
+                "JU",
+                "VD",
+            ],
+        )
         self.assertEqual(me.profile.language, "de")
-        self.assertEqual(me.profile.languages_challenges, ["fr",])
+        self.assertEqual(
+            me.profile.languages_challenges,
+            [
+                "fr",
+            ],
+        )
         self.assertEqual(me.profile.status, USERSTATUS_INACTIVE)
         self.assertEqual(
             me.profile.bank_name, "Banque Alternative Suisse, succursale de Lausanne"

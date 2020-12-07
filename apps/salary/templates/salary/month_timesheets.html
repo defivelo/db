@@ -63,7 +63,7 @@
 
     <tbody>
       {% for label, fields in fields_grouped_by_field_name.items %}
-      <tr class="{{ fields.0|field_type }}">
+      <tr class="{{ fields.0|field_type }}{% if not user|can:"timesheet_editor" and fields.0.name == 'ignore' %} readonly{% endif %}">
         <th>{{ label|capfirst }}</th>
         {% for field in fields %}
         <td align="center">
@@ -86,7 +86,7 @@
       <tr>
         <th>
         {% trans "Total CHF"%} <br/>
-        <small class="text-muted">{% trans "Attention : Ceci n'est pas le salaire net mais le décompte des heures et des indemmnités" %}</small>
+        <small class="text-muted">{% trans "Attention : Ceci n’est pas le salaire net mais le décompte des heures et des indemmnités" %}</small>
         </th>
         {% for form in formset.forms %}
         <td align="center" class="text-center">
@@ -112,10 +112,53 @@
 {% if in_the_future %}
   <p>{% trans "Vous ne pouvez pas entrer des heures dans le futur." %}</p>
 {% elif is_current_month %}
-  <p>{% trans "Vous n'avez pas encore d'heures à rentrer ce mois." %}</p>
+  <p>{% trans "Vous n’avez pas encore d’heures à rentrer ce mois." %}</p>
 {% else %}
-  <p>{% trans "Vous n'avez pas travaillé ce mois." %}</p>
+  <p>{% trans "Vous n’avez pas travaillé ce mois." %}</p>
 {% endif %}
+{% endif %}
+
+{% if orphaned_timesheets and request.user|can:"timesheet_editor" %}
+<div class="panel panel-danger hidden-print">
+  <div class="panel-heading">{% blocktrans with n=orphaned_timesheets|length %}Il y a {{n}} feuilles d'heure orphelines ce mois.{% endblocktrans %}</div>
+  <div class="panel-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>{% trans "Quand" %}</th>
+          <th>{% trans "Heures moni·teur·trice" %}</th>
+          <th>{% trans "Intervention(s)" %}</th>
+          <th>{% trans "Participation(s) comme moniteur 2" %}</th>
+          <th>{% trans "Heures supplémentaires" %}</th>
+          <th>{% trans "Heures de trajet" %}</th>
+          <th>{% trans "Validée" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for timesheet in orphaned_timesheets %}
+        <tr>
+          <td>
+            <a href="{% url 'salary:user-timesheets' year=timesheet.date.year month=timesheet.date.month pk=timesheet.user.pk %}">
+              {{ timesheet.date }}
+            </a>
+          </td>
+          <td>{{ timesheet.time_helper }}</td>
+          <td>{{ timesheet.actor_count }}</td>
+          <td>{{ timesheet.leader_count }}</td>
+          <td>{{ timesheet.overtime }}</td>
+          <td>{{ timesheet.traveltime }}</td>
+          <td><span class="glyphicon glyphicon-{% if timesheet.validated_at %}check{% else %}unchecked{% endif %}"></span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <a
+      class="btn btn-default pull-right"
+      href="{% url "salary:cleanup-timesheets" year=year month=month.month %}?canton={{ user.profile.affiliation_canton }}">
+      {% blocktrans with n=orphaned_timesheets|length %}Examiner les entrées orphelines{% endblocktrans %}
+    </a>
+  </div>
+</div>
 {% endif %}
 
 <script type="text/javascript">
@@ -125,10 +168,15 @@
         const minutes = (Math.abs(value) - Math.abs(hours)) * 60 % 60;
         return (value < 0 ? "-" : "" ) + Math.abs(hours) + ":" + ("0" + minutes).slice(-2);
     };
-    $("tr.checkboxinput").each(function () {
+    $("tr.checkboxinput:not(.readonly)").each(function () {
       let link = $('<a href="#" class="btn btn-primary">{% trans "Tout sélectionner" %}</a>').click(function(e){
         e.preventDefault();
-        $(this).closest('tr').find('input[type=checkbox]').each(function(){ $(this).prop('checked',true);});
+        $(this).closest('tr').find('input[type=checkbox]').each(function(){
+          if (! $(this).prop('disabled')) {
+            $(this).prop('checked', true);
+          }
+        });
+        $("table#table-with-sum").change();
         return false;
       });
       $(this).find(' > td:last').append(link);
@@ -139,6 +187,7 @@
         var total = 0;
         var total_editables = 0;
         var sum_salary = 0;
+        var ignore = false;
         $('table#table-with-sum > tbody > tr').each(function () {
           const input = $(this).children('td').eq(index).find("input[type=number]")
           let value = parseFloat(input.val());
@@ -153,7 +202,16 @@
               sum_salary += parseFloat(input.data("unitPrice")) * value;
             }
           }
+
+          const checkbox = $(this).children("td").eq(index).find("input[type=checkbox]")
+          if (checkbox.data("function") == "ignore" && checkbox.prop("checked")) {
+              ignore = true;
+          }
         });
+        if (ignore) {
+          total = 0;
+          sum_salary = 0;
+        }
         $('table#table-with-sum > tbody > tr > td textarea').eq(index).prop('required', total_editables != 0);
         $('table#table-with-sum > tfoot > tr:first > td').eq(index).data("floatValue", total).text(displayTime(total));
         $('table#table-with-sum > tfoot > tr:nth-child(2) > td').eq(index).data("floatValue", sum_salary)

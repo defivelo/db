@@ -43,27 +43,42 @@ from ..models import Season
 from ..models.availability import HelperSessionAvailability
 
 
+class SelectWithDisabledValues(forms.Select):
+    """
+    Select widget allowing disabled values
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.disabled_values = kwargs.pop("disabled_values", [])
+        super().__init__(**kwargs)
+
+    def create_option(self, name, value, label, selected, *args, **kwargs):
+        """
+        Mark disabled_values as such (unless selected)
+        """
+        option = super().create_option(name, value, label, selected, *args, **kwargs)
+        if not option.get("value"):
+            option["attrs"]["disabled"] = "disabled"
+        if not selected and option.get("value") in self.disabled_values:
+            option["attrs"]["disabled"] = "disabled"
+        return option
+
+
 class SeasonForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         cantons = kwargs.pop("cantons", None)
-        season = kwargs.pop("season", None)
+        kwargs.pop("season", None)
         super().__init__(**kwargs)
+        self.fields["state"].widget = SelectWithDisabledValues(
+            choices=self.fields["state"].choices,
+            disabled_values=[DV_SEASON_STATE_RUNNING, DV_SEASON_STATE_OPEN],
+        )
+
         if cantons:
             # Only permit edition within the allowed cantons
             choices = self.fields["cantons"].choices
             choices = ((k, v) for (k, v) in choices if k in cantons)
             self.fields["cantons"].choices = choices
-        try:
-            # Drop the DV_SEASON_STATE_RUNNING from the states, we want a different process for that one
-            state_choices = self.fields["state"].choices
-            self.fields["state"].choices = (
-                (k, v)
-                for (k, v) in state_choices
-                if k == season.state
-                or k not in [DV_SEASON_STATE_RUNNING, DV_SEASON_STATE_OPEN]
-            )
-        except AttributeError:
-            pass
 
     year = forms.IntegerField(
         label=_("Année"),
@@ -82,16 +97,23 @@ class SeasonForm(forms.ModelForm):
 
     class Meta:
         model = Season
-        fields = ["year", "season", "cantons", "state", "leader"]
+        fields = ["year", "month_start", "n_months", "cantons", "state", "leader"]
 
 
 class SeasonToSpecificStateForm(forms.ModelForm):
     """
-    A form with only hidden fields that will _only_ update a season to a specific season state
+    A form with hidden fields and a tickbox that will _only_ update a season to a specific season state
     """
 
+    sendemail = forms.BooleanField(
+        label=_("Envoyer le courriel suivant"), initial=True, required=False
+    )
+
     def __init__(
-        self, tostate: int, *args, **kwargs,
+        self,
+        tostate: int,
+        *args,
+        **kwargs,
     ):
         """
         Takes a tostate argument, an int of desired target state
@@ -109,7 +131,7 @@ class SeasonToSpecificStateForm(forms.ModelForm):
 
     class Meta:
         model = Season
-        fields = ["state"]
+        fields = ["state", "sendemail"]
 
 
 class SeasonNewHelperAvailabilityForm(forms.Form):
@@ -127,7 +149,9 @@ class SeasonNewHelperAvailabilityForm(forms.Form):
             .distinct(),
             widget=ModelSelect2(
                 url="user-PersonsRelevantForSessions-ac",
-                forward=[dal_const(cantons, "cantons"),],
+                forward=[
+                    dal_const(cantons, "cantons"),
+                ],
             ),
         )
 
@@ -149,7 +173,9 @@ class SeasonAvailabilityForm(forms.Form):
                     except KeyError:
                         fieldinit = 0
                     self.fields[workwishkey] = forms.IntegerField(
-                        required=False, initial=fieldinit, min_value=0,
+                        required=False,
+                        initial=fieldinit,
+                        min_value=0,
                     )
 
                     for session in self.season.sessions_with_qualifs:

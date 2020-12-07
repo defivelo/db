@@ -1,5 +1,5 @@
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2015 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2015,2020 Didier Raboud <me+defivelo@odyx.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -18,7 +18,7 @@ from datetime import datetime, time, timedelta
 
 from django.conf import settings
 from django.db import models
-from django.db.models import Q
+from django.db.models import F, Q
 from django.template.defaultfilters import date
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
@@ -26,9 +26,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from simple_history.models import HistoricalRecords
 
-from apps.common import DV_SEASON_AUTUMN, DV_SEASON_LAST_SPRING_MONTH, DV_SEASON_SPRING
 from apps.common.models import Address
 from apps.orga.models import ORGASTATUS_ACTIVE, Organization
+from apps.salary.models import Timesheet
 from apps.user import FORMATION_KEYS, FORMATION_M2
 
 from .. import (
@@ -64,7 +64,7 @@ class Session(Address, models.Model):
         },
         on_delete=models.CASCADE,
     )  # Don't delete orgas
-    place = models.CharField(_("Lieu de la Qualif'"), max_length=512, blank=True)
+    place = models.CharField(_("Lieu de la Qualif’"), max_length=512, blank=True)
     superleader = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name=_("Moniteur + / Photographe"),
@@ -99,6 +99,19 @@ class Session(Address, models.Model):
         verbose_name_plural = _("Sessions")
         ordering = ["day", "begin", "orga__name"]
 
+    def get_related_timesheets(self):
+        return Timesheet.objects.filter(
+            (
+                Q(user__qualifs_actor__in=self.qualifications.all())
+                | Q(user__qualifs_mon2__in=self.qualifications.all())
+                | Q(user__qualifs_mon1__in=self.qualifications.all())
+            )
+            & Q(date=self.day)
+        ).distinct()
+
+    def has_related_timesheets(self):
+        return self.get_related_timesheets().exists()
+
     @cached_property
     def has_availability_incoherences(self):
         for quali in self.qualifications.all():
@@ -126,7 +139,7 @@ class Session(Address, models.Model):
         for quali in self.qualifications.all():
             qualiq += 1
             if quali.errors:
-                errors.append(_("Qualif' {name}").format(name=quali.name))
+                errors.append(_("Qualif’ {name}").format(name=quali.name))
         if qualiq == 0:
             errors.append(_("Pas de Qualifs"))
         if errors:
@@ -265,13 +278,25 @@ class Session(Address, models.Model):
     def season(self):
         from .season import Season
 
-        return Season.objects.filter(
+        season = Season.objects.filter(
             year=self.day.year,
-            season=DV_SEASON_SPRING
-            if self.day.month <= DV_SEASON_LAST_SPRING_MONTH
-            else DV_SEASON_AUTUMN,
+            month_start__lte=self.day.month,
+            n_months__gt=self.day.month - F("month_start"),
             cantons__contains=self.orga.address_canton,
         ).first()
+
+        if season:
+            return season
+
+        # Should only rarely happen, so afford an other request; look for Season objects in the past year, spanning to ours.
+        for offset in [1, 2]:
+            seasons = Season.objects.filter(
+                year=self.day.year - offset,
+                cantons__contains=self.orga.address_canton,
+            )
+            for s in seasons.all():
+                if s.begin <= self.day <= s.end:
+                    return s
 
     @cached_property
     def short(self):

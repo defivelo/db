@@ -5,7 +5,7 @@
 {% block content %}
     <h2>{% trans "Marquer tous les moniteurs comme inactifs ?" %}</h2>
 
-    <div class="alert alert-danger">{% blocktrans with count=affected_accounts.count %}<b>Tous</b> les moniteurs M1 et M2 ({{count}} profils) de l'Intranet qui sont actifs ou inactifs vont être <strong>marqués comme inactifs</strong> !{% endblocktrans %}</div>
+    <div class="alert alert-danger">{% blocktrans with count=affected_accounts.count %}<b>Tous</b> les moniteurs M1 et M2 ({{count}} profils) de l’Intranet qui sont actifs ou inactifs vont être <strong>marqués comme inactifs</strong> !{% endblocktrans %}</div>
     
     <dl class="dl-horizontal">
     {% for profile in affected_accounts %}

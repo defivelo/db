@@ -22,10 +22,16 @@ from django.utils.translation import ugettext_lazy as _
 from localflavor.ch.ch_states import STATE_CHOICES
 from memoize import memoize
 
-from apps.common import DV_ADDITIONAL_STATES
-
 STATE_CHOICES_WITH_DEFAULT = tuple(
-    list((("", "---------",),)) + list(STATE_CHOICES) + list(DV_ADDITIONAL_STATES)
+    list(
+        (
+            (
+                "",
+                "---------",
+            ),
+        )
+    )
+    + list(STATE_CHOICES)
 )
 
 FORMATION_M1 = "M1"

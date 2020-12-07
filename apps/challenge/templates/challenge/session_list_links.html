@@ -1,9 +1,9 @@
 {% load i18n dv_filters %}
 <div class="hidden-print">
-    <a class="btn btn-default" href="{% url 'season-list' year=now.year %}">{% trans "Retour à la liste des saisons" %}</a>
+    <a class="btn btn-default" href="{% url 'season-list' year=now.year %}">{% trans "Retour à la liste des mois" %}</a>
     {% if user|can:'challenge_session_crud' %}
       <div class="btn-group">
-        <a class="btn btn-default" href="{% url 'season-update' season.pk %}"><span class="glyphicon glyphicon-pencil"></span> {% trans "Éditer la saison" %}</a>
+        <a class="btn btn-default" href="{% url 'season-update' season.pk %}"><span class="glyphicon glyphicon-pencil"></span> {% trans "Éditer le mois" %}</a>
         {% if season.can_set_state_open %}
           <a class="btn btn-default" href="{% url 'season-set-open' season.pk %}"><span
             class="glyphicon glyphicon-flash"></span> {% trans "Diffuser le planning" %}</a>
@@ -18,7 +18,7 @@
     {% endif %}
 
     {% if user|can:'challenge_session_crud' and season.has_availability_incoherences and season.manager_can_crud %}
-        <a class="btn btn-warning" href="{% url 'season-errorslist' season.pk %}" title="{% trans "Sessions avec Qualif' incohérente" %}"><span class="glyphicon glyphicon-warning-sign"></span></a>
+        <a class="btn btn-warning" href="{% url 'season-errorslist' season.pk %}" title="{% trans "Sessions avec Qualif’ incohérente" %}"><span class="glyphicon glyphicon-warning-sign"></span></a>
     {% endif %}
 
     {% if user|can:'challenge_season_crud' %}

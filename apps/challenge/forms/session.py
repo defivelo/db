@@ -33,6 +33,11 @@ from apps.user.models import USERSTATUS_DELETED
 
 from ..models import Session
 
+nodate_change_warning = _(
+    "La date ne peut plus être modifiée, car des heures ont déjà été "
+    "saisies dans au moins une des Qualifs de cette session."
+)
+
 
 class SessionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -45,16 +50,20 @@ class SessionForm(forms.ModelForm):
                 address_canton__in=self.season.cantons
             )
             self.fields["orga"].queryset = qs
-        try:
-            self.fields["day"].widget.options["minDate"] = self.season.begin.strftime(
-                "%Y-%m-%d"
-            )
-            # Disable maxDate - DEFIVELO-98
-            # self.fields["day"].widget.options["maxDate"] = self.season.end.strftime(
-            #     "%Y-%m-%d"
-            # )
-        except Exception:
-            pass
+        # Disable minDate and maxDate - DEFIVELO-98
+        # try:
+        #     self.fields["day"].widget.options["minDate"] = self.season.begin.strftime(
+        #         "%Y-%m-%d"
+        #     )
+        #     self.fields["day"].widget.options["maxDate"] = self.season.end.strftime(
+        #         "%Y-%m-%d"
+        #     )
+        # except Exception:
+        #     pass
+
+        if self.instance.pk and self.instance.has_related_timesheets():
+            self.fields["day"].help_text = nodate_change_warning
+            self.fields["day"].widget.attrs["readonly"] = True
 
     day = SwissDateField(label=_("Date"))
     begin = SwissTimeField(label=_("Début"), required=False)
@@ -88,10 +97,14 @@ class SessionForm(forms.ModelForm):
 
     def clean_day(self):
         day = self.cleaned_data["day"]
+
+        if self.instance.day != day and self.instance.has_related_timesheets():
+            raise forms.ValidationError(nodate_change_warning)
+
         if self.season.begin <= day <= self.season.end:
             return day
         raise forms.ValidationError(
-            _("La session doit être dans la saison" " (entre {begin} et {end})").format(
+            _("La session doit être dans le mois" " (entre {begin} et {end})").format(
                 begin=date(self.season.begin, settings.DATE_FORMAT),
                 end=date(self.season.end, settings.DATE_FORMAT),
             )

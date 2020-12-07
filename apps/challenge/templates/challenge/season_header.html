@@ -1,6 +1,6 @@
 {% load dv_filters %}
 <header>
-    <h2>{{ season.begin|date:"F Y"|title }} - {{ season.end|date:"F Y" }}<br />
+    <h2>{{ season.season_full }}<br />
     {{ season.cantons|cantons_abbr:False|join:", " }}</h2>
     <p>{{ season.state_icon }} {{ season.state_full }}</p>
 </header>

@@ -70,15 +70,29 @@ class QualiMixin(SessionMixin):
 
 
 class QualiCreateView(QualiMixin, SuccessMessageMixin, CreateView):
-    success_message = _("Qualif' créée")
+    success_message = _("Qualif’ créée")
 
     def get_initial(self):
         return {"session": self.get_session_pk()}
 
 
 class QualiUpdateView(QualiMixin, SuccessMessageMixin, UpdateView):
-    success_message = _("Qualif' mise à jour")
+    success_message = _("Qualif’ mise à jour")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["timesheets"] = self.object.get_related_timesheets()
+        return context
 
 
 class QualiDeleteView(QualiMixin, DeleteView):
-    success_message = _("Qualif' supprimée")
+    success_message = _("Qualif’ supprimée")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["timesheets"] = self.object.get_related_timesheets()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.get_object().get_related_timesheets().delete()
+        return super().post(request, *args, **kwargs)

@@ -71,7 +71,9 @@ class SwissTimeField(TimeField):
 
     def __init__(self, *args, **kwargs):
         super(TimeField, self).__init__(
-            widget=SwissTimeInput, *args, **kwargs,
+            widget=SwissTimeInput,
+            *args,
+            **kwargs,
         )
 
 

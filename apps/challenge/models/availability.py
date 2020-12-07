@@ -18,6 +18,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
+from django.utils.translation import pgettext_lazy as _p
 from django.utils.translation import ugettext_lazy as _
 
 from simple_history.models import HistoricalRecords
@@ -42,7 +43,7 @@ class HelperSeasonWorkWish(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     season = models.ForeignKey(
         Season,
-        verbose_name=_("Saison"),
+        verbose_name=_p("Singular month", "Mois"),
         related_name="work_wishes",
         on_delete=models.CASCADE,
     )
@@ -54,7 +55,7 @@ class HelperSeasonWorkWish(models.Model):
         on_delete=models.CASCADE,
     )
     amount = models.PositiveSmallIntegerField(
-        _("Quantité d'engagements souhaités"), default=0
+        _("Quantité d’engagements souhaités"), default=0
     )
     history = HistoricalRecords()
 
@@ -146,7 +147,12 @@ class HelperSessionAvailability(models.Model):
         verbose_name = _("Disponibilité par session")
         verbose_name_plural = _("Disponibilités par session")
         ordering = ["session", "helper", "availability"]
-        unique_together = (("session", "helper",),)
+        unique_together = (
+            (
+                "session",
+                "helper",
+            ),
+        )
 
     def __str__(self):
         is_available = _("n'est pas disponible")

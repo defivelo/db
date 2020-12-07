@@ -137,7 +137,6 @@ class InvoiceYearlyListView(SeasonListView, HasPermissionsMixin, ListView):
             )
             .prefetch_related("invoices", "invoices__lines", "invoices__organization")
             .annotate(nb_invoices=Count("invoices", distinct=True))
-            .order_by("season")
         )
 
 

@@ -24,7 +24,7 @@ from . import BONUS_LEADER, HOURLY_RATE_HELPER, RATE_ACTOR
 class TimesheetFormBase(forms.ModelForm):
     class Meta:
         model = Timesheet
-        readonly = ("date", "time_helper", "actor_count", "leader_count")
+        readonly = ("date", "time_helper", "actor_count", "leader_count", "ignore")
         fields = [
             "date",
             "time_helper",
@@ -33,23 +33,26 @@ class TimesheetFormBase(forms.ModelForm):
             "overtime",
             "traveltime",
             "comments",
+            "ignore",
         ]
         labels = {
             "time_helper": format_lazy(
                 _("Heures moni·teur·trice ({price}.-/h)"), price=HOURLY_RATE_HELPER
             ),
             "actor_count": format_lazy(
-                _("Intervention(s) ({price}.-/Qualif')"), price=RATE_ACTOR
+                _("Intervention(s) ({price}.-/Qualif’)"), price=RATE_ACTOR
             ),
             "leader_count": format_lazy(
-                _("Participation(s) comme moni·teur·trice 2 ({price}.-/Qualif')"),
+                _("Participation(s) comme moni·teur·trice 2 ({price}.-/Qualif’)"),
                 price=BONUS_LEADER,
             ),
             "overtime": format_lazy(
                 _("Heures supplémentaires ({price}.-/h)"), price=HOURLY_RATE_HELPER
             ),
             "traveltime": _("Heures de trajet (aller-retour)"),
+            "ignore": _("Ne compter aucune heure de travail"),
         }
+
         widgets = {
             "date": forms.HiddenInput(),
             "time_helper": TimeNumberInput(
@@ -91,6 +94,13 @@ class TimesheetFormBase(forms.ModelForm):
                     "data-unit-price": HOURLY_RATE_HELPER,
                 }
             ),
+            "ignore": CheckboxInput(
+                attrs={
+                    "data-function": "ignore",
+                    "readonly": "readonly",
+                    "disabled": "disabled",
+                }
+            ),
             "comments": forms.Textarea(attrs={"rows": 3, "cols": 20}),
         }
 
@@ -123,7 +133,7 @@ class TimesheetFormBase(forms.ModelForm):
                 "comments",
                 forms.ValidationError(
                     _(
-                        "Les remarques doivent être renseignées pour tout prétention d'heures supplémentaires"
+                        "Les remarques doivent être renseignées pour tout prétention d’heures supplémentaires"
                     )
                 ),
             )
@@ -155,6 +165,22 @@ class TimesheetForm(TimesheetFormBase):
                 self.fields[key].widget.attrs["readonly"] = True
                 self.fields[key].disabled = True
 
+        # The "ignore" field is disabled for non-editors
+        self.fields["ignore"].widget.attrs["readonly"] = "readonly"
+        self.fields["ignore"].widget.attrs["disabled"] = "disabled"
+
+        # Show the "ignore" field only if it was ticked by a StateManager.
+        if not self.initial.get("ignore"):
+            self.fields["ignore"].widget = forms.HiddenInput()
+
+    def clean(self):
+        """
+        Never allow ignore to be set through this one form
+        """
+        cleaned_data = super().clean()
+        del cleaned_data["ignore"]
+        return cleaned_data
+
 
 class ControlTimesheetForm(TimesheetFormBase):
     validated = forms.BooleanField(
@@ -170,6 +196,10 @@ class ControlTimesheetForm(TimesheetFormBase):
             for key in self.fields:
                 self.fields[key].widget.attrs["readonly"] = True
                 self.fields[key].disabled = True
+
+        # StateManagers can fiddle with it
+        del self.fields["ignore"].widget.attrs["readonly"]
+        del self.fields["ignore"].widget.attrs["disabled"]
 
     def clean(self):
         cleaned_data = super().clean()

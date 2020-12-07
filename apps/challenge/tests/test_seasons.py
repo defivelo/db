@@ -1,5 +1,5 @@
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2016 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2016, 2020 Didier Raboud <me+defivelo@odyx.org>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -13,12 +13,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import datetime
 
 from django.test import TestCase
 from django.urls import reverse
 
 from apps.common import (
-    DV_SEASON_SPRING,
     DV_SEASON_STATE_ARCHIVED,
     DV_SEASON_STATE_OPEN,
     DV_SEASON_STATE_PLANNING,
@@ -230,11 +230,28 @@ class AuthUserTest(SeasonTestCaseMixin):
                 )
                 urls = [
                     weeklysessionlist,
-                    reverse("session-create", kwargs={"seasonpk": self.season.pk,}),
-                    reverse("session-detail", kwargs=session_kwargs,),
-                    reverse("session-update", kwargs=session_kwargs,),
-                    reverse("session-staff-choices", kwargs=session_kwargs,),
-                    reverse("session-delete", kwargs=session_kwargs,),
+                    reverse(
+                        "session-create",
+                        kwargs={
+                            "seasonpk": self.season.pk,
+                        },
+                    ),
+                    reverse(
+                        "session-detail",
+                        kwargs=session_kwargs,
+                    ),
+                    reverse(
+                        "session-update",
+                        kwargs=session_kwargs,
+                    ),
+                    reverse(
+                        "session-staff-choices",
+                        kwargs=session_kwargs,
+                    ),
+                    reverse(
+                        "session-delete",
+                        kwargs=session_kwargs,
+                    ),
                 ]
                 for url in urls:
                     # Final URL is forbidden
@@ -257,9 +274,13 @@ class AuthUserTest(SeasonTestCaseMixin):
                                 visible
                                 and url
                                 in [
-                                    reverse("session-detail", kwargs=session_kwargs,),
                                     reverse(
-                                        "session-staff-choices", kwargs=session_kwargs,
+                                        "session-detail",
+                                        kwargs=session_kwargs,
+                                    ),
+                                    reverse(
+                                        "session-staff-choices",
+                                        kwargs=session_kwargs,
                                     ),
                                 ]
                             )
@@ -393,7 +414,8 @@ class StateManagerUserTest(SeasonTestCaseMixin):
 
         initial = {
             "year": 2015,
-            "season": DV_SEASON_SPRING,
+            "month_start": 1,
+            "n_months": 6,
             "cantons": [],
             "leader": self.client.user.pk,
             "state": DV_SEASON_STATE_OPEN,
@@ -478,22 +500,39 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                         "week": session.day.strftime("%W"),
                     },
                 ),
-                reverse("session-create", kwargs={"seasonpk": self.foreignseason.pk,}),
+                reverse(
+                    "session-create",
+                    kwargs={
+                        "seasonpk": self.foreignseason.pk,
+                    },
+                ),
                 reverse(
                     "session-detail",
-                    kwargs={"seasonpk": self.foreignseason.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.foreignseason.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-update",
-                    kwargs={"seasonpk": self.foreignseason.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.foreignseason.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-staff-choices",
-                    kwargs={"seasonpk": self.foreignseason.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.foreignseason.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-delete",
-                    kwargs={"seasonpk": self.foreignseason.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.foreignseason.pk,
+                        "pk": session.pk,
+                    },
                 ),
             ]
             for url in urls:
@@ -517,22 +556,39 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                                 "week": session.day.strftime("%W"),
                             },
                         ),
-                        reverse("session-create", kwargs={"seasonpk": self.season.pk,}),
+                        reverse(
+                            "session-create",
+                            kwargs={
+                                "seasonpk": self.season.pk,
+                            },
+                        ),
                         reverse(
                             "session-detail",
-                            kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                            kwargs={
+                                "seasonpk": self.season.pk,
+                                "pk": session.pk,
+                            },
                         ),
                         reverse(
                             "session-update",
-                            kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                            kwargs={
+                                "seasonpk": self.season.pk,
+                                "pk": session.pk,
+                            },
                         ),
                         reverse(
                             "session-staff-choices",
-                            kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                            kwargs={
+                                "seasonpk": self.season.pk,
+                                "pk": session.pk,
+                            },
                         ),
                         reverse(
                             "session-delete",
-                            kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                            kwargs={
+                                "seasonpk": self.season.pk,
+                                "pk": session.pk,
+                            },
                         ),
                     ]
                     for url in urls:
@@ -556,11 +612,17 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                 ),
                 reverse(
                     "session-detail",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-staff-choices",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                        "pk": session.pk,
+                    },
                 ),
             ]
             for url in urls:
@@ -570,14 +632,25 @@ class StateManagerUserTest(SeasonTestCaseMixin):
         # Test the forbidden ones
         for session in self.sessions:
             urls = [
-                reverse("session-create", kwargs={"seasonpk": self.season.pk,}),
+                reverse(
+                    "session-create",
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                    },
+                ),
                 reverse(
                     "session-update",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-delete",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                        "pk": session.pk,
+                    },
                 ),
             ]
             for url in urls:
@@ -590,14 +663,20 @@ class StateManagerUserTest(SeasonTestCaseMixin):
         # Test the Qualification creation for a session
         url = reverse(
             "quali-create",
-            kwargs={"seasonpk": session.season.pk, "sessionpk": session.pk,},
+            kwargs={
+                "seasonpk": session.season.pk,
+                "sessionpk": session.pk,
+            },
         )
         initial = {
             "session": session.pk,
             "name": "Classe A",
             "class_teacher_natel": "",
         }
-        response = self.client.post(url, initial,)
+        response = self.client.post(
+            url,
+            initial,
+        )
         self.assertEqual(response.status_code, 302, url)
 
         qualification = session.qualifications.first()
@@ -661,22 +740,39 @@ class PowerUserTest(SeasonTestCaseMixin):
                         "week": session.day.strftime("%W"),
                     },
                 ),
-                reverse("session-create", kwargs={"seasonpk": self.foreignseason.pk,}),
+                reverse(
+                    "session-create",
+                    kwargs={
+                        "seasonpk": self.foreignseason.pk,
+                    },
+                ),
                 reverse(
                     "session-detail",
-                    kwargs={"seasonpk": self.foreignseason.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.foreignseason.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-update",
-                    kwargs={"seasonpk": self.foreignseason.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.foreignseason.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-staff-choices",
-                    kwargs={"seasonpk": self.foreignseason.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.foreignseason.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-delete",
-                    kwargs={"seasonpk": self.foreignseason.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.foreignseason.pk,
+                        "pk": session.pk,
+                    },
                 ),
             ]
             for url in urls:
@@ -695,25 +791,89 @@ class PowerUserTest(SeasonTestCaseMixin):
                         "week": session.day.strftime("%W"),
                     },
                 ),
-                reverse("session-create", kwargs={"seasonpk": self.season.pk,}),
+                reverse(
+                    "session-create",
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                    },
+                ),
                 reverse(
                     "session-detail",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-update",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-staff-choices",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                        "pk": session.pk,
+                    },
                 ),
                 reverse(
                     "session-delete",
-                    kwargs={"seasonpk": self.season.pk, "pk": session.pk,},
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                        "pk": session.pk,
+                    },
                 ),
             ]
             for url in urls:
                 # Final URL is forbidden
                 response = self.client.get(url, follow=True)
                 self.assertEqual(response.status_code, 200, url)
+
+
+def test_session_to_season_all_months_in_year(db):
+    # A year full of seasons
+    [
+        SeasonFactory(cantons=["VD"], year=2019, month_start=month_start, n_months=1)
+        for month_start in range(1, 13)
+    ]
+
+    session = SessionFactory(
+        day=datetime.date(2019, 4, 12),
+        orga=OrganizationFactory(address_canton="VD"),
+    )
+
+    assert session.season.month_start == 4
+
+
+def test_session_to_season_any_month_in_year(db):
+    # A year full of 3 months seasons
+    SeasonFactory(cantons=["VD"], year=2019, month_start=1, n_months=3)
+    SeasonFactory(cantons=["VD"], year=2019, month_start=4, n_months=3)
+    SeasonFactory(cantons=["VD"], year=2019, month_start=7, n_months=3)
+    SeasonFactory(cantons=["VD"], year=2019, month_start=10, n_months=3)
+
+    for month in range(1, 13):
+        session = SessionFactory(
+            day=datetime.date(2019, month, 12),
+            orga=OrganizationFactory(address_canton="VD"),
+        )
+
+        assert session.season.begin <= session.day
+        assert session.season.end >= session.day
+
+
+def test_session_to_season_in_previous_year(db):
+    # Seasons crossing the year boundary
+    SeasonFactory(cantons=["VD"], year=2019, month_start=7, n_months=3)
+    SeasonFactory(cantons=["VD"], year=2019, month_start=10, n_months=6)
+    SeasonFactory(cantons=["VD"], year=2020, month_start=4, n_months=3)
+
+    session = SessionFactory(
+        day=datetime.date(2020, 2, 12),
+        orga=OrganizationFactory(address_canton="VD"),
+    )
+
+    assert session.season.begin <= session.day
+    assert session.season.end >= session.day

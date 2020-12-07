@@ -39,7 +39,7 @@
           <div role="tabpane" class="tab-pane" id="contacts">
             <dl class="dl-horizontal">
                 {% if organization.address_canton %}
-                    <dt>{% trans "Canton d'affiliation" %}</dt>
+                    <dt>{% trans "Canton d’affiliation" %}</dt>
                         <dd>{{ organization.address_canton|canton_abbr:False }}</dd>
                 {% endif %}
                 {% if organization.coordinator.get_full_name %}

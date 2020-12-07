@@ -31,7 +31,7 @@ compile-translations: ## Compile .po files with ./manage.py compilemessages
 .PHONY: format
 format:  # Fix some linting issues in the project
 	black apps defivelo fabfile.py
-	isort -rc apps defivelo fabfile.py
+	isort apps defivelo fabfile.py
 
 .PHONY: lint
 lint:  # Show linting issues in the project

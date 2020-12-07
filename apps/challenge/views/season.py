@@ -29,6 +29,7 @@ from django.template.defaultfilters import date, time
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils.functional import cached_property
+from django.utils.translation import pgettext_lazy as _p
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import ListView
@@ -105,7 +106,7 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
         if has_permission(self.request.user, "cantons_all"):
             form_kwargs["cantons"] = DV_STATES
         else:
-            # Ne permet que l'édition et la création de saisons pour les cantons gérés
+            # Ne permet que l’édition et la création de moiss pour les cantons gérés
             form_kwargs["cantons"] = self.request.user.managedstates.all().values_list(
                 "canton", flat=True
             )
@@ -179,7 +180,7 @@ class SeasonDetailView(SeasonMixin, DetailView):
 
 
 class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
-    success_message = _("Saison mise à jour")
+    success_message = _("Mois mis à jour")
 
     def dispatch(self, request, bypassperm=False, *args, **kwargs):
         if (
@@ -220,7 +221,9 @@ class SeasonHelpersMixin(SeasonMixin):
             except (KeyError, TypeError):
                 pass
         return qs.prefetch_related(
-            "profile", "profile__actor_for", "profile__actor_for__translations",
+            "profile",
+            "profile__actor_for",
+            "profile__actor_for__translations",
         )
 
     def potential_helpers(self, qs=None):
@@ -364,7 +367,7 @@ class SeasonAvailabilityMixin(SeasonHelpersMixin):
                             # Si un choix est fait _dans_ une session (qualif)
                             initials[staffkey] = session.user_assignment(helper)
                             initials[choicekey] = True
-                            # Le choix n'est fait qu'au niveau de la session
+                            # Le choix n’est fait qu'au niveau de la session
                             if not initials[staffkey]:
                                 initials[staffkey] = hsa.chosen_as
                                 initials[choicekey] = False
@@ -489,7 +492,8 @@ class SeasonToRunningView(SeasonToStateMixin):
 
         planning_link = self.request.build_absolute_uri(
             reverse(
-                "season-planning", kwargs={"pk": self.season.pk, "helperpk": helperpk},
+                "season-planning",
+                kwargs={"pk": self.season.pk, "helperpk": helperpk},
             )
         )
 
@@ -527,12 +531,12 @@ class SeasonToRunningView(SeasonToStateMixin):
         """
         Run our specific action here
         """
-        #  Save first
+        # Save first
         form_result = super().form_valid(form)
-        # Then send emails
-        for helper in self.season_helpers:
-            email = self.get_email(helper)
-            helper.profile.send_mail(email["subject"], email["body"])
+        if form.cleaned_data["sendemail"] == True:
+            for helper in self.season_helpers:
+                email = self.get_email(helper)
+                helper.profile.send_mail(email["subject"], email["body"])
         return form_result
 
 
@@ -621,7 +625,7 @@ class SeasonExportView(
 ):
     @property
     def export_filename(self):
-        return _("Saison") + "-" + "-".join(self.season.cantons)
+        return _p("Singular month", "Mois") + "-" + "-".join(self.season.cantons)
 
     def undetected_translations(self):
         return [
@@ -657,7 +661,7 @@ class SeasonExportView(
                 u("Moniteur 2"),
                 u("Moniteur 1"),
                 u("Moniteur 1"),
-                u("Nombre d'élèves"),
+                u("Nombre d’élèves"),
                 u("Nombre de vélos"),
                 u("Nombre de casques"),
                 str(CATEGORY_CHOICE_A),
@@ -762,7 +766,7 @@ class SeasonPersonalPlanningExportView(
 
     @property
     def export_filename(self):
-        return _("Planning_Saison") + "-" + "-".join(self.season.cantons)
+        return _("Planning_Mois") + "-" + "-".join(self.season.cantons)
 
     def get_dataset(self):
         dataset = Dataset()
@@ -774,7 +778,7 @@ class SeasonPersonalPlanningExportView(
             u("Heures"),
             u("Nombre de qualifs"),
         ]
-        # Trouve toutes les personnes qui sont présentes dans cette saison
+        # Trouve toutes les personnes qui sont présentes dans ce mois
         qs = get_user_model().objects
         user_filter = [
             # Ceux qui ont répondu (quoi que ce soit)
@@ -801,7 +805,7 @@ class SeasonPersonalPlanningExportView(
 
         firstcol += [user.get_full_name() for user in qs]
         dataset.append_col(firstcol)
-        # Ajoute le canton d'affiliation comme deuxième colonne
+        # Ajoute le canton d’affiliation comme deuxième colonne
         user_cantons_col = [""] * 6 + [user.profile.affiliation_canton for user in qs]
         dataset.append_col(user_cantons_col)
         for session in self.season.sessions_with_qualifs:
@@ -913,7 +917,10 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
         else:
             return reverse_lazy(
                 "season-availabilities-update",
-                kwargs={"pk": self.season.pk, "helperpk": self.request.user.pk,},
+                kwargs={
+                    "pk": self.season.pk,
+                    "helperpk": self.request.user.pk,
+                },
             )
 
     def form_valid(self, form):
@@ -1029,19 +1036,19 @@ class SeasonStaffChoiceUpdateView(
 class SeasonCreateView(
     SeasonMixin, HasPermissionsMixin, SuccessMessageMixin, CreateView
 ):
-    success_message = _("Saison créée")
+    success_message = _("Mois créé")
 
 
 class SeasonDeleteView(
     SeasonMixin, HasPermissionsMixin, SuccessMessageMixin, DeleteView
 ):
-    success_message = _("Saison supprimée")
+    success_message = _("Mois supprimé")
     success_url = reverse_lazy("season-list")
 
 
 class SeasonHelperListView(HelpersList, HasPermissionsMixin, SeasonMixin):
     model = get_user_model()
-    page_title = _("Moniteurs de la saison")
+    page_title = _("Moniteurs du mois")
 
     def get_context_data(self, **kwargs):
         context = super(SeasonHelperListView, self).get_context_data(**kwargs)
@@ -1063,7 +1070,7 @@ class SeasonHelperListView(HelpersList, HasPermissionsMixin, SeasonMixin):
 
 class SeasonActorListView(ActorsList, HasPermissionsMixin, SeasonMixin):
     model = get_user_model()
-    page_title = _("Intervenants de la saison")
+    page_title = _("Intervenants du mois")
 
     def get_context_data(self, **kwargs):
         context = super(SeasonActorListView, self).get_context_data(**kwargs)
@@ -1083,7 +1090,7 @@ class SeasonActorListView(ActorsList, HasPermissionsMixin, SeasonMixin):
 class SeasonErrorsListView(HasPermissionsMixin, SeasonMixin, ListView):
     required_permission = "challenge_season_crud"
     model = Qualification
-    page_title = _("Erreurs dans les qualifs de la saison")
+    page_title = _("Erreurs dans les qualifs du mois")
     template_name = "challenge/season_errors.html"
     context_object_name = "qualifs"
 
@@ -1145,7 +1152,10 @@ class SeasonPersonalPlanningExportFeed(ICalFeed):
                 else session.orga.address_city
             )
         return " ".join(
-            [session_place, "%s - %s" % (time(session.begin), time(session.end)),]
+            [
+                session_place,
+                "%s - %s" % (time(session.begin), time(session.end)),
+            ]
         )
 
     def item_start_datetime(self, session):

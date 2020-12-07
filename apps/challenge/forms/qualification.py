@@ -21,6 +21,7 @@ from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from apps.common.forms import CHPhoneNumberField
+from apps.salary.models import Timesheet
 from apps.user import FORMATION_KEYS, FORMATION_M2
 
 from .. import (
@@ -78,7 +79,8 @@ class QualificationForm(forms.ModelForm):
         self.fields["leader"] = LeaderChoiceField(
             label=_("Moniteur 2"),
             queryset=available_staff.filter(
-                pk__in=leaders, profile__formation=FORMATION_M2,
+                pk__in=leaders,
+                profile__formation=FORMATION_M2,
             ),
             required=False,
             session=session,
@@ -134,7 +136,7 @@ class QualificationForm(forms.ModelForm):
                 if not actor.profile.actor_for.filter(id=activity_C.id).exists():
                     raise ValidationError(
                         _(
-                            "L'intervenant n'est pas qualifié pour la rencontre "
+                            "L’intervenant n’est pas qualifié pour la rencontre "
                             "prévue !"
                         ),
                         code="unqualified-actor",
@@ -142,7 +144,7 @@ class QualificationForm(forms.ModelForm):
             helpers = self.cleaned_data.get("helpers")
             if helpers and helpers.filter(id=actor.id).exists():
                 raise ValidationError(
-                    _("L'intervenant ne peut pas aussi être moniteur !"),
+                    _("L’intervenant ne peut pas aussi être moniteur !"),
                     code="helper-actor",
                 )
         return actor
@@ -162,6 +164,25 @@ class QualificationForm(forms.ModelForm):
             raise ValidationError(
                 _("Il y a trop de casques prévus !"), code="too-many-helmets"
             )
+
+        if self.instance.pk:
+            removed_helpers = {user.pk for user in self.instance.helpers.all()} - {
+                user.pk for user in self.cleaned_data.get("helpers")
+            }
+            if removed_helpers:
+                Timesheet.objects.filter(
+                    user__in=removed_helpers, date=self.instance.session.day
+                ).delete()
+
+            if self.instance.leader != self.cleaned_data.get("leader"):
+                Timesheet.objects.filter(
+                    user=self.instance.leader, date=self.instance.session.day
+                ).delete()
+
+            if self.instance.actor != self.cleaned_data.get("actor"):
+                Timesheet.objects.filter(
+                    user=self.instance.actor, date=self.instance.session.day
+                ).delete()
 
         return self.cleaned_data
 

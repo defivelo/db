@@ -50,8 +50,6 @@ from apps.common import (
     DV_SEASON_CHOICES,
     DV_STATE_CHOICES,
     DV_STATE_COLORS,
-    DV_STATES_LONGER_ABBREVIATIONS,
-    DV_STATES_REAL_FALLBACKS,
     STDGLYPHICON,
 )
 from apps.user import FORMATION_M1, FORMATION_M2, formation_short
@@ -83,8 +81,7 @@ def vcs_commit():
 
 @register.filter
 def setlang(request, newlang):
-    """ Replace language code in request.path with the new language code
-    """
+    """Replace language code in request.path with the new language code"""
     return sub("^/(%s)/" % request.LANGUAGE_CODE, "/%s/" % newlang, request.path)
 
 
@@ -209,7 +206,7 @@ def useravailsessions_readonly(
                     conflict = conflicts.pop()
 
                 # Si le choix des moniteurs est connu, remplace le label et
-                # la version verbeuse par l'état du choix
+                # la version verbeuse par l’état du choix
                 if not sesskey:
                     staffkey = STAFF_FIELDKEY.format(hpk=user.pk, spk=thissesskey)
                     if staffkey in struct:
@@ -375,22 +372,13 @@ def date_ch_short(date):
 
 
 @register.filter
-def cantons_abbr(cantons, abbr=True, long=True, fix_special=False):
-    special_cantons = (
-        DV_STATES_LONGER_ABBREVIATIONS if long else DV_STATES_REAL_FALLBACKS
-    )
+def cantons_abbr(cantons, abbr=True, long=True):
     return [
-        force_text(
-            c[1]
-            if not fix_special
-            else special_cantons[c[0]]
-            if c[0] in special_cantons
-            else c[0]
-        )
+        force_text(c[1])
         if not abbr
         else mark_safe(
             '<abbr title="{title}">{abbr}</abbr>'.format(
-                abbr=special_cantons[c[0]] if c[0] in special_cantons else c[0],
+                abbr=c[0],
                 title=c[1],
             )
         )
@@ -400,17 +388,17 @@ def cantons_abbr(cantons, abbr=True, long=True, fix_special=False):
 
 
 @register.filter
-def canton_abbr(canton, abbr=True, long=True, fix_special=False):
+def canton_abbr(canton, abbr=True, long=True):
     try:
-        return cantons_abbr([canton], abbr, long, fix_special)[0]
+        return cantons_abbr([canton], abbr, long)[0]
     except IndexError:
         return canton
 
 
 @register.filter
-def canton_abbr_short(canton, abbr=True, fix_special=False):
+def canton_abbr_short(canton, abbr=True):
     try:
-        return cantons_abbr([canton], abbr=abbr, long=False, fix_special=fix_special)[0]
+        return cantons_abbr([canton], abbr=abbr, long=False)[0]
     except IndexError:
         return canton
 

@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
-{% block head_title %}{% if qualification %}{% trans "Édition de la Qualif'" %}{% else %}{% trans "Nouvelle Qualif'" %}{% endif %}{% endblock %}
+{% block head_title %}{% if qualification %}{% trans "Édition de la Qualif’" %}{% else %}{% trans "Nouvelle Qualif’" %}{% endif %}{% endblock %}
 
 {% block bootstrap3_extra_head %}
 {{ form.media.css }}
 {% endblock %}
 {% block content %}
     <h1>{{ session }}</h1>
-    <h2>{% if qualification %}{% trans "Édition de la Qualif'" %}{% else %}{% trans "Nouvelle Qualif'" %}{% endif %}</h2>
+    <h2>{% if qualification %}{% trans "Édition de la Qualif’" %}{% else %}{% trans "Nouvelle Qualif’" %}{% endif %}</h2>
 
     {% if qualification.errors %}
     <div>
@@ -19,6 +19,14 @@
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
         {% bootstrap_form form layout='horizontal' %}
+
+        {% if timesheets %}
+            <div class="form-group">
+                <div class="col-md-9 col-md-offset-3">
+                    {% include "challenge/_qualification_warning_timesheets.html" %}
+                </div>
+            </div>
+        {% endif %}
 
         {% buttons %}
             <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>

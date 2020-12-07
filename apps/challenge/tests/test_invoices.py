@@ -37,6 +37,16 @@ def test_invoiceline_out_of_date(db):
     assert invoiceline.is_up_to_date
 
 
+def test_invoiceline_without_session_is_always_out_of_date(db):
+    invoiceline = InvoiceLineFactory()
+    # Make sure it is not up-to-date by deleting its Session
+    invoiceline.session = None
+    assert not invoiceline.is_up_to_date
+    invoiceline.refresh()
+    # It can't become up_to_date
+    assert not invoiceline.is_up_to_date
+
+
 def test_invoice_out_of_date(db):
     invoice = InvoiceFactory()
     # Create 1+2+3+4+5 invoicelines to test all possible sequences
@@ -92,6 +102,10 @@ def test_invoice_out_of_date(db):
         elif nth_in_sequence >= sequence_max:
             nth_in_sequence = 1
             sequence_max = sequence_max + 1
+
+    # Test that removing any Session will make the Invoice not up_to_date
+    invoicelines[0].session.delete()
+    assert not invoice.is_up_to_date
 
 
 def test_bikes_are_accounted_once_per_day(db):
@@ -241,14 +255,19 @@ class StateManagerUserTest(InvoiceTestCaseMixin):
             "seasonpk": self.season.pk,
             "orgapk": self.canton_orgas[0].pk,
         }
-        url = reverse("invoice-create", kwargs=kwargs,)
+        url = reverse(
+            "invoice-create",
+            kwargs=kwargs,
+        )
         initial = {"title": "Titolo", "status": Invoice.STATUS_DRAFT}
 
         response = self.client.post(url, initial)
         i = Invoice.objects.get(**initial)
         kwargs.update({"invoiceref": i.ref})
         self.assertRedirects(
-            response, reverse("invoice-detail", kwargs=kwargs), target_status_code=200,
+            response,
+            reverse("invoice-detail", kwargs=kwargs),
+            target_status_code=200,
         )
 
     def test_invoice_update_title_only(self):
@@ -297,10 +316,10 @@ class StateManagerUserTest(InvoiceTestCaseMixin):
         self.invoice.save()
         self.assertTrue(self.invoice.is_locked, self.invoice)
 
-        # Lea chargé de projet peut encore l'éditer
+        # Lea chargé de projet peut encore l’éditer
         self.assertEqual(self.client.get(self.invoice_update_url).status_code, 200)
         # Mais mettre à jour son statut échoue
-        # Enfin. Ça marche, mais rien n'a changé
+        # Enfin. Ça marche, mais rien n’a changé
         self.assertRedirects(
             self.client.post(
                 self.invoice_update_url,
@@ -310,14 +329,15 @@ class StateManagerUserTest(InvoiceTestCaseMixin):
             target_status_code=200,
         )
 
-        # Elle n'est bien pas mise à jour
+        # Elle n’est bien pas mise à jour
         i = Invoice.objects.get(ref=self.invoice.ref)
         self.assertNotEqual(i.title, "Titre 2 du CdP", i)
         self.assertEqual(i.status, Invoice.STATUS_VALIDATED)
 
         # Iel peut encore la voir
         self.assertEqual(
-            self.client.get(self.invoice_detail_url).status_code, 200,
+            self.client.get(self.invoice_detail_url).status_code,
+            200,
         )
 
 
@@ -365,14 +385,19 @@ class PowerUserTest(InvoiceTestCaseMixin):
             "seasonpk": self.season.pk,
             "orgapk": self.canton_orgas[0].pk,
         }
-        url = reverse("invoice-create", kwargs=kwargs,)
+        url = reverse(
+            "invoice-create",
+            kwargs=kwargs,
+        )
         initial = {"title": "Titolo", "status": Invoice.STATUS_DRAFT}
 
         response = self.client.post(url, initial)
         i = Invoice.objects.get(**initial)
         kwargs.update({"invoiceref": i.ref})
         self.assertRedirects(
-            response, reverse("invoice-detail", kwargs=kwargs), target_status_code=200,
+            response,
+            reverse("invoice-detail", kwargs=kwargs),
+            target_status_code=200,
         )
 
     def test_invoice_update_title_only(self):
@@ -421,7 +446,7 @@ class PowerUserTest(InvoiceTestCaseMixin):
         self.invoice.save()
         self.assertTrue(self.invoice.is_locked, self.invoice)
 
-        # Lea burea peut encore l'éditer
+        # Lea bureau peut encore l’éditer
         self.assertEqual(self.client.get(self.invoice_update_url).status_code, 200)
         # Et mettre à jour son statut, de retour vers Draft
         self.assertRedirects(
@@ -440,5 +465,6 @@ class PowerUserTest(InvoiceTestCaseMixin):
 
         # Iel peut encore la voir
         self.assertEqual(
-            self.client.get(self.invoice_detail_url).status_code, 200,
+            self.client.get(self.invoice_detail_url).status_code,
+            200,
         )

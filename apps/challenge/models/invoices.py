@@ -23,6 +23,7 @@ from django.db.models import F, Sum
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.functional import cached_property
+from django.utils.translation import pgettext_lazy as _p
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 
@@ -59,7 +60,7 @@ class Invoice(models.Model):
     )
     season = models.ForeignKey(
         Season,
-        verbose_name=_("Saison"),
+        verbose_name=_p("Singular month", "Mois"),
         on_delete=models.PROTECT,
         related_name="invoices",
     )
@@ -118,7 +119,8 @@ class Invoice(models.Model):
     def settings(self):
         try:
             return AnnualStateSetting.objects.get(
-                canton=self.organization.address_canton, year=self.season.year,
+                canton=self.organization.address_canton,
+                year=self.season.year,
             )
         except AnnualStateSetting.DoesNotExist:
             return AnnualStateSetting()
@@ -150,16 +152,20 @@ def round_CHF(n: D):
 
 
 class InvoiceLine(models.Model):
-    session = models.ForeignKey(Session, on_delete=models.PROTECT)
+    session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True)
     historical_session = models.ForeignKey(HistoricalSession, on_delete=models.PROTECT)
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="lines")
     nb_bikes = models.PositiveSmallIntegerField()
     nb_participants = models.PositiveSmallIntegerField()
     cost_bikes = models.DecimalField(
-        max_digits=8, decimal_places=2, validators=[MinValueValidator(0)],
+        max_digits=8,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
     )
     cost_participants = models.DecimalField(
-        max_digits=8, decimal_places=2, validators=[MinValueValidator(0)],
+        max_digits=8,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
     )
 
     class Meta:
@@ -204,7 +210,10 @@ class InvoiceLine(models.Model):
         """
         Provide a shortcut to getting the latest historical copy of the session
         """
-        return self.session.history.latest("history_date")
+        try:
+            return self.session.history.latest("history_date")
+        except AttributeError:  # Without a self.session (deleted ?)
+            return None
 
     def save(self, *args, **kwargs):
         """
@@ -219,6 +228,9 @@ class InvoiceLine(models.Model):
         """
         Check if that invoice line is up-to-date by comparing the historical session, number and costs
         """
+        if not self.session:
+            return False
+
         if (
             self.historical_session.history_id
             != self.most_recent_historical_session().history_id
@@ -269,13 +281,14 @@ class InvoiceLine(models.Model):
         """
         Align the invoiceline's attributes
         """
-        self.historical_session = self.most_recent_historical_session()
-        self.nb_bikes = self.session.n_bikes
-        self.nb_participants = self.session.n_participants
-        self.cost_bikes = self.invoice.settings.cost_per_bike * self.session.n_bikes
-        self.cost_participants = (
-            self.invoice.settings.cost_per_participant * self.session.n_participants
-        )
+        if self.session:
+            self.historical_session = self.most_recent_historical_session()
+            self.nb_bikes = self.session.n_bikes
+            self.nb_participants = self.session.n_participants
+            self.cost_bikes = self.invoice.settings.cost_per_bike * self.session.n_bikes
+            self.cost_participants = (
+                self.invoice.settings.cost_per_participant * self.session.n_participants
+            )
         # Clear the cached is_up_to_date if possible
         try:
             del self.is_up_to_date

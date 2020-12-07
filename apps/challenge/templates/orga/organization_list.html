@@ -2,10 +2,10 @@
 {% load i18n %}
 {% load bootstrap3 %}
 {% load dv_filters %}
-{% block head_title %}{% blocktrans with season=season.desc %}Établissements pour la saison {{season}}{% endblocktrans %}{% endblock %}
+{% block head_title %}{% blocktrans with season=season.desc %}Établissements pour le mois {{season}}{% endblocktrans %}{% endblock %}
 
 {% block content %}
-    <h1>{% blocktrans with season=season.desc %}Établissements pour la saison {{season}}{% endblocktrans %}</h1>
+    <h1>{% blocktrans with season=season.desc %}Établissements pour le mois {{season}}{% endblocktrans %}</h1>
     
     {% for organization in organizations %}
         {% if forloop.first %}

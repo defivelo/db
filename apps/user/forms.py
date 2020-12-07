@@ -119,7 +119,7 @@ class SimpleUserProfileForm(forms.ModelForm):
             self.add_error(
                 "affiliation_canton",
                 ValidationError(
-                    _("Moniteurs/intervenants ont besoin d'un canton d'affiliation.")
+                    _("Moniteurs/intervenants ont besoin d’un canton d’affiliation.")
                 ),
             )
         return cleaned_data
@@ -147,7 +147,8 @@ class UserProfileForm(SimpleUserProfileForm):
                 required=False,
             ),
             "iban": localforms.IBANFormField(
-                include_countries=IBAN_SEPA_COUNTRIES, required=False,
+                include_countries=IBAN_SEPA_COUNTRIES,
+                required=False,
             ),
         }.items():
             label = self.fields[fieldname].label
@@ -193,13 +194,14 @@ class UserProfileForm(SimpleUserProfileForm):
 
 class UserAssignRoleForm(forms.Form):
     role = forms.ChoiceField(
-        label=_("Niveau d'accès"), choices=DV_AVAILABLE_ROLES, required=False
+        label=_("Niveau d’accès"), choices=DV_AVAILABLE_ROLES, required=False
     )
     managed_states = MultiSelectFormField(
         label=_("Cantons gérés"), choices=sorted(DV_STATE_CHOICES), required=False
     )
     managed_organizations = MultiSelectFormField(
-        label=_("Établissements gérés"), required=False,
+        label=_("Établissements gérés"),
+        required=False,
     )
 
     def __init__(self, user, *args, **kwargs):

@@ -37,21 +37,12 @@ DV_STATES = [
     "BE",
     "LU",
     "AR",
-    "WS",  # Haut-Valais
     "SO",
     "AG",
     "BL",
     "GR",
+    "SZ",
 ]
-
-# "faux" cantons pour DÉFI VÉLO
-DV_ADDITIONAL_STATES = [
-    ("WS", _("Haut-Valais")),
-]
-
-DV_STATES_LONGER_ABBREVIATIONS = {"WS": "VS-OW"}
-
-DV_STATES_REAL_FALLBACKS = {"WS": "VS"}
 
 DV_STATE_COLORS = {
     None: "#000",
@@ -82,16 +73,20 @@ DV_STATE_COLORS = {
     "GR": "#E7206A",
     "SG": "#608A9B",
     "ZH": "#7ABEE4",
-    # Spéciale
-    "WS": "#EF86A1",
 }
 
-DV_STATE_CHOICES = [
-    c for c in STATE_CHOICES if c[0] in DV_STATES
-] + DV_ADDITIONAL_STATES
+DV_STATE_CHOICES = [c for c in STATE_CHOICES if c[0] in DV_STATES]
 
 DV_STATE_CHOICES_WITH_DEFAULT = tuple(
-    list((("", "---------",),)) + list(DV_STATE_CHOICES)
+    list(
+        (
+            (
+                "",
+                "---------",
+            ),
+        )
+    )
+    + list(DV_STATE_CHOICES)
 )
 
 MULTISELECTFIELD_REGEXP = "(^|,)%s(,|$)"
@@ -103,7 +98,17 @@ DV_LANGUAGES = LANGUAGES = (
     ("en", _("English")),
 )
 
-DV_LANGUAGES_WITH_DEFAULT = tuple(list((("", "---------",),)) + list(DV_LANGUAGES))
+DV_LANGUAGES_WITH_DEFAULT = tuple(
+    list(
+        (
+            (
+                "",
+                "---------",
+            ),
+        )
+    )
+    + list(DV_LANGUAGES)
+)
 
 DV_SEASON_SPRING = 1
 # DV_SEASON_SUMMER = 2
@@ -127,8 +132,8 @@ DV_SEASON_STATE_ARCHIVED = 5  # R- for SM, R-- for helpers
 
 DV_SEASON_STATES = (
     (DV_SEASON_STATE_PLANNING, _("Planification (invisible)")),
-    (DV_SEASON_STATE_OPEN, _("Annoncée (rentrée des disponibilités)")),
+    (DV_SEASON_STATE_OPEN, _("Annoncé (rentrée des disponibilités)")),
     (DV_SEASON_STATE_RUNNING, _("En cours (corrections que par chargé·e·s de projet)")),
-    (DV_SEASON_STATE_FINISHED, _("Terminée")),
-    (DV_SEASON_STATE_ARCHIVED, _("Archivée")),
+    (DV_SEASON_STATE_FINISHED, _("Terminé")),
+    (DV_SEASON_STATE_ARCHIVED, _("Archivé")),
 )

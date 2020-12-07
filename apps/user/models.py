@@ -167,7 +167,7 @@ class UserProfile(Address, models.Model):
         on_delete=models.CASCADE,
     )
     cresus_employee_number = models.CharField(
-        _("Numéro d'employé Crésus"), max_length=63, blank=True
+        _("Numéro d’employé Crésus"), max_length=63, blank=True
     )
     language = models.CharField(
         _("Langue"), max_length=7, choices=DV_LANGUAGES_WITH_DEFAULT, blank=True
@@ -179,7 +179,7 @@ class UserProfile(Address, models.Model):
     nationality = CountryField(_("Nationalité"), default="CH")
     work_permit = models.CharField(_("Permis de travail"), max_length=255, blank=True)
     tax_jurisdiction = models.CharField(
-        _("Lieu d'imposition"), max_length=511, blank=True
+        _("Lieu d’imposition"), max_length=511, blank=True
     )
     bank_name = models.CharField(_("Nom de la banque"), max_length=511, blank=True)
     iban = IBANField(
@@ -191,9 +191,9 @@ class UserProfile(Address, models.Model):
     natel = models.CharField(max_length=13, blank=True)
     phone = models.CharField(_("Téléphone"), max_length=13, blank=True)
     affiliation_canton = models.CharField(
-        _("Canton d'affiliation"),
+        _("Canton d’affiliation"),
         choices=DV_STATE_CHOICES_WITH_DEFAULT,
-        max_length=5,
+        max_length=2,
         blank=True,
     )
     activity_cantons = MultiSelectField(
@@ -306,7 +306,7 @@ class UserProfile(Address, models.Model):
 
         # This can raise exception, but that's good
         self.send_mail(
-            (settings.EMAIL_SUBJECT_PREFIX + u("Accès à l'Intranet")),
+            (settings.EMAIL_SUBJECT_PREFIX + u("Accès à l’Intranet")),
             render_to_string("auth/email_user_send_credentials.txt", context),
         )
 
@@ -521,7 +521,7 @@ class UserProfile(Address, models.Model):
             if raise_without_cantons:
                 raise PermissionDenied
 
-        # Ajoute les cantons d'affiliation et mobiles
+        # Ajoute les cantons d’affiliation et mobiles
         if self.formation or self.actor:
             if self.affiliation_canton:
                 usercantons += [self.affiliation_canton]
@@ -529,7 +529,11 @@ class UserProfile(Address, models.Model):
                 usercantons += self.activity_cantons
             if not has_permission(self.user, "challenge_season_see_state_planning"):
                 # PLANNING seasons are invisible for these
-                qs = qs.exclude(state__in=[DV_SEASON_STATE_PLANNING,])
+                qs = qs.exclude(
+                    state__in=[
+                        DV_SEASON_STATE_PLANNING,
+                    ]
+                )
 
         # Unique'ify, discard empty values
         usercantons = set([c for c in usercantons if c])
@@ -555,7 +559,12 @@ class UserProfile(Address, models.Model):
         """
         if self.user.email:
             return send_mail(
-                subject, body, settings.DEFAULT_FROM_EMAIL, [self.mailtolink,],
+                subject,
+                body,
+                settings.DEFAULT_FROM_EMAIL,
+                [
+                    self.mailtolink,
+                ],
             )
 
     def __str__(self):
@@ -584,7 +593,7 @@ class UserManagedState(models.Model):
         limit_choices_to={"is_active": True},
         on_delete=models.CASCADE,
     )
-    canton = models.CharField(_("Canton"), max_length=5, choices=DV_STATE_CHOICES)
+    canton = models.CharField(_("Canton"), max_length=2, choices=DV_STATE_CHOICES)
 
     @property
     def canton_full(self):

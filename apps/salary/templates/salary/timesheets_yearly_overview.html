@@ -86,7 +86,26 @@
       <tr>
         <th>{% trans "Total CHF" %}</th>
         {% for amount in timesheets_amount %}
-          <th>{{ amount }}</th>
+          <th>
+            {% if user|can:'timesheet_editor' %}
+              {% for tmonth, timesheets in orphaned_timesheets.items %}
+                  {% if forloop.parentloop.counter == forloop.counter %}
+                    {% if timesheets|length > 0 %}
+                      <a
+                        title="{% blocktrans count count=timesheets|length %}1 entrée orpheline{% plural %}{{ count }} entrées orphelines{% endblocktrans %}"
+                        class="btn btn-danger"
+                        href="{% url "salary:cleanup-timesheets" year=year month=forloop.counter %}{% if canton %}?canton={{ canton }}{% endif %}">
+                        <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+                      </a>
+                    {% else %}
+                      {{ amount }}
+                    {% endif %}
+                  {% endif %}
+              {% endfor %}
+            {% else %}
+              {{ amount }}
+            {% endif %}
+          </th>
         {% endfor %}
       </tr>
       {% if user|can:'timesheet_editor' %}
@@ -96,7 +115,7 @@
             <th class="text-center">
               <a
                 class="btn btn-info"
-                title="{% trans "Envoyer un rappel aux moniteurs qui n'ont pas remplis leurs heures" %}"
+                title="{% trans "Envoyer un rappel aux collabora·teur·trices qui n’ont pas rempli leurs heures" %}"
                 {% if show_reminder_button %}
                   href="{% url "salary:send-timesheets-reminder" year=year month=forloop.counter %}"
                 {% else %}

@@ -31,5 +31,5 @@ vagrant ssh
 ## Autre
 
 Les autres tâches sont décrites dans le `Makefile` à la racine du projet.
-Lancer `make help` dans l'environnement virtuel pour les lister,
+Lancer `make help` dans l’environnement virtuel pour les lister,
 et `make ma_tache` pour les exécuter.

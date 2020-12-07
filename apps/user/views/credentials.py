@@ -97,7 +97,7 @@ class ResendUserCredentials(HasPermissionsMixin, UserCredentials):
 
 class UserAssignRole(ProfileMixin, HasPermissionsMixin, FormView):
     template_name = "roles/assign.html"
-    success_message = _("Rôle assigné à l'utilisa·teur·trice")
+    success_message = _("Rôle assigné à l’utilisa·teur·trice")
     form_class = UserAssignRoleForm
     required_permission = "user_set_role"
     cantons = False

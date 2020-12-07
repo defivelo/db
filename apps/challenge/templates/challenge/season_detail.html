@@ -6,12 +6,6 @@
     {% include "challenge/season_header.html" with season=season only %}
     <h4>{% trans "Toutes les sessions" %}</h4>
 
-    <nav>
-        <ul class="pager">
-            <li><a href="{% url 'session-list' seasonpk=season.pk year=now.year week=now|weeknumber %}">{% trans "Par semaine" %}</a></li>
-        </ul>
-    </nav>
-    
     <table class="table">
     {% for session in season.sessions_by_orga %}
         {% ifchanged session.orga %}

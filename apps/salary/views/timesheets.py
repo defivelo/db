@@ -5,12 +5,15 @@ from django.contrib import messages
 from django.contrib.sites.models import Site
 from django.core import mail
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count, F, Q, Sum
+from django.db.models import Count, F, FloatField, IntegerField, Q, Sum
+from django.db.models.functions import Cast
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import formats, timezone, translation
+from django.utils.datastructures import OrderedSet
 from django.utils.dates import MONTHS_3
+from django.utils.translation import ngettext as n
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import RedirectView, TemplateView
@@ -34,7 +37,10 @@ class RedirectUserMonthlyTimesheets(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         kwargs["pk"] = self.request.user.pk
-        return reverse("salary:user-timesheets", kwargs=kwargs,)
+        return reverse(
+            "salary:user-timesheets",
+            kwargs=kwargs,
+        )
 
 
 class UserMonthlyTimesheets(MonthArchiveView, FormView):
@@ -103,12 +109,19 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
             },
         )
         context["formset"] = context["form"]
+
+        # Consider a field "visible" if it is visible in at least one of the forms
+        visible_fields = OrderedSet()
+        for form in context["form"].forms:
+            for field in form.visible_fields():
+                visible_fields.add(field)
+
         context["fields_grouped_by_field_name"] = (
             {
                 fieldname.label: [
                     form[fieldname.name] for form in context["form"].forms
                 ]
-                for fieldname in context["form"].forms[0].visible_fields()
+                for fieldname in visible_fields
             }
             if context["form"].forms
             else {}
@@ -132,6 +145,13 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
             o["day"]: [s for s in all_sessions if s.day == o["day"]]
             for o in self.object_list
         }
+        context["orphaned_timesheets"] = (
+            Timesheet.objects.filter(
+                user=self.selected_user, date__month=context["month"].month
+            )
+            .exclude(date__in=[o["day"] for o in self.object_list])
+            .order_by("date")
+        )
         return context
 
     def get_month(self):
@@ -164,6 +184,7 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
                 "overtime": timesheet.overtime if timesheet else 0,
                 "traveltime": timesheet.traveltime if timesheet else 0,
                 "validated": bool(timesheet.validated_at) if timesheet else False,
+                "ignore": timesheet.ignore if timesheet else False,
                 "comments": timesheet.comments if timesheet else "",
             }
             initial.append(attributes)
@@ -232,8 +253,8 @@ class YearlyTimesheets(TemplateView):
         users = timesheets_overview.get_visible_users(self.request.user).order_by(
             "first_name", "last_name"
         )
-        global_timesheets_status_matrix = timesheets_overview.get_timesheets_status_matrix(
-            year=year, users=users
+        global_timesheets_status_matrix = (
+            timesheets_overview.get_timesheets_status_matrix(year=year, users=users)
         )
         if active_canton:
             users = users.filter(profile__affiliation_canton=active_canton)
@@ -253,6 +274,15 @@ class YearlyTimesheets(TemplateView):
         context[
             "timesheets_amount"
         ] = timesheets_overview.get_timesheets_amount_by_month(year=year, users=users)
+        context[
+            "orphaned_timesheets"
+        ] = timesheets_overview.get_orphaned_timesheets_per_month(
+            year=year,
+            users=users,
+            cantons=[active_canton]
+            if active_canton in dict(DV_STATE_CHOICES)
+            else None,
+        )
         context["cantons"] = DV_STATE_CHOICES
         context["active_canton"] = (
             dict(DV_STATE_CHOICES)[active_canton] if active_canton else None
@@ -294,7 +324,7 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
                 u("Prénom"),
                 u("Année courante"),
                 u("Mois courant"),
-                u("Numéro d'employé Crésus"),
+                u("Numéro d’employé Crésus"),
                 u("Salaire heure Formateur"),  # 0
                 u("Salaire heures moniteur"),  # time_helper
                 u("Prime moniteur 2"),  # leader_count
@@ -306,6 +336,11 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
         )
         _, object_list, _ = self.get_dated_items()
 
+        # Django queries to convert the ignore Bool (0 if not ignored, 1 if ignored)
+        # into an included Bool (1 if taken into account, 0 if ignored)
+        included = 1 - Cast(F("ignore"), IntegerField())
+        included_float = Cast(included, FloatField())
+
         salary_details_list = (
             object_list.values("user")
             .annotate(
@@ -313,11 +348,11 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
                 user_id=F("user_id"),
                 last_name=F("user__last_name"),
                 first_name=F("user__first_name"),
-                actor_count=Sum("actor_count"),
-                leader_count=Sum("leader_count"),
-                time_helper=Sum("time_helper"),
-                traveltime=Sum("traveltime"),
-                overtime=Sum("overtime"),
+                actor_count=Sum(F("actor_count") * included),
+                leader_count=Sum(F("leader_count") * included),
+                time_helper=Sum(F("time_helper") * included_float),
+                traveltime=Sum(F("traveltime") * included_float),
+                overtime=Sum(F("overtime") * included_float),
             )
             .order_by()
         )
@@ -340,6 +375,58 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
                 ]
             )
         return dataset
+
+
+class CleanupOrphanedTimesheets(TemplateView):
+    template_name = "salary/cleanup_orphaned_timesheets.html"
+    required_permission = "timesheet_editor"
+
+    def dispatch(self, request, *args, month, year, **kwargs):
+        if not has_permission(request.user, self.required_permission):
+            raise PermissionDenied
+        self.month = int(month)
+        self.year = int(year)
+
+        active_canton = self.request.GET.get("canton")
+        self.orphaned_timesheets = (
+            timesheets_overview.get_orphaned_timesheets_per_month(
+                year=year,
+                month=self.month,
+                users=timesheets_overview.get_visible_users(self.request.user),
+                cantons=(active_canton if active_canton in DV_STATE_CHOICES else None),
+            )
+        )
+        if not self.orphaned_timesheets:
+            messages.success(
+                request,
+                _("Aucune feuille d'heure orpheline à supprimer; tout va bien."),
+            )
+            return redirect(self.get_redirect_url())
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_redirect_url(self):
+        return reverse("salary:timesheets-overview", kwargs={"year": self.year})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["redirect_url"] = self.get_redirect_url()
+        context["period"] = formats.date_format(date(self.year, self.month, 1), "F Y")
+        context["orphaned_timesheets"] = self.orphaned_timesheets
+        return context
+
+    def post(self, request, *args, **kwargs):
+        (deleted, _) = Timesheet.objects.filter(
+            id__in=[t.id for t in self.orphaned_timesheets]
+        ).delete()
+        messages.warning(
+            request,
+            n(
+                "{n} feuille d'heures orpheline supprimée.",
+                "{n} feuilles d'heures orphelines supprimées.",
+                deleted,
+            ).format(n=deleted),
+        )
+        return redirect(self.get_redirect_url())
 
 
 class SendTimesheetsReminder(TemplateView):
@@ -375,7 +462,7 @@ class SendTimesheetsReminder(TemplateView):
         context["redirect_url"] = self.get_redirect_url()
         context["recipients"] = self.recipients
         context["period"] = formats.date_format(date(self.year, self.month, 1), "F Y")
-        email_subject, email_text, *_ = self.render_email_for_user(self.request.user)
+        email_subject, email_text, *_ = self.render_email_for_user()
         context["email_text"] = email_text
         context["email_subject"] = email_subject
         return context
@@ -386,8 +473,12 @@ class SendTimesheetsReminder(TemplateView):
         messages.success(request, _("Rappel de soumission des heures expédié."))
         return redirect(self.get_redirect_url())
 
-    def render_email_for_user(self, user):
-        email_lang = user.profile.language or translation.get_language()
+    def render_email_for_user(self, user=None):
+        try:
+            email_lang = user.profile.language or translation.get_language()
+        except AttributeError:
+            email_lang = translation.get_language()
+
         with translation.override(email_lang):
             timesheets_url = self.request.build_absolute_uri(
                 reverse(
@@ -408,5 +499,5 @@ class SendTimesheetsReminder(TemplateView):
                 settings.EMAIL_SUBJECT_PREFIX + u("Soumission des heures"),
                 message,
                 settings.DEFAULT_FROM_EMAIL,
-                [user.email],
+                [user.email if user else None],
             )

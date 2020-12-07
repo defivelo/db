@@ -7,7 +7,6 @@ from apps.challenge.tests.factories import (
     SeasonFactory,
     SessionFactory,
 )
-from apps.common import DV_SEASON_SPRING
 from apps.orga.tests.factories import OrganizationFactory
 from apps.salary.models import Timesheet
 from apps.user.tests.factories import UserFactory
@@ -19,7 +18,10 @@ def test_helper_can_see_his_timesheet(db):
     client = AuthClient()
 
     SeasonFactory(
-        cantons=["VD"], year=2019, season=DV_SEASON_SPRING,
+        cantons=["VD"],
+        year=2019,
+        month_start=1,
+        n_months=5,
     )
     QualificationFactory(
         actor=client.user,
@@ -44,7 +46,10 @@ def test_helper_cannot_timesheet_overtime_without_comments(db):
     client = AuthClient()
 
     SeasonFactory(
-        cantons=["VD"], year=2019, season=DV_SEASON_SPRING,
+        cantons=["VD"],
+        year=2019,
+        month_start=1,
+        n_months=5,
     )
     QualificationFactory(
         actor=client.user,
@@ -82,7 +87,10 @@ def test_helper_can_timesheet(db):
     client = AuthClient()
 
     SeasonFactory(
-        cantons=["VD"], year=2019, season=DV_SEASON_SPRING,
+        cantons=["VD"],
+        year=2019,
+        month_start=1,
+        n_months=5,
     )
     QualificationFactory(
         actor=client.user,
@@ -120,7 +128,10 @@ def test_helper_can_update_timesheet(db):
     client = AuthClient()
 
     SeasonFactory(
-        cantons=["VD"], year=2019, season=DV_SEASON_SPRING,
+        cantons=["VD"],
+        year=2019,
+        month_start=1,
+        n_months=5,
     )
     QualificationFactory(
         actor=client.user,
@@ -171,7 +182,10 @@ def test_helper_cannot_validate_timesheet(db):
     client = AuthClient()
 
     SeasonFactory(
-        cantons=["VD"], year=2019, season=DV_SEASON_SPRING,
+        cantons=["VD"],
+        year=2019,
+        month_start=1,
+        n_months=5,
     )
     QualificationFactory(
         actor=client.user,
@@ -209,6 +223,43 @@ def test_helper_cannot_validate_timesheet(db):
     )
 
 
+def test_helper_cannot_set_timesheet_to_ignore(db):
+    client = AuthClient()
+
+    SeasonFactory(cantons=["VD"], year=2019, month_start=1, n_months=5)
+    QualificationFactory(
+        actor=client.user,
+        session=SessionFactory(
+            day=datetime.date(2019, 4, 12),
+            orga=OrganizationFactory(address_canton="VD"),
+        ),
+    )
+
+    datas = {
+        "form-TOTAL_FORMS": "1",
+        "form-INITIAL_FORMS": "1",
+        "form-MIN_NUM_FORMS": "0",
+        "form-MAX_NUM_FORMS": "0",
+        "form-0-date": "2019-04-12",
+        "form-0-time_helper": "4.5",
+        "form-0-actor_count": "0",
+        "form-0-leader_count": "0",
+        "form-0-overtime": "0.25",
+        "form-0-traveltime": "0.25",
+        "form-0-comments": "Comment",
+        "form-0-ignore": True,
+    }
+
+    client.post(
+        reverse(
+            "salary:user-timesheets",
+            kwargs={"year": 2019, "month": 4, "pk": client.user.pk},
+        ),
+        datas,
+    )
+    assert Timesheet.objects.count() == 1 and not Timesheet.objects.first().ignore
+
+
 def test_state_manager_can_validate_timesheet(db):
     client = StateManagerAuthClient()
     managed_cantons = user_cantons(client.user)
@@ -218,7 +269,10 @@ def test_state_manager_can_validate_timesheet(db):
         profile__affiliation_canton=managed_cantons[0],
     )
     SeasonFactory(
-        cantons=[managed_cantons[0]], year=2019, season=DV_SEASON_SPRING,
+        cantons=[managed_cantons[0]],
+        year=2019,
+        month_start=1,
+        n_months=5,
     )
     QualificationFactory(
         actor=actor,
@@ -245,11 +299,60 @@ def test_state_manager_can_validate_timesheet(db):
 
     client.post(
         reverse(
-            "salary:user-timesheets", kwargs={"year": 2019, "month": 4, "pk": actor.pk},
+            "salary:user-timesheets",
+            kwargs={"year": 2019, "month": 4, "pk": actor.pk},
         ),
         datas,
     )
     assert Timesheet.objects.count() == 1 and Timesheet.objects.first().validated_at
+
+
+def test_state_manager_can_set_timesheet_to_ignore(db):
+    client = StateManagerAuthClient()
+    managed_cantons = user_cantons(client.user)
+    actor = UserFactory(
+        first_name="Maurice",
+        last_name="Moss",
+        profile__affiliation_canton=managed_cantons[0],
+    )
+    SeasonFactory(cantons=[managed_cantons[0]], year=2019, month_start=1, n_months=5)
+    QualificationFactory(
+        actor=actor,
+        session=SessionFactory(
+            day=datetime.date(2019, 4, 12),
+            orga=OrganizationFactory(address_canton=managed_cantons[0]),
+        ),
+    )
+
+    datas = {
+        "form-TOTAL_FORMS": "1",
+        "form-INITIAL_FORMS": "1",
+        "form-MIN_NUM_FORMS": "0",
+        "form-MAX_NUM_FORMS": "0",
+        "form-0-date": "2019-04-12",
+        "form-0-time_helper": "4.5",
+        "form-0-actor_count": "0",
+        "form-0-leader_count": "0",
+        "form-0-overtime": "0.25",
+        "form-0-traveltime": "0.25",
+        "form-0-comments": "Comment",
+        "form-0-ignore": True,
+    }
+
+    client.post(
+        reverse(
+            "salary:user-timesheets",
+            kwargs={"year": 2019, "month": 4, "pk": actor.pk},
+        ),
+        datas,
+    )
+    assert Timesheet.objects.count() == 1
+    ts = Timesheet.objects.first()
+    assert ts.ignore
+    assert ts.get_total_amount_helper() == 0
+    assert ts.get_total_amount_actor() == 0
+    assert ts.get_total_amount_leader() == 0
+    assert ts.get_total_amount() == 0
 
 
 def test_helper_cannot_timesheet_if_he_has_not_work(db):

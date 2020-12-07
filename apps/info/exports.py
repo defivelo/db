@@ -49,7 +49,10 @@ class SeasonSessionsMixin(object):
         if self.export_season == DV_SEASON_AUTUMN:
             end = date(self.export_year, 12, 31)
         sessions = (
-            Session.objects.filter(day__gte=begin, day__lte=end,)
+            Session.objects.filter(
+                day__gte=begin,
+                day__lte=end,
+            )
             .order_by("day", "begin")
             .prefetch_related("orga")
         )
@@ -62,14 +65,14 @@ class SeasonSessionsMixin(object):
 
 class SeasonStatsExport(SeasonSessionsMixin):
     def get_dataset_title(self):
-        return _("Statistiques de la saison {season} {year}").format(
+        return _("Statistiques du mois {season} {year}").format(
             season=season_verb(self.export_season), year=self.export_year
         )
 
     @property
     def export_filename(self):
         return "%s-%s-%s" % (
-            _("Stats_Saison"),
+            _("Stats_Mois"),
             self.export_year,
             season_verb(self.export_season),
         )
@@ -83,7 +86,7 @@ class SeasonStatsExport(SeasonSessionsMixin):
                 u("Établissements"),
                 u("Sessions"),
                 u("Qualifs"),
-                u("Nombre d'élèves"),
+                u("Nombre d’élèves"),
                 u("Prêts de vélos"),
                 u("Prêts de casques"),
                 u("Nombre de personnes ayant exercé"),
@@ -151,7 +154,7 @@ class LogisticsExport(SeasonSessionsMixin):
     def export_filename(self):
         return "%s-%s-%s-%s" % (
             u("Logistique"),
-            u("Saison"),
+            u("Mois"),
             self.export_year,
             season_verb(self.export_season),
         )
@@ -186,7 +189,8 @@ class LogisticsExport(SeasonSessionsMixin):
             url = None
             if season and html:
                 url = reverse(
-                    "session-detail", kwargs={"seasonpk": season.pk, "pk": session.id},
+                    "session-detail",
+                    kwargs={"seasonpk": season.pk, "pk": session.id},
                 )
             datetxt = datefilter(session.day, settings.DATE_FORMAT_COMPACT)
             timetxt = datefilter(session.begin, settings.TIME_FORMAT_SHORT)

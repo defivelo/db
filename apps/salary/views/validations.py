@@ -176,8 +176,8 @@ class ValidationUpdate(ValidationsMixin, UpdateView):
 
     def get_object(self, queryset=None):
         """
-        Extrait l'objet à partir de l'URL plutôt que du pk
-        Permet toujours une mise à jour; en créant l'objet si nécessaire
+        Extrait l’objet à partir de l’URL plutôt que du pk
+        Permet toujours une mise à jour; en créant l’objet si nécessaire
         """
         p, _ = (
             super()

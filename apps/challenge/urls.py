@@ -189,7 +189,11 @@ urlpatterns = [
                     SeasonAvailabilityUpdateView.as_view(),
                     name="season-availabilities-update",
                 ),
-                url(r"^delete/$", SeasonDeleteView.as_view(), name="season-delete",),
+                url(
+                    r"^delete/$",
+                    SeasonDeleteView.as_view(),
+                    name="season-delete",
+                ),
             ]
         ),
     ),
