@@ -179,8 +179,8 @@ class OrgaStateManagerUserTest(TestCase):
         self.myorga = OrganizationFactory(address_canton=mycanton)
         self.myorga.save()
 
-        OTHERSTATES = [c for c in DV_STATES if c != mycanton]
-        self.foreignorga = OrganizationFactory(address_canton=OTHERSTATES[0])
+        self.OTHERSTATES = [c for c in DV_STATES if c != mycanton]
+        self.foreignorga = OrganizationFactory(address_canton=self.OTHERSTATES[0])
         self.foreignorga.save()
 
     def test_access_to_orga_list(self):
@@ -211,9 +211,10 @@ class OrgaStateManagerUserTest(TestCase):
         initial = {
             "name": "Orga",
             "status": ORGASTATUS_ACTIVE,
+            "address_canton": self.client.user.managedstates.first().canton,
         }
 
-        # Test without a canton, we expect a success, with the canton being forced
+        # One of our cantons is mandatory
         response = self.client.post(url, initial)
         self.assertEqual(response.status_code, 302, url)
         self.assertEqual(Organization.objects.count(), 3)  # There are two in the setUp
@@ -221,6 +222,20 @@ class OrgaStateManagerUserTest(TestCase):
             Organization.objects.order_by("-id")[0].address_canton,
             self.client.user.managedstates.first().canton,
         )
+
+        initial = {
+            "name": "Orga",
+            "status": ORGASTATUS_ACTIVE,
+            "address_canton": self.OTHERSTATES[0],
+        }
+
+        # A creation outside our cantons is not OK
+        response = self.client.post(url, initial)
+        # Code 200 because create failed
+        self.assertEqual(response.status_code, 200, url)
+        self.assertEqual(
+            Organization.objects.count(), 3
+        )  # There are two in the setUp, and one above
 
     def test_access_to_orga_edit(self):
         url = reverse("organization-update", kwargs={"pk": self.myorga.pk})
@@ -251,8 +266,8 @@ class OrgaStateManagerUserTest(TestCase):
         initial["address_canton"] = self.foreignorga.address_canton
 
         response = self.client.post(url, initial)
-        # Code 302 because silent update failed
-        self.assertEqual(response.status_code, 302, url)
+        # Code 200 because update failed
+        self.assertEqual(response.status_code, 200, url)
         # Check update failed
         neworga = Organization.objects.get(pk=self.myorga.pk)
         self.assertEqual(neworga.address_canton, self.myorga.address_canton)
