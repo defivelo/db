@@ -18,7 +18,7 @@ def reset_all_roles(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("user", "0064_merge_WS_in_VS"),
+        ("user", "0065_role_reset_for_orga_edit_address"),
     ]
 
     operations = [
