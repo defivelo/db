@@ -882,6 +882,7 @@ class SeasonPlanningView(SeasonAvailabilityMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         potential_helpers = self.potential_helpers()
+        context["submenu_category"] = "season-planning"
         context["potential_helpers"] = potential_helpers
         context["availabilities"] = self.get_initial(all_helpers=potential_helpers)
         return context

@@ -53,7 +53,8 @@
                 {% elif season.staff_can_update_availability %}
                     <a class="btn btn-xs btn-default" href="{% url 'season-availabilities-update' pk=season.pk helperpk=request.user.pk %}"
                     title="{% trans "Mes disponibilités" %}"><span class="glyphicon glyphicon-calendar"></span></a>
-                {% elif season.staff_can_see_planning %}
+                {% endif %}
+                {% if season.staff_can_see_planning %}
                     <a class="btn btn-xs btn-default" href="{% url 'season-planning' pk=season.pk helperpk=request.user.pk %}"
                     title="{% trans "Mon planning" %}"><span class="glyphicon glyphicon-calendar"></span></a>
                 {% endif %}
