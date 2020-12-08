@@ -163,9 +163,7 @@ class OrganizationCrudMixin(OrganizationDetailMixin):
             form.fields["status"].disabled = True
             form.fields["coordinator"].disabled = True
             del form.fields["comments"]
-        if not has_role(self.request.user, "state_manager") and not has_role(
-            self.request.user, "power_user"
-        ):
+        if not has_permission(self.request.user, "orga_edit_address"):
             form.fields["address_canton"].disabled = True
         return form
 
