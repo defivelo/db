@@ -3,6 +3,7 @@
 {% load bootstrap3 %}
 {% block head_title %}{% blocktrans %}Changer l’état du mois{% endblocktrans %}{% endblock %}
 
+{% block body_class %}season_tostate{% endblock %}
 {% block bootstrap3_extra_head %}{{ form.media.css }}{% endblock %}
 {% block bootstrap3_extra_script %}{{ form.media.js }}{% endblock %}
 
@@ -26,7 +27,7 @@
       <pre style="white-space: pre-wrap;">{% trans "Sujet:" %} {{ email.subject }}
 
 {{ email.body.pre }}</pre>
-      {% bootstrap_field form.customtext size='small' show_label=False form_group_class="" %}
+      {% bootstrap_field form.customtext size='small' show_label=False form_group_class="customtext" %}
       <pre style="white-space: pre-wrap;">
 {{ email.body.post }}</pre>
     </blockquote>
