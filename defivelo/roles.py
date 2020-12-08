@@ -51,6 +51,7 @@ class Collaborator(AbstractUserRole):
         "user_view_list": True,
         "user_view_list_non_collaborator": False,
         "user_export_all_fields": False,
+        "timesheet": True,
     }
 
 
@@ -81,6 +82,7 @@ class StateManager(AbstractUserRole):
         "challenge_invoice_cru": True,
         "challenge_invoice_reset_to_draft": False,
         "challenge_season_see_state_planning": True,
+        "timesheet": True,
         "timesheet_editor": True,
     }
 
@@ -119,6 +121,7 @@ class PowerUser(AbstractUserRole):
         "challenge_season_crud": True,
         "challenge_season_see_state_planning": True,
         "settings_crud": True,
+        "timesheet": True,
         "timesheet_editor": True,
     }
 

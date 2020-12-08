@@ -112,9 +112,11 @@
                          <a href="{% url 'salary:validations-year' year=year %}">{% trans "Validations mensuelles" %}</a>
                         </li>
               {% endif %}
+              {% if user|can:'timesheet' %}
                         <li{% if 'timesheet' in menu_category  %} class="active" {% endif %}>
                           <a href="{% url 'salary:timesheets-overview' year=year %}">{% trans "Contrôle des heures" %}</a>
                         </li>
+              {% endif %}
               {% if user|can:'cantons_mine'%}
                       </ul>
                   </a>
