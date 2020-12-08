@@ -57,6 +57,7 @@ from .views import (
     SessionStaffChoiceView,
     SessionUpdateView,
 )
+from .views.registration import register
 
 urlpatterns = [
     # Settings
@@ -288,4 +289,6 @@ urlpatterns = [
         QualiDeleteView.as_view(),
         name="quali-delete",
     ),
+    # Registrations
+    url(r"^register/$", register, name="registration-create"),
 ]

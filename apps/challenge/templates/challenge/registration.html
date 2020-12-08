@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% block head_title %}{% trans "Pré-inscription sans engagements" %}{% endblock %}
+
+{% block bootstrap3_extra_script %}
+
+  {% include 'snippets/datetimepicker_js.html' %}
+
+  <script type="text/javascript">
+    const container = document.querySelector("#form-container")
+    const addButton = document.querySelector("#add-form")
+    const formRegex = RegExp(`form-(\\d){1}-`,'g');
+    let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
+    let deleteButtons = document.querySelectorAll(".delete-form");
+
+    function addForm(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      let newForm = container.querySelectorAll(".registration-form")[0].cloneNode(true);
+      let formNb = container.querySelectorAll(".registration-form").length;
+      newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNb}-`)
+
+      // TODO display delete button as soon as we have more than 1 row
+      newForm.innerHTML = newForm.innerHTML.replace("delete-button hidden", 'delete-button');
+
+      container.insertBefore(newForm, addButton)
+      totalForms.setAttribute('value', `${formNb+1}`)
+
+      // Default datepicker init is onLoad only, so do it manually.
+      $(`#id_form-${formNb}-date_pickers`).datetimepicker({"format": "DD.MM.YYYY"});
+
+    }
+
+    function deleteForm(e) {
+      // Changing the id (as the formset demands), will break the values.
+      // Prepare an array of new date values.
+      const deletedIndex = e.target.parentElement.querySelector(".input-group.date").id.match("id_form-(\\d)")[1];
+      let values = []
+      let i = 0;
+      $(".registration-form").each(function(index) {
+        values.push({
+          'date': $(`#id_form-${i}-date_pickers`).data("DateTimePicker").date(),
+          'day_time': $(`#id_form-${i}-day_time`).val(),
+          'classes_amount': $(`#id_form-${i}-classes_amount`).val(),
+        })
+        $(this).data("DateTimePicker", null);
+        i++;
+      });
+      values.splice(deletedIndex, 1);
+
+      // Remove the line
+      container.removeChild(e.target.parentElement);
+
+      // Reset formset indexes and values
+      i = 0;
+      container.querySelectorAll(".registration-form").forEach(function(form) {
+        form.innerHTML = form.innerHTML.replace(formRegex, `form-${i}-`)
+        const picker = $(`#id_form-${i}-date_pickers`);
+        picker.datetimepicker({"format": "DD.MM.YYYY"});
+        picker.data("DateTimePicker").date(values[i]['date']);
+        $(`#id_form-${i}-day_time`).val(values[i]['day_time']);
+        $(`#id_form-${i}-classes_amount`).val(values[i]['classes_amount']);
+        i ++;
+      });
+
+      // Update totalForms
+      totalForms.setAttribute('value', `${i}`)
+    }
+
+    addButton.addEventListener('click', addForm);
+    container.addEventListener('click', event => {
+      if (event.target.classList.contains("delete-button")) {
+        deleteForm(event);
+      }
+    });
+
+  </script>
+
+{% endblock %}
+
+{% block content %}
+  <h1>{% trans "Pré-inscription sans engagements" %}</h1>
+
+  {% bootstrap_formset_errors formset %}
+  <form id="form-container" method="POST" action="" class="form-horizontal">
+    {% csrf_token %}
+    {{ formset.management_form }}
+
+    {% for form in formset %}
+      <div class="form-group form-group-sm registration-form">
+        {% bootstrap_field form.date size='small' field_class='' form_group_class='col-md-3' %}
+        {% bootstrap_field form.day_time size='small' field_class='' form_group_class='col-md-3' %}
+        {% bootstrap_field form.classes_amount size='small' field_class='' form_group_class='col-md-3' %}
+        <button type="button" class="btn btn-secondary col-md-2 col-md-offset-1 delete-button hidden">
+          {% trans "Supprimer" %}
+        </button>
+      </div>
+    {% endfor %}
+
+    <button type="button" class="btn btn-secondary" id="add-form">
+      {% trans "Ajouter une session" %}
+    </button>
+
+    {% buttons %}
+      <button type="submit" class="btn btn-primary pull-right">{% trans "Suivant" %}</button>
+    {% endbuttons %}
+  </form>
+
+{% endblock %}
