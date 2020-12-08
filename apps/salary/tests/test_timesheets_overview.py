@@ -7,7 +7,12 @@ from apps.challenge.tests.factories import QualificationFactory, SessionFactory
 from apps.salary import HOURLY_RATE_HELPER, timesheets_overview
 from apps.user.tests.factories import UserFactory
 from defivelo.roles import user_cantons
-from defivelo.tests.utils import CollaboratorAuthClient, PowerUserAuthClient, StateManagerAuthClient
+from defivelo.tests.utils import (
+    AuthClient,
+    CollaboratorAuthClient,
+    PowerUserAuthClient,
+    StateManagerAuthClient,
+)
 
 from .factories import TimesheetFactory, ValidatedTimesheetFactory
 
@@ -74,6 +79,25 @@ def test_helper_can_only_see_own_entries(db):
         in response.content.decode()
     )
     assert "Jen Barber" not in response.content.decode()
+
+
+def test_authed_user_cannot_timesheet(db):
+    client = AuthClient()
+    client.user.profile.affiliation_canton = "VD"
+
+    QualificationFactory(
+        actor=UserFactory(
+            first_name="Mark", last_name="Brown", profile__affiliation_canton="VD"
+        ),
+        session=SessionFactory(day=datetime.date(2019, 4, 11)),
+    )
+    QualificationFactory(
+        actor=client.user,
+        session=SessionFactory(day=datetime.date(2019, 4, 12)),
+    )
+
+    response = client.get(reverse("salary:timesheets-overview", kwargs={"year": 2019}))
+    assert response.status_code == 403  # Forbidden
 
 
 def test_matrix_shows_months_with_missing_timesheets(db):

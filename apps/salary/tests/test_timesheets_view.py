@@ -11,7 +11,38 @@ from apps.orga.tests.factories import OrganizationFactory
 from apps.salary.models import Timesheet
 from apps.user.tests.factories import UserFactory
 from defivelo.roles import user_cantons
-from defivelo.tests.utils import CollaboratorAuthClient, StateManagerAuthClient
+from defivelo.tests.utils import (
+    AuthClient,
+    CollaboratorAuthClient,
+    StateManagerAuthClient,
+)
+
+
+def test_authed_user_cannot_see_timesheet(db):
+    client = AuthClient()
+
+    SeasonFactory(
+        cantons=["VD"],
+        year=2019,
+        month_start=1,
+        n_months=5,
+    )
+    QualificationFactory(
+        actor=client.user,
+        session=SessionFactory(
+            day=datetime.date(2019, 4, 12),
+            orga=OrganizationFactory(address_canton="VD"),
+        ),
+    )
+
+    response = client.get(
+        reverse(
+            "salary:user-timesheets",
+            kwargs={"year": 2019, "month": 4, "pk": client.user.pk},
+        )
+    )
+
+    assert response.status_code == 403  # Forbidden
 
 
 def test_helper_can_see_his_timesheet(db):
