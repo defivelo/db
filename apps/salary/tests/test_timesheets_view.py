@@ -11,11 +11,11 @@ from apps.orga.tests.factories import OrganizationFactory
 from apps.salary.models import Timesheet
 from apps.user.tests.factories import UserFactory
 from defivelo.roles import user_cantons
-from defivelo.tests.utils import AuthClient, StateManagerAuthClient
+from defivelo.tests.utils import CollaboratorAuthClient, StateManagerAuthClient
 
 
 def test_helper_can_see_his_timesheet(db):
-    client = AuthClient()
+    client = CollaboratorAuthClient()
 
     SeasonFactory(
         cantons=["VD"],
@@ -43,7 +43,7 @@ def test_helper_can_see_his_timesheet(db):
 
 
 def test_helper_cannot_timesheet_overtime_without_comments(db):
-    client = AuthClient()
+    client = CollaboratorAuthClient()
 
     SeasonFactory(
         cantons=["VD"],
@@ -84,7 +84,7 @@ def test_helper_cannot_timesheet_overtime_without_comments(db):
 
 
 def test_helper_can_timesheet(db):
-    client = AuthClient()
+    client = CollaboratorAuthClient()
 
     SeasonFactory(
         cantons=["VD"],
@@ -125,7 +125,7 @@ def test_helper_can_timesheet(db):
 
 
 def test_helper_can_update_timesheet(db):
-    client = AuthClient()
+    client = CollaboratorAuthClient()
 
     SeasonFactory(
         cantons=["VD"],
@@ -179,7 +179,7 @@ def test_helper_can_update_timesheet(db):
 
 
 def test_helper_cannot_validate_timesheet(db):
-    client = AuthClient()
+    client = CollaboratorAuthClient()
 
     SeasonFactory(
         cantons=["VD"],
@@ -224,7 +224,7 @@ def test_helper_cannot_validate_timesheet(db):
 
 
 def test_helper_cannot_set_timesheet_to_ignore(db):
-    client = AuthClient()
+    client = CollaboratorAuthClient()
 
     SeasonFactory(cantons=["VD"], year=2019, month_start=1, n_months=5)
     QualificationFactory(
@@ -356,7 +356,7 @@ def test_state_manager_can_set_timesheet_to_ignore(db):
 
 
 def test_helper_cannot_timesheet_if_he_has_not_work(db):
-    client = AuthClient()
+    client = CollaboratorAuthClient()
     datas = {
         "form-TOTAL_FORMS": "1",
         "form-INITIAL_FORMS": "1",

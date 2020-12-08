@@ -7,7 +7,7 @@ from apps.challenge.tests.factories import QualificationFactory, SessionFactory
 from apps.salary import HOURLY_RATE_HELPER, timesheets_overview
 from apps.user.tests.factories import UserFactory
 from defivelo.roles import user_cantons
-from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient
+from defivelo.tests.utils import CollaboratorAuthClient, PowerUserAuthClient, StateManagerAuthClient
 
 from .factories import TimesheetFactory, ValidatedTimesheetFactory
 
@@ -50,7 +50,7 @@ def test_state_manager_can_only_see_managed_users(db):
 
 
 def test_helper_can_only_see_own_entries(db):
-    client = AuthClient()
+    client = CollaboratorAuthClient()
     client.user.profile.affiliation_canton = "VD"
 
     QualificationFactory(
@@ -233,7 +233,7 @@ def test_state_manager_sees_reminder_button_for_month_with_missing_timesheets(db
 
 
 def test_helper_doesnt_see_reminder_button(db):
-    client = AuthClient()
+    client = CollaboratorAuthClient()
     QualificationFactory(
         actor=client.user,
         session=SessionFactory(day=datetime.date(2019, 3, 11)),
