@@ -108,6 +108,15 @@ class SeasonToSpecificStateForm(forms.ModelForm):
     sendemail = forms.BooleanField(
         label=_("Envoyer le courriel suivant"), initial=True, required=False
     )
+    customtext = forms.CharField(
+        label=_("Précisions"),
+        help_text=_(
+            "Attention: Le courriel est envoyé à chaque destinataire dans sa langue, mais ce texte est envoyé tel quel."
+        ),
+        initial="",
+        widget=forms.Textarea,
+        required=False,
+    )
 
     def __init__(
         self,

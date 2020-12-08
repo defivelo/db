@@ -17,13 +17,20 @@
             <button type="submit" class="btn btn-primary pull-right">{% blocktrans with tostate=tostate %}Passer le mois vers "{{tostate}}"{% endblocktrans %}}</button>
             <a class="btn btn-default" href="{% url 'season-detail' pk=season.pk %}">{% trans "Annuler" %}</a>
         {% endbuttons %}
-        {% bootstrap_form form size='small' %}
-    </form>
+        {% for field in form %}
+          {% if field.name != 'customtext' %}
+            {% bootstrap_field field size='small' %}
+          {% endif %}
+        {% endfor %}
     <blockquote>
       <pre style="white-space: pre-wrap;">{% trans "Sujet:" %} {{ email.subject }}
 
-{{ email.body }}</pre>
+{{ email.body.pre }}</pre>
+      {% bootstrap_field form.customtext size='small' show_label=False form_group_class="" %}
+      <pre style="white-space: pre-wrap;">
+{{ email.body.post }}</pre>
     </blockquote>
+    </form>
     <p>{% trans "Ce courriel sera envoyé à:" %}</p>
     {% if recipients %}
       <ul>
