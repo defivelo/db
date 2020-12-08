@@ -54,7 +54,7 @@ def test_state_manager_can_only_see_managed_users(db):
     assert "Jen Barber" not in response.content.decode()
 
 
-def test_helper_can_only_see_own_entries(db):
+def test_collaborator_can_only_see_own_entries(db):
     client = CollaboratorAuthClient()
     client.user.profile.affiliation_canton = "VD"
 
@@ -256,7 +256,7 @@ def test_state_manager_sees_reminder_button_for_month_with_missing_timesheets(db
     assert "Envoyer un rappel aux collabora" in response.content.decode()
 
 
-def test_helper_doesnt_see_reminder_button(db):
+def test_collaborator_doesnt_see_reminder_button(db):
     client = CollaboratorAuthClient()
     QualificationFactory(
         actor=client.user,

@@ -45,7 +45,7 @@ def test_authed_user_cannot_see_timesheet(db):
     assert response.status_code == 403  # Forbidden
 
 
-def test_helper_can_see_his_timesheet(db):
+def test_collaborator_can_see_his_timesheet(db):
     client = CollaboratorAuthClient()
 
     SeasonFactory(
@@ -73,7 +73,7 @@ def test_helper_can_see_his_timesheet(db):
     assert 1 == len(response.context["form"].forms)
 
 
-def test_helper_cannot_timesheet_overtime_without_comments(db):
+def test_collaborator_cannot_timesheet_overtime_without_comments(db):
     client = CollaboratorAuthClient()
 
     SeasonFactory(
@@ -114,7 +114,7 @@ def test_helper_cannot_timesheet_overtime_without_comments(db):
     assert Timesheet.objects.count() == 0
 
 
-def test_helper_can_timesheet(db):
+def test_collaborator_can_timesheet(db):
     client = CollaboratorAuthClient()
 
     SeasonFactory(
@@ -155,7 +155,7 @@ def test_helper_can_timesheet(db):
     assert Timesheet.objects.count() == 1
 
 
-def test_helper_can_update_timesheet(db):
+def test_collaborator_can_update_timesheet(db):
     client = CollaboratorAuthClient()
 
     SeasonFactory(
@@ -209,7 +209,7 @@ def test_helper_can_update_timesheet(db):
     )
 
 
-def test_helper_cannot_validate_timesheet(db):
+def test_collaborator_cannot_validate_timesheet(db):
     client = CollaboratorAuthClient()
 
     SeasonFactory(
@@ -254,7 +254,7 @@ def test_helper_cannot_validate_timesheet(db):
     )
 
 
-def test_helper_cannot_set_timesheet_to_ignore(db):
+def test_collaborator_cannot_set_timesheet_to_ignore(db):
     client = CollaboratorAuthClient()
 
     SeasonFactory(cantons=["VD"], year=2019, month_start=1, n_months=5)
@@ -386,7 +386,7 @@ def test_state_manager_can_set_timesheet_to_ignore(db):
     assert ts.get_total_amount() == 0
 
 
-def test_helper_cannot_timesheet_if_he_has_not_work(db):
+def test_collaborator_cannot_timesheet_if_he_has_not_work(db):
     client = CollaboratorAuthClient()
     datas = {
         "form-TOTAL_FORMS": "1",
