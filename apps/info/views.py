@@ -106,7 +106,8 @@ class SeasonExportsMixin(MenuView):
         }
         context["nav_url"] = resolve(self.request.path).url_name
         context["dataset_exporturl"] = context["nav_url"] + "-export"
-        context["menu_category"] = "stats"
+        context["menu_category"] = "statistics"
+        context["submenu_category"] = "statistics-season"
         return context
 
 
