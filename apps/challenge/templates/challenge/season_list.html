@@ -10,20 +10,22 @@
     <nav>
         <ul class="pager">
             <li class="previous btn-xs">
-                <a href="{% url 'season-list' year=dv_season_prev.year dv_season=dv_season_prev.dv_season %}">
+                <a href="{% dv_season_url dv_season_prev_day %}">
+                    {% dv_season dv_season_prev_day as dvs %}
                     <span aria-hidden="true">&larr;</span>
-                    {% blocktrans with year=dv_season_prev.year season=dv_season_prev.dv_season|season_verb %}{{season}} {{year}}{% endblocktrans %}
+                    {% blocktrans with year=dvs.year season=dvs.dv_season|season_verb %}{{season}} {{year}}{% endblocktrans %}
                 </a>
             </li>
-            {% current_dv_season as current_dv_season %}
-            {% if year|add:0 != now.year|add:0 or current_dv_season != dv_season %}
+            {% dv_season as dvs %}
+            {% if year|add:0 != dvs.year|add:0 or dv_season|add:0 != dvs.dv_season|add:0 %}
                 <li class="btn-xs">
-                  <a href="{% url 'season-list' year=now.year dv_season=current_dv_season %}">{% trans "Saison courante" %}</a>
+                  <a href="{% dv_season_url %}">{% trans "Saison courante" %}</a>
                 </li>
             {% endif %}
             <li class="next btn-xs">
-                <a href="{% url 'season-list' year=dv_season_next.year dv_season=dv_season_next.dv_season %}">
-                    {% blocktrans with year=dv_season_next.year season=dv_season_next.dv_season|season_verb %}{{season}} {{year}}{% endblocktrans %}
+                <a href="{% dv_season_url dv_season_next_day %}">
+                    {% dv_season dv_season_next_day as dvs %}
+                    {% blocktrans with year=dvs.year season=dvs.dv_season|season_verb %}{{season}} {{year}}{% endblocktrans %}
                     <span aria-hidden="true">&rarr;</span>
                 </a>
             </li>

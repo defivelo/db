@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
+{% load dv_filters %}
 {% block head_title %}{% blocktrans with season=season.desc %}Suppression du mois {{ season }} ?{% endblocktrans %}{% endblock %}
 
 {% block content %}
@@ -12,7 +13,7 @@
 
         {% buttons %}
             <button type="submit" class="btn btn-danger pull-right">{% trans "Supprimer vraiment" %}</button>
-            <a class="btn btn-default" href="{% url 'season-list' %}">{% trans "Retour à la saison" %}</a>
+            <a class="btn btn-default" href="{% dv_season_url season.begin %}">{% trans "Retour à la saison" %}</a>
         {% endbuttons %}
     </form>
 {% endblock %}

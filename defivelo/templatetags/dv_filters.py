@@ -424,12 +424,28 @@ def season_verb(season_id):
 
 
 @register.simple_tag
-def current_dv_season():
-    return int(
-        DV_SEASON_SPRING
-        if datetime.datetime.today().month <= DV_SEASON_LAST_SPRING_MONTH
-        else DV_SEASON_AUTUMN
-    )
+def dv_season(day=None):
+    """
+    Structure (kwargs) for the current (or specified) DV season
+    """
+    if not day:
+        day = datetime.datetime.today()
+    return {
+        "year": day.year,
+        "dv_season": (
+            DV_SEASON_SPRING
+            if day.month <= DV_SEASON_LAST_SPRING_MONTH
+            else DV_SEASON_AUTUMN
+        ),
+    }
+
+
+@register.simple_tag
+def dv_season_url(day=None):
+    """
+    URL of the current (or specified) DV season list view
+    """
+    return reverse("season-list", kwargs=dv_season(day))
 
 
 @register.filter

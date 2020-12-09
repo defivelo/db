@@ -57,6 +57,7 @@ from apps.user import FORMATION_KEYS, FORMATION_M1, FORMATION_M2
 from apps.user.models import USERSTATUS_ACTIVE, USERSTATUS_DELETED, USERSTATUS_RESERVE
 from apps.user.views import ActorsList, HelpersList
 from defivelo.roles import has_permission, user_cantons
+from defivelo.templatetags.dv_filters import dv_season_url
 from defivelo.views import MenuView
 
 from .. import (
@@ -88,7 +89,6 @@ from ..models.qualification import (
 )
 from ..utils import get_users_roles_for_session
 from .mixins import CantonSeasonFormMixin
-from defivelo.templatetags.dv_filters import current_dv_season
 
 EXPORT_NAMETEL = u("{name} - {tel}")
 
@@ -144,13 +144,7 @@ class SeasonListRedirect(RedirectView):
     is_permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse(
-            "season-list",
-            kwargs={
-                "year": datetime.datetime.today().year,
-                "dv_season": current_dv_season(),
-            },
-        )
+        return dv_season_url()
 
 
 class SeasonListView(SeasonMixin, ListView):
@@ -180,23 +174,15 @@ class SeasonListView(SeasonMixin, ListView):
         context["year"] = self.year
         context["dv_season"] = self.dv_season
         if self.dv_season == DV_SEASON_SPRING:
-            context["dv_season_next"] = {
-                "year": self.year,
-                "dv_season": DV_SEASON_AUTUMN,
-            }
-            context["dv_season_prev"] = {
-                "year": self.year - 1,
-                "dv_season": DV_SEASON_AUTUMN,
-            }
+            context["dv_season_prev_day"] = datetime.date(
+                self.year - 1, DV_SEASON_LAST_SPRING_MONTH + 1, 1
+            )
+            context["dv_season_next_day"] = datetime.date(
+                self.year, DV_SEASON_LAST_SPRING_MONTH + 1, 1
+            )
         elif self.dv_season == DV_SEASON_AUTUMN:
-            context["dv_season_next"] = {
-                "year": self.year + 1,
-                "dv_season": DV_SEASON_SPRING,
-            }
-            context["dv_season_prev"] = {
-                "year": self.year,
-                "dv_season": DV_SEASON_SPRING,
-            }
+            context["dv_season_prev_day"] = datetime.date(self.year, 1, 1)
+            context["dv_season_next_day"] = datetime.date(self.year + 1, 1, 1)
         else:
             # Will never happen
             raise PermissionDenied
