@@ -49,9 +49,6 @@
                     {% endif %}
                     <li><a href="{% url 'season-list' year=now_year %}">{% trans "Tous les mois" %}</a></li>
                     <li{% if 'qualifs-calendar' in submenu_category %} class="active"{% endif %}><a href="{% url 'qualifs-calendar' %}">{% trans "Calendrier" %}</a></li>
-                    {% if user|can:'challenge_invoice_cru' %}
-                      <li><a href="{% url 'invoices-yearly-list' year=now_year %}">{% trans "Facturation" %}</a></li>
-                    {% endif %}
                     {% if not user|can:'challenge_season_crud' %}
                         <li><a target="_blank" href="{% url 'public-nextqualifs' %}">{% trans "Prochaines Qualifs" %}</a></li>
                     {% endif %}
@@ -103,12 +100,17 @@
             {% endif %}
             {% with now|date:'Y' as year %}
               {% if user|can:'cantons_mine'%}
-                <li{% if 'finance' in menu_category  %} class="active"{% endif %}>
+                <li{% if 'finance' in menu_category %} class="active"{% endif %}>
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Finances" %}<span class="caret"></span></a>
                       <ul class="dropdown-menu">
                         <li{% if 'validations' in menu_category  %} class="active" {% endif %}>
                          <a href="{% url 'salary:validations-year' year=year %}">{% trans "Validations mensuelles" %}</a>
                         </li>
+                      {% if user|can:'challenge_invoice_cru' %}
+                        <li{% if 'invoices' in submenu_category  %} class="active" {% endif %}>
+                          <a href="{% url 'invoices-yearly-list' year=now_year %}">{% trans "Facturation" %}</a>
+                        </li>
+                      {% endif %}
               {% endif %}
               {% if user|can:'timesheet' %}
                         <li{% if 'timesheet' in menu_category  %} class="active" {% endif %}>
