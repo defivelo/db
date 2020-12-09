@@ -156,9 +156,11 @@ class SeasonListView(SeasonMixin, ListView):
 
     def dispatch(self, request, *args, **kwargs):
         self.year = int(self.kwargs.pop("year"))
-        self.dv_season = int(self.kwargs.pop("dv_season"))
-        if self.dv_season not in [s[0] for s in DV_SEASON_CHOICES]:
-            raise PermissionDenied
+        self.dv_season = self.kwargs.pop("dv_season", None)
+        if self.dv_season:
+            self.dv_season = int(self.dv_season)
+            if self.dv_season not in [s[0] for s in DV_SEASON_CHOICES]:
+                raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -172,20 +174,21 @@ class SeasonListView(SeasonMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["year"] = self.year
-        context["dv_season"] = self.dv_season
-        if self.dv_season == DV_SEASON_SPRING:
-            context["dv_season_prev_day"] = datetime.date(
-                self.year - 1, DV_SEASON_LAST_SPRING_MONTH + 1, 1
-            )
-            context["dv_season_next_day"] = datetime.date(
-                self.year, DV_SEASON_LAST_SPRING_MONTH + 1, 1
-            )
-        elif self.dv_season == DV_SEASON_AUTUMN:
-            context["dv_season_prev_day"] = datetime.date(self.year, 1, 1)
-            context["dv_season_next_day"] = datetime.date(self.year + 1, 1, 1)
-        else:
-            # Will never happen
-            raise PermissionDenied
+        if self.dv_season:
+            context["dv_season"] = self.dv_season
+            if self.dv_season == DV_SEASON_SPRING:
+                context["dv_season_prev_day"] = datetime.date(
+                    self.year - 1, DV_SEASON_LAST_SPRING_MONTH + 1, 1
+                )
+                context["dv_season_next_day"] = datetime.date(
+                    self.year, DV_SEASON_LAST_SPRING_MONTH + 1, 1
+                )
+            elif self.dv_season == DV_SEASON_AUTUMN:
+                context["dv_season_prev_day"] = datetime.date(self.year, 1, 1)
+                context["dv_season_next_day"] = datetime.date(self.year + 1, 1, 1)
+            else:
+                # Will never happen
+                raise PermissionDenied
         return context
 
 
