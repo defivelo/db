@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load bootstrap3 dv_filters i18n %}
+{% block head_title %}{% trans "Confirmer la pré-inscription" %}{% endblock %}
+
+{% block bootstrap3_extra_script %}
+  <script type="text/javascript">
+    $("#id_is_terms_accepted").on("change", function() {
+      $("#btn-confirm").prop("disabled", !this.checked);
+    });
+  </script>
+{% endblock %}
+
+{% block content %}
+  <h1>{% trans "Confirmer la pré-inscription" %}</h1>
+
+  {% include "orga/_organization_detail.html" %}
+
+  <div class="panel panel-success">
+    <div class="panel-heading">
+      <h2 class="panel-title">{% trans 'Pré-inscription' %}</h2>
+    </div>
+    <table class="table">
+      <tr>
+        <th>{% trans 'Date' %}</th>
+        <th>{% trans 'Partie de la journée' %}</th>
+        <th>{% trans 'Nombre de classes' %}</th>
+      </tr>
+      {% for line in lines %}
+        <tr>
+          <td>{{ line.date|date:"l, j F Y" }}</td>
+          <td>{{ line.day_time }}</td>
+          <td>{{ line.classes_amount }}</td>
+        </tr>
+      {% endfor %}
+      <tr>
+        <th colspan="2">{% trans 'Total de classes' %}</th>
+        <th>{{ total_classes }}</th>
+      </tr>
+    </table>
+  </div>
+
+  <div class="panel panel-warning">
+    <div class="panel-heading">
+      <h2 class="panel-title">{% trans 'Conditions générales' %}</h2>
+    </div>
+    <div class="panel-body">
+      {% blocktrans trimmed %}
+        Les conditions générales sont décrites ici. Texte à venir.
+      {% endblocktrans %}
+    </div>
+  </div>
+
+  <form method="POST" action="">
+    <div>
+      {% csrf_token %}
+      {% bootstrap_field form.is_terms_accepted %}
+    </div>
+
+    {% buttons %}
+      <button id="btn-confirm" class="btn btn-primary pull-right" type="submit" disabled>
+        {% trans "Soumettre la pré-inscription" %}
+      </button>
+      <a class="btn btn-default" href="{% url "registration-create" %}">
+        {% trans "Modifier" %}
+      </a>
+    {% endbuttons %}
+
+  </form>
+
+{% endblock %}

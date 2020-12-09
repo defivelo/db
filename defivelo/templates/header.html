@@ -62,6 +62,9 @@
                     {% if user|can:'challenge_season_crud' %}
                         <li><a href="{% url 'season-create' %}">{% trans "Créer un mois" %}</a></li>
                     {% endif %}
+                      {% if user|can:'registration_create' %}
+                        <li><a href="{% url 'registration-create' %}">{% trans 'Nouvelle inscription' %}</a></li>
+                      {% endif %}
                     </ul>
             </li>
             {% if user|can:"orga_show" and user.managed_organizations.count %}
