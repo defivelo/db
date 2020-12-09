@@ -425,7 +425,7 @@ def season_verb(season_id):
 
 @register.simple_tag
 def current_dv_season():
-    return (
+    return int(
         DV_SEASON_SPRING
         if datetime.datetime.today().month <= DV_SEASON_LAST_SPRING_MONTH
         else DV_SEASON_AUTUMN

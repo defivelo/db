@@ -7,7 +7,7 @@
 <ul class="nav navbar-nav">
     {% if request.user.is_authenticated %}
         {% if season and user|can:'challenge_season_crud' %}
-            <li><a href="{% url 'season-list' year=now_year %}" title="{% trans "Tous les mois" %}"><span class="glyphicon glyphicon-th-list"></span>&nbsp;</a></li>
+            <li><a href="{% url 'season-list' year=now_year dv_season=current_dv_season %}" title="{% trans "Tous les mois" %}"><span class="glyphicon glyphicon-th-list"></span>&nbsp;</a></li>
             <li class="active">
                 <a href="{% url 'season-detail' season.pk %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                     {{ season.desc_abbr }} <span class="caret"></span>

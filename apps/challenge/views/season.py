@@ -146,7 +146,7 @@ class SeasonListView(SeasonMixin, ListView):
     raise_without_cantons = False
 
     def dispatch(self, request, *args, **kwargs):
-        self.year = self.kwargs.pop("year")
+        self.year = int(self.kwargs.pop("year"))
         self.dv_season = int(self.kwargs.pop("dv_season"))
         if self.dv_season not in [s[0] for s in DV_SEASON_CHOICES]:
             raise PermissionDenied
@@ -157,13 +157,34 @@ class SeasonListView(SeasonMixin, ListView):
         if self.dv_season == DV_SEASON_SPRING:
             qs = qs.filter(month_start__lte=DV_SEASON_LAST_SPRING_MONTH)
         elif self.dv_season == DV_SEASON_AUTUMN:
-            qs = qs.filter(month_start_gt=DV_SEASON_LAST_SPRING_MONTH)
+            qs = qs.filter(month_start__gt=DV_SEASON_LAST_SPRING_MONTH)
         return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["year"] = self.year
         context["dv_season"] = self.dv_season
+        if self.dv_season == DV_SEASON_SPRING:
+            context["dv_season_next"] = {
+                "year": self.year,
+                "dv_season": DV_SEASON_AUTUMN,
+            }
+            context["dv_season_prev"] = {
+                "year": self.year - 1,
+                "dv_season": DV_SEASON_AUTUMN,
+            }
+        elif self.dv_season == DV_SEASON_AUTUMN:
+            context["dv_season_next"] = {
+                "year": self.year + 1,
+                "dv_season": DV_SEASON_SPRING,
+            }
+            context["dv_season_prev"] = {
+                "year": self.year,
+                "dv_season": DV_SEASON_SPRING,
+            }
+        else:
+            # Will never happen
+            raise PermissionDenied
         return context
 
 
