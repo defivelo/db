@@ -106,7 +106,7 @@ class SeasonExportsMixin(MenuView):
         }
         context["nav_url"] = resolve(self.request.path).url_name
         context["dataset_exporturl"] = context["nav_url"] + "-export"
-        context["menu_category"] = "exports"
+        context["menu_category"] = "stats"
         return context
 
 
@@ -176,7 +176,7 @@ class SeasonExports(
 
     def get_context_data(self, **kwargs):
         context = super(SeasonExports, self).get_context_data(**kwargs)
-        context["submenu_category"] = "exports-season"
+        context["submenu_category"] = "statistics-season"
         return context
 
 
