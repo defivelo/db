@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.forms import ModelChoiceField, TimeField, Select
+from django.forms import ModelChoiceField, Select, TimeField
 from django.template.loader import render_to_string
 
 from bootstrap3_datetime.widgets import DateTimePicker

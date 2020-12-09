@@ -139,8 +139,10 @@ class Coordinator(AbstractUserRole):
 
 DV_AVAILABLE_ROLES = (
     (None, _("Aucun rôle")),
-    #  ("collaborator", _("Collabora·teur·trice")), # Automatic, leave as comment
+    ("collaborator", _("Collabora·teur·trice")),
     ("state_manager", _("Chargé·e de projet")),
     ("coordinator", _("Coordina·teur·trice")),
     ("power_user", _("Bureau de coordination")),
 )
+
+DV_AUTOMATIC_ROLES = ["collaborator"]
