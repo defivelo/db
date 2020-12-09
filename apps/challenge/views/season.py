@@ -41,6 +41,10 @@ from rolepermissions.mixins import HasPermissionsMixin
 from tablib import Dataset
 
 from apps.common import (
+    DV_SEASON_AUTUMN,
+    DV_SEASON_CHOICES,
+    DV_SEASON_LAST_SPRING_MONTH,
+    DV_SEASON_SPRING,
     DV_SEASON_STATE_OPEN,
     DV_SEASON_STATE_RUNNING,
     DV_SEASON_STATES,
@@ -143,11 +147,18 @@ class SeasonListView(SeasonMixin, ListView):
 
     def dispatch(self, request, *args, **kwargs):
         self.year = self.kwargs.pop("year")
-        self.dv_season = self.kwargs.pop("dv_season")
+        self.dv_season = int(self.kwargs.pop("dv_season"))
+        if self.dv_season not in [s[0] for s in DV_SEASON_CHOICES]:
+            raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        return super().get_queryset().filter(year=self.year)
+        qs = super().get_queryset().filter(year=self.year)
+        if self.dv_season == DV_SEASON_SPRING:
+            qs = qs.filter(month_start__lte=DV_SEASON_LAST_SPRING_MONTH)
+        elif self.dv_season == DV_SEASON_AUTUMN:
+            qs = qs.filter(month_start_gt=DV_SEASON_LAST_SPRING_MONTH)
+        return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
