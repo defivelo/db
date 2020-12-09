@@ -7,9 +7,9 @@ from apps.common.forms import SwissDateField
 
 
 class OrganizationSelectionForm(forms.Form):
-    def __init__(self, *args, user, **kwargs):
+    def __init__(self, *args, coordinator, **kwargs):
         super().__init__(*args, **kwargs)
-        organizations = user.managed_organizations.all()
+        organizations = coordinator.managed_organizations.all()
         self.fields["organization"] = forms.ModelChoiceField(
             widget=forms.Select,
             queryset=organizations,
@@ -20,11 +20,14 @@ class OrganizationSelectionForm(forms.Form):
 
 
 class RegistrationForm(forms.ModelForm):
-    date = SwissDateField()
+    date = SwissDateField(required=True)
 
-    def __init__(self, *args, user, **kwargs):
-        self.user = user
+    def __init__(self, *args, **kwargs):
+        coordinator = kwargs.pop("coordinator", None)
+        organization = kwargs.pop("organization", None)
         super().__init__(*args, **kwargs)
+        self.instance.coordinator = coordinator
+        self.instance.organization = organization
         self.fields["classes_amount"].widget.attrs["min"] = 1
         self.fields["classes_amount"].widget.attrs["max"] = 6
 
@@ -32,11 +35,27 @@ class RegistrationForm(forms.ModelForm):
         model = Registration
         fields = ("date", "day_time", "classes_amount")
 
-    def clean_date(self):
-        return self.cleaned_data["date"].isoformat()
+
+class BaseRegistrationFormSet(forms.BaseFormSet):
+    def serialize(self):
+        return [
+            {
+                "date": form["date"].isoformat(),
+                "day_time": form["day_time"],
+                "classes_amount": form["classes_amount"],
+            }
+            for form in self.cleaned_data
+        ]
 
 
-RegistrationFormSet = formset_factory(RegistrationForm, extra=1, max_num=1)
+RegistrationFormSet = formset_factory(
+    RegistrationForm,
+    formset=BaseRegistrationFormSet,
+    extra=1,
+    max_num=1,
+    min_num=1,
+    validate_min=True,
+)
 
 
 class RegistrationConfirmForm(forms.Form):
