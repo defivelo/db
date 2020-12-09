@@ -81,7 +81,7 @@
                       {% trans "Base de données" %}<span class="caret"></span>
                       <ul class="dropdown-menu">
                           {% if user|can:'user_view_list' %}
-                              <li{% if 'user' in menu_category %} class="active"{% endif %}><a href="{% url 'user-list' %}">{% trans "Personnes" %}</a></li>
+                              <li{% if 'user' in menu_category %} class="active"{% endif %}><a href="{% url 'user-list' %}">{% trans "Collabora·teurs·trices" %}</a></li>
                           {% endif %}
                           {% if user|can:'orga_detail_all' %}
                               <li{% if 'organization' in menu_category  %} class="active"{% endif %}><a href="{% url 'organization-list' %}">{% trans "Établissements" %}</a></li>
