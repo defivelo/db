@@ -33,6 +33,7 @@ from .season import (
     SeasonErrorsListView,
     SeasonExportView,
     SeasonHelperListView,
+    SeasonListRedirect,
     SeasonListView,
     SeasonPersonalPlanningExportFeed,
     SeasonPersonalPlanningExportView,

@@ -1,6 +1,7 @@
 {% load i18n dv_filters %}
+{% current_dv_season as current_dv_season %}
 <div class="hidden-print">
-    <a class="btn btn-default" href="{% url 'season-list' year=now.year %}">{% trans "Retour à la liste des mois" %}</a>
+    <a class="btn btn-default" href="{% url 'season-list' year=now.year dv_season=current_dv_season %}">{% trans "Retour à la saison" %}</a>
     {% if user|can:'challenge_session_crud' %}
       <div class="btn-group">
         <a class="btn btn-default" href="{% url 'season-update' season.pk %}"><span class="glyphicon glyphicon-pencil"></span> {% trans "Éditer le mois" %}</a>

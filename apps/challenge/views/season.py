@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import operator
 from collections import OrderedDict
 from functools import reduce
@@ -32,7 +33,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import pgettext_lazy as _p
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import ListView
+from django.views.generic import ListView, RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
@@ -87,6 +88,7 @@ from ..models.qualification import (
 )
 from ..utils import get_users_roles_for_session
 from .mixins import CantonSeasonFormMixin
+from defivelo.templatetags.dv_filters import current_dv_season
 
 EXPORT_NAMETEL = u("{name} - {tel}")
 
@@ -136,6 +138,19 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
             if not cantons:
                 raise PermissionDenied
         return qs
+
+
+class SeasonListRedirect(RedirectView):
+    is_permanent = False
+
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse(
+            "season-list",
+            kwargs={
+                "year": datetime.datetime.today().year,
+                "dv_season": current_dv_season(),
+            },
+        )
 
 
 class SeasonListView(SeasonMixin, ListView):
