@@ -142,5 +142,5 @@ DV_AVAILABLE_ROLES = (
     #  ("collaborator", _("Collabora·teur·trice")), # Automatic, leave as comment
     ("state_manager", _("Chargé·e de projet")),
     ("coordinator", _("Coordina·teur·trice")),
-    ("power_user", _("Super-utilisa·teur·trice")),  # Bureau
+    ("power_user", _("Bureau de coordination")),
 )
