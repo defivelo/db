@@ -1,5 +1,5 @@
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2017 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2017,2020 Didier Raboud <didier.raboud@liip.ch>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -31,7 +31,11 @@ from apps.challenge.models.session import Session
 from apps.common import DV_SEASON_AUTUMN, DV_SEASON_LAST_SPRING_MONTH, DV_STATE_CHOICES
 from apps.orga.models import Organization
 from defivelo.roles import user_cantons
-from defivelo.templatetags.dv_filters import season_verb
+from defivelo.templatetags.dv_filters import (
+    season_month_end,
+    season_month_start,
+    season_verb,
+)
 
 linktxt = '<a href="{url}">{content}</a>'
 
@@ -65,8 +69,11 @@ class SeasonSessionsMixin(object):
 
 class SeasonStatsExport(SeasonSessionsMixin):
     def get_dataset_title(self):
-        return _("Statistiques du mois {season} {year}").format(
-            season=season_verb(self.export_season), year=self.export_year
+        return "{title} - {month_start} à {month_end} {year}".format(
+            title=(u("Statistiques")),
+            year=self.export_year,
+            month_start=season_month_start(self.export_season),
+            month_end=season_month_end(self.export_season),
         )
 
     @property
@@ -144,10 +151,11 @@ class SeasonStatsExport(SeasonSessionsMixin):
 
 class LogisticsExport(SeasonSessionsMixin):
     def get_dataset_title(self):
-        return "{title} - {season} {year}".format(
+        return "{title} - {month_start} à {month_end} {year}".format(
             title=(u("Planification logistique")),
-            season=season_verb(self.export_season),
             year=self.export_year,
+            month_start=season_month_start(self.export_season),
+            month_end=season_month_end(self.export_season),
         )
 
     @property
