@@ -102,7 +102,11 @@ urlpatterns = [
                     never_cache(InvoiceYearlyListView.as_view()),
                     name="invoices-yearly-list",
                 ),
-                url(r"^$", never_cache(SeasonListView.as_view()), name="season-list"),
+                url(
+                    r"(?P<dv_season>[0-4]{1})/$",
+                    never_cache(SeasonListView.as_view()),
+                    name="season-list",
+                ),
             ]
         ),
     ),

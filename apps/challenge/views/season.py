@@ -143,6 +143,7 @@ class SeasonListView(SeasonMixin, ListView):
 
     def dispatch(self, request, *args, **kwargs):
         self.year = self.kwargs.pop("year")
+        self.dv_season = self.kwargs.pop("dv_season")
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -151,6 +152,7 @@ class SeasonListView(SeasonMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["year"] = self.year
+        context["dv_season"] = self.dv_season
         return context
 
 

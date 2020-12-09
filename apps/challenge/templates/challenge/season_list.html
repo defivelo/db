@@ -25,13 +25,9 @@
             </li>
         </ul>
     </nav>
-    
+
+    <table class="table">
     {% for season in seasons %}
-        {% ifchanged season.season_full %}
-            {% if not forloop.first %}</table>{% endif %}
-            <h2>{{ season.season_full }}</h2>
-            <table class="table">
-        {% endifchanged %}
         <tr class="{{ season.state_class }}">
             <td>{{ season.state_icon }}</td>
             <td>
@@ -59,8 +55,8 @@
                 {% endif %}
             </td>
         </tr>
-        {% if forloop.last %}</table>{% endif %}
     {% endfor %}
+    </table>
 
     {% if user|can:'challenge_season_crud' %}
         <div>
