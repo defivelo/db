@@ -73,6 +73,9 @@
           {% if user|can:'registration_create' %}
             <li><a href="{% url 'registration-create' %}">{% trans 'Nouvelle inscription' %}</a></li>
           {% endif %}
+          {% if user|can:'registration_validate' %}
+            <li><a href="{% url 'registration-validate' %}">{% trans 'Pré-inscription à valider' %}</a></li>
+          {% endif %}
         </ul>
       </li>
       {% if user|can:"orga_show" and user.managed_organizations.count %}

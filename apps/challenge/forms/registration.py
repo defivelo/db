@@ -1,5 +1,4 @@
 from django import forms
-from django.forms import formset_factory
 from django.utils.translation import ugettext_lazy as _
 
 from apps.challenge.models.registration import Registration
@@ -20,7 +19,7 @@ class OrganizationSelectionForm(forms.Form):
 
 
 class RegistrationForm(forms.ModelForm):
-    date = SwissDateField(required=True)
+    date = SwissDateField()
 
     def __init__(self, *args, **kwargs):
         coordinator = kwargs.pop("coordinator", None)
@@ -48,7 +47,7 @@ class BaseRegistrationFormSet(forms.BaseFormSet):
         ]
 
 
-RegistrationFormSet = formset_factory(
+RegistrationFormSet = forms.formset_factory(
     RegistrationForm,
     formset=BaseRegistrationFormSet,
     extra=1,
@@ -64,3 +63,25 @@ class RegistrationConfirmForm(forms.Form):
         required=True,
         initial=False,
     )
+
+
+class RegistrationValidationForm(forms.ModelForm):
+    date = SwissDateField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # self.fields['organization'].disabled = True
+        # self.fields['organization'].widget = forms.TextInput()
+        # self.fields['coordinator'].disabled = True
+        # import pdb; pdb.set_trace()
+
+    class Meta:
+        model = Registration
+        fields = ("date", "day_time", "classes_amount")
+
+
+RegistrationValidationFormSet = forms.modelformset_factory(
+    Registration,
+    form=RegistrationValidationForm,
+    extra=0,
+)

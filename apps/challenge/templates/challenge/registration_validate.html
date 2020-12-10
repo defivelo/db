@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% block head_title %}{% trans "Pré-inscription sans engagements" %}{% endblock %}
+
+{% block bootstrap3_extra_script %}
+
+  {% include 'snippets/datetimepicker_js.html' %}
+
+  <script type="text/javascript">
+    /**
+     * Display a confirmation prompt, then remove row
+     */
+    function deleteRow(event) {
+      console.log("remove")
+    }
+
+    /**
+     * Make row editable
+     */
+    function modify(event) {
+      console.log("modify");
+    }
+
+    /**
+     * Mark row accepted. Disable modify/delete.
+     */
+    function accept(event) {
+      console.log("accept");
+    }
+
+    /**
+     * Add event listeners on document ready.
+     */
+    $(function() {
+      console.log("ready");
+    });
+
+  </script>
+
+{% endblock %}
+
+{% block content %}
+  <h1>{% trans "Inscriptions à valider" %}</h1>
+
+  {% bootstrap_formset_errors formset %}
+  <form id="form-container" method="POST" action="">
+    {% csrf_token %}
+
+    {{ formset.management_form }}
+
+    <div class="panel panel-default form-inline">
+      <table class="table table-striped">
+        <tr>
+          <th>{% trans 'Date' %}</th>
+          <th>{% trans 'Moment de la journée' %}</th>
+          <th>{% trans 'Nombre de classes' %}</th>
+          <th>{% trans 'Établissement' %}</th>
+          <th>{% trans 'Coordina·teur·trice' %}</th>
+          <th>{% trans 'Actions' %}</th>
+        </tr>
+
+        {% for form in formset %}
+          <tr class="registration-form">
+            <td class="form-group-sm">{% bootstrap_field form.date size='small' field_class='' show_label=False %}</td>
+            <td class="form-group-sm">{% bootstrap_field form.day_time size='small' field_class='' show_label=False %}</td>
+            <td class="form-group-sm">{% bootstrap_field form.classes_amount size='small' field_class='' show_label=False %}</td>
+            <td class="form-group-sm">
+              {{ form.instance.organization }}
+            </td>
+            <td class="form-group-sm">
+              {{ form.instance.coordinator.get_full_name }}
+            </td>
+            <td class="row">
+              <a class="btn btn-warning btn-xs col-md-4 modify-button" href="#">
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="{% trans 'Modifier' %}"></span>
+              </a>
+              <a class="btn btn-danger btn-xs col-md-4 delete-button" href="#">
+                <span class="glyphicon glyphicon-trash" aria-hidden="true" title="{% trans 'Supprimer' %}"></span>
+              </a>
+              <a class="btn btn-success btn-xs col-md-4 accept-button" href="#">
+                <span class="glyphicon glyphicon-ok" aria-hidden="true" title="{% trans 'Accepter' %}"></span>
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+
+      </table>
+    </div>
+
+    {% buttons %}
+      <button type="submit" class="btn btn-primary pull-right">{% trans "Confirmer" %}</button>
+    {% endbuttons %}
+  </form>
+
+{% endblock %}

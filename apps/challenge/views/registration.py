@@ -11,12 +11,14 @@ from apps.challenge.forms.registration import (
     OrganizationSelectionForm,
     RegistrationConfirmForm,
     RegistrationFormSet,
+    RegistrationValidationFormSet,
 )
 from apps.challenge.models.registration import REGISTRATION_DAY_TIMES, Registration
 from apps.orga.models import Organization
 
 
 def register(request):
+    # TODO Limit with permissions to coordinator or stronger
     if request.method == "POST":
         organization_form = OrganizationSelectionForm(
             request.POST, coordinator=request.user
@@ -63,6 +65,7 @@ def register(request):
 
 
 def register_confirm(request):
+    # TODO Limit with permissions to coordinator or stronger
     data = request.session.get("new_registration")
     if not data:
         raise SuspiciousOperation(_("Aucune inscription à valider"))
@@ -107,4 +110,17 @@ def register_confirm(request):
             "form": form,
         },
         template="challenge/registration_confirm.html",
+    )
+
+
+def register_validate(request):
+    # TODO Limit with permissions to chargé-de-projet or stronger
+    registrations = Registration.objects.all()
+
+    return TemplateResponse(
+        request=request,
+        context={
+            "formset": RegistrationValidationFormSet()
+        },
+        template="challenge/registration_validate.html",
     )

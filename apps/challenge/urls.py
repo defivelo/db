@@ -57,7 +57,7 @@ from .views import (
     SessionStaffChoiceView,
     SessionUpdateView,
 )
-from .views.registration import register, register_confirm
+from .views.registration import register, register_confirm, register_validate
 
 urlpatterns = [
     # Settings
@@ -292,4 +292,5 @@ urlpatterns = [
     # Registrations
     url(r"^register/$", register, name="registration-create"),
     url(r"^register-confirm/$", register_confirm, name="registration-confirm"),
+    url(r"^registrations/$", register_validate, name="registration-validate"),
 ]

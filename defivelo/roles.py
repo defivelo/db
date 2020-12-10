@@ -84,7 +84,6 @@ class StateManager(AbstractUserRole):
         "challenge_season_see_state_planning": True,
         "timesheet": True,
         "timesheet_editor": True,
-        "registration_view": True,
     }
 
 
@@ -125,7 +124,7 @@ class PowerUser(AbstractUserRole):
         "timesheet": True,
         "timesheet_editor": True,
         "registration_create": True,
-        "registration_view": True,
+        "registration_validate": True,
     }
 
 
