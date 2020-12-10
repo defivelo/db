@@ -126,6 +126,15 @@ class InvoiceYearlyListView(SeasonListView, HasPermissionsMixin, ListView):
     allow_future = True
     make_object_list = True
 
+    def get_context_data(self, **kwargs):
+        """
+        Add the needed context to set the menu and submenu categories correctly
+        """
+        context = super().get_context_data(**kwargs)
+        context["menu_category"] = "finance"
+        context["submenu_category"] = "invoices"
+        return context
+
     def get_queryset(self, **kwargs):
         return (
             super()

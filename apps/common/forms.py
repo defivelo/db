@@ -1,5 +1,5 @@
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2015 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2015,2020 Didier Raboud <didier.raboud@liip.ch>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.forms import ModelChoiceField, TimeField
+from django.forms import ModelChoiceField, Select, TimeField
 from django.template.loader import render_to_string
 
 from bootstrap3_datetime.widgets import DateTimePicker
@@ -119,3 +119,24 @@ class UserAutoComplete(ModelChoiceField):
 
     def label_from_instance(self, obj):
         return obj.get_full_name()
+
+
+class SelectWithDisabledValues(Select):
+    """
+    Select widget allowing disabled values
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.disabled_values = kwargs.pop("disabled_values", [])
+        super().__init__(**kwargs)
+
+    def create_option(self, name, value, label, selected, *args, **kwargs):
+        """
+        Mark disabled_values as such (unless selected)
+        """
+        option = super().create_option(name, value, label, selected, *args, **kwargs)
+        if option.get("value") is None:
+            option["attrs"]["disabled"] = "disabled"
+        if not selected and option.get("value") in self.disabled_values:
+            option["attrs"]["disabled"] = "disabled"
+        return option
