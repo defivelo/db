@@ -1,5 +1,5 @@
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2015, 2016 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2015, 2016, 2020 Didier Raboud <didier.raboud@liip.ch>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -16,6 +16,7 @@
 
 from datetime import date
 
+from django.db.models import F
 from django.views.generic.base import TemplateView
 
 from stronghold.views import StrongholdPublicMixin
@@ -34,24 +35,15 @@ class MenuView(object):
         )
 
     def get_context_data(self, **kwargs):
-        context = super(MenuView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         today = date.today()
 
-        current_seasons = self.request.user.profile.get_seasons().filter(
-            year=today.year
+        # Uniquement les saisons==mois qui couvrent le jour courant
+        context["current_seasons"] = self.request.user.profile.get_seasons().filter(
+            year=today.year,
+            month_start__lte=today.month,
+            n_months__gt=today.month - F("month_start"),
         )
-        if date.today().month <= DV_SEASON_LAST_SPRING_MONTH:
-            # Demi-année "printemps"
-            current_seasons = current_seasons.filter(
-                month_start__lte=DV_SEASON_LAST_SPRING_MONTH
-            )
-        else:
-            # Demi-année "automne"
-            current_seasons = current_seasons.filter(
-                month_start__gt=DV_SEASON_LAST_SPRING_MONTH
-            )
-
-        context["current_seasons"] = current_seasons
         return context
 
 

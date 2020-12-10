@@ -14,6 +14,13 @@
                 <ul class="dropdown-menu">
                     <li{% if 'season-detail' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-detail' season.pk %}">{% trans "Toutes les sessions" %}</a></li>
                     <li{% if 'season-availability' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-availabilities' season.pk %}">{% trans "Planning" %}</a></li>
+                    {% if season.staff_can_see_planning %}
+                      <li{% if 'season-planninng' in submenu_category %} class="active"{% endif %}>
+                        <a href="{% url 'season-planning' pk=season.pk helperpk=request.user.pk %}">
+                            {% trans "Mon planning" %} {{ submenu_category }}
+                        </a>
+                      </li>
+                    {% endif %}
                     {% if user|can:'challenge_invoice_cru' %}
                     <li{% if 'season-orga-list' in submenu_category %} class="active"{% endif %}>
                         <a href="{% url 'invoice-orga-list' seasonpk=season.pk %}">{% trans "Facturation établissements" %}</a>
@@ -49,9 +56,6 @@
                     {% endif %}
                     <li><a href="{% dv_season_url %}">{% trans "Tous les mois" %}</a></li>
                     <li{% if 'qualifs-calendar' in submenu_category %} class="active"{% endif %}><a href="{% url 'qualifs-calendar' %}">{% trans "Calendrier" %}</a></li>
-                    {% if user|can:'challenge_invoice_cru' %}
-                      <li><a href="{% url 'invoices-yearly-list' year=now_year %}">{% trans "Facturation" %}</a></li>
-                    {% endif %}
                     {% if not user|can:'challenge_season_crud' %}
                         <li><a target="_blank" href="{% url 'public-nextqualifs' %}">{% trans "Prochaines Qualifs" %}</a></li>
                     {% endif %}
@@ -81,7 +85,7 @@
                       {% trans "Base de données" %}<span class="caret"></span>
                       <ul class="dropdown-menu">
                           {% if user|can:'user_view_list' %}
-                              <li{% if 'user' in menu_category %} class="active"{% endif %}><a href="{% url 'user-list' %}">{% trans "Personnes" %}</a></li>
+                              <li{% if 'user' in menu_category %} class="active"{% endif %}><a href="{% url 'user-list' %}">{% trans "Collabora·teurs·trices" %}</a></li>
                           {% endif %}
                           {% if user|can:'orga_detail_all' %}
                               <li{% if 'organization' in menu_category  %} class="active"{% endif %}><a href="{% url 'organization-list' %}">{% trans "Établissements" %}</a></li>
@@ -93,24 +97,27 @@
                 <li{% if 'organization' in menu_category  %} class="active"{% endif %}><a href="{% url 'organization-list' %}">{% trans "Établissements" %}</a></li>
             {% endif %}
             {% if user|can:'challenge_season_crud' %}
-                <li{% if 'exports' in menu_category  %} class="active"{% endif %}>
-                    <a href="{% url 'season-exports' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Exports" %}<span class="caret"></span></a>
+                <li{% if 'statistics' in menu_category  %} class="active"{% endif %}>
+                    <a href="{% url 'season-exports' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Statistiques" %}<span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li{% if 'exports-season' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-exports' %}">{% trans "Exports par mois" %}</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a target="_blank" href="{% url 'public-nextqualifs' %}">{% trans "Prochaines Qualifs (public)" %}</a></li>
+                            <li{% if 'statistics-season' in submenu_category %} class="active"{% endif %}><a href="{% url 'season-exports' %}">{% trans "Statistiques par mois" %}</a></li>
                         </ul>
                     </a>
                 </li>
             {% endif %}
             {% with now|date:'Y' as year %}
               {% if user|can:'cantons_mine'%}
-                <li{% if 'finance' in menu_category  %} class="active"{% endif %}>
+                <li{% if 'finance' in menu_category %} class="active"{% endif %}>
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Finances" %}<span class="caret"></span></a>
                       <ul class="dropdown-menu">
                         <li{% if 'validations' in menu_category  %} class="active" {% endif %}>
                          <a href="{% url 'salary:validations-year' year=year %}">{% trans "Validations mensuelles" %}</a>
                         </li>
+                      {% if user|can:'challenge_invoice_cru' %}
+                        <li{% if 'invoices' in submenu_category  %} class="active" {% endif %}>
+                          <a href="{% url 'invoices-yearly-list' year=now_year %}">{% trans "Facturation" %}</a>
+                        </li>
+                      {% endif %}
               {% endif %}
               {% if user|can:'timesheet' %}
                         <li{% if 'timesheet' in menu_category  %} class="active" {% endif %}>

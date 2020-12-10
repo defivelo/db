@@ -23,6 +23,7 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.template.defaultfilters import date as datefilter
 from django.urls import reverse
+from django.utils.dates import MONTHS
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
@@ -446,6 +447,41 @@ def dv_season_url(day=None):
     URL of the current (or specified) DV season list view
     """
     return reverse("season-list", kwargs=dv_season(day))
+
+
+@register.filter
+def season_month_start(season_id):
+    for s in DV_SEASON_CHOICES:
+        if s[0] == season_id:
+            try:
+                return MONTHS[
+                    1
+                    + (
+                        0
+                        if season_id == DV_SEASON_SPRING
+                        else DV_SEASON_LAST_SPRING_MONTH
+                    )
+                ]
+            except IndexError:
+                pass
+    return ""
+
+
+@register.filter
+def season_month_end(season_id):
+    for s in DV_SEASON_CHOICES:
+        if s[0] == season_id:
+            try:
+                return MONTHS[
+                    (
+                        DV_SEASON_LAST_SPRING_MONTH
+                        if season_id == DV_SEASON_SPRING
+                        else 12
+                    )
+                ]
+            except IndexError:
+                pass
+    return ""
 
 
 @register.filter

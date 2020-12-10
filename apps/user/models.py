@@ -470,7 +470,7 @@ class UserProfile(Address, models.Model):
                 icon = "queen"
             elif self.user.groups.exists():
                 if has_role(self.user, "power_user"):
-                    title = _("Super-utilisa·teur·trice")
+                    title = _("Bureau de coordination")
                     icon = "king"
                 elif has_role(self.user, "state_manager"):
                     title = _("Chargé·e de projet")
