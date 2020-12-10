@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import urllib.parse
 from re import search, sub
 
@@ -48,6 +49,7 @@ from apps.challenge import (
     SUPERLEADER_FIELDKEY,
 )
 from apps.common import (
+    DV_SEASON_AUTUMN,
     DV_SEASON_CHOICES,
     DV_SEASON_LAST_SPRING_MONTH,
     DV_SEASON_SPRING,
@@ -420,6 +422,31 @@ def season_verb(season_id):
         return [s[1] for s in DV_SEASON_CHOICES if s[0] == season_id][0]
     except IndexError:
         return ""
+
+
+@register.simple_tag
+def dv_season(day=None):
+    """
+    Structure (kwargs) for the current (or specified) DV season
+    """
+    if not day:
+        day = datetime.datetime.today()
+    return {
+        "year": day.year,
+        "dv_season": (
+            DV_SEASON_SPRING
+            if day.month <= DV_SEASON_LAST_SPRING_MONTH
+            else DV_SEASON_AUTUMN
+        ),
+    }
+
+
+@register.simple_tag
+def dv_season_url(day=None):
+    """
+    URL of the current (or specified) DV season list view
+    """
+    return reverse("season-list", kwargs=dv_season(day))
 
 
 @register.filter

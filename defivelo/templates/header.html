@@ -6,7 +6,7 @@
 <ul class="nav navbar-nav">
     {% if request.user.is_authenticated %}
         {% if season and user|can:'challenge_season_crud' %}
-            <li><a href="{% url 'season-list' year=now_year %}" title="{% trans "Tous les mois" %}"><span class="glyphicon glyphicon-th-list"></span>&nbsp;</a></li>
+            <li><a href="{% dv_season_url %}" title="{% trans "Tous les mois" %}"><span class="glyphicon glyphicon-th-list"></span>&nbsp;</a></li>
             <li class="active">
                 <a href="{% url 'season-detail' season.pk %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                     {{ season.desc_abbr }} <span class="caret"></span>
@@ -33,7 +33,7 @@
             </li>
         {% else %}
             <li{% if 'season' in menu_category %} class="active"{% endif %}>
-                <a href="{% url 'season-list' %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Qualifs" %}<span class="caret"></span></a>
+                <a href="{% dv_season_url %}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Qualifs" %}<span class="caret"></span></a>
                     <ul class="dropdown-menu">
                     {% for season in current_seasons %}
                         <li>
@@ -54,7 +54,7 @@
                     {% if current_seasons %}
                     <li role="separator" class="divider"></li>
                     {% endif %}
-                    <li><a href="{% url 'season-list' year=now_year %}">{% trans "Tous les mois" %}</a></li>
+                    <li><a href="{% dv_season_url %}">{% trans "Tous les mois" %}</a></li>
                     <li{% if 'qualifs-calendar' in submenu_category %} class="active"{% endif %}><a href="{% url 'qualifs-calendar' %}">{% trans "Calendrier" %}</a></li>
                     {% if not user|can:'challenge_season_crud' %}
                         <li><a target="_blank" href="{% url 'public-nextqualifs' %}">{% trans "Prochaines Qualifs" %}</a></li>

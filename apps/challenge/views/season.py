@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import operator
 from collections import OrderedDict
 from functools import reduce
@@ -32,7 +33,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import pgettext_lazy as _p
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import ListView
+from django.views.generic import ListView, RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
@@ -41,6 +42,10 @@ from rolepermissions.mixins import HasPermissionsMixin
 from tablib import Dataset
 
 from apps.common import (
+    DV_SEASON_AUTUMN,
+    DV_SEASON_CHOICES,
+    DV_SEASON_LAST_SPRING_MONTH,
+    DV_SEASON_SPRING,
     DV_SEASON_STATE_OPEN,
     DV_SEASON_STATE_RUNNING,
     DV_SEASON_STATES,
@@ -52,6 +57,7 @@ from apps.user import FORMATION_KEYS, FORMATION_M1, FORMATION_M2
 from apps.user.models import USERSTATUS_ACTIVE, USERSTATUS_DELETED, USERSTATUS_RESERVE
 from apps.user.views import ActorsList, HelpersList
 from defivelo.roles import has_permission, user_cantons
+from defivelo.templatetags.dv_filters import dv_season_url
 from defivelo.views import MenuView
 
 from .. import (
@@ -134,6 +140,13 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
         return qs
 
 
+class SeasonListRedirect(RedirectView):
+    is_permanent = False
+
+    def get_redirect_url(self, *args, **kwargs):
+        return dv_season_url()
+
+
 class SeasonListView(SeasonMixin, ListView):
     allow_empty = True
     allow_future = True
@@ -142,15 +155,40 @@ class SeasonListView(SeasonMixin, ListView):
     raise_without_cantons = False
 
     def dispatch(self, request, *args, **kwargs):
-        self.year = self.kwargs.pop("year")
+        self.year = int(self.kwargs.pop("year"))
+        self.dv_season = self.kwargs.pop("dv_season", None)
+        if self.dv_season:
+            self.dv_season = int(self.dv_season)
+            if self.dv_season not in [s[0] for s in DV_SEASON_CHOICES]:
+                raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        return super().get_queryset().filter(year=self.year)
+        qs = super().get_queryset().filter(year=self.year)
+        if self.dv_season == DV_SEASON_SPRING:
+            qs = qs.filter(month_start__lte=DV_SEASON_LAST_SPRING_MONTH)
+        elif self.dv_season == DV_SEASON_AUTUMN:
+            qs = qs.filter(month_start__gt=DV_SEASON_LAST_SPRING_MONTH)
+        return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["year"] = self.year
+        if self.dv_season:
+            context["dv_season"] = self.dv_season
+            if self.dv_season == DV_SEASON_SPRING:
+                context["dv_season_prev_day"] = datetime.date(
+                    self.year - 1, DV_SEASON_LAST_SPRING_MONTH + 1, 1
+                )
+                context["dv_season_next_day"] = datetime.date(
+                    self.year, DV_SEASON_LAST_SPRING_MONTH + 1, 1
+                )
+            elif self.dv_season == DV_SEASON_AUTUMN:
+                context["dv_season_prev_day"] = datetime.date(self.year, 1, 1)
+                context["dv_season_next_day"] = datetime.date(self.year + 1, 1, 1)
+            else:
+                # Will never happen
+                raise PermissionDenied
         return context
 
 

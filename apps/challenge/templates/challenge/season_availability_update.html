@@ -32,8 +32,8 @@
             <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
             {% if request.user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons %}
                 <a class="btn btn-default" href="{% url 'season-availabilities' pk=season.pk %}">{% trans "Annuler" %}</a>
-            {% else %}{% now 'Y' as now_year %}
-                <a class="btn btn-default" href="{% url 'season-list' year=now_year %}">{% trans "Annuler" %}</a>
+            {% else %}
+                <a class="btn btn-default" href="{% dv_season_url season.begin %}">{% trans "Annuler" %}</a>
             {% endif %}
         {% endbuttons %}
      </form>
