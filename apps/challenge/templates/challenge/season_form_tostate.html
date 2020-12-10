@@ -15,7 +15,7 @@
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
         {% buttons %}
-            <button type="submit" class="btn btn-primary pull-right">{% blocktrans with tostate=tostate %}Passer le mois vers "{{tostate}}"{% endblocktrans %}}</button>
+            <button type="submit" class="btn btn-primary pull-right">{% blocktrans with tostate=tostate %}Passer le mois vers "{{tostate}}"{% endblocktrans %}</button>
             <a class="btn btn-default" href="{% url 'season-detail' pk=season.pk %}">{% trans "Annuler" %}</a>
         {% endbuttons %}
         {% for field in form %}
