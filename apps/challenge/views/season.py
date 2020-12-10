@@ -500,15 +500,26 @@ class SeasonToRunningView(SeasonToStateMixin):
         return {
             "subject": settings.EMAIL_SUBJECT_PREFIX
             + u("Planning {season}").format(season=self.season.desc()),
-            "body": render_to_string(
-                "challenge/season_email_to_state_running.txt",
-                {
-                    "profile": profile,
-                    "season": self.season,
-                    "planning_link": planning_link,
-                    "current_site": Site.objects.get_current(),
-                },
-            ),
+            "body": {
+                "pre": render_to_string(
+                    "challenge/season_email_to_state_running_pre.txt",
+                    {
+                        "profile": profile,
+                        "season": self.season,
+                        "planning_link": planning_link,
+                        "current_site": Site.objects.get_current(),
+                    },
+                ),
+                "post": render_to_string(
+                    "challenge/season_email_to_state_running_post.txt",
+                    {
+                        "profile": profile,
+                        "season": self.season,
+                        "planning_link": planning_link,
+                        "current_site": Site.objects.get_current(),
+                    },
+                ),
+            },
         }
 
     def dispatch(self, request, bypassperm=False, *args, **kwargs):
@@ -536,7 +547,14 @@ class SeasonToRunningView(SeasonToStateMixin):
         if form.cleaned_data["sendemail"] == True:
             for helper in self.season_helpers:
                 email = self.get_email(helper)
-                helper.profile.send_mail(email["subject"], email["body"])
+                body = "\n".join(
+                    [
+                        email["body"]["pre"],
+                        form.cleaned_data["customtext"],
+                        email["body"]["post"],
+                    ]
+                )
+                helper.profile.send_mail(email["subject"], body)
         return form_result
 
 
@@ -564,15 +582,26 @@ class SeasonToOpenView(SeasonToStateMixin):
         return {
             "subject": settings.EMAIL_SUBJECT_PREFIX
             + u("Planning {season}").format(season=self.season.desc()),
-            "body": render_to_string(
-                "challenge/season_email_to_state_open.txt",
-                {
-                    "profile": profile,
-                    "season": self.season,
-                    "planning_link": planning_link,
-                    "current_site": Site.objects.get_current(),
-                },
-            ),
+            "body": {
+                "pre": render_to_string(
+                    "challenge/season_email_to_state_open_pre.txt",
+                    {
+                        "profile": profile,
+                        "season": self.season,
+                        "planning_link": planning_link,
+                        "current_site": Site.objects.get_current(),
+                    },
+                ),
+                "post": render_to_string(
+                    "challenge/season_email_to_state_open_post.txt",
+                    {
+                        "profile": profile,
+                        "season": self.season,
+                        "planning_link": planning_link,
+                        "current_site": Site.objects.get_current(),
+                    },
+                ),
+            },
         }
 
     def dispatch(self, request, bypassperm=False, *args, **kwargs):
@@ -611,12 +640,19 @@ class SeasonToOpenView(SeasonToStateMixin):
         """
         Run our specific action here
         """
-        #  Save first
+        # Save first
         form_result = super().form_valid(form)
         # Then send emails
         for helper in self.get_email_recipients():
             email = self.get_email(helper)
-            helper.profile.send_mail(email["subject"], email["body"])
+            body = "\n".join(
+                [
+                    email["body"]["pre"],
+                    form.cleaned_data["customtext"],
+                    email["body"]["post"],
+                ]
+            )
+            helper.profile.send_mail(email["subject"], body)
         return form_result
 
 
