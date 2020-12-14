@@ -211,9 +211,13 @@ class SeasonDetailView(SeasonMixin, DetailView):
         raise PermissionDenied
 
     def get_context_data(self, **kwargs):
-        context = super(SeasonDetailView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         # Add our submenu_category context
         context["submenu_category"] = "season-detail"
+        sessions = self.season.sessions_by_orga
+        if not has_permission(self.request.user, "challenge_see_all_orga"):
+            sessions = sessions.filter(orga__coordinator=self.request.user)
+        context["sessions_by_orga"] = sessions
         return context
 
 
