@@ -43,13 +43,39 @@ class SessionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         kwargs.pop("cantons", None)
         self.season = kwargs.pop("season", None)
-        super(SessionForm, self).__init__(**kwargs)
+        # Get permissions from kwargs, as set in view.
+        perms = {}
+        for permstr in ["challenge_session_crud", "challenge_session_my_orga"]:
+            perms[permstr] = kwargs.pop(permstr, False)
+        super().__init__(**kwargs)
         if self.season.cantons:
             # Only permit orgas within the allowed cantons
             qs = self.fields["orga"].queryset.filter(
                 address_canton__in=self.season.cantons
             )
             self.fields["orga"].queryset = qs
+
+        if perms["challenge_session_my_orga"] and not perms["challenge_session_crud"]:
+            # For non-stateManagers (coordinator), set some fields disabled
+            for f in ["orga", "day"]:
+                self.fields[f].widget.attrs["readonly"] = True
+                self.fields[f].disabled = True
+            # And lots as hidden
+            for f in list(self.fields.keys()):
+                if f not in [
+                    "orga",
+                    "day",
+                    "begin",
+                    "begin",
+                    "place",
+                    "address_street",
+                    "address_no",
+                    "address_zip",
+                    "address_city",
+                    "address_canton",
+                ]:
+                    del self.fields[f]
+
         # Disable minDate and maxDate - DEFIVELO-98
         # try:
         #     self.fields["day"].widget.options["minDate"] = self.season.begin.strftime(

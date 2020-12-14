@@ -145,6 +145,24 @@ class SessionMixin(CantonSeasonFormMixin, MenuView):
                 break
         return context
 
+    def get_form_kwargs(self):
+        """
+        Hand some permission insights to form class.
+        """
+        form_kwargs = super().get_form_kwargs()
+        #  Whether user can do it all.
+        form_kwargs["challenge_session_crud"] = has_permission(
+            self.request.user, "challenge_session_crud"
+        )
+        try:
+            #  Whether user can do it on their sessions.
+            form_kwargs["challenge_session_my_orga"] = (
+                self.get_object().orga.coordinator == self.request.user
+            ) and has_permission(self.request.user, "challenge_session_my_orga")
+        except AttributeError:
+            form_kwargs["challenge_session_my_orga"] = False
+        return form_kwargs
+
 
 class SessionsListView(SessionMixin, WeekArchiveView):
     date_field = "day"
