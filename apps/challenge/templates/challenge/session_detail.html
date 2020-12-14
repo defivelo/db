@@ -220,6 +220,6 @@
         <div class="btn-group" role="group" aria-label="exports">
             {% include 'export_buttons.html' with exporturl='session-export' seasonpk=season.pk exportargs=session.pk filter_querystring=filter_querystring only %}
         </div>
-        <a class="btn btn-default" href="{% url 'session-list' seasonpk=season.pk year=session.day|date:"Y" week=session.day|weeknumber %}">{% trans "Retour à la liste des sessions" %}</a>
+        <a class="btn btn-default" href="{% url 'season-detail' pk=season.pk %}">{% trans "Retour au mois" %}</a>
     </div>
 {% endblock %}
