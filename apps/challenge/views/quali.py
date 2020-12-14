@@ -28,7 +28,6 @@ class QualiMixin(SessionMixin):
     model = Qualification
     context_object_name = "qualification"
     form_class = QualificationForm
-    view_does_crud = True
 
     def get_session_pk(self):
         resolvermatch = self.request.resolver_match
@@ -71,6 +70,7 @@ class QualiMixin(SessionMixin):
 
 class QualiCreateView(QualiMixin, SuccessMessageMixin, CreateView):
     success_message = _("Qualif’ créée")
+    view_does_create_or_delete = True
 
     def get_initial(self):
         return {"session": self.get_session_pk()}
@@ -87,6 +87,7 @@ class QualiUpdateView(QualiMixin, SuccessMessageMixin, UpdateView):
 
 class QualiDeleteView(QualiMixin, DeleteView):
     success_message = _("Qualif’ supprimée")
+    view_does_create_or_delete = True
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

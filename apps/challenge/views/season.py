@@ -108,7 +108,7 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
         return context
 
     def get_form_kwargs(self):
-        form_kwargs = super(SeasonMixin, self).get_form_kwargs()
+        form_kwargs = super().get_form_kwargs()
         if has_permission(self.request.user, "cantons_all"):
             form_kwargs["cantons"] = DV_STATES
         else:

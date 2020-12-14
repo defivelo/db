@@ -56,7 +56,10 @@ class QualificationForm(forms.ModelForm):
         session = kwargs.pop("session")
         kwargs.pop("season", None)
         kwargs.pop("cantons", None)
-        super(QualificationForm, self).__init__(*args, **kwargs)
+        perms = {}
+        for permstr in ["challenge_session_crud", "challenge_session_my_orga"]:
+            perms[permstr] = kwargs.pop(permstr, False)
+        super().__init__(*args, **kwargs)
         other_qualifs = session.qualifications.exclude(pk=self.instance.pk)
         # Construct chosen_as dict of arrays
         chosens = {}
