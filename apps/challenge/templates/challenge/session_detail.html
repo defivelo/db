@@ -29,7 +29,7 @@
         </ul>
     </nav>
 
-    {% if season.manager_can_crud and user|can:'challenge_session_crud' %}
+    {% if season.manager_can_crud and user|can:'challenge_session_crud' or user|can:'challenge_session_my_orga' %}
         <div class="hidden-print">
             <a class="btn btn-primary pull-right" href="{% url 'session-update' seasonpk=season.pk pk=session.pk %}">{% trans "Éditer" %}</a>
         </div>
