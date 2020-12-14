@@ -19,7 +19,7 @@ from django.utils.functional import cached_property
 
 from defivelo.roles import user_cantons
 
-from ..models import Season
+from ..models import Season, Session
 
 
 class CantonSeasonFormMixin(object):
@@ -60,7 +60,15 @@ class CantonSeasonFormMixin(object):
                 raise PermissionDenied
         except LookupError:
             # That user doesn't manage cantons
-            if self.allow_season_fetch:
+            # Check if we're in a sub-request. If both seasonpk and pk are in kwargs, we're in a session.
+            if (
+                "seasonpk" in self.kwargs
+                and "pk" in self.kwargs
+                and (
+                    Session.objects.get(pk=self.kwargs["pk"]).orga.coordinator
+                    == self.request.user
+                )
+            ) or self.allow_season_fetch:
                 season = Season.objects.prefetch_related("leader").get(pk=seasonpk)
             else:
                 season = None

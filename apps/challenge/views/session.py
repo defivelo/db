@@ -63,20 +63,24 @@ class SessionMixin(CantonSeasonFormMixin, MenuView):
         """
         allowed = False
 
+        try:
+            session = self.get_object()
+            # visible = "Visible pour les moniteurs"
+            list_or_single_session_visible = session.visible
+        except AttributeError:
+            session = None
+            list_or_single_session_visible = True
+
         if has_permission(request.user, self.required_permission):
             if not self.view_does_cud:
                 allowed = True
             if self.season and self.season.manager_can_crud:
                 allowed = True
+        elif self.view_does_cud:
+            # Coordinators can update their own sessions.
+            if session.orga.coordinator == self.request.user:
+                allowed = True
         elif not self.view_does_cud:
-            try:
-                # visible = "Visible pour les moniteurs"
-                session = self.get_object()
-                list_or_single_session_visible = session.visible
-            except AttributeError:
-                session = None
-                list_or_single_session_visible = True
-
             # Read-only view when session is visible
             if self.season and self.season.unprivileged_user_can_see(request.user):
                 if list_or_single_session_visible:
