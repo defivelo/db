@@ -535,6 +535,11 @@ class UserProfile(Address, models.Model):
                     ]
                 )
 
+        # Ajoute les cantons dans lesquels on a des établissements
+        usercantons += [
+            orga.address_canton for orga in self.user.managed_organizations.all()
+        ]
+
         # Unique'ify, discard empty values
         usercantons = set([c for c in usercantons if c])
 
