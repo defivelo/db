@@ -19,7 +19,7 @@ from django.utils.functional import cached_property
 
 from defivelo.roles import user_cantons
 
-from ..models import Season, Session
+from ..models import Season
 
 
 class CantonSeasonFormMixin(object):

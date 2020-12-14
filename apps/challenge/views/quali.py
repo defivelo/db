@@ -46,7 +46,7 @@ class QualiMixin(SessionMixin):
         )
 
     def get_form_kwargs(self):
-        form_kwargs = super(QualiMixin, self).get_form_kwargs()
+        form_kwargs = super().get_form_kwargs()
         try:
             form_kwargs["session"] = Session.objects.get(pk=self.get_session_pk())
         except Exception:
@@ -70,7 +70,6 @@ class QualiMixin(SessionMixin):
 
 class QualiCreateView(QualiMixin, SuccessMessageMixin, CreateView):
     success_message = _("Qualif’ créée")
-    view_does_create_or_delete = True
 
     def get_initial(self):
         return {"session": self.get_session_pk()}
@@ -87,7 +86,6 @@ class QualiUpdateView(QualiMixin, SuccessMessageMixin, UpdateView):
 
 class QualiDeleteView(QualiMixin, DeleteView):
     success_message = _("Qualif’ supprimée")
-    view_does_create_or_delete = True
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

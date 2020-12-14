@@ -164,9 +164,16 @@ class SessionMixin(CantonSeasonFormMixin, MenuView):
             self.request.user, "challenge_session_crud"
         )
         try:
+            obj = self.get_object()
+            if isinstance(obj, Session):
+                session = obj
+            elif isinstance(obj, Qualification):
+                session = obj.session
+            else:
+                raise AttributeError
             #  Whether user can do it on their sessions.
             form_kwargs["challenge_session_my_orga"] = (
-                self.get_object().orga.coordinator == self.request.user
+                session.orga.coordinator == self.request.user
             ) and has_permission(self.request.user, "challenge_session_my_orga")
         except AttributeError:
             form_kwargs["challenge_session_my_orga"] = False
