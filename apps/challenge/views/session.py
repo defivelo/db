@@ -77,9 +77,6 @@ class SessionMixin(CantonSeasonFormMixin, MenuView):
             if self.season and self.season.manager_can_crud:
                 allowed = True
         elif not self.view_does_create_or_delete:
-            # Coordinators can update their own sessions.
-            if session.orga.coordinator == self.request.user:
-                allowed = True
             # Read-only view when session is visible
             if self.season and self.season.unprivileged_user_can_see(request.user):
                 if list_or_single_session_visible:
