@@ -138,6 +138,7 @@ class Coordinator(AbstractUserRole):
         "orga_show": True,
         "orga_edit": True,
         "challenge_session_all_orga": False,
+        "challenge_session_my_orga": True,
     }
 
 
