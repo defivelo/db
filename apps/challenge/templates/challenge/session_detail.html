@@ -184,7 +184,7 @@
         <tr><th>{% trans "Remarques" %}</th>
                 {% for quali in session.qualifications.all %}<td><em>{{ quali.comments }}</em></td>{% endfor %}</tr>
 
-        {% if season.manager_can_crud and user|can:'challenge_session_crud' %}
+        {% if season.manager_can_crud and user|can:'challenge_session_crud' or user|can:'challenge_session_my_orga' %}
             <tr class="hidden-print"><td></td>
                     {% for quali in session.qualifications.all %}
                         <td>
@@ -200,7 +200,7 @@
         {% endif %}
     {% endif %}
 
-    {% if season.manager_can_crud and user|can:'challenge_session_crud' %}
+    {% if season.manager_can_crud and user|can:'challenge_session_crud' or user|can:'challenge_session_my_orga' %}
         <tr class="hidden-print">
             <td{% if session.qualifications.count > 0 %} colspan="{{ session.qualifications.count|add:1 }}"{% endif %}>
                 <form method="POST" action="{% url 'quali-create' seasonpk=season.pk sessionpk=session.pk %}" class="form-horizontal">
