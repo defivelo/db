@@ -54,7 +54,7 @@ class SessionMixin(CantonSeasonFormMixin, MenuView):
     model = Session
     context_object_name = "session"
     form_class = SessionForm
-    view_does_cud = True
+    view_does_create_or_delete = True
     raise_without_cantons = False
 
     def dispatch(self, request, *args, **kwargs):
@@ -72,15 +72,14 @@ class SessionMixin(CantonSeasonFormMixin, MenuView):
             list_or_single_session_visible = True
 
         if has_permission(request.user, self.required_permission):
-            if not self.view_does_cud:
+            if not self.view_does_create_or_delete:
                 allowed = True
             if self.season and self.season.manager_can_crud:
                 allowed = True
-        elif self.view_does_cud:
+        elif not self.view_does_create_or_delete:
             # Coordinators can update their own sessions.
             if session.orga.coordinator == self.request.user:
                 allowed = True
-        elif not self.view_does_cud:
             # Read-only view when session is visible
             if self.season and self.season.unprivileged_user_can_see(request.user):
                 if list_or_single_session_visible:
@@ -171,13 +170,13 @@ class SessionsListView(SessionMixin, WeekArchiveView):
     allow_future = True
     week_format = "%W"
     ordering = ["day", "begin", "duration"]
-    view_does_cud = False
+    view_does_create_or_delete = False
     # Allow season fetch even for non-state managers
     allow_season_fetch = True
 
 
 class SessionDetailView(SessionMixin, DetailView):
-    view_does_cud = False
+    view_does_create_or_delete = False
     # Allow season fetch even for non-state managers
     allow_season_fetch = True
 
@@ -253,6 +252,7 @@ class SessionDetailView(SessionMixin, DetailView):
 
 class SessionUpdateView(SessionMixin, SuccessMessageMixin, UpdateView):
     success_message = _("Session mise à jour")
+    view_does_create_or_delete = False
 
 
 class SessionCreateView(SessionMixin, SuccessMessageMixin, CreateView):
@@ -275,7 +275,7 @@ class SessionStaffChoiceView(SessionDetailView):
 
 
 class SessionExportView(ExportMixin, SessionMixin, DetailView):
-    view_does_cud = False
+    view_does_create_or_delete = False
     # Allow season fetch even for non-state managers
     allow_season_fetch = True
 
