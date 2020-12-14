@@ -91,11 +91,18 @@ class SessionMixin(CantonSeasonFormMixin, MenuView):
             or self.model == Qualification
         ):
             # Read-only view when session is visible
-            if self.season and self.season.unprivileged_user_can_see(request.user):
-                if list_or_single_session_visible:
+            if self.season:
+                if (
+                    self.season.unprivileged_user_can_see(request.user)
+                    and list_or_single_session_visible
+                ):
                     # Visible pour les moniteurs
                     allowed = True
-                if session and session.orga.coordinator == request.user:
+                if (
+                    self.season.unprivileged_user_can_edit(request.user)
+                    and session
+                    and session.orga.coordinator == request.user
+                ):
                     # Toujours visible pour les coordinateurs
                     allowed = True
 

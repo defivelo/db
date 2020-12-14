@@ -263,6 +263,16 @@ class Season(models.Model):
             and self.all_helpers_qs.filter(id=user.id).exists()
         )
 
+    def unprivileged_user_can_edit(self, user):
+        """
+        Whether a user can edit this session/Qualif'
+        """
+        # Coordinators can edit when the season is in planning
+        return (
+            self.state == DV_SEASON_STATE_PLANNING
+            and self.all_coordinator_qs.filter(id=user.id).exists()
+        )
+
     def get_absolute_url(self):
         return reverse("season-detail", args=[self.pk])
 
