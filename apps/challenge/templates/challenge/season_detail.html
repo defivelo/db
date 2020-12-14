@@ -11,7 +11,7 @@
         {% ifchanged session.orga %}
             <tr><th colspan="3">{{ session.orga }}</th></th>
         {% endifchanged %}
-        {% include "challenge/session_item_in_list.html" with session=session season=season user=request.user only %}
+        {% include "challenge/session_item_in_list.html" with session=session season=season user=request.user user_can_edit_season_sessions=user_can_edit_season_sessions only %}
     {% endfor %}
     </table>
      

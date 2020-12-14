@@ -263,9 +263,9 @@ class Season(models.Model):
             and self.all_helpers_qs.filter(id=user.id).exists()
         )
 
-    def unprivileged_user_can_edit(self, user):
+    def unprivileged_user_can_edit_session(self, user):
         """
-        Whether a user can edit this session/Qualif'
+        Whether a user can edit this season's session/Qualif's
         """
         # Coordinators can edit when the season is in planning
         return (

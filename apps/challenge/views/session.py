@@ -99,7 +99,7 @@ class SessionMixin(CantonSeasonFormMixin, MenuView):
                     # Visible pour les moniteurs
                     allowed = True
                 if (
-                    self.season.unprivileged_user_can_edit(request.user)
+                    self.season.unprivileged_user_can_edit_session(request.user)
                     and session
                     and session.orga.coordinator == request.user
                 ):

@@ -105,6 +105,10 @@ class SeasonMixin(CantonSeasonFormMixin, MenuView):
         # Add our menu_category context
         context["menu_category"] = "season"
         context["season"] = self.season
+        if self.season:
+            context[
+                "user_can_edit_season_sessions"
+            ] = self.season.unprivileged_user_can_edit_session(self.request.user)
         return context
 
     def get_form_kwargs(self):
