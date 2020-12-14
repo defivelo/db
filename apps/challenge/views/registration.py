@@ -2,7 +2,7 @@ from datetime import datetime
 
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
@@ -15,6 +15,7 @@ from apps.challenge.forms.registration import (
 )
 from apps.challenge.models.registration import REGISTRATION_DAY_TIMES, Registration
 from apps.orga.models import Organization
+from defivelo.templatetags.dv_filters import dv_season_url
 
 
 def register(request):
@@ -115,12 +116,55 @@ def register_confirm(request):
 
 def register_validate(request):
     # TODO Limit with permissions to chargé-de-projet or stronger
-    registrations = Registration.objects.all()
+
+    organizations = Organization.objects.filter(
+        registration__isnull=False,
+        registration__is_archived=False,
+    ).distinct()
+
+    if request.method == "POST":
+        organization = get_object_or_404(
+            Organization, pk=request.POST.get("form-organization-id")
+        )
+        formset = RegistrationValidationFormSet(
+            organization=organization,
+            data=request.POST,
+        )
+
+        if formset.is_valid():
+            formset.save()
+            # Redirect to the current season view
+            return redirect(dv_season_url())
+
+        else:
+            data = []
+            for other_organization in organizations:
+                if organization == other_organization:
+                    # This organization's formset has errors
+                    data.append((organization, formset))
+                else:
+                    # These organizations' formsets haven't been submitted
+                    data.append(
+                        (
+                            other_organization,
+                            RegistrationValidationFormSet(
+                                organization=other_organization,
+                            ),
+                        )
+                    )
+    else:
+        data = [
+            (
+                organization,
+                RegistrationValidationFormSet(
+                    organization=organization,
+                ),
+            )
+            for organization in organizations
+        ]
 
     return TemplateResponse(
         request=request,
-        context={
-            "formset": RegistrationValidationFormSet()
-        },
+        context={"organizations": data},
         template="challenge/registration_validate.html",
     )

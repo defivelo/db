@@ -22,7 +22,7 @@
       let formNb = $(".registration-form").length;
       newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNb}-`)
       $("[name$=-date]", newForm).val("");
-      $("select", newForm).val(0);
+      $("select option", newForm).first().prop("selected", true);
       $("[name$=-classes_amount]", newForm).val(1);
 
       $('table tbody', container).append(newForm);

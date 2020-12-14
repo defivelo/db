@@ -40,3 +40,15 @@ body {
 @import "partials/invoices";
 @import "partials/timesheets";
 @import "partials/season_tostate_emails";
+
+
+.panel-confirm {
+  @include clearfix;
+  button {
+    margin: 10px;
+  }
+}
+
+.panel table .row.actions .col-md-4{
+  padding: 0;
+}

@@ -9,31 +9,77 @@
 
   <script type="text/javascript">
     /**
-     * Display a confirmation prompt, then remove row
+     * Mark row as "to delete", disable modify/accept.
      */
     function deleteRow(event) {
-      console.log("remove")
+      event.preventDefault();
+      event.stopPropagation();
+      const $line = $(event.target).closest("tr");
+      const isDeletedState = $(".delete-hidden-field", $line).val() === "on";
+
+      // Deleted state fields
+      $(".delete-hidden-field", $line).val(isDeletedState ? "" : "on");
+      $line.toggleClass("danger");
+
+      // Deleted state actions
+      $(".delete-button .glyphicon", $line).toggleClass("glyphicon-delete").toggleClass("glyphicon-repeat");
+      $(".modify-button, .accept-button", $line).toggleClass("hidden");
     }
 
     /**
-     * Make row editable
+     * Make row editable. Disable delete/accept.
      */
     function modify(event) {
-      console.log("modify");
+      event.preventDefault();
+      event.stopPropagation();
+      const $line = $(event.target).closest("tr");
+      const $select = $("select", $line);
+      const formRegex = RegExp(/form-(\d*)-/g);
+      const prefix = $("input", $line)[0].name.match(formRegex)[0];
+      const $datepicker = $(`[name=${prefix}date]`, $line);
+      const isModifyState = !$("input", $line).prop("readonly");
+
+      // Modify state fields
+      $("input", $line).prop("readonly", isModifyState);
+      $select.prop("disabled", isModifyState);
+      $select.closest("td").find("input[type=hidden]").prop("disabled", !isModifyState);
+      if (!isModifyState) {
+        $datepicker.datetimepicker({"format": "DD.MM.YYYY"});
+      }
+
+      // Modify state actions
+      $(".modify-button .glyphicon", $line).toggleClass("glyphicon-pencil").toggleClass("glyphicon-repeat");
+      $(".delete-button, .accept-button", $line).toggleClass("hidden");
     }
 
     /**
      * Mark row accepted. Disable modify/delete.
      */
     function accept(event) {
-      console.log("accept");
+      event.preventDefault();
+      event.stopPropagation();
+      const $line = $(event.target).closest("tr");
+      const formRegex = RegExp(/form-(\d*)-/g);
+      const prefix = $("input", $line)[0].name.match(formRegex)[0];
+      const isAcceptedState = $(`[name=${prefix}is_validated]`, $line).val() === "true";
+      console.log(isAcceptedState);
+
+      // Accepted state fields
+      $(`[name=${prefix}is_validated]`, $line).val(String(!isAcceptedState));
+      $line.toggleClass("success");
+
+      // Accepted state actions
+      $(".accept-button .glyphicon", $line).toggleClass("glyphicon-ok").toggleClass("glyphicon-repeat");
+      $(".delete-button, .modify-button", $line).toggleClass("hidden");
     }
 
     /**
      * Add event listeners on document ready.
      */
     $(function() {
-      console.log("ready");
+      $(".delete-button").on("click", deleteRow);
+      $(".modify-button").on("click", modify);
+      $(".accept-button").on("click", accept);
     });
 
   </script>
@@ -43,54 +89,75 @@
 {% block content %}
   <h1>{% trans "Inscriptions à valider" %}</h1>
 
-  {% bootstrap_formset_errors formset %}
-  <form id="form-container" method="POST" action="">
-    {% csrf_token %}
 
-    {{ formset.management_form }}
+  {% for organization, formset in organizations %}
 
     <div class="panel panel-default form-inline">
-      <table class="table table-striped">
-        <tr>
-          <th>{% trans 'Date' %}</th>
-          <th>{% trans 'Moment de la journée' %}</th>
-          <th>{% trans 'Nombre de classes' %}</th>
-          <th>{% trans 'Établissement' %}</th>
-          <th>{% trans 'Coordina·teur·trice' %}</th>
-          <th>{% trans 'Actions' %}</th>
-        </tr>
+      <div class="panel-heading">
+        <p class="panel-title">{% trans 'Établissement' %}: {{ organization }}</p>
+        <p>{% trans 'Coordina·teur·trice' %}: {{ organization.coordinator.get_full_name }}</p>
+      </div>
 
-        {% for form in formset %}
-          <tr class="registration-form">
-            <td class="form-group-sm">{% bootstrap_field form.date size='small' field_class='' show_label=False %}</td>
-            <td class="form-group-sm">{% bootstrap_field form.day_time size='small' field_class='' show_label=False %}</td>
-            <td class="form-group-sm">{% bootstrap_field form.classes_amount size='small' field_class='' show_label=False %}</td>
-            <td class="form-group-sm">
-              {{ form.instance.organization }}
-            </td>
-            <td class="form-group-sm">
-              {{ form.instance.coordinator.get_full_name }}
-            </td>
-            <td class="row">
-              <a class="btn btn-warning btn-xs col-md-4 modify-button" href="#">
-                <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="{% trans 'Modifier' %}"></span>
-              </a>
-              <a class="btn btn-danger btn-xs col-md-4 delete-button" href="#">
-                <span class="glyphicon glyphicon-trash" aria-hidden="true" title="{% trans 'Supprimer' %}"></span>
-              </a>
-              <a class="btn btn-success btn-xs col-md-4 accept-button" href="#">
-                <span class="glyphicon glyphicon-ok" aria-hidden="true" title="{% trans 'Accepter' %}"></span>
-              </a>
-            </td>
+
+      {% bootstrap_formset_errors formset %}
+      <form id="form-container" method="POST" action="" class="">
+        {% csrf_token %}
+
+        <input type="hidden" name="form-organization-id" value="{{ organization.id }}">
+        {{ formset.management_form }}
+
+        <table class="panel-body form-inline table table-striped">
+          <tr>
+            <th>{% trans 'Date' %}</th>
+            <th>{% trans 'Moment de la journée' %}</th>
+            <th>{% trans 'Nombre de classes' %}</th>
+            <th>{% trans 'Actions' %}</th>
           </tr>
-        {% endfor %}
 
-      </table>
+          {% for form in formset %}
+            <tr class="registration-form">
+              <td class="form-group-sm">
+                {% bootstrap_field form.date size='small' field_class='' show_label=False %}
+              </td>
+              <td class="form-group-sm">
+                {% bootstrap_field form.day_time size='small' field_class='' show_label=False %}
+                <input type="hidden" name="{{ form.prefix}}-{{ form.day_time.name }}" value="{{ form.day_time.value }}">
+              </td>
+              <td class="form-group-sm">
+                {% bootstrap_field form.classes_amount size='small' field_class='' show_label=False %}
+              </td>
+
+              <td class="row actions">
+                <div class="col-md-4">
+                  <button class="btn btn-warning btn-sm modify-button" href="#">
+                    <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="{% trans 'Modifier' %}"></span>
+                  </button>
+                </div>
+                <div class="col-md-4">
+                  <button class="btn btn-danger btn-sm delete-button" href="#">
+                    <span class="glyphicon glyphicon-trash" aria-hidden="true" title="{% trans 'Supprimer' %}"></span>
+                  </button>
+                </div>
+                <div class="col-md-4">
+                  <button class="btn btn-success btn-sm accept-button" href="#">
+                    <span class="glyphicon glyphicon-ok" aria-hidden="true" title="{% trans 'Accepter' %}"></span>
+                  </button>
+                </div>
+                <input type="hidden" name="form-{{ forloop.counter0 }}-id" value="{{ form.instance.id }}">
+                <input type="hidden" class="delete-hidden-field" name="form-{{ forloop.counter0 }}-DELETE" value="">
+                {% bootstrap_field form.is_validated %}
+              </td>
+            </tr>
+          {% endfor %}
+
+        </table>
+
+        <div class="panel-confirm">
+          <button type="submit" class="btn btn-primary pull-right">{% trans "Confirmer" %}</button>
+        </div>
+      </form>
+
     </div>
-
-    {% buttons %}
-      <button type="submit" class="btn btn-primary pull-right">{% trans "Confirmer" %}</button>
-    {% endbuttons %}
-  </form>
+  {% endfor %}
 
 {% endblock %}
