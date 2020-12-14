@@ -1,6 +1,6 @@
 {% load i18n dv_filters %}
 <tr {% if session.errors and user|can:'challenge_session_crud' %}class="warning"{% endif %} >
-    {% if user|can:'challenge_session_crud' or session.visible %}
+    {% if user|can:'challenge_session_crud' or session.visible or user|can:'challenge_session_my_orga' %}
       <th>
         <a href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">
           {{ session.day }} ({{ session.begin }}) {{ session.city }}
