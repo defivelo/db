@@ -115,7 +115,9 @@ class SessionMixin(CantonSeasonFormMixin, MenuView):
         }
 
         try:
-            sessions = self.season.sessions_by_orga.filter(orga=mysession.orga)
+            sessions = self.season.sessions_by_orga(self.request.user).filter(
+                orga=mysession.orga
+            )
         except AttributeError:
             sessions = []
 

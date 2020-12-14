@@ -45,6 +45,7 @@ from apps.common import (
     DV_STATE_CHOICES,
     STDGLYPHICON,
 )
+from defivelo.roles import has_permission
 from defivelo.templatetags.dv_filters import cantons_abbr
 
 
@@ -212,9 +213,12 @@ class Season(models.Model):
             "orga",
         )
 
-    @property
-    def sessions_by_orga(self):
-        return self.sessions.order_by("orga__name", "day", "begin")
+    def sessions_by_orga(self, user):
+        # For coordinators, limit the sessions to one's orga
+        qs = self.sessions
+        if not has_permission(user, "challenge_session_all_orga"):
+            qs = qs.filter(orga__coordinator=user)
+        return qs.order_by("orga__name", "day", "begin")
 
     @cached_property
     def sessions_with_qualifs(self):

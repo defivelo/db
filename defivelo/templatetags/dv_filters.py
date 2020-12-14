@@ -91,6 +91,14 @@ def setlang(request, newlang):
 
 
 @register.filter
+def sessions_by_orga(season, user):
+    """
+    Pass user as single argument to sessions_by_orga
+    """
+    return season.sessions_by_orga(user)
+
+
+@register.filter
 def tel_int(tel):
     if not tel:
         return ""

@@ -48,6 +48,7 @@ class Collaborator(AbstractUserRole):
     """
 
     available_permissions = {
+        "challenge_session_all_orga": True,
         "user_view_list": True,
         "user_view_list_non_collaborator": False,
         "user_export_all_fields": False,
@@ -78,6 +79,7 @@ class StateManager(AbstractUserRole):
         "orga_show": True,
         "orga_edit": True,
         "challenge_season_crud": True,
+        "challenge_session_all_orga": True,
         "challenge_session_crud": True,
         "challenge_invoice_cru": True,
         "challenge_invoice_reset_to_draft": False,
@@ -117,6 +119,7 @@ class PowerUser(AbstractUserRole):
         "orga_edit": True,
         "challenge_invoice_cru": True,
         "challenge_invoice_reset_to_draft": True,
+        "challenge_session_all_orga": True,
         "challenge_session_crud": True,
         "challenge_season_crud": True,
         "challenge_season_see_state_planning": True,
@@ -134,6 +137,7 @@ class Coordinator(AbstractUserRole):
     available_permissions = {
         "orga_show": True,
         "orga_edit": True,
+        "challenge_session_all_orga": False,
     }
 
 
