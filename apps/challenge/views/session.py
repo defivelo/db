@@ -61,6 +61,11 @@ class SessionMixin(CantonSeasonFormMixin, MenuView):
         """
         Check allowances for access to view
         """
+
+        #  FIRST, set allow_season_fetch for coordinators.
+        if has_permission(self.request.user, "challenge_session_my_orga"):
+            self.allow_season_fetch = True
+
         allowed = False
 
         try:

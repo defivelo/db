@@ -60,15 +60,7 @@ class CantonSeasonFormMixin(object):
                 raise PermissionDenied
         except LookupError:
             # That user doesn't manage cantons
-            # Check if we're in a sub-request. If both seasonpk and pk are in kwargs, we're in a session.
-            if (
-                "seasonpk" in self.kwargs
-                and "pk" in self.kwargs
-                and (
-                    Session.objects.get(pk=self.kwargs["pk"]).orga.coordinator
-                    == self.request.user
-                )
-            ) or self.allow_season_fetch:
+            if self.allow_season_fetch:
                 season = Season.objects.prefetch_related("leader").get(pk=seasonpk)
             else:
                 season = None
