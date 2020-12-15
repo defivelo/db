@@ -86,7 +86,7 @@ class CantonSeasonFormMixin(object):
         return season
 
     def get_form_kwargs(self):
-        kwargs = super(CantonSeasonFormMixin, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs["season"] = self.season_object
         try:
             cantons = user_cantons(self.request.user)

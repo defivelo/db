@@ -66,7 +66,8 @@ class SessionMixin(CantonSeasonFormMixin, MenuView):
 
     def get_success_url(self):
         return reverse_lazy(
-            "session-detail", kwargs={"seasonpk": self.season.pk, "pk": self.object.pk}
+            "session-detail",
+            kwargs={"seasonpk": self.season_object.pk, "pk": self.object.pk},
         )
 
     def get_context_data(self, **kwargs):
@@ -274,6 +275,16 @@ class SessionUpdateView(SessionMixin, SuccessMessageMixin, UpdateView):
         if allowed:
             return super().dispatch(request, *args, **kwargs)
         raise PermissionDenied
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if (
+            not has_permission(self.request.user, "challenge_session_crud")
+            and self.request.user == self.get_object().orga.coordinator
+        ):
+            # Coordinator without StateManager rights
+            kwargs["coordinator"] = True
+        return kwargs
 
 
 class SessionCreateView(SessionMixin, SuccessMessageMixin, CreateView):

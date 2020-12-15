@@ -43,6 +43,8 @@ class SessionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         kwargs.pop("cantons", None)
         self.season = kwargs.pop("season", None)
+        self.coordinator = kwargs.pop("coordinator", False)
+
         super().__init__(**kwargs)
         if self.season.cantons:
             # Only permit orgas within the allowed cantons
@@ -60,6 +62,27 @@ class SessionForm(forms.ModelForm):
         #     )
         # except Exception:
         #     pass
+
+        if self.coordinator:
+            # For non-stateManagers (coordinator), set some fields disabled
+            for f in ["orga", "day"]:
+                self.fields[f].widget.attrs["readonly"] = True
+                self.fields[f].disabled = True
+            # And lots as hidden
+            for f in list(self.fields.keys()):
+                if f not in [
+                    "orga",
+                    "day",
+                    "begin",
+                    "begin",
+                    "place",
+                    "address_street",
+                    "address_no",
+                    "address_zip",
+                    "address_city",
+                    "address_canton",
+                ]:
+                    del self.fields[f]
 
         if self.instance.pk and self.instance.has_related_timesheets():
             self.fields["day"].help_text = nodate_change_warning
