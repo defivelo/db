@@ -38,15 +38,15 @@
       <tr class="{{ season.state_class }}">
         <td>{{ season.state_icon }}</td>
         <td>
-          {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons or user == season.leader or season.staff_can_see_planning %}
+          {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons or user == season.leader or season.staff_can_see_planning or user in season.all_coordinator_qs %}
             <a href="{% url 'season-detail' pk=season.pk %}" title="{% trans "Liste des sessions" %}">
-            {% elif season.staff_can_update_availability %}
+          {% elif season.staff_can_update_availability %}
             <a href="{% url 'season-availabilities-update' pk=season.pk helperpk=request.user.pk %}"
                title="{% trans "Mes disponibilités" %}">
           {% endif %}
           <span class="badge pull-right">{{ season.leader.get_full_name }}</span>
           {{ season.desc_abbr }}
-          {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons or season.staff_can_update_availability or season.staff_can_see_planning %}
+          {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons or season.staff_can_update_availability or season.staff_can_see_planning or user in season.all_coordinator_qs %}
             </a>
           {% endif %}
         </td>
