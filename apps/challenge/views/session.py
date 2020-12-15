@@ -248,13 +248,23 @@ class SessionUpdateView(SessionMixin, SuccessMessageMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         """
-        Check allowances for access to view
+        Check allowances for access to updateview
         """
         allowed = False
 
-        if has_permission(request.user, self.required_permission):
-            if self.season and self.season.manager_can_crud:
-                allowed = True
+        if (
+            has_permission(request.user, self.required_permission)
+            and self.season
+            and self.season.manager_can_crud
+        ):
+            # StateManager, and it's the right moment
+            allowed = True
+        elif (
+            self.get_object().orga.coordinator == request.user
+            and self.season_object.coordinator_can_update
+        ):
+            # Coordinator, and it's the right moment
+            allowed = True
 
         if allowed:
             return super().dispatch(request, *args, **kwargs)

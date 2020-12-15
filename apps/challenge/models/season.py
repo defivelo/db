@@ -149,6 +149,10 @@ class Season(models.Model):
         return self.state != DV_SEASON_STATE_ARCHIVED
 
     @cached_property
+    def coordinator_can_update(self):
+        return self.state == DV_SEASON_STATE_PLANNING
+
+    @cached_property
     def season_full(self):
         # Before November 2020 (DEFIVELO-48), the Season objects were either "Spring" or "Autumn"
         # Check if the current Season=Months matches the legacy objects.
@@ -271,6 +275,7 @@ class Season(models.Model):
             "staff_can_update_availability",
             "staff_can_see_planning",
             "manager_can_crud",
+            "coordinator_can_update",
             "season_full",
         ]:
             try:
