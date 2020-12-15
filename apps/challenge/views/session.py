@@ -240,18 +240,12 @@ class SessionDetailView(SessionMixin, DetailView):
         if has_permission(request.user, self.required_permission):
             allowed = True
         else:
-            try:
-                list_or_single_session_visible = self.get_object().visible
-            except AttributeError:
-                list_or_single_session_visible = True
-
             # Read-only view when session is visible
-            if (
-                self.season
-                and self.season.unprivileged_user_can_see(request.user)
-                and list_or_single_session_visible
-            ):
-                allowed = True
+            if self.season and self.season.unprivileged_user_can_see(request.user):
+                session = self.get_object()
+                # Always visible for coordinators
+                if session.visible or session.orga.coordinator == request.user:
+                    allowed = True
 
         if allowed:
             return super().dispatch(request, *args, **kwargs)
