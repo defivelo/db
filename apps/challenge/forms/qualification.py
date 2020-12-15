@@ -56,6 +56,7 @@ class QualificationForm(forms.ModelForm):
         session = kwargs.pop("session")
         kwargs.pop("season", None)
         kwargs.pop("cantons", None)
+        coordinator = kwargs.pop("coordinator", False)
         super(QualificationForm, self).__init__(*args, **kwargs)
         other_qualifs = session.qualifications.exclude(pk=self.instance.pk)
         # Construct chosen_as dict of arrays
@@ -101,6 +102,19 @@ class QualificationForm(forms.ModelForm):
             required=False,
             session=session,
         )
+        if coordinator:
+            # For non-stateManagers (coordinator), delete non-accessible fields
+            for f in list(self.fields.keys()):
+                if f not in [
+                    "session",
+                    "name",
+                    "class_teacher_fullname",
+                    "class_teacher_natel",
+                    "n_participants",
+                    "n_bikes",
+                    "n_helmets",
+                ]:
+                    del self.fields[f]
 
     def clean_helpers(self):
         # Check that we don't have too many moniteurs 1
@@ -167,7 +181,7 @@ class QualificationForm(forms.ModelForm):
 
         if self.instance.pk:
             removed_helpers = {user.pk for user in self.instance.helpers.all()} - {
-                user.pk for user in self.cleaned_data.get("helpers")
+                user.pk for user in self.cleaned_data.get("helpers", [])
             }
             if removed_helpers:
                 Timesheet.objects.filter(
