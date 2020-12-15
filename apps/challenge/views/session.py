@@ -154,7 +154,7 @@ class SessionDetailView(SessionMixin, DetailView):
     allow_season_fetch = True
 
     def get_context_data(self, **kwargs):
-        context = super(SessionDetailView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         try:
             mysession = self.get_object()
         except AttributeError:
@@ -164,6 +164,15 @@ class SessionDetailView(SessionMixin, DetailView):
                 "session": mysession,
                 "name": _("Classe %s") % lettercounter(mysession.n_qualifications + 1),
             }
+        )
+        context[
+            "statemanager_can_access"
+        ] = self.season_object.manager_can_crud and has_permission(
+            self.request.user, "challenge_session_crud"
+        )
+        context["coordinator_can_access"] = (
+            self.season_object.coordinator_can_update
+            and mysession.orga.coordinator == self.request.user
         )
         # Build a meaningful mailto: link towards all session available emails, with meaningful subject and body.
         session_helpers = [

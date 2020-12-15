@@ -29,7 +29,7 @@
         </ul>
     </nav>
 
-    {% if season.manager_can_crud and user|can:'challenge_session_crud' %}
+    {% if statemanager_can_access or coordinator_can_access %}
         <div class="hidden-print">
             <a class="btn btn-primary pull-right" href="{% url 'session-update' seasonpk=season.pk pk=session.pk %}">{% trans "Éditer" %}</a>
         </div>
@@ -120,7 +120,7 @@
         <tr><th>{% trans "Remarques" %}</th><td>{{ session.comments }}</td></tr>
     {% endif %}
     </table>
-    {% if season.manager_can_crud and user|can:'challenge_session_crud' %}
+    {% if statemanager_can_access %}
       <div class="hidden-print pull-right">
           <a class="btn btn-primary" href="{% url 'season-availabilities' pk=season.pk %}#sess{{session.pk}}">{% trans "Planning" %}</a>
           {% if session_mailtoall %}
@@ -184,7 +184,7 @@
         <tr><th>{% trans "Remarques" %}</th>
                 {% for quali in session.qualifications.all %}<td><em>{{ quali.comments }}</em></td>{% endfor %}</tr>
 
-        {% if season.manager_can_crud and user|can:'challenge_session_crud' %}
+        {% if statemanager_can_access or coordinator_can_access %}
             <tr class="hidden-print"><td></td>
                     {% for quali in session.qualifications.all %}
                         <td>
@@ -200,7 +200,7 @@
         {% endif %}
     {% endif %}
 
-    {% if season.manager_can_crud and user|can:'challenge_session_crud' %}
+    {% if statemanager_can_access or coordinator_can_access %}
         <tr class="hidden-print">
             <td{% if session.qualifications.count > 0 %} colspan="{{ session.qualifications.count|add:1 }}"{% endif %}>
                 <form method="POST" action="{% url 'quali-create' seasonpk=season.pk sessionpk=session.pk %}" class="form-horizontal">
