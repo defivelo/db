@@ -26,9 +26,9 @@ class CantonSeasonFormMixin(object):
     allow_season_fetch = False
 
     @cached_property
-    def season(self):
+    def season_object(self):
         """
-        self.season a Season object of the currently running season
+        Return the season object without any constraints
         """
         try:
             seasonpk = int(
@@ -36,7 +36,22 @@ class CantonSeasonFormMixin(object):
                 if "seasonpk" in self.kwargs
                 else self.kwargs["pk"]
             )
-            season = Season.objects.prefetch_related("leader").get(pk=seasonpk)
+            return Season.objects.prefetch_related("leader").get(pk=seasonpk)
+        except KeyError:
+            return None
+
+    @cached_property
+    def season(self):
+        """
+        DEPRECATED
+        This is too complicated, unreliable, so shouldn't be used anymore.
+        self.season a Season object of the currently running season, with restrictions
+        """
+        try:
+            season = self.season_object
+
+            if not season:
+                return None
 
             # Check that the intersection isn't empty
             usercantons = user_cantons(self.request.user)
@@ -60,9 +75,7 @@ class CantonSeasonFormMixin(object):
                 raise PermissionDenied
         except LookupError:
             # That user doesn't manage cantons
-            if self.allow_season_fetch:
-                season = Season.objects.prefetch_related("leader").get(pk=seasonpk)
-            else:
+            if not self.allow_season_fetch:
                 season = None
         except KeyError:
             # We're looking at a list
