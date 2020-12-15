@@ -54,7 +54,6 @@ class SessionMixin(CantonSeasonFormMixin, MenuView):
     model = Session
     context_object_name = "session"
     form_class = SessionForm
-    view_does_cud = True
     raise_without_cantons = False
 
     def get_queryset(self):
@@ -114,7 +113,6 @@ class SessionsListView(SessionMixin, WeekArchiveView):
     allow_future = True
     week_format = "%W"
     ordering = ["day", "begin", "duration"]
-    view_does_cud = False
     # Allow season fetch even for non-state managers
     allow_season_fetch = True
 
@@ -125,11 +123,8 @@ class SessionsListView(SessionMixin, WeekArchiveView):
         allowed = False
 
         if has_permission(request.user, self.required_permission):
-            if not self.view_does_cud:
-                allowed = True
-            if self.season and self.season.manager_can_crud:
-                allowed = True
-        elif not self.view_does_cud:
+            allowed = True
+        else:
             try:
                 list_or_single_session_visible = self.get_object().visible
             except AttributeError:
@@ -149,7 +144,6 @@ class SessionsListView(SessionMixin, WeekArchiveView):
 
 
 class SessionDetailView(SessionMixin, DetailView):
-    view_does_cud = False
     # Allow season fetch even for non-state managers
     allow_season_fetch = True
 
@@ -229,11 +223,8 @@ class SessionDetailView(SessionMixin, DetailView):
         allowed = False
 
         if has_permission(request.user, self.required_permission):
-            if not self.view_does_cud:
-                allowed = True
-            if self.season and self.season.manager_can_crud:
-                allowed = True
-        elif not self.view_does_cud:
+            allowed = True
+        else:
             try:
                 list_or_single_session_visible = self.get_object().visible
             except AttributeError:
@@ -262,22 +253,7 @@ class SessionUpdateView(SessionMixin, SuccessMessageMixin, UpdateView):
         allowed = False
 
         if has_permission(request.user, self.required_permission):
-            if not self.view_does_cud:
-                allowed = True
             if self.season and self.season.manager_can_crud:
-                allowed = True
-        elif not self.view_does_cud:
-            try:
-                list_or_single_session_visible = self.get_object().visible
-            except AttributeError:
-                list_or_single_session_visible = True
-
-            # Read-only view when session is visible
-            if (
-                self.season
-                and self.season.unprivileged_user_can_see(request.user)
-                and list_or_single_session_visible
-            ):
                 allowed = True
 
         if allowed:
@@ -295,22 +271,7 @@ class SessionCreateView(SessionMixin, SuccessMessageMixin, CreateView):
         allowed = False
 
         if has_permission(request.user, self.required_permission):
-            if not self.view_does_cud:
-                allowed = True
             if self.season and self.season.manager_can_crud:
-                allowed = True
-        elif not self.view_does_cud:
-            try:
-                list_or_single_session_visible = self.get_object().visible
-            except AttributeError:
-                list_or_single_session_visible = True
-
-            # Read-only view when session is visible
-            if (
-                self.season
-                and self.season.unprivileged_user_can_see(request.user)
-                and list_or_single_session_visible
-            ):
                 allowed = True
 
         if allowed:
@@ -328,22 +289,7 @@ class SessionDeleteView(SessionMixin, SuccessMessageMixin, DeleteView):
         allowed = False
 
         if has_permission(request.user, self.required_permission):
-            if not self.view_does_cud:
-                allowed = True
             if self.season and self.season.manager_can_crud:
-                allowed = True
-        elif not self.view_does_cud:
-            try:
-                list_or_single_session_visible = self.get_object().visible
-            except AttributeError:
-                list_or_single_session_visible = True
-
-            # Read-only view when session is visible
-            if (
-                self.season
-                and self.season.unprivileged_user_can_see(request.user)
-                and list_or_single_session_visible
-            ):
                 allowed = True
 
         if allowed:
@@ -363,7 +309,6 @@ class SessionStaffChoiceView(SessionDetailView):
 
 
 class SessionExportView(ExportMixin, SessionMixin, DetailView):
-    view_does_cud = False
     # Allow season fetch even for non-state managers
     allow_season_fetch = True
 
