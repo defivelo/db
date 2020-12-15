@@ -680,17 +680,18 @@ class SeasonToOpenView(SeasonToStateMixin):
         """
         # Save first
         form_result = super().form_valid(form)
-        # Then send emails
-        for helper in self.get_email_recipients():
-            email = self.get_email(helper)
-            body = "\n".join(
-                [
-                    email["body"]["pre"],
-                    form.cleaned_data["customtext"],
-                    email["body"]["post"],
-                ]
-            )
-            helper.profile.send_mail(email["subject"], body)
+        if form.cleaned_data["sendemail"] == True:
+            # Then send emails
+            for helper in self.get_email_recipients():
+                email = self.get_email(helper)
+                body = "\n".join(
+                    [
+                        email["body"]["pre"],
+                        form.cleaned_data["customtext"],
+                        email["body"]["post"],
+                    ]
+                )
+                helper.profile.send_mail(email["subject"], body)
         return form_result
 
 
