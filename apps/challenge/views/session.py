@@ -30,10 +30,10 @@ from django.views.generic.dates import WeekArchiveView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from rolepermissions.checkers import has_permission
 from tablib import Dataset
 
 from apps.common.views import ExportMixin
+from defivelo.roles import has_permission, user_cantons
 from defivelo.templatetags.dv_filters import lettercounter
 from defivelo.views import MenuView
 
@@ -113,30 +113,35 @@ class SessionsListView(SessionMixin, WeekArchiveView):
     allow_future = True
     week_format = "%W"
     ordering = ["day", "begin", "duration"]
-    # Allow season fetch even for non-state managers
-    allow_season_fetch = True
 
     def dispatch(self, request, *args, **kwargs):
         """
-        Check allowances for access to view
+        Check allowances for access to list
         """
         allowed = False
 
         if has_permission(request.user, self.required_permission):
+            # StateManagers
+            # Check that the intersection isn't empty
+            usercantons = user_cantons(request.user)
+            if usercantons:
+                if list(set(usercantons).intersection(set(self.season_object.cantons))):
+                    # StateManager cantons
+                    allowed = True
+                else:
+                    # If the user is marked as state manager for that season
+                    if self.season_object.leader == self.request.user:
+                        allowed = True
+                    # Verify that this state manager can access that canton as mobile
+                    elif list(
+                        set(
+                            [request.user.profile.affiliation_canton]
+                            + request.user.profile.activity_cantons
+                        ).intersection(set(self.season_object.cantons))
+                    ):
+                        allowed = True
+        elif self.season_object.unprivileged_user_can_see(request.user):
             allowed = True
-        else:
-            try:
-                list_or_single_session_visible = self.get_object().visible
-            except AttributeError:
-                list_or_single_session_visible = True
-
-            # Read-only view when session is visible
-            if (
-                self.season
-                and self.season.unprivileged_user_can_see(request.user)
-                and list_or_single_session_visible
-            ):
-                allowed = True
 
         if allowed:
             return super().dispatch(request, *args, **kwargs)
