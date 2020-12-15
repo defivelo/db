@@ -87,7 +87,7 @@ class CantonSeasonFormMixin(object):
 
     def get_form_kwargs(self):
         kwargs = super(CantonSeasonFormMixin, self).get_form_kwargs()
-        kwargs["season"] = self.season
+        kwargs["season"] = self.season_object
         try:
             cantons = user_cantons(self.request.user)
         except LookupError:

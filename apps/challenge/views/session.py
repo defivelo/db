@@ -57,9 +57,9 @@ class SessionMixin(CantonSeasonFormMixin, MenuView):
     raise_without_cantons = False
 
     def get_queryset(self):
-        qs = super(SessionMixin, self).get_queryset()
+        qs = super().get_queryset()
         try:
-            return qs.filter(orga__address_canton__in=self.season.cantons)
+            return qs.filter(orga__address_canton__in=self.season_object.cantons)
         except FieldError:
             # For the cases qs is Qualification, not Session
             return qs
@@ -73,7 +73,7 @@ class SessionMixin(CantonSeasonFormMixin, MenuView):
         context = super(SessionMixin, self).get_context_data(**kwargs)
         # Add our menu_category context
         context["menu_category"] = "season"
-        context["season"] = self.season
+        context["season"] = self.season_object
         try:
             mysession = self.get_object()
         except AttributeError:

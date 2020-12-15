@@ -43,7 +43,7 @@ class SessionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         kwargs.pop("cantons", None)
         self.season = kwargs.pop("season", None)
-        super(SessionForm, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         if self.season.cantons:
             # Only permit orgas within the allowed cantons
             qs = self.fields["orga"].queryset.filter(
