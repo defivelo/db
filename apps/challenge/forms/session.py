@@ -43,7 +43,7 @@ class SessionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         kwargs.pop("cantons", None)
         self.season = kwargs.pop("season", None)
-        self.coordinator = kwargs.pop("coordinator", False)
+        coordinator = kwargs.pop("coordinator", False)
 
         super().__init__(**kwargs)
         if self.season.cantons:
@@ -52,6 +52,7 @@ class SessionForm(forms.ModelForm):
                 address_canton__in=self.season.cantons
             )
             self.fields["orga"].queryset = qs
+
         # Disable minDate and maxDate - DEFIVELO-98
         # try:
         #     self.fields["day"].widget.options["minDate"] = self.season.begin.strftime(
@@ -63,7 +64,7 @@ class SessionForm(forms.ModelForm):
         # except Exception:
         #     pass
 
-        if self.coordinator:
+        if coordinator:
             # For non-stateManagers (coordinator), set some fields disabled
             for f in ["orga", "day"]:
                 self.fields[f].widget.attrs["readonly"] = True
