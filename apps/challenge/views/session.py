@@ -57,35 +57,6 @@ class SessionMixin(CantonSeasonFormMixin, MenuView):
     view_does_cud = True
     raise_without_cantons = False
 
-    def dispatch(self, request, *args, **kwargs):
-        """
-        Check allowances for access to view
-        """
-        allowed = False
-
-        if has_permission(request.user, self.required_permission):
-            if not self.view_does_cud:
-                allowed = True
-            if self.season and self.season.manager_can_crud:
-                allowed = True
-        elif not self.view_does_cud:
-            try:
-                list_or_single_session_visible = self.get_object().visible
-            except AttributeError:
-                list_or_single_session_visible = True
-
-            # Read-only view when session is visible
-            if (
-                self.season
-                and self.season.unprivileged_user_can_see(request.user)
-                and list_or_single_session_visible
-            ):
-                allowed = True
-
-        if allowed:
-            return super().dispatch(request, *args, **kwargs)
-        raise PermissionDenied
-
     def get_queryset(self):
         qs = super(SessionMixin, self).get_queryset()
         try:
@@ -146,6 +117,35 @@ class SessionsListView(SessionMixin, WeekArchiveView):
     view_does_cud = False
     # Allow season fetch even for non-state managers
     allow_season_fetch = True
+
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Check allowances for access to view
+        """
+        allowed = False
+
+        if has_permission(request.user, self.required_permission):
+            if not self.view_does_cud:
+                allowed = True
+            if self.season and self.season.manager_can_crud:
+                allowed = True
+        elif not self.view_does_cud:
+            try:
+                list_or_single_session_visible = self.get_object().visible
+            except AttributeError:
+                list_or_single_session_visible = True
+
+            # Read-only view when session is visible
+            if (
+                self.season
+                and self.season.unprivileged_user_can_see(request.user)
+                and list_or_single_session_visible
+            ):
+                allowed = True
+
+        if allowed:
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
 
 
 class SessionDetailView(SessionMixin, DetailView):
@@ -222,17 +222,133 @@ class SessionDetailView(SessionMixin, DetailView):
             )
         )
 
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Check allowances for access to view
+        """
+        allowed = False
+
+        if has_permission(request.user, self.required_permission):
+            if not self.view_does_cud:
+                allowed = True
+            if self.season and self.season.manager_can_crud:
+                allowed = True
+        elif not self.view_does_cud:
+            try:
+                list_or_single_session_visible = self.get_object().visible
+            except AttributeError:
+                list_or_single_session_visible = True
+
+            # Read-only view when session is visible
+            if (
+                self.season
+                and self.season.unprivileged_user_can_see(request.user)
+                and list_or_single_session_visible
+            ):
+                allowed = True
+
+        if allowed:
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
 
 class SessionUpdateView(SessionMixin, SuccessMessageMixin, UpdateView):
     success_message = _("Session mise à jour")
+
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Check allowances for access to view
+        """
+        allowed = False
+
+        if has_permission(request.user, self.required_permission):
+            if not self.view_does_cud:
+                allowed = True
+            if self.season and self.season.manager_can_crud:
+                allowed = True
+        elif not self.view_does_cud:
+            try:
+                list_or_single_session_visible = self.get_object().visible
+            except AttributeError:
+                list_or_single_session_visible = True
+
+            # Read-only view when session is visible
+            if (
+                self.season
+                and self.season.unprivileged_user_can_see(request.user)
+                and list_or_single_session_visible
+            ):
+                allowed = True
+
+        if allowed:
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
 
 
 class SessionCreateView(SessionMixin, SuccessMessageMixin, CreateView):
     success_message = _("Session créée")
 
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Check allowances for access to view
+        """
+        allowed = False
+
+        if has_permission(request.user, self.required_permission):
+            if not self.view_does_cud:
+                allowed = True
+            if self.season and self.season.manager_can_crud:
+                allowed = True
+        elif not self.view_does_cud:
+            try:
+                list_or_single_session_visible = self.get_object().visible
+            except AttributeError:
+                list_or_single_session_visible = True
+
+            # Read-only view when session is visible
+            if (
+                self.season
+                and self.season.unprivileged_user_can_see(request.user)
+                and list_or_single_session_visible
+            ):
+                allowed = True
+
+        if allowed:
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
 
 class SessionDeleteView(SessionMixin, SuccessMessageMixin, DeleteView):
     success_message = _("Session supprimée")
+
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Check allowances for access to view
+        """
+        allowed = False
+
+        if has_permission(request.user, self.required_permission):
+            if not self.view_does_cud:
+                allowed = True
+            if self.season and self.season.manager_can_crud:
+                allowed = True
+        elif not self.view_does_cud:
+            try:
+                list_or_single_session_visible = self.get_object().visible
+            except AttributeError:
+                list_or_single_session_visible = True
+
+            # Read-only view when session is visible
+            if (
+                self.season
+                and self.season.unprivileged_user_can_see(request.user)
+                and list_or_single_session_visible
+            ):
+                allowed = True
+
+        if allowed:
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
 
     def post(self, request, *args, **kwargs):
         self.get_object().get_related_timesheets().delete()
