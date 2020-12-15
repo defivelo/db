@@ -202,8 +202,10 @@ class SeasonDetailView(SeasonMixin, DetailView):
         """
         allowed = False
         if self.season.unprivileged_user_can_see(request.user):
+            # Season participants
             allowed = True
         elif has_permission(request.user, self.required_permission):
+            # State Managers
             allowed = True
 
         if allowed:
