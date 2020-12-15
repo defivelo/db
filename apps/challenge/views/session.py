@@ -283,13 +283,11 @@ class SessionCreateView(SessionMixin, SuccessMessageMixin, CreateView):
         """
         Check allowances for access to view
         """
-        allowed = False
-
-        if has_permission(request.user, self.required_permission):
-            if self.season and self.season.manager_can_crud:
-                allowed = True
-
-        if allowed:
+        if (
+            has_permission(request.user, self.required_permission)
+            and self.season
+            and self.season.manager_can_crud
+        ):
             return super().dispatch(request, *args, **kwargs)
         raise PermissionDenied
 
@@ -301,13 +299,11 @@ class SessionDeleteView(SessionMixin, SuccessMessageMixin, DeleteView):
         """
         Check allowances for access to view
         """
-        allowed = False
-
-        if has_permission(request.user, self.required_permission):
-            if self.season and self.season.manager_can_crud:
-                allowed = True
-
-        if allowed:
+        if (
+            has_permission(request.user, self.required_permission)
+            and self.season
+            and self.season.manager_can_crud
+        ):
             return super().dispatch(request, *args, **kwargs)
         raise PermissionDenied
 
