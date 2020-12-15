@@ -193,9 +193,6 @@ class SeasonListView(SeasonMixin, ListView):
 
 
 class SeasonDetailView(SeasonMixin, DetailView):
-    allow_season_fetch = True
-    raise_without_cantons = False
-
     def dispatch(self, request, *args, **kwargs):
         """
         Allow view by participants of the season if allowed
@@ -204,7 +201,25 @@ class SeasonDetailView(SeasonMixin, DetailView):
         if self.season.unprivileged_user_can_see(request.user):
             allowed = True
         elif has_permission(request.user, self.required_permission):
-            allowed = True
+            # A season can only be seen if the permission is granted (StateManager) _and_ if the canton is managed by the user
+            # Check that the intersection isn't empty
+            usercantons = user_cantons(request.user)
+            if usercantons:
+                if list(set(usercantons).intersection(set(self.season.cantons))):
+                    # StateManager for one of these cantons
+                    allowed = True
+                else:
+                    # If the user is marked as state manager for that season
+                    if self.season.leader == self.request.user:
+                        allowed = True
+                    # Verify that this state manager can access that canton as mobile
+                    elif list(
+                        set(
+                            [request.user.profile.affiliation_canton]
+                            + request.user.profile.activity_cantons
+                        ).intersection(set(self.season.cantons))
+                    ):
+                        allowed = True
 
         if allowed:
             return super().dispatch(request, *args, **kwargs)
