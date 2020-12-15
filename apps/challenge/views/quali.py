@@ -63,7 +63,7 @@ class QualiMixin(SessionMixin):
         return form_kwargs
 
     def get_context_data(self, **kwargs):
-        context = super(QualiMixin, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         # Add our menu_category context
         context["menu_category"] += " qualification"
         try:
@@ -71,6 +71,9 @@ class QualiMixin(SessionMixin):
         except Exception:
             pass
         context["season"] = self.season_object
+        context["qualification_user_errors"] = self.get_object().user_errors(
+            self.request.user
+        )
         return context
 
 

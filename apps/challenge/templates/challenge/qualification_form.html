@@ -10,9 +10,9 @@
     <h1>{{ session }}</h1>
     <h2>{% if qualification %}{% trans "Édition de la Qualif’" %}{% else %}{% trans "Nouvelle Qualif’" %}{% endif %}</h2>
 
-    {% if qualification.errors %}
+    {% if qualification_user_errors %}
     <div>
-        {{ qualification.errors }}
+        {{ qualification_user_errors }}
     </div>
     {% endif %}
 

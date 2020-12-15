@@ -192,21 +192,21 @@ class Qualification(models.Model):
             ).exists():
                 self.helpers.remove(helper)
 
-    @property
-    def errors(self):
+    def user_errors(self, user=None):
         errors = []
         if not self.class_teacher_fullname or not self.class_teacher_natel:
             errors.append(u("Enseignant"))
         if not self.n_participants:
             errors.append(u("Nombre de participants"))
-        if not self.leader or self.helpers.count() != MAX_MONO1_PER_QUALI:
-            errors.append(u("Moniteurs"))
-        if not self.actor:
-            errors.append(u("Intervenant"))
-        if not self.activity_A or not self.activity_B or not self.activity_C:
-            errors.append(u("Postes"))
-        if self.has_availability_incoherences:
-            errors.append(u("Incohérences de dispos"))
+        if self.session.orga.coordinator != user:
+            if not self.leader or self.helpers.count() != MAX_MONO1_PER_QUALI:
+                errors.append(u("Moniteurs"))
+            if not self.actor:
+                errors.append(u("Intervenant"))
+            if not self.activity_A or not self.activity_B or not self.activity_C:
+                errors.append(u("Postes"))
+            if self.has_availability_incoherences:
+                errors.append(u("Incohérences de dispos"))
         if errors:
             return mark_safe(
                 "<br />".join(
@@ -219,6 +219,10 @@ class Qualification(models.Model):
                     ]
                 )
             )
+
+    @property
+    def errors(self):
+        return self.user_errors(None)
 
     @classmethod
     def _get_label(cls, field):
