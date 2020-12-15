@@ -62,10 +62,7 @@ class QualiMixin(SessionMixin):
             context["session"] = Session.objects.get(pk=self.get_session_pk())
         except Exception:
             pass
-        try:
-            context["season"] = self.season
-        except Exception:
-            pass
+        context["season"] = self.season_object
         return context
 
 
