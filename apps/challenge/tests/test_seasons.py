@@ -893,41 +893,49 @@ class CoordinatorUserTest(SeasonTestCaseMixin):
             s.orga.coordinator = self.client.user
             s.orga.save()
 
-    def test_access_to_sessions(self):
+    def test_cooordinator_can_navigate_sessions(self):
         # Test the access to the session on all season states
         for state in DV_SEASON_STATES:
             self.season.state = state[0]
             self.season.save()
             for session in self.sessions:
-
-                session_kwargs = {
-                    "seasonpk": self.season.pk,
-                    "pk": session.pk,
-                }
-                weeklysessionlist = reverse(
-                    "session-list",
-                    kwargs={
-                        "seasonpk": self.season.pk,
-                        "year": session.day.year,
-                        "week": session.day.strftime("%W"),
-                    },
-                )
                 urls = [
-                    weeklysessionlist,
+                    reverse(
+                        "session-list",
+                        kwargs={
+                            "seasonpk": self.season.pk,
+                            "year": session.day.year,
+                            "week": session.day.strftime("%W"),
+                        },
+                    ),
                     reverse(
                         "session-detail",
-                        kwargs=session_kwargs,
+                        kwargs={
+                            "seasonpk": self.season.pk,
+                            "pk": session.pk,
+                        },
                     ),
                 ]
                 for url in urls:
-                    # Final URL is allowed, coordinators can navigate the seasons in all states
-                    response = self.client.get(url, follow=True)
+                    # Coordinators can navigate the seasons in all states
+                    response = self.client.get(url)
+                    self.assertEqual(response.status_code, 200, url)
 
+    def test_coordinator_can_update_sessions(self):
+        # Test the access to the session on all season states
+        for state in DV_SEASON_STATES:
+            self.season.state = state[0]
+            self.season.save()
+            for session in self.sessions:
+                url = reverse(
+                    "session-update",
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                        "pk": session.pk,
+                    },
+                )
                 response = self.client.get(
-                    reverse(
-                        "session-update",
-                        kwargs=session_kwargs,
-                    ),
+                    url,
                     follow=True,
                 )
                 if state[0] == DV_SEASON_STATE_PLANNING:
@@ -936,6 +944,12 @@ class CoordinatorUserTest(SeasonTestCaseMixin):
                 else:
                     self.assertEqual(response.status_code, 403, url)
 
+    def test_coordinator_cannot_create_nor_delete_sessions(self):
+        # Test the access to the session on all season states
+        for state in DV_SEASON_STATES:
+            self.season.state = state[0]
+            self.season.save()
+            for session in self.sessions:
                 urls = [
                     reverse(
                         "session-create",
@@ -945,7 +959,10 @@ class CoordinatorUserTest(SeasonTestCaseMixin):
                     ),
                     reverse(
                         "session-delete",
-                        kwargs=session_kwargs,
+                        kwargs={
+                            "seasonpk": self.season.pk,
+                            "pk": session.pk,
+                        },
                     ),
                 ]
                 for url in urls:
