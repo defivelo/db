@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from django.core.exceptions import SuspiciousOperation
+from django.contrib import messages
+from django.core.exceptions import PermissionDenied, SuspiciousOperation
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
@@ -15,11 +16,14 @@ from apps.challenge.forms.registration import (
 )
 from apps.challenge.models.registration import REGISTRATION_DAY_TIMES, Registration
 from apps.orga.models import Organization
+from defivelo.roles import user_cantons
 from defivelo.templatetags.dv_filters import dv_season_url
 
 
 def register(request):
-    # TODO Limit with permissions to coordinator or stronger
+    if not request.user.managed_organizations.exists():
+        raise PermissionDenied
+
     if request.method == "POST":
         organization_form = OrganizationSelectionForm(
             request.POST, coordinator=request.user
@@ -66,7 +70,9 @@ def register(request):
 
 
 def register_confirm(request):
-    # TODO Limit with permissions to coordinator or stronger
+    if not request.user.managed_organizations.exists():
+        raise PermissionDenied
+
     data = request.session.get("new_registration")
     if not data:
         raise SuspiciousOperation(_("Aucune inscription à valider"))
@@ -96,9 +102,8 @@ def register_confirm(request):
                     organization=organization,
                 )
             del request.session["new_registration"]
-            # TODO
-            #  - Send email to "Chargé de projet"
-            #  - Redirect to ?
+            organization.notify_new_registrations(request)
+            return redirect(reverse("home"))
     else:
         form = RegistrationConfirmForm()
 
@@ -120,6 +125,7 @@ def register_validate(request):
     organizations = Organization.objects.filter(
         registration__isnull=False,
         registration__is_archived=False,
+        address_canton__in=user_cantons(request.user)
     ).distinct()
 
     if request.method == "POST":
@@ -127,13 +133,12 @@ def register_validate(request):
             Organization, pk=request.POST.get("form-organization-id")
         )
         formset = RegistrationValidationFormSet(
-            organization=organization,
-            data=request.POST,
+            organization=organization, data=request.POST,
         )
 
         if formset.is_valid():
             formset.save()
-            # Redirect to the current season view
+            organization.notify_registrations_validated(request)
             return redirect(dv_season_url())
 
         else:
@@ -154,12 +159,7 @@ def register_validate(request):
                     )
     else:
         data = [
-            (
-                organization,
-                RegistrationValidationFormSet(
-                    organization=organization,
-                ),
-            )
+            (organization, RegistrationValidationFormSet(organization=organization,),)
             for organization in organizations
         ]
 

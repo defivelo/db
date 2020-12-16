@@ -62,7 +62,6 @@
       const formRegex = RegExp(/form-(\d*)-/g);
       const prefix = $("input", $line)[0].name.match(formRegex)[0];
       const isAcceptedState = $(`[name=${prefix}is_validated]`, $line).val() === "true";
-      console.log(isAcceptedState);
 
       // Accepted state fields
       $(`[name=${prefix}is_validated]`, $line).val(String(!isAcceptedState));
@@ -73,6 +72,18 @@
       $(".delete-button, .modify-button", $line).toggleClass("hidden");
     }
 
+    function initialState(line) {
+      const formRegex = RegExp(/form-(\d*)-/g);
+      const prefix = $("input", line)[0].name.match(formRegex)[0];
+      const isAcceptedState = $(`[name=${prefix}is_validated]`, line).val() === "true";
+
+      if (isAcceptedState) {
+        $(line).toggleClass("success");
+        $(".accept-button .glyphicon", line).toggleClass("glyphicon-ok").toggleClass("glyphicon-repeat");
+        $(".delete-button, .modify-button", line).toggleClass("hidden");
+      }
+    }
+
     /**
      * Add event listeners on document ready.
      */
@@ -80,6 +91,10 @@
       $(".delete-button").on("click", deleteRow);
       $(".modify-button").on("click", modify);
       $(".accept-button").on("click", accept);
+
+      $(".registration-form").each(function(){
+        initialState(this);
+      });
     });
 
   </script>
@@ -96,6 +111,13 @@
       <div class="panel-heading">
         <p class="panel-title">{% trans 'Établissement' %}: {{ organization }}</p>
         <p>{% trans 'Coordina·teur·trice' %}: {{ organization.coordinator.get_full_name }}</p>
+      </div>
+
+      <div class="panel-body alert-warning">
+        {% blocktrans trimmed %}
+          Pour confirmer les pré-inscriptions de l'établissement, vous devez donner un statut
+          (<strong>supprimé</strong> ou <strong>accepté</strong>) à <strong>toutes</strong> sessions de la liste.
+        {% endblocktrans %}
       </div>
 
 
@@ -157,6 +179,17 @@
         </div>
       </form>
 
+    </div>
+  {% empty %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <p class="panel-title">{% trans 'Validation des pré-inscriptions' %}</p>
+      </div>
+      <div class="panel-body">
+        {% blocktrans %}
+          Il n'y a actuellement aucune pré-inscription à valider pour les cantons que vous gérez.
+        {% endblocktrans %}
+      </div>
     </div>
   {% endfor %}
 

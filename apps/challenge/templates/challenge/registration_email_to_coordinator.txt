@@ -1,0 +1,16 @@
+{% load i18n %}{% filter wordwrap:80 %}{% autoescape off %}{% blocktrans trimmed with full_name=full_name %}
+Salut {{ full_name }},
+{% endblocktrans %}
+
+{% blocktrans trimmed with url=url %}
+Tes pré-inscriptions ont été validées.
+Retrouve les sessions et qualifications de ton établissement à l'adresse:
+{{ url }}
+{% endblocktrans %}
+
+{% blocktrans trimmed with site_domain=site_domain %}
+Avec nos meilleures salutations,
+
+L’équipe DÉFI VÉLO - {{ site_domain }}
+{% endblocktrans %}
+{% endautoescape %}{% endfilter %}

@@ -25,7 +25,8 @@ class RegistrationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         coordinator = kwargs.pop("coordinator")
-        organization = kwargs.pop("organization")
+        # On GET request, organization is not yet chosen
+        organization = kwargs.pop("organization", None)
         super().__init__(*args, **kwargs)
         self.instance.coordinator = coordinator
         self.instance.organization = organization
@@ -70,7 +71,7 @@ class RegistrationConfirmForm(forms.Form):
 class RegistrationValidationForm(forms.ModelForm):
     date = SwissDateField()
     is_validated = forms.BooleanField(
-        initial=False, widget=forms.HiddenInput, required=False
+        initial=False, widget=forms.HiddenInput, required=True
     )
 
     def __init__(self, *args, **kwargs):

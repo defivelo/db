@@ -1,0 +1,15 @@
+{% load i18n %}{% filter wordwrap:80 %}{% autoescape off %}{% blocktrans trimmed with full_name=full_name %}
+Salut {{ full_name }},
+{% endblocktrans %}
+
+{% blocktrans trimmed with url=url %}
+De nouvelles pré-inscriptions sont disponibles pour votre canton.
+Merci de visiter {{ url }} afin de les valider!
+{% endblocktrans %}
+
+{% blocktrans trimmed with site_domain=site_domain %}
+Avec nos meilleures salutations,
+
+L’équipe DÉFI VÉLO - {{ site_domain }}
+{% endblocktrans %}
+{% endautoescape %}{% endfilter %}

@@ -15,14 +15,22 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.contrib.sites.models import Site
 from django.db import models
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 
 from apps.common import STDGLYPHICON
 from apps.common.models import Address
+from defivelo.templatetags.dv_filters import dv_season_url
+
+User = get_user_model()
 
 ORGASTATUS_UNDEF = 0
 ORGASTATUS_ACTIVE = 10
@@ -107,3 +115,59 @@ class Organization(Address, models.Model):
 
     def get_absolute_url(self):
         return reverse("organization-detail", args=[self.pk])
+
+    def get_state_managers(self):
+        return User.objects.filter(managedstates__canton=self.address_canton)
+
+    def notify_new_registrations(self, request):
+        for state_manager in self.get_state_managers():
+            state_manager.profile.send_mail(
+                "%s %s"
+                % (
+                    settings.EMAIL_SUBJECT_PREFIX,
+                    u("Nouvelles pré-inscriptions à valider"),
+                ),
+                render_to_string(
+                    "challenge/registration_email_to_state_manager.txt",
+                    {
+                        "full_name": state_manager.get_full_name(),
+                        "url": request.build_absolute_uri(
+                            reverse("registration-validate")
+                        ),
+                        "site_domain": Site.objects.get_current().domain,
+                    },
+                ),
+            )
+
+        messages.success(
+            request,
+            _(
+                "Vos préinscriptions ont été enregistrées et les chargé·e·s de "
+                "projet de votre canton a été notifié·e·s!"
+            ),
+        )
+
+    def notify_registrations_validated(self, request):
+        self.coordinator.profile.send_mail(
+            "%s %s"
+            % (
+                settings.EMAIL_SUBJECT_PREFIX,
+                u("Vos inscriptions à DEFIVELO"),
+            ),
+            render_to_string(
+                "challenge/registration_email_to_coordinator.txt",
+                {
+                    "full_name": self.coordinator.get_full_name(),
+                    "url": request.build_absolute_uri(dv_season_url()),
+                    "site_domain": Site.objects.get_current().domain,
+                },
+            ),
+        )
+
+        messages.success(
+            request,
+            _(
+                "Les inscriptions pour l'établissement %s sont enregistrées, et un "
+                "email a été envoyé à la personne coordinatrice." % self
+            ),
+        )
