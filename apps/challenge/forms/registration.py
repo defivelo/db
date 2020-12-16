@@ -24,8 +24,8 @@ class RegistrationForm(forms.ModelForm):
     date = SwissDateField()
 
     def __init__(self, *args, **kwargs):
-        coordinator = kwargs.pop("coordinator", None)
-        organization = kwargs.pop("organization", None)
+        coordinator = kwargs.pop("coordinator")
+        organization = kwargs.pop("organization")
         super().__init__(*args, **kwargs)
         self.instance.coordinator = coordinator
         self.instance.organization = organization
