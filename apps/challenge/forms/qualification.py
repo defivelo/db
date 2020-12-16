@@ -56,7 +56,7 @@ class QualificationForm(forms.ModelForm):
         session = kwargs.pop("session")
         kwargs.pop("season", None)
         kwargs.pop("cantons", None)
-        coordinator = kwargs.pop("coordinator", False)
+        is_for_coordinator = kwargs.pop("is_for_coordinator", False)
         super(QualificationForm, self).__init__(*args, **kwargs)
         other_qualifs = session.qualifications.exclude(pk=self.instance.pk)
         # Construct chosen_as dict of arrays
@@ -102,7 +102,7 @@ class QualificationForm(forms.ModelForm):
             required=False,
             session=session,
         )
-        if coordinator:
+        if is_for_coordinator:
             # For non-stateManagers (coordinator), delete non-accessible fields
             for f in list(self.fields.keys()):
                 if f not in [

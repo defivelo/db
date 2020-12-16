@@ -54,7 +54,7 @@ class QualiMixin(SessionMixin):
             session = Session.objects.get(pk=self.get_session_pk())
             form_kwargs["session"] = session
             # Coordinator without StateManager rights
-            form_kwargs["coordinator"] = (
+            form_kwargs["is_for_coordinator"] = (
                 not has_permission(self.request.user, "challenge_session_crud")
                 and self.request.user == session.orga.coordinator
             )

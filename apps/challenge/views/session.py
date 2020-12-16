@@ -281,12 +281,11 @@ class SessionUpdateView(SessionMixin, SuccessMessageMixin, UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        if (
+        # Coordinator without StateManager rights
+        kwargs["is_for_coordinator"] = (
             not has_permission(self.request.user, "challenge_session_crud")
             and self.request.user == self.get_object().orga.coordinator
-        ):
-            # Coordinator without StateManager rights
-            kwargs["coordinator"] = True
+        )
         return kwargs
 
 

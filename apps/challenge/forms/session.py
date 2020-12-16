@@ -43,7 +43,7 @@ class SessionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         kwargs.pop("cantons", None)
         self.season = kwargs.pop("season", None)
-        coordinator = kwargs.pop("coordinator", False)
+        is_for_coordinator = kwargs.pop("is_for_coordinator", False)
 
         super().__init__(**kwargs)
         if self.season.cantons:
@@ -64,7 +64,7 @@ class SessionForm(forms.ModelForm):
         # except Exception:
         #     pass
 
-        if coordinator:
+        if is_for_coordinator:
             # For non-stateManagers (coordinator), set some fields disabled
             for f in ["orga", "day"]:
                 self.fields[f].widget.attrs["readonly"] = True
