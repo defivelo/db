@@ -40,7 +40,7 @@
         <td>
           {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons or user == season.leader or season.staff_can_see_planning or user in season.all_coordinator_qs %}
             <a href="{% url 'season-detail' pk=season.pk %}" title="{% trans "Liste des sessions" %}">
-          {% elif season.staff_can_update_availability %}
+          {% elif season.staff_can_update_availability and user not in season.all_coordinator_qs %}
             <a href="{% url 'season-availabilities-update' pk=season.pk helperpk=request.user.pk %}"
                title="{% trans "Mes disponibilités" %}">
           {% endif %}
@@ -54,7 +54,7 @@
           {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons or user == season.leader %}
             <a class="btn btn-xs btn-primary" href="{% url 'season-availabilities' season.pk %}"
                title="{% trans "Planning" %}"><span class="glyphicon glyphicon-th"></span></a>
-          {% elif season.staff_can_update_availability %}
+          {% elif season.staff_can_update_availability and user not in season.all_coordinator_qs %}
             <a class="btn btn-xs btn-default"
                href="{% url 'season-availabilities-update' pk=season.pk helperpk=request.user.pk %}"
                title="{% trans "Mes disponibilités" %}"><span class="glyphicon glyphicon-calendar"></span></a>
