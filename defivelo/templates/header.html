@@ -37,7 +37,7 @@
                     <ul class="dropdown-menu">
                     {% for season in current_seasons %}
                         <li>
-                            {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons %}
+                            {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons or user in season.all_coordinator_qs %}
                                 <a href="{% url 'season-detail' pk=season.pk %}">
                             {% elif season.staff_can_update_availability %}
                                 <a href="{% url 'season-availabilities-update' pk=season.pk helperpk=user.pk %}"
