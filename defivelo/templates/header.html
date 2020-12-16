@@ -56,9 +56,6 @@
                     {% endif %}
                     <li><a href="{% dv_season_url %}">{% trans "Tous les mois" %}</a></li>
                     <li{% if 'qualifs-calendar' in submenu_category %} class="active"{% endif %}><a href="{% url 'qualifs-calendar' %}">{% trans "Calendrier" %}</a></li>
-                    {% if not user|can:'challenge_season_crud' %}
-                        <li><a target="_blank" href="{% url 'public-nextqualifs' %}">{% trans "Prochaines Qualifs" %}</a></li>
-                    {% endif %}
                     {% if user|can:'challenge_season_crud' %}
                         <li><a href="{% url 'season-create' %}">{% trans "Créer un mois" %}</a></li>
                     {% endif %}
