@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
@@ -83,6 +84,14 @@ class QualiCreateView(QualiMixin, SuccessMessageMixin, CreateView):
     def get_initial(self):
         return {"session": self.get_session_pk()}
 
+    def dispatch(self, *args, **kwargs):
+        """
+        Quali Creation is only for StateManagers, not coordinators
+        """
+        if not has_permission(self.request.user, "challenge_session_crud"):
+            raise PermissionDenied
+        return super().dispatch(*args, **kwargs)
+
 
 class QualiUpdateView(QualiMixin, SuccessMessageMixin, UpdateView):
     success_message = _("Qualif’ mise à jour")
@@ -95,6 +104,14 @@ class QualiUpdateView(QualiMixin, SuccessMessageMixin, UpdateView):
 
 class QualiDeleteView(QualiMixin, DeleteView):
     success_message = _("Qualif’ supprimée")
+
+    def dispatch(self, *args, **kwargs):
+        """
+        Quali Deletion is only for StateManagers, not coordinators
+        """
+        if not has_permission(self.request.user, "challenge_session_crud"):
+            raise PermissionDenied
+        return super().dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
