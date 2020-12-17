@@ -30,10 +30,10 @@ from django.views.generic.dates import WeekArchiveView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from rolepermissions.checkers import has_permission
 from tablib import Dataset
 
 from apps.common.views import ExportMixin
+from defivelo.roles import has_permission, user_cantons
 from defivelo.templatetags.dv_filters import lettercounter
 from defivelo.views import MenuView
 
@@ -54,56 +54,27 @@ class SessionMixin(CantonSeasonFormMixin, MenuView):
     model = Session
     context_object_name = "session"
     form_class = SessionForm
-    view_does_cud = True
     raise_without_cantons = False
 
-    def dispatch(self, request, *args, **kwargs):
-        """
-        Check allowances for access to view
-        """
-        allowed = False
-
-        if has_permission(request.user, self.required_permission):
-            if not self.view_does_cud:
-                allowed = True
-            if self.season and self.season.manager_can_crud:
-                allowed = True
-        elif not self.view_does_cud:
-            try:
-                list_or_single_session_visible = self.get_object().visible
-            except AttributeError:
-                list_or_single_session_visible = True
-
-            # Read-only view when session is visible
-            if (
-                self.season
-                and self.season.unprivileged_user_can_see(request.user)
-                and list_or_single_session_visible
-            ):
-                allowed = True
-
-        if allowed:
-            return super().dispatch(request, *args, **kwargs)
-        raise PermissionDenied
-
     def get_queryset(self):
-        qs = super(SessionMixin, self).get_queryset()
+        qs = super().get_queryset()
         try:
-            return qs.filter(orga__address_canton__in=self.season.cantons)
+            return qs.filter(orga__address_canton__in=self.season_object.cantons)
         except FieldError:
             # For the cases qs is Qualification, not Session
             return qs
 
     def get_success_url(self):
         return reverse_lazy(
-            "session-detail", kwargs={"seasonpk": self.season.pk, "pk": self.object.pk}
+            "session-detail",
+            kwargs={"seasonpk": self.season_object.pk, "pk": self.object.pk},
         )
 
     def get_context_data(self, **kwargs):
         context = super(SessionMixin, self).get_context_data(**kwargs)
         # Add our menu_category context
         context["menu_category"] = "season"
-        context["season"] = self.season
+        context["season"] = self.season_object
         try:
             mysession = self.get_object()
         except AttributeError:
@@ -143,18 +114,47 @@ class SessionsListView(SessionMixin, WeekArchiveView):
     allow_future = True
     week_format = "%W"
     ordering = ["day", "begin", "duration"]
-    view_does_cud = False
-    # Allow season fetch even for non-state managers
-    allow_season_fetch = True
+
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Check allowances for access to list
+        """
+        allowed = False
+
+        if has_permission(request.user, self.required_permission):
+            # StateManagers
+            # Check that the intersection isn't empty
+            usercantons = user_cantons(request.user)
+            if usercantons:
+                if list(set(usercantons).intersection(set(self.season_object.cantons))):
+                    # StateManager cantons
+                    allowed = True
+                else:
+                    # If the user is marked as state manager for that season
+                    if self.season_object.leader == self.request.user:
+                        allowed = True
+                    # Verify that this state manager can access that canton as mobile
+                    elif list(
+                        set(
+                            [request.user.profile.affiliation_canton]
+                            + request.user.profile.activity_cantons
+                        ).intersection(set(self.season_object.cantons))
+                    ):
+                        allowed = True
+        elif self.season_object.unprivileged_user_can_see(request.user):
+            allowed = True
+
+        if allowed:
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
 
 
 class SessionDetailView(SessionMixin, DetailView):
-    view_does_cud = False
     # Allow season fetch even for non-state managers
     allow_season_fetch = True
 
     def get_context_data(self, **kwargs):
-        context = super(SessionDetailView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         try:
             mysession = self.get_object()
         except AttributeError:
@@ -164,6 +164,15 @@ class SessionDetailView(SessionMixin, DetailView):
                 "session": mysession,
                 "name": _("Classe %s") % lettercounter(mysession.n_qualifications + 1),
             }
+        )
+        context[
+            "statemanager_can_access"
+        ] = self.season_object.manager_can_crud and has_permission(
+            self.request.user, "challenge_session_crud"
+        )
+        context["coordinator_can_access"] = (
+            self.season_object.coordinator_can_update
+            and mysession.orga.coordinator == self.request.user
         )
         # Build a meaningful mailto: link towards all session available emails, with meaningful subject and body.
         session_helpers = [
@@ -222,17 +231,94 @@ class SessionDetailView(SessionMixin, DetailView):
             )
         )
 
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Check allowances for access to view
+        """
+        allowed = False
+
+        if has_permission(request.user, self.required_permission):
+            allowed = True
+        else:
+            # Read-only view when session is visible
+            if self.season and self.season.unprivileged_user_can_see(request.user):
+                session = self.get_object()
+                # Always visible for coordinators
+                if session.visible or session.orga.coordinator == request.user:
+                    allowed = True
+
+        if allowed:
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
 
 class SessionUpdateView(SessionMixin, SuccessMessageMixin, UpdateView):
     success_message = _("Session mise à jour")
+
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Check allowances for access to updateview
+        """
+        allowed = False
+
+        if (
+            has_permission(request.user, self.required_permission)
+            and self.season
+            and self.season.manager_can_crud
+        ):
+            # StateManager, and it's the right moment
+            allowed = True
+        elif (
+            self.get_object().orga.coordinator == request.user
+            and self.season_object.coordinator_can_update
+        ):
+            # Coordinator, and it's the right moment
+            allowed = True
+
+        if allowed:
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        # Coordinator without StateManager rights
+        kwargs["is_for_coordinator"] = (
+            not has_permission(self.request.user, "challenge_session_crud")
+            and self.request.user == self.get_object().orga.coordinator
+        )
+        return kwargs
 
 
 class SessionCreateView(SessionMixin, SuccessMessageMixin, CreateView):
     success_message = _("Session créée")
 
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Check allowances for access to view
+        """
+        if (
+            has_permission(request.user, self.required_permission)
+            and self.season
+            and self.season.manager_can_crud
+        ):
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
 
 class SessionDeleteView(SessionMixin, SuccessMessageMixin, DeleteView):
     success_message = _("Session supprimée")
+
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Check allowances for access to view
+        """
+        if (
+            has_permission(request.user, self.required_permission)
+            and self.season
+            and self.season.manager_can_crud
+        ):
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
 
     def post(self, request, *args, **kwargs):
         self.get_object().get_related_timesheets().delete()
@@ -247,7 +333,6 @@ class SessionStaffChoiceView(SessionDetailView):
 
 
 class SessionExportView(ExportMixin, SessionMixin, DetailView):
-    view_does_cud = False
     # Allow season fetch even for non-state managers
     allow_season_fetch = True
 

@@ -202,8 +202,10 @@ class SeasonDetailView(SeasonMixin, DetailView):
         """
         allowed = False
         if self.season.unprivileged_user_can_see(request.user):
+            # Season participants
             allowed = True
         elif has_permission(request.user, self.required_permission):
+            # State Managers
             allowed = True
 
         if allowed:
@@ -211,9 +213,13 @@ class SeasonDetailView(SeasonMixin, DetailView):
         raise PermissionDenied
 
     def get_context_data(self, **kwargs):
-        context = super(SeasonDetailView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         # Add our submenu_category context
         context["submenu_category"] = "season-detail"
+        sessions = self.season.sessions_by_orga
+        if not has_permission(self.request.user, "challenge_see_all_orga"):
+            sessions = sessions.filter(orga__coordinator=self.request.user)
+        context["sessions_by_orga"] = sessions
         return context
 
 
@@ -680,17 +686,18 @@ class SeasonToOpenView(SeasonToStateMixin):
         """
         # Save first
         form_result = super().form_valid(form)
-        # Then send emails
-        for helper in self.get_email_recipients():
-            email = self.get_email(helper)
-            body = "\n".join(
-                [
-                    email["body"]["pre"],
-                    form.cleaned_data["customtext"],
-                    email["body"]["post"],
-                ]
-            )
-            helper.profile.send_mail(email["subject"], body)
+        if form.cleaned_data["sendemail"] == True:
+            # Then send emails
+            for helper in self.get_email_recipients():
+                email = self.get_email(helper)
+                body = "\n".join(
+                    [
+                        email["body"]["pre"],
+                        form.cleaned_data["customtext"],
+                        email["body"]["post"],
+                    ]
+                )
+                helper.profile.send_mail(email["subject"], body)
         return form_result
 
 

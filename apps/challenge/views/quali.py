@@ -1,5 +1,5 @@
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2015 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2015,2020 Didier Raboud <didier.raboud@liip.ch>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -18,6 +18,8 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+
+from defivelo.roles import has_permission
 
 from ..forms import QualificationForm
 from ..models import Qualification, Session
@@ -47,25 +49,31 @@ class QualiMixin(SessionMixin):
         )
 
     def get_form_kwargs(self):
-        form_kwargs = super(QualiMixin, self).get_form_kwargs()
+        form_kwargs = super().get_form_kwargs()
         try:
-            form_kwargs["session"] = Session.objects.get(pk=self.get_session_pk())
+            session = Session.objects.get(pk=self.get_session_pk())
+            form_kwargs["session"] = session
+            # Coordinator without StateManager rights
+            form_kwargs["is_for_coordinator"] = (
+                not has_permission(self.request.user, "challenge_session_crud")
+                and self.request.user == session.orga.coordinator
+            )
         except Exception:
             pass
         return form_kwargs
 
     def get_context_data(self, **kwargs):
-        context = super(QualiMixin, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         # Add our menu_category context
         context["menu_category"] += " qualification"
         try:
             context["session"] = Session.objects.get(pk=self.get_session_pk())
         except Exception:
             pass
-        try:
-            context["season"] = self.season
-        except Exception:
-            pass
+        context["season"] = self.season_object
+        context["qualification_user_errors"] = self.get_object().user_errors(
+            self.request.user
+        )
         return context
 
 

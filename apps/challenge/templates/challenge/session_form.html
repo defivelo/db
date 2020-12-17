@@ -47,27 +47,29 @@ $( "#id_place" ).change( updateHelpersPlace );
         {% bootstrap_field form.begin layout='horizontal' size='small' %}
         {% bootstrap_field form.place layout='horizontal' size='small' %}
         {% include "address_bootstrap_form.html" with has_additional=True %}
-        <h3>{% trans "Logistique" %}</h3>
-        <div class="form-group form-group-sm">
-          {% bootstrap_label form.visible.label label_class='col-md-3 control-label' %}
-          <div class="col-md-1">
-              <div class="checkbox">
-                  <label for="id_visible">
-                      <input {% if form.visible.value %}checked="checked" {% endif %}
-                            {% if form.visible.field.disabled %}disabled {% endif %}
-                            id="id_visible" name="visible" type="checkbox" />
-                  </label>
-              </div>
+        {% if form.visible %}
+          <h3>{% trans "Logistique" %}</h3>
+          <div class="form-group form-group-sm">
+            {% bootstrap_label form.visible.label label_class='col-md-3 control-label' %}
+            <div class="col-md-1">
+                <div class="checkbox">
+                    <label for="id_visible">
+                        <input {% if form.visible.value %}checked="checked" {% endif %}
+                              {% if form.visible.field.disabled %}disabled {% endif %}
+                              id="id_visible" name="visible" type="checkbox" />
+                    </label>
+                </div>
+            </div>
           </div>
-        </div>
-        {% bootstrap_field form.superleader layout='horizontal' size='small' %}
-        {% bootstrap_field form.fallback_plan layout='horizontal' size='small' %}
-        {% bootstrap_field form.bikes_concept layout='horizontal' size='small' %}
-        {% bootstrap_field form.bikes_phone layout='horizontal' size='small' %}
-        {% bootstrap_field form.apples layout='horizontal' size='small' %}
-        {% bootstrap_field form.helpers_time layout='horizontal' size='small' %}
-        {% bootstrap_field form.helpers_place layout='horizontal' size='small' %}
-        {% bootstrap_field form.comments layout='horizontal' size='small' %}
+          {% bootstrap_field form.superleader layout='horizontal' size='small' %}
+          {% bootstrap_field form.fallback_plan layout='horizontal' size='small' %}
+          {% bootstrap_field form.bikes_concept layout='horizontal' size='small' %}
+          {% bootstrap_field form.bikes_phone layout='horizontal' size='small' %}
+          {% bootstrap_field form.apples layout='horizontal' size='small' %}
+          {% bootstrap_field form.helpers_time layout='horizontal' size='small' %}
+          {% bootstrap_field form.helpers_place layout='horizontal' size='small' %}
+          {% bootstrap_field form.comments layout='horizontal' size='small' %}
+        {% endif %}
         {% buttons %}
             <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
             {% if session %}

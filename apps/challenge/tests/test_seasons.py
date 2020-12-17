@@ -30,7 +30,12 @@ from apps.common.forms import SWISS_DATE_INPUT_FORMAT
 from apps.orga.tests.factories import OrganizationFactory
 from apps.user import FORMATION_M1
 from apps.user.tests.factories import UserFactory
-from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient
+from defivelo.tests.utils import (
+    AuthClient,
+    CoordinatorAuthClient,
+    PowerUserAuthClient,
+    StateManagerAuthClient,
+)
 
 from .factories import QualificationFactory, SeasonFactory, SessionFactory
 
@@ -877,3 +882,90 @@ def test_session_to_season_in_previous_year(db):
 
     assert session.season.begin <= session.day
     assert session.season.end >= session.day
+
+
+class CoordinatorUserTest(SeasonTestCaseMixin):
+    def setUp(self):
+        self.client = CoordinatorAuthClient()
+        super().setUp()
+        # Put the sessions for our Coordinator's orga
+        for s in self.sessions:
+            s.orga.coordinator = self.client.user
+            s.orga.save()
+
+    def test_cooordinator_can_navigate_sessions(self):
+        # Test the access to the session on all season states
+        for state in DV_SEASON_STATES:
+            self.season.state = state[0]
+            self.season.save()
+            for session in self.sessions:
+                urls = [
+                    reverse(
+                        "session-list",
+                        kwargs={
+                            "seasonpk": self.season.pk,
+                            "year": session.day.year,
+                            "week": session.day.strftime("%W"),
+                        },
+                    ),
+                    reverse(
+                        "session-detail",
+                        kwargs={
+                            "seasonpk": self.season.pk,
+                            "pk": session.pk,
+                        },
+                    ),
+                ]
+                for url in urls:
+                    # Coordinators can navigate the seasons in all states
+                    response = self.client.get(url)
+                    self.assertEqual(response.status_code, 200, url)
+
+    def test_coordinator_can_update_sessions(self):
+        # Test the access to the session on all season states
+        for state in DV_SEASON_STATES:
+            self.season.state = state[0]
+            self.season.save()
+            for session in self.sessions:
+                url = reverse(
+                    "session-update",
+                    kwargs={
+                        "seasonpk": self.season.pk,
+                        "pk": session.pk,
+                    },
+                )
+                response = self.client.get(
+                    url,
+                    follow=True,
+                )
+                if state[0] == DV_SEASON_STATE_PLANNING:
+                    # Coordinator can update sessions only in planning
+                    self.assertEqual(response.status_code, 200, url)
+                else:
+                    self.assertEqual(response.status_code, 403, url)
+
+    def test_coordinator_cannot_create_nor_delete_sessions(self):
+        # Test the access to the session on all season states
+        for state in DV_SEASON_STATES:
+            self.season.state = state[0]
+            self.season.save()
+            for session in self.sessions:
+                urls = [
+                    reverse(
+                        "session-create",
+                        kwargs={
+                            "seasonpk": self.season.pk,
+                        },
+                    ),
+                    reverse(
+                        "session-delete",
+                        kwargs={
+                            "seasonpk": self.season.pk,
+                            "pk": session.pk,
+                        },
+                    ),
+                ]
+                for url in urls:
+                    # Final URL is forbidden; no creation nor deletion by coordinators
+                    response = self.client.get(url, follow=True)
+                    self.assertEqual(response.status_code, 403, url)
