@@ -47,6 +47,7 @@ $( "#id_place" ).change( updateHelpersPlace );
         {% bootstrap_field form.begin layout='horizontal' size='small' %}
         {% bootstrap_field form.place layout='horizontal' size='small' %}
         {% include "address_bootstrap_form.html" with has_additional=True %}
+        {% bootstrap_field form.fallback_plan layout='horizontal' size='small' %}
         {% if form.visible %}
           <h3>{% trans "Logistique" %}</h3>
           <div class="form-group form-group-sm">
@@ -62,7 +63,6 @@ $( "#id_place" ).change( updateHelpersPlace );
             </div>
           </div>
           {% bootstrap_field form.superleader layout='horizontal' size='small' %}
-          {% bootstrap_field form.fallback_plan layout='horizontal' size='small' %}
           {% bootstrap_field form.bikes_concept layout='horizontal' size='small' %}
           {% bootstrap_field form.bikes_phone layout='horizontal' size='small' %}
           {% bootstrap_field form.apples layout='horizontal' size='small' %}

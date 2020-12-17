@@ -75,7 +75,7 @@ class SessionForm(forms.ModelForm):
                     "orga",
                     "day",
                     "begin",
-                    "begin",
+                    "fallback_plan",
                     "place",
                     "address_street",
                     "address_no",
