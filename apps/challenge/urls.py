@@ -293,5 +293,4 @@ urlpatterns = [
     url(r"^registration/$", register, name="registration-create"),
     url(r"^registration/confirm/$", register_confirm, name="registration-confirm"),
     url(r"^registrations/validate/$", register_validate, name="registration-validate"),
-
 ]

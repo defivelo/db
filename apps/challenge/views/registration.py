@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from django.contrib import messages
 from django.core.exceptions import PermissionDenied, SuspiciousOperation
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
@@ -125,7 +124,7 @@ def register_validate(request):
     organizations = Organization.objects.filter(
         registration__isnull=False,
         registration__is_archived=False,
-        address_canton__in=user_cantons(request.user)
+        address_canton__in=user_cantons(request.user),
     ).distinct()
 
     if request.method == "POST":
@@ -133,7 +132,8 @@ def register_validate(request):
             Organization, pk=request.POST.get("form-organization-id")
         )
         formset = RegistrationValidationFormSet(
-            organization=organization, data=request.POST,
+            organization=organization,
+            data=request.POST,
         )
 
         if formset.is_valid():
@@ -159,7 +159,12 @@ def register_validate(request):
                     )
     else:
         data = [
-            (organization, RegistrationValidationFormSet(organization=organization,),)
+            (
+                organization,
+                RegistrationValidationFormSet(
+                    organization=organization,
+                ),
+            )
             for organization in organizations
         ]
 
