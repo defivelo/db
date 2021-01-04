@@ -938,7 +938,7 @@ class CoordinatorUserTest(SeasonTestCaseMixin):
                     url,
                     follow=True,
                 )
-                if state[0] == DV_SEASON_STATE_PLANNING:
+                if state[0] in [DV_SEASON_STATE_PLANNING, DV_SEASON_STATE_OPEN]:
                     # Coordinator can update sessions only in planning
                     self.assertEqual(response.status_code, 200, url)
                 else:
