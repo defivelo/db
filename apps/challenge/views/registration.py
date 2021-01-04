@@ -15,7 +15,7 @@ from apps.challenge.forms.registration import (
 )
 from apps.challenge.models.registration import REGISTRATION_DAY_TIMES, Registration
 from apps.orga.models import Organization
-from defivelo.roles import user_cantons
+from defivelo.roles import has_permission, user_cantons
 from defivelo.templatetags.dv_filters import dv_season_url
 
 
@@ -43,6 +43,8 @@ def register(request):
                 }
 
                 return HttpResponseRedirect(reverse("registration-confirm"))
+        else:
+            formset = RegistrationFormSet(form_kwargs={"coordinator": request.user})
     else:
         submitted = request.session.get("new_registration")
         initial = []
@@ -119,7 +121,8 @@ def register_confirm(request):
 
 
 def register_validate(request):
-    # TODO Limit with permissions to chargé-de-projet or stronger
+    if not has_permission(request.user, "registration_validate"):
+        raise PermissionDenied
 
     organizations = Organization.objects.filter(
         registration__isnull=False,

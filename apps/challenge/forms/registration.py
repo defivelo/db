@@ -1,7 +1,9 @@
 from django import forms
+from django.core.exceptions import ValidationError
+from django.db.models import F
 from django.utils.translation import ugettext_lazy as _
 
-from apps.challenge.models import Qualification, Session
+from apps.challenge.models import Qualification, Season, Session
 from apps.challenge.models.registration import Registration
 from apps.common.forms import SwissDateField
 from defivelo.templatetags.dv_filters import lettercounter
@@ -33,12 +35,57 @@ class RegistrationForm(forms.ModelForm):
         self.fields["classes_amount"].widget.attrs["min"] = 1
         self.fields["classes_amount"].widget.attrs["max"] = 6
 
+    def clean_date(self):
+        """Check that a related Season(Month) exists"""
+        data = self.cleaned_data["date"]
+        if not Season.objects.filter(
+            year=data.year,
+            month_start__lte=data.month,
+            n_months__gt=data.month - F("month_start"),
+            cantons__contains=self.instance.organization.address_canton,
+        ).exists():
+            raise ValidationError(
+                _(
+                    "Il n'est pas encore possible d'inscrire de session à cette date, "
+                    "merci de contacter le ou la chargé·e de projet régional·e"
+                )
+            )
+
+        return data
+
     class Meta:
         model = Registration
         fields = ("date", "day_time", "classes_amount")
 
 
-class BaseRegistrationFormSet(forms.BaseFormSet):
+class UniqueTimeRegistrationMixin:
+    def clean(self):
+        """Check that there's no two sessions at the same time."""
+        if any(self.errors):
+            # Don't bother validating the formset unless each form is valid on its own
+            return
+
+        times = []
+        for form in self.forms:
+            if self.can_delete and self._should_delete_form(form):
+                continue
+            time = "%s%s" % (
+                form.cleaned_data.get("date").isoformat(),
+                form.cleaned_data.get("day_time"),
+            )
+            if time in times:
+                form.add_error(
+                    "date",
+                    _(
+                        "Il est impossible de créer 2 sessions pour la même demi-journée pour le même établissement."
+                    ),
+                )
+                form.add_error("day_time", "")
+
+            times.append(time)
+
+
+class BaseRegistrationFormSet(UniqueTimeRegistrationMixin, forms.BaseFormSet):
     def serialize(self):
         return [
             {
@@ -104,7 +151,9 @@ class RegistrationValidationForm(forms.ModelForm):
         fields = ("id", "date", "day_time", "classes_amount")
 
 
-class BaseRegistrationValidationFormSet(forms.BaseModelFormSet):
+class BaseRegistrationValidationFormSet(
+    UniqueTimeRegistrationMixin, forms.BaseModelFormSet
+):
     def __init__(self, *args, **kwargs):
         organization = kwargs.pop("organization")
         super().__init__(

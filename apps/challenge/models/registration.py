@@ -1,9 +1,12 @@
+from datetime import time
+
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from apps.challenge.models import Session
 from apps.orga.models import Organization
 
 User = get_user_model()
@@ -43,6 +46,18 @@ class Registration(models.Model):
                 _("L'établissement choisi n'est pas géré par cet utilisateur.")
             )
 
+        if Session.session_exists(self.organization, self.date, self.day_time_as_time):
+            raise ValidationError(
+                _(
+                    "Il y a déjà une session inscrite pour cet établissement à cette date."
+                )
+            )
+
     def archive(self):
         self.is_archived = True
         self.save()
+
+    @property
+    def day_time_as_time(self):
+        as_array = self.day_time.split(":")
+        return time(int(as_array[0]), int(as_array[1]))

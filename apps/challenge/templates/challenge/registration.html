@@ -9,7 +9,7 @@
 
   <script type="text/javascript">
     const container = $("#form-container")[0];
-    const formRegex = RegExp(`form-(\\d){1}-`,'g');
+    const formRegex = RegExp(`form-(x)-`,'g');
     let totalForms = $("#id_form-TOTAL_FORMS")[0];
 
     /**
@@ -18,14 +18,15 @@
     function addForm(e) {
       e.preventDefault();
       e.stopPropagation();
-      let newForm = $(".registration-form", container)[0].cloneNode(true);
+      let newForm = $(".empty-form", container)[0].cloneNode(true);
       let formNb = $(".registration-form").length;
-      newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNb}-`)
+      newForm.innerHTML = newForm.innerHTML.replaceAll("__prefix__", formNb);
       $("[name$=-date]", newForm).val("");
       $("select option", newForm).first().prop("selected", true);
       $("[name$=-classes_amount]", newForm).val(1);
+      $(newForm).addClass("registration-form").removeClass("empty-form").removeClass("hidden")
 
-      $('table tbody', container).append(newForm);
+      $('table tbody .empty-form', container).before(newForm)
       totalForms.setAttribute('value', `${formNb+1}`);
 
       // Default datepicker init is onLoad only, so do it manually.
@@ -78,7 +79,7 @@
      */
     function react() {
       let total = 0;
-      $("[name$=-classes_amount]", container).each(function(field) {
+      $(".registration-form [name$=-classes_amount]", container).each(function(field) {
         total += Number(this.value);
       });
       $("#total_classes").val(total);
@@ -141,9 +142,9 @@
 
         {% for form in formset %}
           <tr class="registration-form">
-            <td class="form-group-sm">{% bootstrap_field form.date size='small' field_class='' %}</td>
-            <td class="form-group-sm">{% bootstrap_field form.day_time size='small' field_class='' %}</td>
-            <td class="form-group-sm">{% bootstrap_field form.classes_amount size='small' field_class='' %}</td>
+            <td class="form-group-sm">{% bootstrap_field form.date form_group_class="form-group required-field" size='small' field_class='' %}</td>
+            <td class="form-group-sm">{% bootstrap_field form.day_time form_group_class="form-group required-field" size='small' field_class='' %}</td>
+            <td class="form-group-sm">{% bootstrap_field form.classes_amount form_group_class="form-group required-field" size='small' field_class='' %}</td>
             <td>
               <button type="button" class="btn btn-secondary delete-button" disabled>
                 {% trans "Supprimer" %}
@@ -151,6 +152,19 @@
             </td>
           </tr>
         {% endfor %}
+
+        {% with form=formset.empty_form %}
+          <tr class="empty-form hidden">
+            <td class="form-group-sm">{% bootstrap_field form.date form_group_class="form-group required-field" size='small' field_class='' %}</td>
+            <td class="form-group-sm">{% bootstrap_field form.day_time form_group_class="form-group required-field" size='small' field_class='' %}</td>
+            <td class="form-group-sm">{% bootstrap_field form.classes_amount form_group_class="form-group required-field" size='small' field_class='' %}</td>
+            <td>
+              <button type="button" class="btn btn-secondary delete-button" disabled>
+                {% trans "Supprimer" %}
+              </button>
+            </td>
+          </tr>
+        {% endwith %}
 
       </table>
     </div>

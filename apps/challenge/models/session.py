@@ -17,6 +17,7 @@
 from datetime import datetime, time, timedelta
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import F, Q
 from django.template.defaultfilters import date
@@ -38,6 +39,7 @@ from .. import (
     CHOSEN_AS_NOT,
     CHOSEN_AS_REPLACEMENT,
     MAX_MONO1_PER_QUALI,
+    utils,
 )
 
 DEFAULT_SESSION_DURATION_HOURS = 3
@@ -307,6 +309,30 @@ class Session(Address, models.Model):
             ),
             place=self.orga.name,
         )
+
+    def clean(self):
+        """Avoid creating two sessions at the same place, same day and same half of
+        the day.
+        """
+        if Session.session_exists(self.orga, self.day, self.begin):
+            raise ValidationError(
+                _(
+                    "Il y a déjà une session inscrite pour cet établissement à cette date."
+                )
+            )
+
+    @classmethod
+    def session_exists(cls, orga, day, begin):
+        """Check if a session exists for this orga, day, and at the same half of
+        the day (beginning also before or after noon).
+        """
+        sessions = cls.objects.filter(orga_id=orga.id, day=day)
+        if utils.is_morning(begin):
+            sessions = sessions.filter(begin__lte=time(12, 00))
+        else:
+            sessions = sessions.filter(begin__gt=time(12, 00))
+
+        return sessions.exists()
 
     def __str__(self):
         return (

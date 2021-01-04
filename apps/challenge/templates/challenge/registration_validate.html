@@ -34,16 +34,20 @@
       event.stopPropagation();
       const $line = $(event.target).closest("tr");
       const $select = $("select", $line);
+      // Trick for readonly select with a sibling hidden field https://stackoverflow.com/questions/368813
+      const $hiddenSelect = $select.closest("td").find("input[type=hidden]");
       const formRegex = RegExp(/form-(\d*)-/g);
       const prefix = $("input", $line)[0].name.match(formRegex)[0];
       const $datepicker = $(`[name=${prefix}date]`, $line);
       const isModifyState = !$("input", $line).prop("readonly");
 
-      // Modify state fields
+      // (Dis)Allow to modify fields
       $("input", $line).prop("readonly", isModifyState);
       $select.prop("disabled", isModifyState);
-      $select.closest("td").find("input[type=hidden]").prop("disabled", !isModifyState);
-      if (!isModifyState) {
+      $hiddenSelect.prop("disabled", !isModifyState);
+      if (isModifyState) {
+        $hiddenSelect.val($select.val());
+      } else {
         $datepicker.datetimepicker({"format": "DD.MM.YYYY"});
       }
 
@@ -137,6 +141,17 @@
           </tr>
 
           {% for form in formset %}
+
+            {% if form.non_field_errors %}
+              <tr>
+                <td colspan="4" class="alert alert-danger">
+                  {% for error in form.non_field_errors %}
+                    {{ error }}{% if not forloop.last %}<br>{% endif %}
+                  {% endfor %}
+                </td>
+              </tr>
+            {% endif %}
+
             <tr class="registration-form">
               <td class="form-group-sm">
                 {% bootstrap_field form.date size='small' field_class='' show_label=False %}

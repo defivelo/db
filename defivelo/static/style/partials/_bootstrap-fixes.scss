@@ -3,3 +3,14 @@ abbr[title] {
     border-bottom: 0;
     text-decoration: none;
 }
+
+.panel-confirm {
+  @include clearfix;
+  button {
+    margin: 10px;
+  }
+}
+
+.panel table .row.actions .col-md-4{
+  padding: 0;
+}
