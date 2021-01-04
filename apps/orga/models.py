@@ -142,8 +142,8 @@ class Organization(Address, models.Model):
         messages.success(
             request,
             _(
-                "Vos préinscriptions ont été enregistrées et les chargé·e·s de "
-                "projet de votre canton a été notifié·e·s!"
+                "Votre préinscription a été enregistrée et le/la chargé·e de "
+                "projet de votre canton a été notifié·e!"
             ),
         )
 
@@ -167,7 +167,7 @@ class Organization(Address, models.Model):
         messages.success(
             request,
             _(
-                "Les inscriptions pour l'établissement %s sont enregistrées, et un "
+                "L'inscription pour l'établissement %s est enregistrée, et un "
                 "email a été envoyé à la personne coordinatrice." % self
             ),
         )

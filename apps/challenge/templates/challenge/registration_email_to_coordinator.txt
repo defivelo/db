@@ -1,10 +1,10 @@
 {% load i18n %}{% filter wordwrap:80 %}{% autoescape off %}{% blocktrans trimmed with full_name=full_name %}
-Salut {{ full_name }},
+Bonjour {{ full_name }},
 {% endblocktrans %}
 
 {% blocktrans trimmed with url=url %}
-Tes pré-inscriptions ont été validées.
-Retrouve les sessions et qualifications de ton établissement à l'adresse:
+Votre pré-inscription a été validée.
+Retrouvez les sessions et Qualifs de votre établissement à l'adresse:
 {{ url }}
 {% endblocktrans %}
 
