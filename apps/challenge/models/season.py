@@ -150,7 +150,7 @@ class Season(models.Model):
 
     @cached_property
     def coordinator_can_update(self):
-        return self.state == DV_SEASON_STATE_PLANNING
+        return self.state in [DV_SEASON_STATE_PLANNING, DV_SEASON_STATE_OPEN]
 
     @cached_property
     def season_full(self):
