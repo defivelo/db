@@ -174,6 +174,7 @@ class SessionDetailView(SessionMixin, DetailView):
             self.season_object.coordinator_can_update
             and mysession.orga.coordinator == self.request.user
         )
+        context["user_is_coordinator"] = mysession.orga.coordinator == self.request.user
         # Build a meaningful mailto: link towards all session available emails, with meaningful subject and body.
         session_helpers = [
             f"{s.helper.get_full_name()} <{s.helper.email}>"

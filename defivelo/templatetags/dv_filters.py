@@ -112,7 +112,7 @@ def tel_link(tel):
 
 
 @register.filter
-def profile_tag(user):
+def profile_tag(user, is_restricted: bool = False):
     """
     Standard user display (currently fullname + small natel)
     """
@@ -120,7 +120,7 @@ def profile_tag(user):
         return ""
     usertag = "<span>"
     usertag += user.get_full_name()
-    if user.profile.natel:
+    if user.profile.natel and not is_restricted:
         usertag += "<br /><small>{tel_link}</small>".format(
             tel_link=tel_link(user.profile.natel)
         )

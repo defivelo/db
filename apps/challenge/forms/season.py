@@ -91,7 +91,7 @@ class SeasonToSpecificStateForm(forms.ModelForm):
     customtext = forms.CharField(
         label=_("Précisions"),
         help_text=_(
-            "Attention: Le courriel est envoyé à chaque destinataire dans sa langue, mais ce texte est envoyé tel quel."
+            "Attention: Le courriel est envoyé à chaque destinataire dans sa langue, mais ce texte est envoyé tel quel, il ne sera pas traduit."
         ),
         initial="",
         widget=forms.Textarea,
