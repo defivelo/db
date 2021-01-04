@@ -314,12 +314,16 @@ class Session(Address, models.Model):
         """Avoid creating two sessions at the same place, same day and same half of
         the day.
         """
-        if Session.session_exists(self.orga, self.day, self.begin):
-            raise ValidationError(
-                _(
-                    "Il y a déjà une session inscrite pour cet établissement à cette date."
+        try:
+            if Session.session_exists(self.orga, self.day, self.begin):
+                raise ValidationError(
+                    _(
+                        "Il y a déjà une session inscrite pour cet établissement à cette date."
+                    )
                 )
-            )
+        except Session.orga.RelatedObjectDoesNotExist:
+            # It's ok if the organisation is not yet selected
+            pass
 
     @classmethod
     def session_exists(cls, orga, day, begin):
