@@ -450,6 +450,7 @@ def reset_db_from_prod(c):
 
     # Run what's needed to bring the target env to a working state
     dj_migrate_database(c)
+    dj_sync_roles(c)
     c.conn.manage_py(
         f'set_default_site --name "{project_name_verbose} ({c.environment})" --domain "{c.config.settings["SITE_DOMAIN"]}"'
     )
@@ -507,6 +508,7 @@ def deploy(c):
     dj_collect_static(c)
     django_compress(c)
     dj_migrate_database(c)
+    dj_sync_roles(c)
     compile_messages(c)
     restart_uwsgi(c)
     c.conn.clean_old_database_backups(nb_backups_to_keep=10)
@@ -640,6 +642,15 @@ def dj_migrate_database(c):
     Django: Migrate the database
     """
     c.conn.manage_py("migrate")
+
+
+@task
+@remote
+def dj_sync_roles(c):
+    """
+    Django: Synchronize Groups/Permissions with defivelo.roles
+    """
+    c.conn.manage_py("sync_roles --reset_user_permissions")
 
 
 @task
