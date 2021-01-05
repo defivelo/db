@@ -113,8 +113,8 @@
 
     <div class="panel panel-default form-inline">
       <div class="panel-heading">
-        <p class="panel-title">{% trans 'Établissement' %}: {{ organization }}</p>
-        <p>{% trans 'Coordina·teur·trice' %}: {{ organization.coordinator.get_full_name }}</p>
+          <p class="panel-title">{% blocktrans with organization=organization %}Établissement : {{ organization }}{% endblocktrans %}</p>
+        <p>{% blocktrans with full_name=organization.coordinator.get_full_name %}Coordina·teur·trice : {{ full_name }}{% endblocktrans %}</p>
       </div>
 
       <div class="panel-body alert-warning">
