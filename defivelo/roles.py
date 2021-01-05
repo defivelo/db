@@ -86,6 +86,7 @@ class StateManager(AbstractUserRole):
         "challenge_season_see_state_planning": True,
         "timesheet": True,
         "timesheet_editor": True,
+        "registration_validate": True,
     }
 
 
@@ -138,6 +139,7 @@ class Coordinator(AbstractUserRole):
         "orga_show": True,
         "orga_edit": True,
         "challenge_see_all_orga": False,
+        "registration_create": True,
     }
 
 

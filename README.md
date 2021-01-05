@@ -27,3 +27,9 @@ make help
 vagrant ssh
 fab [staging|prod] deploy
 ```
+
+## Roles & permissions
+After adding a new permission in `defivelo/roles.py`, run the following in vagrant to apply them:
+```
+./manage.py sync_roles --reset_user_permissions
+```

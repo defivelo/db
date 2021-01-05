@@ -36,6 +36,7 @@ from ..models import (
     Session,
 )
 from ..models.qualification import CATEGORY_CHOICES
+from ..models.registration import Registration
 
 
 class SeasonFactory(DjangoModelFactory):
@@ -105,3 +106,8 @@ class QualificationActivityFactory(DjangoModelFactory):
 
     name = Faker("name")
     category = fuzzy.FuzzyChoice([c[0] for c in CATEGORY_CHOICES])
+
+
+class RegistrationFactory(DjangoModelFactory):
+    class Meta:
+        model = Registration

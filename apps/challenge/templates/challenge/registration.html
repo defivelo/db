@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% block head_title %}{% trans "Pré-inscription sans engagement" %}{% endblock %}
+
+{% block bootstrap3_extra_script %}
+
+  {% include 'snippets/datetimepicker_js.html' %}
+
+  <script type="text/javascript">
+    const container = $("#form-container")[0];
+    const formRegex = RegExp(`form-(x)-`,'g');
+    let totalForms = $("#id_form-TOTAL_FORMS")[0];
+
+    /**
+     * Add a new row to the form.
+     */
+    function addForm(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      let newForm = $(".empty-form", container)[0].cloneNode(true);
+      let formNb = $(".registration-form").length;
+      newForm.innerHTML = newForm.innerHTML.replaceAll("__prefix__", formNb);
+      $("[name$=-date]", newForm).val("");
+      $("select option", newForm).first().prop("selected", true);
+      $("[name$=-classes_amount]", newForm).val(1);
+      $(newForm).addClass("registration-form").removeClass("empty-form").removeClass("hidden")
+
+      $('table tbody .empty-form', container).before(newForm)
+      totalForms.setAttribute('value', `${formNb+1}`);
+
+      // Default datepicker init is onLoad only, so do it manually.
+      $(`#id_form-${formNb}-date_pickers`).datetimepicker({"format": "DD.MM.YYYY"});
+
+    }
+
+    /**
+     * Delete the row concerned by the event.
+     */
+    function deleteForm(event) {
+      // Changing the id (as the formset demands), will break the values.
+      // Prepare an array of new date values.
+      const line = $(event.target).closest("tr");
+      const deletedIndex = $(".input-group.date", line).attr('id').match("id_form-(\\d)")[1];
+      let values = []
+      let i = 0;
+      $(".registration-form").each(function(index) {
+        values.push({
+          'date': $(`#id_form-${i}-date_pickers`).data("DateTimePicker").date(),
+          'day_time': $(`#id_form-${i}-day_time`).val(),
+          'classes_amount': $(`#id_form-${i}-classes_amount`).val(),
+        })
+        $(this).data("DateTimePicker", null);
+        i++;
+      });
+      values.splice(deletedIndex, 1);
+
+      // Remove the line
+      $('table tbody', container)[0].removeChild(line[0]);
+
+      // Reset formset indexes and values
+      i = 0;
+      $(".registration-form", container).each(function() {
+        this.innerHTML = this.innerHTML.replace(formRegex, `form-${i}-`)
+        const picker = $(`#id_form-${i}-date_pickers`);
+        picker.datetimepicker({"format": "DD.MM.YYYY"});
+        picker.data("DateTimePicker").date(values[i]['date']);
+        $(`#id_form-${i}-day_time`).val(values[i]['day_time']);
+        $(`#id_form-${i}-classes_amount`).val(values[i]['classes_amount']);
+        i ++;
+      });
+
+      // Update totalForms
+      $(totalForms).attr('value', `${i}`)
+    }
+
+    /**
+     * Update classes count and available controls.
+     */
+    function react() {
+      let total = 0;
+      $(".registration-form [name$=-classes_amount]", container).each(function(field) {
+        total += Number(this.value);
+      });
+      $("#total_classes").val(total);
+      $('.delete-button').prop("disabled", $(".registration-form", container).size() <= 1);
+    }
+
+    /**
+     * Add event listeners on document ready.
+     */
+    $(function() {
+      $(container).on('click', function(event) {
+        if (event.target.classList.contains("delete-button")) {
+          deleteForm(event);
+        }
+        if (event.target.id === 'add-form') {
+          addForm(event);
+        }
+        react();
+      });
+
+      $(".classes-amount > input", container).on("change", function(){
+        react();
+      });
+
+      // Reactions based on initial data.
+      react();
+    });
+
+  </script>
+
+{% endblock %}
+
+{% block content %}
+  <h1>{% trans "Pré-inscription sans engagement" %}</h1>
+
+  {% bootstrap_formset_errors formset %}
+  <form id="form-container" method="POST" action="">
+    {% csrf_token %}
+
+    <div class="panel panel-default form-horizontal">
+      <div class="panel-body">
+        {% bootstrap_field form.organization layout='horizontal' size='small' %}
+
+        <div class="form-group form-group-sm required-field">
+          <label class="col-md-3 control-label" for="total_classes">{% trans 'Nombre de classes' %}</label>
+          <div class="col-md-9">
+            <input type="text" readonly id="total_classes" value="1"/>
+            <div class="help-block">
+              {% trans 'Au sens de DÉFI VÉLO, une classe comprend entre 15 et 25 participants.' %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{ formset.management_form }}
+
+    <div class="panel panel-default form-inline">
+      <table class="table table-striped">
+
+        {% for form in formset %}
+          <tr class="registration-form">
+            <td class="form-group-sm">{% bootstrap_field form.date form_group_class="form-group required-field" size='small' field_class='' %}</td>
+            <td class="form-group-sm">{% bootstrap_field form.day_time form_group_class="form-group required-field" size='small' field_class='' %}</td>
+            <td class="form-group-sm">{% bootstrap_field form.classes_amount form_group_class="form-group required-field" size='small' field_class='' %}</td>
+            <td>
+              <button type="button" class="btn btn-secondary delete-button" disabled>
+                {% trans "Supprimer" %}
+              </button>
+            </td>
+          </tr>
+        {% endfor %}
+
+        {% with form=formset.empty_form %}
+          <tr class="empty-form hidden">
+            <td class="form-group-sm">{% bootstrap_field form.date form_group_class="form-group required-field" size='small' field_class='' %}</td>
+            <td class="form-group-sm">{% bootstrap_field form.day_time form_group_class="form-group required-field" size='small' field_class='' %}</td>
+            <td class="form-group-sm">{% bootstrap_field form.classes_amount form_group_class="form-group required-field" size='small' field_class='' %}</td>
+            <td>
+              <button type="button" class="btn btn-secondary delete-button" disabled>
+                {% trans "Supprimer" %}
+              </button>
+            </td>
+          </tr>
+        {% endwith %}
+
+      </table>
+    </div>
+
+    <button type="button" class="btn btn-secondary" id="add-form">
+      {% trans "Ajouter une session" %}
+    </button>
+
+    {% buttons %}
+      <button type="submit" class="btn btn-primary pull-right">{% trans "Suivant" %}</button>
+    {% endbuttons %}
+  </form>
+
+{% endblock %}
