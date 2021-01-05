@@ -43,14 +43,20 @@ class Registration(models.Model):
             pk=self.organization.pk
         ).exists():
             raise ValidationError(
-                _("L'établissement choisi n'est pas géré par cet utilisateur.")
+                {
+                    "organization": _(
+                        "L'établissement choisi n'est pas géré par cet utilisateur."
+                    )
+                }
             )
 
         if Session.session_exists(self.organization, self.date, self.day_time_as_time):
             raise ValidationError(
-                _(
-                    "Il y a déjà une session inscrite pour cet établissement à cette date."
-                )
+                {
+                    "date": _(
+                        "Il y a déjà une session inscrite pour cet établissement à cette date."
+                    )
+                }
             )
 
     def archive(self):
