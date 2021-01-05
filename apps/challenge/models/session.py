@@ -317,9 +317,11 @@ class Session(Address, models.Model):
         try:
             if Session.session_exists(self.orga, self.day, self.begin):
                 raise ValidationError(
-                    _(
-                        "Il y a déjà une session inscrite pour cet établissement à cette date."
-                    )
+                    {
+                        "day": _(
+                            "Il y a déjà une session inscrite pour cet établissement à cette date."
+                        )
+                    }
                 )
         except Session.orga.RelatedObjectDoesNotExist:
             # It's ok if the organisation is not yet selected
