@@ -2,15 +2,12 @@
 Bonjour {{ full_name }},
 {% endblocktrans %}
 
-{% blocktrans trimmed with url=url %}
-Votre pré-inscription a été validée.
-Retrouvez les sessions et Qualifs de votre établissement à l'adresse:
-{{ url }}
-{% endblocktrans %}
+{% blocktrans with url=url %}Votre pré-inscription a été validée.
+Retrouvez les sessions et Qualifs de votre établissement à l'adresse :
 
-{% blocktrans trimmed with site_domain=site_domain %}
-Avec nos meilleures salutations,
-
-L’équipe DÉFI VÉLO - {{ site_domain }}
+    {{ url }}
 {% endblocktrans %}
+{% blocktrans with site_domain=site_domain %}Avec nos meilleures salutations,
+
+L’équipe DÉFI VÉLO - {{ site_domain }}{% endblocktrans %}
 {% endautoescape %}{% endfilter %}

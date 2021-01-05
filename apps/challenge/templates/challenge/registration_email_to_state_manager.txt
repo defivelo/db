@@ -2,14 +2,12 @@
 Salut {{ full_name }},
 {% endblocktrans %}
 
-{% blocktrans trimmed with url=url %}
-Une nouvelle pré-inscription est disponible pour votre canton.
-Merci de visiter {{ url }} afin de la valider!
-{% endblocktrans %}
+{% blocktrans with url=url %}Une nouvelle pré-inscription est disponible pour votre canton.
+Merci de visiter cette adresse afin de la valider !
 
-{% blocktrans trimmed with site_domain=site_domain %}
-Avec nos meilleures salutations,
-
-L’équipe DÉFI VÉLO - {{ site_domain }}
+    {{ url }}
 {% endblocktrans %}
+{% blocktrans with site_domain=site_domain %}Avec nos meilleures salutations,
+
+L’équipe DÉFI VÉLO - {{ site_domain }}{% endblocktrans %}
 {% endautoescape %}{% endfilter %}
