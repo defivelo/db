@@ -467,8 +467,10 @@ def import_db(c, dump_file=None):
     The dump must be a gzipped SQL dump. If the dump_file parameter is not set,
     the database will be dumped and retrieved from the remote host.
     """
-    with open("envdir/DATABASE_URL", "r") as db_credentials_file:
-        db_credentials = db_credentials_file.read()
+    db_credentials = os.environ.get("DATABASE_URL")
+    if not db_credentials:
+        with open("envdir/DATABASE_URL", "r") as db_credentials_file:
+            db_credentials = db_credentials_file.read()
     db_credentials_dict = dj_database_url.parse(db_credentials)
 
     if not is_supported_db_engine(db_credentials_dict["ENGINE"]):
@@ -486,6 +488,14 @@ def import_db(c, dump_file=None):
         "db_dump": dump_file,
     }
     env = {"PGPASSWORD": db_credentials_dict["PASSWORD"].replace("$", "\$")}
+
+    c.run("""
+        psql -h '{host}' -U '{user}' '{db}' '$(./manage.py sqldsn -q)' <<<'
+            SELECT pg_terminate_backend(pid)
+            FROM pg_stat_activity
+            WHERE pid != pg_backend_pid()'
+        """.format(**db_info), env=env)
+
     c.run("dropdb -h '{host}' -U '{user}' '{db}'".format(**db_info), env=env)
     c.run("createdb -h '{host}' -U '{user}' '{db}'".format(**db_info), env=env)
     c.run(
