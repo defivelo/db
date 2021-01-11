@@ -1,0 +1,40 @@
+version: '3.4'
+
+x-environment:
+  &x-environment
+  INITIAL: "${INITIAL:-0}"
+
+services:
+  db:
+    image: postgres:11.8
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_PASSWORD:
+      POSTGRES_DB: defivelo
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432
+
+  backend:
+    build:
+      context: .
+    command: sh -c 'while true; do ./manage.py runserver 0.0.0.0:8000; sleep 1; done'
+    environment:
+      <<: *x-environment
+      ALLOWED_HOSTS: >-
+        localhost
+      DATABASE_URL: postgresql://postgres@db/defivelo
+    ports:
+      - 8000
+    volumes:
+      - venv:/venv
+      - .:/code
+    depends_on:
+      - db
+    stdin_open: true
+    tty: true
+
+volumes:
+  pgdata:
+  venv:
