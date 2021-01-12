@@ -40,3 +40,10 @@ MIDDLEWARE += [
 STRONGHOLD_PUBLIC_URLS += [r"^/__debug__/.*$"]
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+COMPRESS_PRECOMPILERS = (
+    (
+        "text/x-scss",
+        "sassc {infile} {outfile}",
+    ),
+)
