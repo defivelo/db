@@ -118,7 +118,10 @@ class RegistrationConfirmForm(forms.Form):
 class RegistrationValidationForm(forms.ModelForm):
     date = SwissDateField()
     is_validated = forms.BooleanField(
-        initial=False, widget=forms.HiddenInput, required=True
+        initial=False,
+        widget=forms.HiddenInput,
+        required=True,
+        error_messages={"required": _("Cette inscription n'a pas été validée.")}
     )
 
     def __init__(self, *args, **kwargs):

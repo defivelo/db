@@ -38,7 +38,7 @@
       const $hiddenSelect = $select.closest("td").find("input[type=hidden]");
       const formRegex = RegExp(/form-(\d*)-/g);
       const prefix = $("input", $line)[0].name.match(formRegex)[0];
-      const $datepicker = $(`[name=${prefix}date]`, $line);
+      const $datepicker = $(`#id_${prefix}date_pickers`, $line);
       const isModifyState = !$("input", $line).prop("readonly");
 
       // (Dis)Allow to modify fields
@@ -148,6 +148,14 @@
                   {% for error in form.non_field_errors %}
                     {{ error }}{% if not forloop.last %}<br>{% endif %}
                   {% endfor %}
+                </td>
+              </tr>
+            {% endif %}
+
+            {% if form.errors.is_validated %}
+              <tr>
+                <td colspan="4" class="alert alert-danger">
+                  {{ form.errors.is_validated.0 }}
                 </td>
               </tr>
             {% endif %}
