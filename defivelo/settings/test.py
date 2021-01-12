@@ -22,3 +22,10 @@ COMPRESS_OFFLINE = False
 
 SECRET_KEY = "notsosecret"
 NEVERCACHE_KEY = "notsosecret"
+
+COMPRESS_PRECOMPILERS = (
+    (
+        "text/x-scss",
+        "sassc {infile} {outfile}",
+    ),
+)
