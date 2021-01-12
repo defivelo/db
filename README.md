@@ -32,6 +32,11 @@ After adding a new permission in `defivelo/roles.py`, run the following in vagra
 ./manage.py sync_roles --reset_user_permissions
 ```
 
+## Clone production database
+```shell
+docker-compose run backend fab prod import-db
+```
+
 ## Automated tests
 
 To run backend tests and lint checks, run `scripts/run_tests.sh` in the `backend` container:
