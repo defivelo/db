@@ -31,4 +31,4 @@ test:
         echo ' Ready!'
       "
     - ./scripts/run_tests.sh
-    - ./manage.py fixturize -y
+
