@@ -10,6 +10,7 @@ test:
     - name: postgres:11.8
       alias: db
   variables:
+    VIRTUAL_ENV: ""
     GIT_SUBMODULE_STRATEGY: recursive
     DJANGO_SETTINGS_MODULE: defivelo.settings.test
     DATABASE_URL: postgresql://postgres:postgres@db/postgres
