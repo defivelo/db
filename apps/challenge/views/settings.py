@@ -22,6 +22,7 @@ from django.views.generic.edit import CreateView, UpdateView
 
 from rolepermissions.mixins import HasPermissionsMixin
 
+from defivelo.roles import has_permission
 from defivelo.views import MenuView
 
 from ..forms import AnnualStateSettingForm
@@ -49,6 +50,11 @@ class SettingsMixin(HasPermissionsMixin):
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
         form_kwargs["year"] = self.year
+        if not has_permission(self.request.user, "cantons_all"):
+            # Ne permet que l’édition et la création de moiss pour les cantons gérés
+            form_kwargs["cantons"] = self.request.user.managedstates.all().values_list(
+                "canton", flat=True
+            )
         return form_kwargs
 
     def get_success_url(self):
