@@ -84,6 +84,7 @@ class StateManager(AbstractUserRole):
         "challenge_invoice_cru": True,
         "challenge_invoice_reset_to_draft": False,
         "challenge_season_see_state_planning": True,
+        "settings_crud": True,
         "timesheet": True,
         "timesheet_editor": True,
         "registration_validate": True,
