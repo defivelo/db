@@ -136,6 +136,7 @@ class Coordinator(AbstractUserRole):
     """
 
     available_permissions = {
+        "home_without_articles": True,
         "orga_show": True,
         "orga_edit": True,
         "challenge_see_all_orga": False,

@@ -51,11 +51,12 @@ class HomeView(MenuView, TemplateView):
     template_name = "home.html"
 
     def get_context_data(self, **kwargs):
-        context = super(HomeView, self).get_context_data(**kwargs)
-        articles_qs = Article.objects
-        if not has_permission(self.request.user, "home_article_cud"):
-            articles_qs = articles_qs.filter(published=True)
-        context["articles"] = articles_qs.order_by("-modified")[:5]
+        context = super().get_context_data(**kwargs)
+        if not has_permission(self.request.user, "home_without_articles"):
+            articles_qs = Article.objects
+            if not has_permission(self.request.user, "home_article_cud"):
+                articles_qs = articles_qs.filter(published=True)
+            context["articles"] = articles_qs.order_by("-modified")[:5]
         # Add our menu_category context
         context["menu_category"] = "home"
         return context
