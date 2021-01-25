@@ -22,6 +22,7 @@ from django.views.generic.edit import CreateView, UpdateView
 
 from rolepermissions.mixins import HasPermissionsMixin
 
+from apps.common import DV_STATES
 from defivelo.roles import has_permission
 from defivelo.views import MenuView
 
@@ -35,10 +36,16 @@ class SettingsMixin(HasPermissionsMixin):
 
     def dispatch(self, request, *args, **kwargs):
         self.year = kwargs.pop("year")
+        self.cantons = DV_STATES
+        if not has_permission(request.user, "cantons_all"):
+            # Ne permet que l’édition et la création de moiss pour les cantons gérés
+            self.cantons = self.request.user.managedstates.all().values_list(
+                "canton", flat=True
+            )
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        return super().get_queryset().filter(year=self.year)
+        return super().get_queryset().filter(year=self.year, canton__in=self.cantons)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -50,11 +57,7 @@ class SettingsMixin(HasPermissionsMixin):
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
         form_kwargs["year"] = self.year
-        if not has_permission(self.request.user, "cantons_all"):
-            # Ne permet que l’édition et la création de moiss pour les cantons gérés
-            form_kwargs["cantons"] = self.request.user.managedstates.all().values_list(
-                "canton", flat=True
-            )
+        form_kwargs["cantons"] = self.cantons
         return form_kwargs
 
     def get_success_url(self):
