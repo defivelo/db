@@ -19,19 +19,23 @@ from django.urls import reverse
 from django.utils import timezone
 
 from apps.article.models import Article
-from defivelo.tests.utils import AuthClient, PowerUserAuthClient
+from defivelo.tests.utils import AuthClient, CoordinatorAuthClient, PowerUserAuthClient
 
 
-class AuthUserTest(TestCase):
+class OneArticle(object):
     def setUp(self):
-        # Every test needs a client.
-        self.client = AuthClient()
         self.article = Article.objects.create(
             title="TestArticle",
             body="<h1>Test Body</h1>",
             published=True,
             modified=timezone.now(),
         )
+
+
+class AuthUserTest(OneArticle, TestCase):
+    def setUp(self):
+        super().setUp()
+        self.client = AuthClient()
 
     def test_my_restrictions(self):
         for symbolicurl in [
@@ -46,17 +50,28 @@ class AuthUserTest(TestCase):
         response = self.client.get(reverse("article-create"))
         self.assertEqual(response.status_code, 403, "Article creation")
 
+    def test_articles_are_accessible(self):
+        response = self.client.get(reverse("home"))
+        self.assertEqual(response.status_code, 200, "home")
+        self.assertContains(response, "TestArticle")
 
-class PowerUserTest(TestCase):
+
+class CoordinatorTest(OneArticle, TestCase):
     def setUp(self):
-        # Every test needs a client.
+        super().setUp()
+        self.client = CoordinatorAuthClient()
+
+    def test_articles_are_not_accessible(self):
+        response = self.client.get(reverse("home"))
+        self.assertEqual(response.status_code, 200, "home")
+        # The only article is not present
+        self.assertNotContains(response, "TestArticle")
+
+
+class PowerUserTest(OneArticle, TestCase):
+    def setUp(self):
+        super().setUp()
         self.client = PowerUserAuthClient()
-        self.article = Article.objects.create(
-            title="TestArticle",
-            body="<h1>Test Body</h1>",
-            published=True,
-            modified=timezone.now(),
-        )
 
     def test_my_accesses(self):
         for symbolicurl in [
