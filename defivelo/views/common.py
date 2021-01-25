@@ -48,8 +48,6 @@ class MenuView(object):
 
 
 class HomeView(MenuView, TemplateView):
-    template_name = "home.html"
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if not has_permission(self.request.user, "home_without_articles"):
@@ -60,6 +58,14 @@ class HomeView(MenuView, TemplateView):
         # Add our menu_category context
         context["menu_category"] = "home"
         return context
+
+    def get_template_names(self):
+        if has_permission(self.request.user, "home_without_articles"):
+            self.template_name = "home_without_articles.html"
+        else:
+            self.template_name = "home.html"
+
+        return super().get_template_names()
 
 
 class LicenseView(StrongholdPublicMixin, TemplateView):
