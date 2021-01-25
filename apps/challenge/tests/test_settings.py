@@ -110,9 +110,64 @@ class StateManagerUserTest(SettingsViewsTestCase):
         self.client = StateManagerAuthClient()
         super().setUp()
 
-    def test_settings_list_access(self):
-        for url in self.restricted_urls:
-            self.assertEqual(self.client.get(url).status_code, 403, url)
+    def test_no_access_to_foreignsettings(self):
+        # Make the setting _not_ an accessible setting
+        foreignsetting = AnnualStateSettingFactory(
+            canton=next(
+                c
+                for c in DV_STATES
+                if c
+                not in self.client.user.managedstates.all().values_list(
+                    "canton", flat=True
+                )
+            )
+        )
+        foreignsetting.save()
+
+        # The StateManager can't access other canton's settings
+        url = reverse(
+            "annualstatesetting-update",
+            kwargs={"year": foreignsetting.year, "pk": foreignsetting.pk},
+        )
+        self.assertEqual(self.client.get(url).status_code, 404, url)
+
+    def test_create_setting_in_our_cantons(self):
+        # Now create one in our cantons, and ensure we return on the page that corresponds to our year
+        initial = self.create_initial
+        initial["year"] = 1968
+        initial["canton"] = self.client.user.managedstates.first().canton
+        self.assertRedirects(
+            self.client.post(self.url_create, initial),
+            reverse(
+                "annualstatesettings-list",
+                kwargs={"year": 1968},
+            ),
+            target_status_code=200,
+        )
+
+    def test_update_setting_in_our_cantons(self):
+        setting = AnnualStateSettingFactory(
+            canton=self.client.user.managedstates.first().canton
+        )
+        setting.save()
+
+        update_url = reverse(
+            "annualstatesetting-update",
+            kwargs={"year": setting.year, "pk": setting.pk},
+        )
+
+        initial = setting.__dict__
+        initial["year"] = 2021
+
+        # On update, ensure we return on the page that corresponds to our new year
+        self.assertRedirects(
+            self.client.post(update_url, initial),
+            reverse(
+                "annualstatesettings-list",
+                kwargs={"year": 2021},
+            ),
+            target_status_code=200,
+        )
 
 
 class PowerUserTest(SettingsViewsTestCase):
