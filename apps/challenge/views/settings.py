@@ -36,12 +36,11 @@ class SettingsMixin(HasPermissionsMixin):
 
     def dispatch(self, request, *args, **kwargs):
         self.year = kwargs.pop("year")
-        self.cantons = DV_STATES
-        if not has_permission(request.user, "cantons_all"):
-            # Ne permet que l’édition et la création de moiss pour les cantons gérés
-            self.cantons = self.request.user.managedstates.all().values_list(
-                "canton", flat=True
-            )
+        self.cantons = (
+            DV_STATES
+            if has_permission(request.user, "cantons_all")
+            else self.request.user.managedstates.all().values_list("canton", flat=True)
+        )
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
