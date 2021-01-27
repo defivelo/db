@@ -2,9 +2,11 @@ body.dvpublic {
     padding-top: inherit;
     margin-bottom: auto;
 
+    // 2021 CI
+    font-family: "Work Sans", sans-serif;
+
     h2, h3, h6 {
         // Work Sans Medium for titles
-        font-family: "Work Sans", sans-serif;
         font-weight: 500;
         text-rendering: optimizeLegibility;
         letter-spacing: -1px;
@@ -35,7 +37,7 @@ body.dvpublic {
             left: 15px;
 
             border-radius: 50%;
-            width: 26px; 
+            width: 26px;
             font-size: 13px;
             padding: 0;
             color: white;

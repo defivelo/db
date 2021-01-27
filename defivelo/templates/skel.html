@@ -19,9 +19,6 @@
         {% include 'snippets/dv_colors.css' %}
     {% endcompress %}
     {% if 'javascript_in_head'|bootstrap_setting %}{% bootstrap_javascript jquery=True %}{% endif %}
-    {# 2021 CI: Work Sans in normal, bold, and italic normal #}
-    <link rel="preconnect" href="//fonts.gstatic.com" />
-    <link href="//fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
     {% block bootstrap3_extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">

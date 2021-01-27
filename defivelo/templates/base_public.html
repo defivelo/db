@@ -1,6 +1,11 @@
 {% extends "skel.html" %}
 {% load bootstrap3 static compress i18n dv_filters %}
 {% block body_class %}dvpublic{% endblock %}
+{% block bootstrap3_extra_head %}
+    {# 2021 CI: Work Sans in normal, bold, and italic normal #}
+    <link rel="preconnect" href="//fonts.gstatic.com" />
+    <link href="//fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+{% endblock %}
 {% block body %}{% block bootstrap3_content %}
     <div class="{% block container-class %}container{% endblock %}" role="main">{% block container %}
       <span class="hidden-print">{% bootstrap_messages %}</span>
