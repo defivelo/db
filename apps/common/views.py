@@ -24,6 +24,7 @@ from import_export.formats import base_formats
 class ExportMixin(object):
     export_class = None
     export_filename = None
+    export_kwargs = {}
 
     def render_to_response(self, context, **response_kwargs):
         resolvermatch = self.request.resolver_match
@@ -46,7 +47,8 @@ class ExportMixin(object):
         )
 
         response = HttpResponse(
-            getattr(dataset, formattxt), format.get_content_type() + ";charset=utf-8"
+            dataset.export(formattxt, **self.export_kwargs),
+            format.get_content_type() + ";charset=utf-8",
         )
         response["Content-Disposition"] = 'attachment; filename="{f}"'.format(
             f=filename

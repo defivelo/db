@@ -307,6 +307,7 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
     allow_empty = False
     allow_future = False
     model = Timesheet
+    export_kwargs = {"delimiter": ";"}
 
     def get_queryset(self):
         active_canton = self.request.GET.get("canton")
