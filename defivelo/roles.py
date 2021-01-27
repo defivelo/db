@@ -112,7 +112,7 @@ class PowerUser(AbstractUserRole):
         "user_deletions": True,
         "user_set_role": True,
         "user_mark_inactive": True,
-        "home_article_crud": True,
+        "home_article_cud": True,
         "orga_detail_all": True,
         "orga_crud": True,
         "orga_edit_address": True,
@@ -136,6 +136,7 @@ class Coordinator(AbstractUserRole):
     """
 
     available_permissions = {
+        "home_without_articles": True,
         "orga_show": True,
         "orga_edit": True,
         "challenge_see_all_orga": False,
