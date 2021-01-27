@@ -8,6 +8,7 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Count, F, FloatField, IntegerField, Q, Sum
 from django.db.models.functions import Cast
 from django.shortcuts import get_object_or_404, redirect
+from django.template.defaultfilters import date as datefilter
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import formats, timezone, translation
@@ -317,32 +318,16 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
         return super().get_queryset().filter(validated_at__isnull=False, user__in=users)
 
     def get_dataset_title(self):
-        return _("Export Crésus {month} {year}").format(
+        return _("Export Winbiz {month} {year}").format(
             month=self.get_month(), year=self.get_year()
         )
 
     @property
     def export_filename(self):
-        return "%s-%s-%s" % ("export-cresus", self.get_year(), self.get_month())
+        return "%s-%s-%s" % ("export-winbiz", self.get_year(), self.get_month())
 
     def get_dataset(self, html=False):
         dataset = Dataset()
-        dataset.append(
-            [
-                u("Nom"),
-                u("Prénom"),
-                u("Année courante"),
-                u("Mois courant"),
-                u("Numéro d’employé Crésus"),
-                u("Salaire heure Formateur"),  # 0
-                u("Salaire heures moniteur"),  # time_helper
-                u("Prime moniteur 2"),  # leader_count
-                u("Salaire heures supplémentaires"),  # overtime
-                u("Salaire heures de trajet"),  # traveltime
-                u("Salaire heure moniteur Finale"),  # not implented
-                u("interventions"),  # actor_count
-            ]
-        )
         _, object_list, _ = self.get_dated_items()
 
         # Django queries to convert the ignore Bool (0 if not ignored, 1 if ignored)
@@ -354,9 +339,6 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
             object_list.values("user")
             .annotate(
                 employee_code=F("user__profile__employee_code"),
-                user_id=F("user_id"),
-                last_name=F("user__last_name"),
-                first_name=F("user__first_name"),
                 actor_count=Sum(F("actor_count") * included),
                 leader_count=Sum(F("leader_count") * included),
                 time_helper=Sum(F("time_helper") * included_float),
@@ -366,23 +348,28 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
             .order_by()
         )
 
+        # See DEFIVELO-218
+        category_codes_list = {
+            "actor_count": 1106,  # Interventions
+            "leader_count": 1105,  # Prime moniteur 2
+            "time_helper": 1101,  # Salaire heures moniteur
+            "traveltime": 1102,  # Salaire heures de trajet
+            "overtime": 1103,  # Salaire heures supplémentaires
+        }
+
         for salary_details in salary_details_list:
-            dataset.append(
-                [
-                    salary_details["last_name"],
-                    salary_details["first_name"],
-                    self.get_year(),
-                    self.get_month(),
-                    salary_details["employee_code"],
-                    0,
-                    salary_details["time_helper"],
-                    salary_details["leader_count"],
-                    salary_details["overtime"],
-                    salary_details["traveltime"],
-                    0,
-                    salary_details["actor_count"],
-                ]
-            )
+            employee_line = [
+                datefilter(date.today(), "d.m.Y"),  # Date of the export
+                self.get_month(),  # Concerned month
+                salary_details["employee_code"],
+            ]
+            # Add one line to the dataset for every category
+            for category, category_code in category_codes_list.items():
+                if salary_details[category] > 0:
+                    dataset.append(
+                        employee_line + [category_code, salary_details[category]]
+                    )
+
         return dataset
 
 
