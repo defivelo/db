@@ -353,7 +353,7 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
         salary_details_list = (
             object_list.values("user")
             .annotate(
-                cresus_employee_number=F("user__profile__cresus_employee_number"),
+                employee_code=F("user__profile__employee_code"),
                 user_id=F("user_id"),
                 last_name=F("user__last_name"),
                 first_name=F("user__first_name"),
@@ -373,7 +373,7 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
                     salary_details["first_name"],
                     self.get_year(),
                     self.get_month(),
-                    salary_details["cresus_employee_number"],
+                    salary_details["employee_code"],
                     0,
                     salary_details["time_helper"],
                     salary_details["leader_count"],

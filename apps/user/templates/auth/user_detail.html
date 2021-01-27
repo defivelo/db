@@ -125,9 +125,9 @@
                             <dt>{% trans "N° IBAN" %}</dt>
                                 <dd><span style="font-family: monospace">{{ userprofile.profile.iban_nice }}</span></dd>
                         {% endif %}
-                        {% if userprofile.profile.cresus_employee_number %}
+                        {% if userprofile.profile.employee_code %}
                             <dt>{% trans "N° d’employé Crésus" %}</dt>
-                                <dd><span style="font-family: monospace">{{ userprofile.profile.cresus_employee_number }}</span></dd>
+                                <dd><span style="font-family: monospace">{{ userprofile.profile.employee_code }}</span></dd>
                         {% endif %}
                         {% if userprofile.profile.social_security %}
                             <dt>{% trans "N° AVS" %}</dt>
