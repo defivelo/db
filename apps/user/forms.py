@@ -32,9 +32,14 @@ from multiselectfield.forms.fields import MultiSelectFormField
 from rolepermissions.roles import get_user_roles
 
 from apps.common import DV_STATE_CHOICES
-from apps.common.forms import BS3CountriesField, CHPhoneNumberField, SwissDateField
+from apps.common.forms import (
+    BS3CountriesField,
+    CHPhoneNumberField,
+    SelectWithDisabledValues,
+    SwissDateField,
+)
 from apps.orga.models import Organization
-from defivelo.roles import DV_AVAILABLE_ROLES
+from defivelo.roles import DV_AUTOMATIC_ROLES, DV_AVAILABLE_ROLES
 
 from . import STATE_CHOICES_WITH_DEFAULT
 from .models import UserProfile
@@ -194,7 +199,13 @@ class UserProfileForm(SimpleUserProfileForm):
 
 class UserAssignRoleForm(forms.Form):
     role = forms.ChoiceField(
-        label=_("Niveau d’accès"), choices=DV_AVAILABLE_ROLES, required=False
+        label=_("Niveau d’accès"),
+        choices=DV_AVAILABLE_ROLES,
+        required=False,
+        widget=SelectWithDisabledValues(
+            choices=DV_AVAILABLE_ROLES,
+            disabled_values=DV_AUTOMATIC_ROLES,
+        ),
     )
     managed_states = MultiSelectFormField(
         label=_("Cantons gérés"), choices=sorted(DV_STATE_CHOICES), required=False

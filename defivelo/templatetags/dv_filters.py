@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import urllib.parse
 from re import search, sub
 
@@ -22,6 +23,7 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.template.defaultfilters import date as datefilter
 from django.urls import reverse
+from django.utils.dates import MONTHS
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
@@ -47,7 +49,10 @@ from apps.challenge import (
     SUPERLEADER_FIELDKEY,
 )
 from apps.common import (
+    DV_SEASON_AUTUMN,
     DV_SEASON_CHOICES,
+    DV_SEASON_LAST_SPRING_MONTH,
+    DV_SEASON_SPRING,
     DV_STATE_CHOICES,
     DV_STATE_COLORS,
     STDGLYPHICON,
@@ -107,7 +112,7 @@ def tel_link(tel):
 
 
 @register.filter
-def profile_tag(user):
+def profile_tag(user, is_restricted: bool = False):
     """
     Standard user display (currently fullname + small natel)
     """
@@ -115,7 +120,7 @@ def profile_tag(user):
         return ""
     usertag = "<span>"
     usertag += user.get_full_name()
-    if user.profile.natel:
+    if user.profile.natel and not is_restricted:
         usertag += "<br /><small>{tel_link}</small>".format(
             tel_link=tel_link(user.profile.natel)
         )
@@ -417,6 +422,66 @@ def season_verb(season_id):
         return [s[1] for s in DV_SEASON_CHOICES if s[0] == season_id][0]
     except IndexError:
         return ""
+
+
+@register.simple_tag
+def dv_season(day=None):
+    """
+    Structure (kwargs) for the current (or specified) DV season
+    """
+    if not day:
+        day = datetime.datetime.today()
+    return {
+        "year": day.year,
+        "dv_season": (
+            DV_SEASON_SPRING
+            if day.month <= DV_SEASON_LAST_SPRING_MONTH
+            else DV_SEASON_AUTUMN
+        ),
+    }
+
+
+@register.simple_tag
+def dv_season_url(day=None):
+    """
+    URL of the current (or specified) DV season list view
+    """
+    return reverse("season-list", kwargs=dv_season(day))
+
+
+@register.filter
+def season_month_start(season_id):
+    for s in DV_SEASON_CHOICES:
+        if s[0] == season_id:
+            try:
+                return MONTHS[
+                    1
+                    + (
+                        0
+                        if season_id == DV_SEASON_SPRING
+                        else DV_SEASON_LAST_SPRING_MONTH
+                    )
+                ]
+            except IndexError:
+                pass
+    return ""
+
+
+@register.filter
+def season_month_end(season_id):
+    for s in DV_SEASON_CHOICES:
+        if s[0] == season_id:
+            try:
+                return MONTHS[
+                    (
+                        DV_SEASON_LAST_SPRING_MONTH
+                        if season_id == DV_SEASON_SPRING
+                        else 12
+                    )
+                ]
+            except IndexError:
+                pass
+    return ""
 
 
 @register.filter

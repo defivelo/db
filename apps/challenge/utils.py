@@ -1,3 +1,4 @@
+from datetime import time
 from typing import Mapping
 
 from django.contrib.auth import get_user_model
@@ -62,3 +63,7 @@ def get_users_roles_for_session(users, session) -> Mapping[User, str]:
 
         roles[user] = label
     return roles
+
+
+def is_morning(begin):
+    return begin <= time(12, 00)

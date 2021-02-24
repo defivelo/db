@@ -29,6 +29,7 @@ from .models import (
     Season,
     Session,
 )
+from .models.registration import Registration
 
 
 class QualificationActivityAdmin(TranslatableAdmin):
@@ -72,3 +73,4 @@ admin.site.register(Session, SessionAdmin)
 admin.site.register(Qualification, QualificationAdmin)
 admin.site.register(HelperSessionAvailability, HelperSessionAvailabilityAdmin)
 admin.site.register(AnnualStateSetting, AnnualStateSettingAdmin)
+admin.site.register(Registration)

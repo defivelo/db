@@ -2,69 +2,75 @@
 {% load i18n %}
 {% load bootstrap3 %}
 {% load dv_filters %}
-{% block head_title %}{% blocktrans with year=year %}Mois de {{ year }}{% endblocktrans %}{% endblock %}
+{% block head_title %}{% blocktrans with year=year season=dv_season|season_verb %}{{ season }} {{ year }}
+{% endblocktrans %}{% endblock %}
 
 {% block content %}
-    <h1>{% blocktrans with year=year %}Mois de {{ year }}{% endblocktrans %}</h1>
+  <h1>{% blocktrans with year=year season=dv_season|season_verb %}{{ season }} {{ year }}{% endblocktrans %}</h1>
 
-    <nav>
-        <ul class="pager">
-            <li class="previous btn-xs">
-                <a href="{% url 'season-list' year=year|add:"-1" %}">
-                    <span aria-hidden="true">&larr;</span> {{ year|add:"-1" }}
-                </a>
-            </li>
-            {% if year|add:0 != now.year|add:0 %}
-                <li class="btn-xs"><a href="{% url 'season-list' year=now.year %}">{% trans "Année courante" %}</a>
-                </li>
-            {% endif %}
-            <li class="next btn-xs">
-                <a href="{% url 'season-list' year=year|add:"1" %}">
-                    {{ year|add:"1" }} <span aria-hidden="true">&rarr;</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-    
+  <nav>
+    <ul class="pager">
+      <li class="previous btn-xs">
+        <a href="{% dv_season_url dv_season_prev_day %}">
+          {% dv_season dv_season_prev_day as dvs %}
+          <span aria-hidden="true">&larr;</span>
+          {% blocktrans with year=dvs.year season=dvs.dv_season|season_verb %}{{ season }} {{ year }}{% endblocktrans %}
+        </a>
+      </li>
+      {% dv_season as dvs %}
+      {% if year|add:0 != dvs.year|add:0 or dv_season|add:0 != dvs.dv_season|add:0 %}
+        <li class="btn-xs">
+          <a href="{% dv_season_url %}">{% trans "Saison courante" %}</a>
+        </li>
+      {% endif %}
+      <li class="next btn-xs">
+        <a href="{% dv_season_url dv_season_next_day %}">
+          {% dv_season dv_season_next_day as dvs %}
+          {% blocktrans with year=dvs.year season=dvs.dv_season|season_verb %}{{ season }} {{ year }}{% endblocktrans %}
+          <span aria-hidden="true">&rarr;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <table class="table">
     {% for season in seasons %}
-        {% ifchanged season.season_full %}
-            {% if not forloop.first %}</table>{% endif %}
-            <h2>{{ season.season_full }}</h2>
-            <table class="table">
-        {% endifchanged %}
-        <tr class="{{ season.state_class }}">
-            <td>{{ season.state_icon }}</td>
-            <td>
-                {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons or user == season.leader or season.staff_can_see_planning %}
-                    <a href="{% url 'season-detail' pk=season.pk %}" title="{% trans "Liste des sessions" %}">
-                {% elif season.staff_can_update_availability %}
-                    <a href="{% url 'season-availabilities-update' pk=season.pk helperpk=request.user.pk %}"
-                    title="{% trans "Mes disponibilités" %}">
-                {% endif %}
-                    <span class="badge pull-right">{{ season.leader.get_full_name }}</span>
-                    {{ season.desc_abbr }}
-                {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons or season.staff_can_update_availability or season.staff_can_see_planning %}
-                    </a>
-                {% endif %}
-            </td>
-            <td>
-                {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons or user == season.leader %}
-                    <a class="btn btn-xs btn-primary" href="{% url 'season-availabilities' season.pk %}" title="{% trans "Planning" %}"><span class="glyphicon glyphicon-th"></span></a>
-                {% elif season.staff_can_update_availability %}
-                    <a class="btn btn-xs btn-default" href="{% url 'season-availabilities-update' pk=season.pk helperpk=request.user.pk %}"
-                    title="{% trans "Mes disponibilités" %}"><span class="glyphicon glyphicon-calendar"></span></a>
-                {% elif season.staff_can_see_planning %}
-                    <a class="btn btn-xs btn-default" href="{% url 'season-planning' pk=season.pk helperpk=request.user.pk %}"
-                    title="{% trans "Mon planning" %}"><span class="glyphicon glyphicon-calendar"></span></a>
-                {% endif %}
-            </td>
-        </tr>
-        {% if forloop.last %}</table>{% endif %}
+      <tr class="{{ season.state_class }}">
+        <td>{{ season.state_icon }}</td>
+        <td>
+          {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons or user == season.leader or season.staff_can_see_planning or user in season.all_coordinator_qs %}
+            <a href="{% url 'season-detail' pk=season.pk %}" title="{% trans "Liste des sessions" %}">
+          {% elif season.staff_can_update_availability and user.is_paid_staff %}
+            <a href="{% url 'season-availabilities-update' pk=season.pk helperpk=request.user.pk %}"
+               title="{% trans "Mes disponibilités" %}">
+          {% endif %}
+          <span class="badge pull-right">{{ season.leader.get_full_name }}</span>
+          {{ season.desc_abbr }}
+          {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons or season.staff_can_update_availability or season.staff_can_see_planning or user in season.all_coordinator_qs %}
+            </a>
+          {% endif %}
+        </td>
+        <td>
+          {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons or user == season.leader %}
+            <a class="btn btn-xs btn-primary" href="{% url 'season-availabilities' season.pk %}"
+               title="{% trans "Planning" %}"><span class="glyphicon glyphicon-th"></span></a>
+          {% elif season.staff_can_update_availability and user.is_paid_staff %}
+            <a class="btn btn-xs btn-default"
+               href="{% url 'season-availabilities-update' pk=season.pk helperpk=request.user.pk %}"
+               title="{% trans "Mes disponibilités" %}"><span class="glyphicon glyphicon-calendar"></span></a>
+          {% endif %}
+          {% if season.staff_can_see_planning %}
+            <a class="btn btn-xs btn-default" href="{% url 'season-planning' pk=season.pk helperpk=request.user.pk %}"
+               title="{% trans "Mon planning" %}"><span class="glyphicon glyphicon-calendar"></span></a>
+          {% endif %}
+        </td>
+      </tr>
     {% endfor %}
+  </table>
 
-    {% if user|can:'challenge_season_crud' %}
-        <div>
-            <a class="btn btn-primary pull-right" href="{% url 'season-create' %}">{% trans "Créer un nouveau mois" %}</a>
-        </div>
-    {% endif %}
+  {% if user|can:'challenge_season_crud' %}
+    <div>
+      <a class="btn btn-primary pull-right" href="{% url 'season-create' %}">{% trans "Créer un nouveau mois" %}</a>
+    </div>
+  {% endif %}
 {% endblock %}

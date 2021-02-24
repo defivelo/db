@@ -30,7 +30,7 @@
 <div class="hidden-print">
 </div>
 <div class="hidden-print">
-  <a class="btn btn-default" href="{% url 'season-list' season.year %}">{% blocktrans with year=season.year %}Mois de {{ year }}{% endblocktrans %}</a>
+  <a class="btn btn-default" href="{% dv_season_url season.begin %}">{% blocktrans with year=season.year %}Mois de {{ year }}{% endblocktrans %}</a>
 
   <div class="btn-group" role="group" aria-label="exports">
     {% include 'export_buttons.html' with exporturl='season-personal-planning-export' seasonpk=season.pk exportargs=helperpk filter_querystring=filter_querystring only %}

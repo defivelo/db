@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
+{% load dv_filters %}
 {% block head_title %}{% if season %}{% trans "Édition du mois" %}{% else %}{% trans "Nouveau mois" %}{% endif %}{% endblock %}
 
 {% block bootstrap3_extra_head %}
@@ -23,7 +24,7 @@
             {% if season %}
                 <a class="btn btn-default" href="{% url 'season-detail' pk=season.pk %}">{% trans "Annuler" %}</a>
             {% else %}
-                <a class="btn btn-default" href="{% url 'season-list' %}">{% trans "Annuler" %}</a>
+                <a class="btn btn-default" href="{% dv_season_url %}">{% trans "Annuler" %}</a>
             {% endif %}
         {% endbuttons %}
     </form>

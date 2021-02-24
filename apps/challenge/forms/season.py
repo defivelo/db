@@ -24,6 +24,7 @@ from dal.forward import Const as dal_const
 from dal_select2.widgets import ModelSelect2
 
 from apps.common import DV_SEASON_STATE_OPEN, DV_SEASON_STATE_RUNNING, DV_SEASON_STATES
+from apps.common.forms import SelectWithDisabledValues
 from apps.user import FORMATION_KEYS, FORMATION_M2
 from apps.user.models import USERSTATUS_DELETED
 
@@ -41,27 +42,6 @@ from .. import (
 from ..fields import BSAvailabilityRadioSelect, BSChoiceRadioSelect, LeaderChoiceField
 from ..models import Season
 from ..models.availability import HelperSessionAvailability
-
-
-class SelectWithDisabledValues(forms.Select):
-    """
-    Select widget allowing disabled values
-    """
-
-    def __init__(self, *args, **kwargs):
-        self.disabled_values = kwargs.pop("disabled_values", [])
-        super().__init__(**kwargs)
-
-    def create_option(self, name, value, label, selected, *args, **kwargs):
-        """
-        Mark disabled_values as such (unless selected)
-        """
-        option = super().create_option(name, value, label, selected, *args, **kwargs)
-        if not option.get("value"):
-            option["attrs"]["disabled"] = "disabled"
-        if not selected and option.get("value") in self.disabled_values:
-            option["attrs"]["disabled"] = "disabled"
-        return option
 
 
 class SeasonForm(forms.ModelForm):
@@ -107,6 +87,15 @@ class SeasonToSpecificStateForm(forms.ModelForm):
 
     sendemail = forms.BooleanField(
         label=_("Envoyer le courriel suivant"), initial=True, required=False
+    )
+    customtext = forms.CharField(
+        label=_("Précisions"),
+        help_text=_(
+            "Attention: Le courriel est envoyé à chaque destinataire dans sa langue, mais ce texte est envoyé tel quel, il ne sera pas traduit."
+        ),
+        initial="",
+        widget=forms.Textarea,
+        required=False,
     )
 
     def __init__(

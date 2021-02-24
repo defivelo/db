@@ -149,6 +149,10 @@ class Season(models.Model):
         return self.state != DV_SEASON_STATE_ARCHIVED
 
     @cached_property
+    def coordinator_can_update(self):
+        return self.state in [DV_SEASON_STATE_PLANNING, DV_SEASON_STATE_OPEN]
+
+    @cached_property
     def season_full(self):
         # Before November 2020 (DEFIVELO-48), the Season objects were either "Spring" or "Autumn"
         # Check if the current Season=Months matches the legacy objects.
@@ -236,15 +240,26 @@ class Season(models.Model):
             | Q(qualifs_actor__session__in=self.sessions_with_qualifs)
         ).distinct()
 
+    @cached_property
+    def all_coordinator_qs(self):
+        """
+        All coordinators with organizations with sessions in this season
+        """
+        User = get_user_model()
+        return User.objects.filter(
+            managed_organizations__sessions__in=self.sessions_with_qualifs
+        ).distinct()
+
     def unprivileged_user_can_see(self, user):
         """
         Whether a user can consult this season;
-        All users selected in season can see all of this season's sessions
         """
+        # All users selected in season can see all of this season's sessions
+        # Coordinators can always consult.
         return (
             self.state == DV_SEASON_STATE_RUNNING
             and self.all_helpers_qs.filter(id=user.id).exists()
-        )
+        ) or self.all_coordinator_qs.filter(id=user.id).exists()
 
     def get_absolute_url(self):
         return reverse("season-detail", args=[self.pk])
@@ -260,6 +275,7 @@ class Season(models.Model):
             "staff_can_update_availability",
             "staff_can_see_planning",
             "manager_can_crud",
+            "coordinator_can_update",
             "season_full",
         ]:
             try:

@@ -48,9 +48,11 @@ class Collaborator(AbstractUserRole):
     """
 
     available_permissions = {
+        "challenge_see_all_orga": True,
         "user_view_list": True,
         "user_view_list_non_collaborator": False,
         "user_export_all_fields": False,
+        "timesheet": True,
     }
 
 
@@ -73,14 +75,19 @@ class StateManager(AbstractUserRole):
         "user_create": True,
         "orga_detail_all": True,
         "orga_crud": True,
+        "orga_edit_address": True,
         "orga_show": True,
         "orga_edit": True,
         "challenge_season_crud": True,
+        "challenge_see_all_orga": True,
         "challenge_session_crud": True,
         "challenge_invoice_cru": True,
         "challenge_invoice_reset_to_draft": False,
         "challenge_season_see_state_planning": True,
+        "settings_crud": True,
+        "timesheet": True,
         "timesheet_editor": True,
+        "registration_validate": True,
     }
 
 
@@ -106,17 +113,20 @@ class PowerUser(AbstractUserRole):
         "user_deletions": True,
         "user_set_role": True,
         "user_mark_inactive": True,
-        "home_article_crud": True,
+        "home_article_cud": True,
         "orga_detail_all": True,
         "orga_crud": True,
+        "orga_edit_address": True,
         "orga_show": True,
         "orga_edit": True,
         "challenge_invoice_cru": True,
         "challenge_invoice_reset_to_draft": True,
+        "challenge_see_all_orga": True,
         "challenge_session_crud": True,
         "challenge_season_crud": True,
         "challenge_season_see_state_planning": True,
         "settings_crud": True,
+        "timesheet": True,
         "timesheet_editor": True,
     }
 
@@ -127,15 +137,20 @@ class Coordinator(AbstractUserRole):
     """
 
     available_permissions = {
+        "home_without_articles": True,
         "orga_show": True,
         "orga_edit": True,
+        "challenge_see_all_orga": False,
+        "registration_create": True,
     }
 
 
 DV_AVAILABLE_ROLES = (
     (None, _("Aucun rôle")),
-    #  ("collaborator", _("Collabora·teur·trice")), # Automatic, leave as comment
+    ("collaborator", _("Collabora·teur·trice")),
     ("state_manager", _("Chargé·e de projet")),
     ("coordinator", _("Coordina·teur·trice")),
-    ("power_user", _("Super-utilisa·teur·trice")),  # Bureau
+    ("power_user", _("Bureau de coordination")),
 )
+
+DV_AUTOMATIC_ROLES = ["collaborator"]

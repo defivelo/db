@@ -15,10 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.conf.urls import include, url
-from django.urls import reverse_lazy
-from django.utils import timezone
 from django.views.decorators.cache import never_cache
-from django.views.generic.base import RedirectView
 
 from .views import (
     AnnualStateSettingCreateView,
@@ -41,6 +38,7 @@ from .views import (
     SeasonErrorsListView,
     SeasonExportView,
     SeasonHelperListView,
+    SeasonListRedirect,
     SeasonListView,
     SeasonOrgaListView,
     SeasonPersonalPlanningExportFeed,
@@ -59,6 +57,7 @@ from .views import (
     SessionStaffChoiceView,
     SessionUpdateView,
 )
+from .views.registration import register, register_confirm, register_validate
 
 urlpatterns = [
     # Settings
@@ -87,10 +86,7 @@ urlpatterns = [
     # Seasons
     url(
         r"^$",
-        RedirectView.as_view(
-            url=reverse_lazy("season-list", kwargs={"year": timezone.now().year}),
-            permanent=False,
-        ),
+        SeasonListRedirect.as_view(),
         name="season-list",
     ),
     url(
@@ -102,7 +98,11 @@ urlpatterns = [
                     never_cache(InvoiceYearlyListView.as_view()),
                     name="invoices-yearly-list",
                 ),
-                url(r"^$", never_cache(SeasonListView.as_view()), name="season-list"),
+                url(
+                    r"(?P<dv_season>[0-4]{1})/$",
+                    never_cache(SeasonListView.as_view()),
+                    name="season-list",
+                ),
             ]
         ),
     ),
@@ -289,4 +289,8 @@ urlpatterns = [
         QualiDeleteView.as_view(),
         name="quali-delete",
     ),
+    # Registrations
+    url(r"^registration/$", register, name="registration-create"),
+    url(r"^registration/confirm/$", register_confirm, name="registration-confirm"),
+    url(r"^registrations/validate/$", register_validate, name="registration-validate"),
 ]

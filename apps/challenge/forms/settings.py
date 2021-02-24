@@ -20,7 +20,7 @@ from django.utils.translation import ugettext_lazy as _
 from bootstrap3_datetime.widgets import DateTimePicker
 from localflavor.ch.forms import CHStateSelect
 
-from apps.common import DV_STATE_CHOICES_WITH_DEFAULT
+from apps.common import DV_STATE_CHOICES
 
 from ..models import AnnualStateSetting
 
@@ -35,7 +35,7 @@ class AnnualStateSettingForm(forms.ModelForm):
     canton = forms.ChoiceField(
         label=_("Canton"),
         widget=CHStateSelect,
-        choices=DV_STATE_CHOICES_WITH_DEFAULT,
+        choices=DV_STATE_CHOICES,
         required=True,
     )
 
@@ -45,5 +45,11 @@ class AnnualStateSettingForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         year = kwargs.pop("year")
+        cantons = kwargs.pop("cantons", None)
         super().__init__(*args, **kwargs)
         self.initial["year"] = year
+        if cantons:
+            # Only permit edition within the allowed cantons
+            choices = self.fields["canton"].choices
+            choices = ((k, v) for (k, v) in choices if k in cantons)
+            self.fields["canton"].choices = choices

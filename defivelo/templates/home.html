@@ -3,7 +3,7 @@
 {% load dv_filters %}
 
 {% block content %}
-    {% if user|can:"home_article_crud" %}
+    {% if user|can:"home_article_cud" %}
     <div class="hidden-print clearfix">
         <a class="btn btn-primary pull-right" href="{% url 'article-create' %}">
             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
@@ -22,7 +22,7 @@
                 
                 <span class="pull-right">
                     <small><em>{{ article.modified }}</em></small>
-                    {% if user|can:"home_article_crud" %}
+                    {% if user|can:"home_article_cud" %}
                         <a class="btn {% if article.published %}btn-info{% else %}btn-default{% endif %}" href="{% url 'article-update' pk=article.pk %}">
                             <span class="glyphicon glyphicon-pencil" title="{% trans "Éditer l’article" %}" aria-hidden="true"></span>
                         </a>

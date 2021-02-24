@@ -223,6 +223,10 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
         return self.render_to_response(context)
 
     def dispatch(self, request, *args, **kwargs):
+        if not has_permission(self.request.user, "timesheet") and not has_permission(
+            self.request.user, "timesheet_editor"
+        ):
+            raise PermissionDenied
         self.selected_user = (
             get_object_or_404(
                 timesheets_overview.get_visible_users(self.request.user),
@@ -289,6 +293,11 @@ class YearlyTimesheets(TemplateView):
         )
 
         return context
+
+    def dispatch(self, request, *args, **kwargs):
+        if not has_permission(self.request.user, "timesheet"):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
 
 class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):

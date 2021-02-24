@@ -4,11 +4,4 @@
 
 Tu peux accéder au planning directement ici ou via ton compte personnel Intranet.
 
-    {{ planning_link }}
-
-{% endblocktrans %}{% endautoescape %}{% blocktrans with site_domain=current_site.domain %}Avec nos meilleures salutations,
-
-L’équipe DÉFI VÉLO - {{ site_domain }}{% endblocktrans %}
-{% autoescape off %}
-{% blocktrans %}PS : Tu reçois ce mail parce que tu as rempli au minimum une disponibilité en tant que « si besoin ». Si aucune date n’apparait dans le planning c’est que nous n’avons finalement pas besoin de toi. N’hésite pas à contacter ton chargé de projet régional si tu as des questions.
-{% endblocktrans %}{% endautoescape %}{% endfilter %}
+    {{ planning_link }}{% endblocktrans %}{% endautoescape %}{% endfilter %}

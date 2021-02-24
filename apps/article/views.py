@@ -28,7 +28,7 @@ from .forms import ArticleForm
 
 
 class ArticleMixin(HasPermissionsMixin, SuccessMessageMixin, MenuView):
-    required_permission = "home_article_crud"
+    required_permission = "home_article_cud"
     model = Article
     context_object_name = "article"
     form_class = ArticleForm

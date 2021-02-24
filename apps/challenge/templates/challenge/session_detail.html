@@ -9,7 +9,7 @@
 
     <nav class="hidden-print">
         <ul class="pager">
-        {% if session_previous and user|can:'challenge_session_crud' or session_previous.visible %}
+        {% if session_previous and user|can:'challenge_session_crud' or session_previous.visible or session_previous.orga.coordinator == user %}
             <li class="previous btn-xs">
                 <a href="{% url 'session-detail' seasonpk=season.pk pk=session_previous.pk %}" title="{{ session_previous }}">
                     <span aria-hidden="true">&larr;</span> {{ session_previous.short }}
@@ -19,7 +19,7 @@
             <li class="btn-xs">
                 <a href="{% url 'season-detail' pk=season.pk %}">{% trans "Toutes les sessions" %}</a>
             </li>
-        {% if session_next and user|can:'challenge_session_crud' or session_next.visible %}
+        {% if session_next and user|can:'challenge_session_crud' or session_next.visible or session_next.orga.coordinator == user %}
             <li class="next btn-xs">
                 <a href="{% url 'session-detail' seasonpk=season.pk pk=session_next.pk  %}" title="{{ session_next }}">
                     {{ session_next.short }}<span aria-hidden="true">&rarr;</span>
@@ -29,7 +29,7 @@
         </ul>
     </nav>
 
-    {% if season.manager_can_crud and user|can:'challenge_session_crud' %}
+    {% if statemanager_can_access or coordinator_can_access %}
         <div class="hidden-print">
             <a class="btn btn-primary pull-right" href="{% url 'session-update' seasonpk=season.pk pk=session.pk %}">{% trans "Éditer" %}</a>
         </div>
@@ -67,7 +67,7 @@
         <tr><th>{% trans "Horaire" %}</th><td>{{ session.begin|time }} - {{ session.end|time }}</td></tr>
     {% endif %}
     {% if session.superleader %}
-        <tr><th>{% trans "Moniteur + / Photographe" %}</th><td>{{ session.superleader|profile_tag }}</td></tr>
+        <tr><th>{% trans "Moniteur + / Photographe" %}</th><td>{{ session.superleader|profile_tag:user_is_coordinator }}</td></tr>
     {% endif %}
     {% if session.fallback %}
         <tr><th>{% trans "Mauvais temps" %}</th><td>{{ session.fallback }}</td></tr>
@@ -107,20 +107,20 @@
                     <dd>{{ session.helpers_time_with_default }}{% if session.helpers_place %}<br />{{ session.helpers_place }}{% endif %}</dd>
                 {% if session.replacement_staff.count > 0 %}
                     <dt>{% trans "Moniteur de Secours" %}</dt>
-                        <dd>{% for avail in session.replacement_staff %}{% if not forloop.first %}<br />{% endif %}{{ avail.helper|profile_tag }}{% endfor %}</dd>
+                        <dd>{% for avail in session.replacement_staff %}{% if not forloop.first %}<br />{% endif %}{{ avail.helper|profile_tag:user_is_coordinator }}{% endfor %}</dd>
                 {% endif %}
             </dl>
         </td>
     </tr>
 
-    {% if session.errors and user|can:'challenge_session_crud' %}
+    {% if session.errors and statemanager_can_access or session.errors and coordinator_can_access %}
         <tr class="hidden-print"><th>{% trans "Erreurs" %}</th><td>{{ session.errors }}</td></tr>
     {% endif %}
     {% if session.comments %}
         <tr><th>{% trans "Remarques" %}</th><td>{{ session.comments }}</td></tr>
     {% endif %}
     </table>
-    {% if season.manager_can_crud and user|can:'challenge_session_crud' %}
+    {% if statemanager_can_access %}
       <div class="hidden-print pull-right">
           <a class="btn btn-primary" href="{% url 'season-availabilities' pk=season.pk %}#sess{{session.pk}}">{% trans "Planning" %}</a>
           {% if session_mailtoall %}
@@ -134,8 +134,8 @@
         <tr><th>{% trans "Classe" %}</th>
             {% for quali in session.qualifications.all %}
                 <th>{% if not quali.errors %}{% include "ok.html" %}{% endif%}
-                {{ forloop.counter }} - {% if season.manager_can_crud and user|can:'challenge_session_crud' %}<a href="{% url 'quali-update' seasonpk=season.pk sessionpk=session.pk pk=quali.pk %}">{{ quali.name }}</a>{% else %}{{ quali.name }}{% endif %}
-                {% if quali.errors and user|can:'challenge_session_crud' %}<span class="hidden-print">
+                {{ forloop.counter }} - {% if statemanager_can_access or coordinator_can_access %}<a href="{% url 'quali-update' seasonpk=season.pk sessionpk=session.pk pk=quali.pk %}">{{ quali.name }}</a>{% else %}{{ quali.name }}{% endif %}
+                {% if quali.errors and statemanager_can_access or quali.errors and coordinator_can_access %}<span class="hidden-print">
                     <br />
                     {{ quali.errors }}</span>
                 {% endif %}
@@ -153,9 +153,9 @@
                 {% endfor %}
         </tr>
         <tr><th>{% trans "Moniteur 2" %}</th>
-                {% for quali in session.qualifications.all %}<td>{{ quali.leader|profile_tag }}</td>{% endfor %}</tr>
+                {% for quali in session.qualifications.all %}<td>{{ quali.leader|profile_tag:user_is_coordinator }}</td>{% endfor %}</tr>
         <tr><th>{% trans "Moniteurs 1" %}</th>
-                {% for quali in session.qualifications.all %}<td>{% for helper in quali.helpers.all %}{{ helper|profile_tag }}<br />{% endfor %}</td>{% endfor %}</tr>
+                {% for quali in session.qualifications.all %}<td>{% for helper in quali.helpers.all %}{{ helper|profile_tag:user_is_coordinator }}<br />{% endfor %}</td>{% endfor %}</tr>
         <tr><th>{% trans "Agilité" %}</th>
                 {% for quali in session.qualifications.all %}<td><em>{{ quali.activity_A|default:"" }}</em></td>{% endfor %}</tr>
         <tr><th>{% trans "Mécanique" %}</th>
@@ -164,7 +164,7 @@
                 {% for quali in session.qualifications.all %}
                     <td>
                     <em>{{ quali.activity_C|default:"" }}</em><br />
-                    {{ quali.actor|profile_tag }}
+                    {{ quali.actor|profile_tag:user_is_coordinator }}
                     </td>
                 {% endfor %}
         </tr>
@@ -184,23 +184,26 @@
         <tr><th>{% trans "Remarques" %}</th>
                 {% for quali in session.qualifications.all %}<td><em>{{ quali.comments }}</em></td>{% endfor %}</tr>
 
-        {% if season.manager_can_crud and user|can:'challenge_session_crud' %}
+        {% if statemanager_can_access or coordinator_can_access %}
             <tr class="hidden-print"><td></td>
                     {% for quali in session.qualifications.all %}
                         <td>
                             <a class="btn btn-primary btn-xs" href="{% url 'quali-update' seasonpk=season.pk sessionpk=session.pk pk=quali.pk %}">
                                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>{% trans "Éditer" %}
-                            </a><br />
-                            <a class="btn btn-danger btn-xs" href="{% url 'quali-delete' seasonpk=season.pk sessionpk=session.pk pk=quali.pk %}">
-                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>{% trans "Supprimer" %}
                             </a>
+                            {% if statemanager_can_access %}
+                                <br />
+                                <a class="btn btn-danger btn-xs" href="{% url 'quali-delete' seasonpk=season.pk sessionpk=session.pk pk=quali.pk %}">
+                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>{% trans "Supprimer" %}
+                                </a>
+                            {% endif %}
                         </td>
                     {% endfor %}
             </tr>
         {% endif %}
     {% endif %}
 
-    {% if season.manager_can_crud and user|can:'challenge_session_crud' %}
+    {% if statemanager_can_access %}
         <tr class="hidden-print">
             <td{% if session.qualifications.count > 0 %} colspan="{{ session.qualifications.count|add:1 }}"{% endif %}>
                 <form method="POST" action="{% url 'quali-create' seasonpk=season.pk sessionpk=session.pk %}" class="form-horizontal">
@@ -220,6 +223,6 @@
         <div class="btn-group" role="group" aria-label="exports">
             {% include 'export_buttons.html' with exporturl='session-export' seasonpk=season.pk exportargs=session.pk filter_querystring=filter_querystring only %}
         </div>
-        <a class="btn btn-default" href="{% url 'session-list' seasonpk=season.pk year=session.day|date:"Y" week=session.day|weeknumber %}">{% trans "Retour à la liste des sessions" %}</a>
+        <a class="btn btn-default" href="{% url 'season-detail' pk=season.pk %}">{% trans "Retour au mois" %}</a>
     </div>
 {% endblock %}

@@ -1,5 +1,5 @@
 # defivelo-intranet -- Outil métier pour la gestion du Défi Vélo
-# Copyright (C) 2015, 2016 Didier Raboud <me+defivelo@odyx.org>
+# Copyright (C) 2015, 2016, 2020 Didier Raboud <didier.raboud@liip.ch>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -16,6 +16,7 @@
 
 from datetime import date
 
+from django.db.models import F
 from django.views.generic.base import TemplateView
 
 from stronghold.views import StrongholdPublicMixin
@@ -34,39 +35,37 @@ class MenuView(object):
         )
 
     def get_context_data(self, **kwargs):
-        context = super(MenuView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         today = date.today()
 
-        current_seasons = self.request.user.profile.get_seasons().filter(
-            year=today.year
+        # Uniquement les saisons==mois qui couvrent le jour courant
+        context["current_seasons"] = self.request.user.profile.get_seasons().filter(
+            year=today.year,
+            month_start__lte=today.month,
+            n_months__gt=today.month - F("month_start"),
         )
-        if date.today().month <= DV_SEASON_LAST_SPRING_MONTH:
-            # Demi-année "printemps"
-            current_seasons = current_seasons.filter(
-                month_start__lte=DV_SEASON_LAST_SPRING_MONTH
-            )
-        else:
-            # Demi-année "automne"
-            current_seasons = current_seasons.filter(
-                month_start__gt=DV_SEASON_LAST_SPRING_MONTH
-            )
-
-        context["current_seasons"] = current_seasons
         return context
 
 
 class HomeView(MenuView, TemplateView):
-    template_name = "home.html"
-
     def get_context_data(self, **kwargs):
-        context = super(HomeView, self).get_context_data(**kwargs)
-        articles_qs = Article.objects
-        if not has_permission(self.request.user, "home_article_crud"):
-            articles_qs = articles_qs.filter(published=True)
-        context["articles"] = articles_qs.order_by("-modified")[:5]
+        context = super().get_context_data(**kwargs)
+        if not has_permission(self.request.user, "home_without_articles"):
+            articles_qs = Article.objects
+            if not has_permission(self.request.user, "home_article_cud"):
+                articles_qs = articles_qs.filter(published=True)
+            context["articles"] = articles_qs.order_by("-modified")[:5]
         # Add our menu_category context
         context["menu_category"] = "home"
         return context
+
+    def get_template_names(self):
+        if has_permission(self.request.user, "home_without_articles"):
+            self.template_name = "home_without_articles.html"
+        else:
+            self.template_name = "home.html"
+
+        return super().get_template_names()
 
 
 class LicenseView(StrongholdPublicMixin, TemplateView):
