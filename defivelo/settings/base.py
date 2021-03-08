@@ -318,10 +318,10 @@ TINYMCE_DEFAULT_CONFIG = {
     ),
     "branding": False,
 }
-TINYMCE_JS_URL = os.path.join(STATIC_URL, "tinymce/tinymce.js")
+TINYMCE_JS_URL = os.path.join(STATIC_URL, "tinymce/tinymce.min.js")
 TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, "tinymce")
 TINYMCE_INCLUDE_JQUERY = False
-TINYMCE_COMPRESSOR = True
+TINYMCE_COMPRESSOR = False
 
 
 def defivelo_user_display(u):
