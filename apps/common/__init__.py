@@ -73,6 +73,7 @@ DV_STATE_COLORS = {
     "GR": "#E7206A",
     "SG": "#608A9B",
     "ZH": "#7ABEE4",
+    "default": "#56A7DC",
 }
 
 DV_STATE_CHOICES = [c for c in STATE_CHOICES if c[0] in DV_STATES]

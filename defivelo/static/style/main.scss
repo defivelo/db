@@ -20,7 +20,12 @@ body {
 }
 
 #dv-navbar-logo {
-  margin-top: -15px;
+  padding-top: 0;
+  padding-bottom: 0;
+  height: 50px;
+  img {
+    max-height: 100%;
+  }
 }
 
 .required-field label:after {
