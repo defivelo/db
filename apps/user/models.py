@@ -116,7 +116,7 @@ PERSONAL_FIELDS = [
     "tax_jurisdiction",
     "bank_name",
     "iban",
-    "cresus_employee_number",
+    "employee_code",
     "social_security",
     "marital_status",
     "status",
@@ -166,9 +166,7 @@ class UserProfile(Address, models.Model):
         primary_key=True,
         on_delete=models.CASCADE,
     )
-    cresus_employee_number = models.CharField(
-        _("Numéro d’employé Crésus"), max_length=63, blank=True
-    )
+    employee_code = models.CharField(_("Code salarié·e"), max_length=63, blank=True)
     language = models.CharField(
         _("Langue"), max_length=7, choices=DV_LANGUAGES_WITH_DEFAULT, blank=True
     )
