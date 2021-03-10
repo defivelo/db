@@ -52,7 +52,21 @@ class SeasonAdmin(SimpleHistoryAdmin):
 
 
 class SessionAdmin(SimpleHistoryAdmin):
-    pass
+    list_display = (
+        "day",
+        "begin",
+        "canton",
+        "orga",
+    )
+    list_filter = (
+        "orga",
+        "day",
+        "begin",
+    )
+    search_fields = ("orga",)
+
+    def canton(self, obj):
+        return obj.orga.address_canton
 
 
 class QualificationAdmin(SimpleHistoryAdmin):

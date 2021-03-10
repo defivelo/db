@@ -315,7 +315,10 @@ class Session(Address, models.Model):
         the day.
         """
         try:
-            if Session.session_exists(self.orga, self.day, self.begin):
+            sessions = Session.sessions_in_same_half_day(
+                self.orga, self.day, self.begin
+            )
+            if sessions.exclude(pk=self.pk).exists():
                 raise ValidationError(
                     {
                         "day": _(
@@ -328,8 +331,8 @@ class Session(Address, models.Model):
             pass
 
     @classmethod
-    def session_exists(cls, orga, day, begin):
-        """Check if a session exists for this orga, day, and at the same half of
+    def sessions_in_same_half_day(cls, orga, day, begin):
+        """Get the sessions for this orga, day, and at the same half of
         the day (beginning also before or after noon).
         """
         sessions = cls.objects.filter(orga_id=orga.id, day=day)
@@ -338,7 +341,7 @@ class Session(Address, models.Model):
         else:
             sessions = sessions.filter(begin__gt=time(12, 00))
 
-        return sessions.exists()
+        return sessions
 
     def __str__(self):
         return (

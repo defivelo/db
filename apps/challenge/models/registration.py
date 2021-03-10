@@ -50,7 +50,9 @@ class Registration(models.Model):
                 }
             )
 
-        if Session.session_exists(self.organization, self.date, self.day_time_as_time):
+        if Session.sessions_in_same_half_day(
+            self.organization, self.date, self.day_time_as_time
+        ).exists():
             raise ValidationError(
                 {
                     "date": _(

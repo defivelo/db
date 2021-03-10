@@ -475,6 +475,45 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                 response = self.client.post(url, initial)
                 self.assertEqual(response.status_code, 302, url)
 
+    def test_user_can_edit_session(self):
+        session = self.sessions[0]
+        session.begin = datetime.time(9, 30)
+        session.save()
+
+        for state in DV_SEASON_STATES:
+            if state[0] != DV_SEASON_STATE_ARCHIVED:
+                self.season.state = state[0]
+                self.season.save()
+                self.client.post(
+                    reverse(
+                        "session-update",
+                        kwargs={"pk": session.pk, "seasonpk": self.season.pk},
+                    ),
+                    data={
+                        "orga": session.orga.pk,
+                        "day": session.day,
+                        "begin": "08:27",  # Modified !
+                        "place": "",
+                        "address_street": "",
+                        "address_no": "",
+                        "address_zip": "",
+                        "address_city": "",
+                        "address_canton": "",
+                        "fallback_plan": "",
+                        "superleader": "",
+                        "bikes_concept": "",
+                        "bikes_phone": "",
+                        "apples": "",
+                        "helpers_time": "07:30",
+                        "helpers_place": "",
+                        "comments": "",
+                    },
+                    follow=True,
+                )
+
+                session.refresh_from_db()
+                self.assertEqual(session.begin, datetime.time(8, 27))
+
     def test_no_access_to_foreign_season(self):
         for symbolicurl in restrictedspecificurls:
             url = reverse(symbolicurl, kwargs={"pk": self.foreignseason.pk})
