@@ -1,5 +1,5 @@
 #!/bin/bash
-# We need to use bash because of the use of the /dev/tcp device
+
 
 if [ ! -e "$VIRTUAL_ENV/bin" ]; then
     echo "Creating virtualenv at \"$VIRTUAL_ENV\""

@@ -29,6 +29,7 @@ you want to reset the database.
 ## Roles & permissions
 After adding a new permission in `defivelo/roles.py`, run the following in vagrant to apply them:
 ```
+docker-compose exec backend bash
 ./manage.py sync_roles --reset_user_permissions
 ```
 
@@ -44,5 +45,5 @@ To run backend tests and lint checks, run `scripts/run_tests.sh` in the `backend
 * or `docker-compose run --rm backend scripts/run_tests.sh` if the `backend` service is not already running
 
 CLI arguments are forwarded to `pytest`.
-For example, running tests with `scripts/run_tests.sh cche --reuse-db` avoids
+For example, running tests with `scripts/run_tests.sh defivelo --reuse-db` avoids
 re-creating the database from scratch on each run.

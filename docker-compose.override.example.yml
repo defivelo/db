@@ -43,21 +43,6 @@
 #     build:
 #       args:
 #         <<: *x-build-args
-#   frontend:
-#     networks:
-#       - default
-#       - pontsun
-#     labels:
-#       - 'traefik.enable=true'
-#       - 'traefik.docker.network=pontsun'
-#       - 'traefik.backend=defivelo'
-#       - 'traefik.port=3000'
-#       - 'traefik.frontend.rule=Host:defivelo.docker.test'
-#     environment:
-#       <<: *x-environment
-#     build:
-#       args:
-#         <<: *x-build-args
 # networks:
 #   pontsun:
 #     external:
