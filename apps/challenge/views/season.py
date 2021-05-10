@@ -977,6 +977,32 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
     raise_without_cantons = False
     view_is_update = True
 
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Early request processing dispatch
+        """
+        try:
+            """
+            DEFIVELO-221 Circumvent a weird bug that made it so that emails were sent with helperpk == 0
+            If helperpk == 0, redirect to self
+            """
+            if (
+                self.request.user
+                and int(self.request.resolver_match.kwargs["helperpk"]) == 0
+            ):
+                return HttpResponseRedirect(
+                    reverse_lazy(
+                        "season-availabilities-update",
+                        kwargs={
+                            "pk": self.season.pk,
+                            "helperpk": self.request.user.pk,
+                        },
+                    )
+                )
+        except KeyError:
+            pass
+        return super().dispatch(request, *args, **kwargs)
+
     def get_form_kwargs(self):
         form_kwargs = super(SeasonAvailabilityUpdateView, self).get_form_kwargs()
         form_kwargs["potential_helpers"] = self.potential_helpers()
