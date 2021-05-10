@@ -160,6 +160,19 @@ class AuthUserTest(SeasonTestCaseMixin):
         self.assertEqual(response.status_code, 200, ["season-availabilities-update"])
         self.assertTemplateUsed(response, "widgets/BSRadioSelect_option.html")
 
+        # If, by mistake, the user got sent a url with a helperpk set to 0, it will redirect
+        response = self.client.get(
+            reverse(
+                "season-availabilities-update",
+                kwargs={"pk": self.season.pk, "helperpk": 0},
+            )
+        )
+        self.assertEqual(
+            response.status_code,
+            302,
+            "DEFIVELO-221: Availabilities' update URL with helperpk set to 0",
+        )
+
         # The season is not open
         for state in DV_SEASON_STATES:
             self.season.state = state[0]

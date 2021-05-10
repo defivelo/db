@@ -412,7 +412,7 @@ class UserProfile(Address, models.Model):
         ]
         return any([getattr(self, field, False) != "" for field in address_fields])
 
-    @cached_property
+    @property
     def is_paid_staff(self):
         """
         Whether a UserProfile is probably a paid staff
