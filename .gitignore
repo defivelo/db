@@ -6,6 +6,5 @@ envdir/*
 /static_files
 
 /.coverage
-/.tox
 /.vscode/
 /docker-compose.override.yml
