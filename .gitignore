@@ -9,5 +9,4 @@ envdir/*
 /.tox
 /.vagrant/
 /.vscode/
-/virtualization/playbook.retry
 /docker-compose.override.yml
