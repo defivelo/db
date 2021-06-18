@@ -27,10 +27,9 @@ Note the `INITIAL` flag should not be set for subsequent container starts unless
 you want to reset the database.
 
 ## Roles & permissions
-After adding a new permission in `defivelo/roles.py`, run the following in vagrant to apply them:
+After adding a new permission in `defivelo/roles.py`, run the following inside docker to apply them:
 ```
-docker-compose exec backend bash
-./manage.py sync_roles --reset_user_permissions
+docker-compose exec backend ./manage.py sync_roles --reset_user_permissions
 ```
 
 ## Clone production database
