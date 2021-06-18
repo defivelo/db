@@ -31,15 +31,21 @@
 #  # USER_ID: 1001  # Set if your dev user  is non-1000
 #  # GROUP_ID: 1001 # Set if your dev group is non-1000
 # services:
-#   backend:
-#     environment:
-#       <<: *x-environment
-#       SSH_AUTH_SOCK: /ssh-agent
-#     volumes:
-#       - $SSH_AUTH_SOCK:/ssh-agent
-#     build:
-#       args:
-#         <<: *x-build-args
+#  backend:
+#    environment:
+#      <<: *x-environment
+#      SSH_AUTH_SOCK: /.ssh-agent/proxy-socket
+#    volumes:
+#      - pontsun_sshagent_socket_dir:/.ssh-agent
+#    networks:
+#      - default
+#      - pontsun
+#    labels:
+#      - 'traefik.enable=true'
+#      - 'traefik.docker.network=pontsun'
+#      - 'traefik.backend=defivelo'
+#      - 'traefik.port=8000'
+#      - 'traefik.frontend.rule=Host:defivelo.docker.test'
 # networks:
 #   pontsun:
 #     external:
