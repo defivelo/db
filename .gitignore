@@ -7,6 +7,5 @@ envdir/*
 
 /.coverage
 /.tox
-/.vagrant/
 /.vscode/
 /docker-compose.override.yml
