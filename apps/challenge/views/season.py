@@ -240,7 +240,7 @@ class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
 
 class SeasonHelpersMixin(SeasonMixin):
     """
-    Provide helper functions to list helpers for season enin various formats
+    Provide helper functions to list helpers for season in various formats
     """
 
     def potential_helpers_qs(self, qs=None):
