@@ -136,6 +136,10 @@ class Season(models.Model):
     def staff_can_see_planning(self):
         return self.state == DV_SEASON_STATE_RUNNING
 
+    @cached_property
+    def staff_can_see(self):
+        return self.state == DV_SEASON_STATE_RUNNING
+
     @property
     def can_set_state_open(self):
         return self.state == DV_SEASON_STATE_PLANNING
@@ -257,8 +261,7 @@ class Season(models.Model):
         # All users selected in season can see all of this season's sessions
         # Coordinators can always consult.
         return (
-            self.state == DV_SEASON_STATE_RUNNING
-            and self.all_helpers_qs.filter(id=user.id).exists()
+            self.staff_can_see and self.all_helpers_qs.filter(id=user.id).exists()
         ) or self.all_coordinator_qs.filter(id=user.id).exists()
 
     def get_absolute_url(self):
