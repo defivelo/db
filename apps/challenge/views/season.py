@@ -21,6 +21,7 @@ from functools import reduce
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.messages import warning as warning_message
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sites.models import Site
 from django.core.exceptions import PermissionDenied
@@ -982,6 +983,34 @@ class SeasonPlanningView(SeasonAvailabilityMixin, DetailView):
                         },
                     )
                 )
+
+            """
+            DEFIVELO-221 If we're in the wrong state, redirect to the other URL; move from planning to availability
+            """
+            if (
+                self.request.user.profile.is_paid_staff
+                and (
+                    self.request.user.profile.actor
+                    or self.request.user.profile.formation
+                )
+                and not self.season.staff_can_see_planning
+                and self.season.staff_can_update_availability
+            ):
+                warning_message(
+                    request,
+                    _(
+                        "Le planning n'est pas encore disponible; mets plutôt à jour tes disponibilités."
+                    ),
+                )
+                return HttpResponseRedirect(
+                    reverse_lazy(
+                        "season-availabilities-update",
+                        kwargs={
+                            "pk": self.season.pk,
+                            "helperpk": self.request.user.pk,
+                        },
+                    )
+                )
         except KeyError:
             pass
         return super().dispatch(request, *args, **kwargs)
@@ -1019,6 +1048,33 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
                 return HttpResponseRedirect(
                     reverse_lazy(
                         "season-availabilities-update",
+                        kwargs={
+                            "pk": self.season.pk,
+                            "helperpk": self.request.user.pk,
+                        },
+                    )
+                )
+            """
+            DEFIVELO-221 If we're in the wrong state, redirect to the other URL; move from planning to availability
+            """
+            if (
+                self.request.user.profile.is_paid_staff
+                and (
+                    self.request.user.profile.actor
+                    or self.request.user.profile.formation
+                )
+                and not self.season.staff_can_update_availability
+                and self.season.staff_can_see_planning
+            ):
+                warning_message(
+                    request,
+                    _(
+                        "Il n'est pas possible de mettre à jour tes disponibilités; voici le planning."
+                    ),
+                )
+                return HttpResponseRedirect(
+                    reverse_lazy(
+                        "season-planning",
                         kwargs={
                             "pk": self.season.pk,
                             "helperpk": self.request.user.pk,
