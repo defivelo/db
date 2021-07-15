@@ -1,10 +1,5 @@
-#!/bin/bash
+#!/bin/sh -e
 
-# don't delete this line, or copy that content and adjust it
-. ./virtualization/drifter/ci/test-header.sh
-
-~/venv/bin/tox -r
-
-# don't delete this line, or copy that content and adjust it
-. ./virtualization/drifter/ci/test-footer.sh
-
+./scripts/check_migrations.sh
+pytest "${@:-defivelo}" "${@:-apps}"
+flake8 defivelo apps

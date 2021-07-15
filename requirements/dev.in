@@ -1,5 +1,4 @@
 -r test.in
-tox
 pip-tools
 django-debug-toolbar
 django-extensions

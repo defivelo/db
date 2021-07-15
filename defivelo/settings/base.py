@@ -24,6 +24,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
 import os
+import sys
 
 from django.utils.translation import gettext_lazy as _
 
@@ -145,13 +146,14 @@ COMPRESS_PRECOMPILERS = (
     (
         "text/x-scss",
         os.path.join(
-            get_env_variable("VIRTUAL_ENV", os.path.join(PROJECT_ROOT, "venv")),
+            sys.exec_prefix,
             "bin",
             "sassc",
         )
         + " {infile} {outfile}",
     ),
 )
+
 COMPRESS_FILTERS = {
     "css": [
         "compressor.filters.css_default.CssAbsoluteFilter",

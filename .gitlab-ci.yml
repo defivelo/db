@@ -1,19 +1,34 @@
-before_script:
-  - mkdir -p ../${PWD##*/}.vagrant
-  - ln -s ../${PWD##*/}.vagrant .vagrant
-  
-variables:
-  VAGRANT_DEFAULT_PROVIDER: lxc
+stages:
+  - test
 
-# uncomment this, if you want to cache some stuff between runs  
-# cache:
-#  paths:
-#    - vendor/
-#    - bin/
-#  key: sharedcache
-  
-tests:
+test:
+  stage: test
   tags:
-     - shell
-     - lxc
-  script: "bash scripts/gitlabci.sh"
+    - docker-nonswiss-ok
+  image: &test_image 'python:3.7.4-buster'
+  services:
+    - name: postgres:11.8
+      alias: db
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    DJANGO_SETTINGS_MODULE: defivelo.settings.test
+    DATABASE_URL: postgresql://postgres:postgres@db/postgres
+    POSTGRES_PASSWORD: postgres
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  cache:
+    key: *test_image
+    paths:
+      - .cache/pip
+  script:
+    - pip install -r requirements/test.txt
+    - |
+      bash -c "
+        echo -n 'Wait until the PostgreSQL server is ready .'
+        while ! (echo > /dev/tcp/db/5432) >/dev/null 2>&1; do
+          echo -n '.'
+          sleep 1
+        done
+        echo ' Ready!'
+      "
+    - ./scripts/run_tests.sh
+
