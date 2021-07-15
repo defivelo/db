@@ -366,7 +366,7 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
             ]
             # Add one line to the dataset for every category
             for category, category_code in category_codes_list.items():
-                if salary_details[category] > 0:
+                if salary_details[category] != 0:
                     dataset.append(
                         employee_line + [category_code, salary_details[category]]
                     )
