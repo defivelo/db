@@ -340,6 +340,8 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
             object_list.values("user")
             .annotate(
                 employee_code=F("user__profile__employee_code"),
+                first_name=F("user__first_name"),
+                last_name=F("user__last_name"),
                 actor_count=Sum(F("actor_count") * included),
                 leader_count=Sum(F("leader_count") * included),
                 time_helper=Sum(F("time_helper") * included_float),
@@ -368,7 +370,18 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
             for category, category_code in category_codes_list.items():
                 if salary_details[category] != 0:
                     dataset.append(
-                        employee_line + [category_code, salary_details[category]]
+                        employee_line
+                        + [
+                            category_code,
+                            salary_details[category],
+                            "",  # Empty columns, see DEFIVELO-224
+                            "",
+                            "",
+                            "",
+                            1,
+                            salary_details["first_name"],
+                            salary_details["last_name"],
+                        ]
                     )
 
         return dataset
