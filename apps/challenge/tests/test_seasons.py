@@ -182,6 +182,11 @@ class AuthUserTest(SeasonTestCaseMixin):
                 self.assertEqual(
                     response.status_code, 200, urls["season-availabilities-update"]
                 )
+            elif state[0] == DV_SEASON_STATE_RUNNING:
+                # When possible, we redirect to planning
+                self.assertEqual(
+                    response.status_code, 302, urls["season-availabilities-update"]
+                )
             else:
                 self.assertEqual(
                     response.status_code, 403, urls["season-availabilities-update"]
@@ -211,6 +216,9 @@ class AuthUserTest(SeasonTestCaseMixin):
                 )
                 response = self.client.get(url, follow=True)
                 self.assertEqual(response.status_code, 200, url)
+            elif state[0] == DV_SEASON_STATE_OPEN:
+                # When possible, we redirect to availabilities
+                self.assertEqual(response.status_code, 302, urls["season-planning"])
             else:
                 self.assertEqual(response.status_code, 403, urls["season-planning"])
 

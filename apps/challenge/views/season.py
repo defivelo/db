@@ -21,6 +21,7 @@ from functools import reduce
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.messages import warning as warning_message
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sites.models import Site
 from django.core.exceptions import PermissionDenied
@@ -240,7 +241,7 @@ class SeasonUpdateView(SeasonMixin, SuccessMessageMixin, UpdateView):
 
 class SeasonHelpersMixin(SeasonMixin):
     """
-    Provide helper functions to list helpers for season enin various formats
+    Provide helper functions to list helpers for season in various formats
     """
 
     def potential_helpers_qs(self, qs=None):
@@ -960,6 +961,60 @@ class SeasonPlanningView(SeasonAvailabilityMixin, DetailView):
     raise_without_cantons = False
     view_is_planning = True
 
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Early request processing dispatch
+        """
+        try:
+            """
+            DEFIVELO-221 Circumvent a weird bug that made it so that emails were sent with helperpk == 0
+            If helperpk == 0, redirect to self
+            """
+            if (
+                self.request.user
+                and int(self.request.resolver_match.kwargs["helperpk"]) == 0
+            ):
+                return HttpResponseRedirect(
+                    reverse_lazy(
+                        "season-planning",
+                        kwargs={
+                            "pk": self.season.pk,
+                            "helperpk": self.request.user.pk,
+                        },
+                    )
+                )
+
+            """
+            DEFIVELO-221 If we're in the wrong state, redirect to the other URL; move from planning to availability
+            """
+            if (
+                self.request.user.profile.is_paid_staff
+                and (
+                    self.request.user.profile.actor
+                    or self.request.user.profile.formation
+                )
+                and not self.season.staff_can_see_planning
+                and self.season.staff_can_update_availability
+            ):
+                warning_message(
+                    request,
+                    _(
+                        "Le planning n'est pas encore disponible; mets plutôt à jour tes disponibilités."
+                    ),
+                )
+                return HttpResponseRedirect(
+                    reverse_lazy(
+                        "season-availabilities-update",
+                        kwargs={
+                            "pk": self.season.pk,
+                            "helperpk": self.request.user.pk,
+                        },
+                    )
+                )
+        except KeyError:
+            pass
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         potential_helpers = self.potential_helpers()
@@ -993,6 +1048,33 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
                 return HttpResponseRedirect(
                     reverse_lazy(
                         "season-availabilities-update",
+                        kwargs={
+                            "pk": self.season.pk,
+                            "helperpk": self.request.user.pk,
+                        },
+                    )
+                )
+            """
+            DEFIVELO-221 If we're in the wrong state, redirect to the other URL; move from planning to availability
+            """
+            if (
+                self.request.user.profile.is_paid_staff
+                and (
+                    self.request.user.profile.actor
+                    or self.request.user.profile.formation
+                )
+                and not self.season.staff_can_update_availability
+                and self.season.staff_can_see_planning
+            ):
+                warning_message(
+                    request,
+                    _(
+                        "Il n'est pas possible de mettre à jour tes disponibilités; voici le planning."
+                    ),
+                )
+                return HttpResponseRedirect(
+                    reverse_lazy(
+                        "season-planning",
                         kwargs={
                             "pk": self.season.pk,
                             "helperpk": self.request.user.pk,

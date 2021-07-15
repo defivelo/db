@@ -494,6 +494,11 @@ def anyofusercantons(user, cantons):
 
 
 @register.filter
+def unprivileged_user_can_see(user, season):
+    return season.unprivileged_user_can_see(user)
+
+
+@register.filter
 def inusercantons(user, canton):
     if has_permission(user, "cantons_all"):
         # Also True for `canton == ''`
