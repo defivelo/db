@@ -173,8 +173,7 @@ class UserResource(resources.ModelResource):
     )
     profile__iban = fields.Field(
         column_name=_("IBAN"),
-        attribute="profile",
-        widget=ObjectMethodWidget(method="iban_nice"),
+        attribute="profile__iban",
     )
     profile__access_level = fields.Field(
         column_name=_("Niveau d’accès"),
