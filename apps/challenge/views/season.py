@@ -39,6 +39,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from django_ical.views import ICalFeed
+from rolepermissions.checkers import has_role
 from rolepermissions.mixins import HasPermissionsMixin
 from tablib import Dataset
 
@@ -1058,7 +1059,11 @@ class SeasonAvailabilityUpdateView(SeasonAvailabilityMixin, SeasonUpdateView):
             DEFIVELO-221 If we're in the wrong state, redirect to the other URL; move from planning to availability
             """
             if (
-                self.request.user.profile.is_paid_staff
+                # Poweruser & Related state manager, can still access
+                not self.request.user.managedstates.filter(
+                    canton__in=self.season.cantons
+                ).exists()
+                and not has_role(self.request.user, "power_user")
                 and (
                     self.request.user.profile.actor
                     or self.request.user.profile.formation
