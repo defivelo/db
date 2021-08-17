@@ -1,0 +1,5 @@
+{% extends "http_errors.html" %}
+{% load i18n %}
+{% block head_title %}404 {% trans "Pas trouvé" %}{% endblock %}
+{% block http_error_code %}404{% endblock %}
+{% block http_error_name %}{% trans "Pas trouvé" %}{% endblock %}

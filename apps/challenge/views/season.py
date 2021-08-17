@@ -29,7 +29,7 @@ from django.db.models import Case, Count, F, IntegerField, Q, When
 from django.http import HttpResponseRedirect
 from django.template.defaultfilters import date, time
 from django.template.loader import render_to_string
-from django.urls import reverse, reverse_lazy
+from django.urls import Resolver404, reverse, reverse_lazy
 from django.utils.functional import cached_property
 from django.utils.translation import pgettext_lazy as _p
 from django.utils.translation import ugettext as u
@@ -202,16 +202,19 @@ class SeasonDetailView(SeasonMixin, DetailView):
         """
         Allow view by participants of the season if allowed
         """
-        allowed = False
-        if self.season.unprivileged_user_can_see(request.user):
-            # Season participants
-            allowed = True
-        elif has_permission(request.user, self.required_permission):
-            # State Managers
-            allowed = True
+        try:
+            allowed = False
+            if self.season.unprivileged_user_can_see(request.user):
+                # Season participants
+                allowed = True
+            elif has_permission(request.user, self.required_permission):
+                # State Managers
+                allowed = True
 
-        if allowed:
-            return super().dispatch(request, *args, **kwargs)
+            if allowed:
+                return super().dispatch(request, *args, **kwargs)
+        except ValueError:
+            raise Resolver404
         raise PermissionDenied
 
     def get_context_data(self, **kwargs):
