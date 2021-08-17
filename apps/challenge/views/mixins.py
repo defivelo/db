@@ -37,7 +37,7 @@ class CantonSeasonFormMixin(object):
                 else self.kwargs["pk"]
             )
             return Season.objects.prefetch_related("leader").get(pk=seasonpk)
-        except KeyError:
+        except (ValueError, KeyError):
             return None
 
     @cached_property
