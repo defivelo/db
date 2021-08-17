@@ -3,12 +3,13 @@
 
 {% block content %}
      <h2>{% trans "Bienvenue sur l'intranet DÉFI VÉLO" %}</h2>
+     <p>{% trans "Tutoriel Intranet DÉFI VÉLO - Inscription Qualifs" %} <em>{% trans "(ci-dessous)" %}</p>
 
-     <h4>{% trans "Tutoriel Intranet DÉFI VÉLO - Inscription Qualifs" %}</h4>
+     <img src="{% static 'img/DEFIVELO_VD_Burier_20181012.jpg' %}" class="img-responsive" alt="{% trans "Photo de 11 moniteurs Défi Vélo représentant les mots 'Défi Vélo' avec leurs corps, au soleil du gymnase de Burier" %}" />
+
      <div class="coordinator-home-video">
        <iframe src="{% trans "https://player.vimeo.com/video/588319676?badge=0&autopause=0&player_id=0&app_id=58479&h=6c8330a8bf" %}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="{% trans "Tutoriel Intranet DÉFI VÉLO - Inscription Qualifs" %}"></iframe>
      </div>
      <script src="https://player.vimeo.com/api/player.js"></script>
 
-     <img src="{% static 'img/DEFIVELO_VD_Burier_20181012.jpg' %}" class="img-responsive" alt="{% trans "Photo de 11 moniteurs Défi Vélo représentant les mots 'Défi Vélo' avec leurs corps, au soleil du gymnase de Burier" %}" />
 {% endblock %}
