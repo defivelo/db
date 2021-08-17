@@ -50,7 +50,7 @@ class MenuView(object):
 class HomeView(MenuView, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if not has_permission(self.request.user, "home_without_articles"):
+        if not has_permission(self.request.user, "coordinator_home"):
             articles_qs = Article.objects
             if not has_permission(self.request.user, "home_article_cud"):
                 articles_qs = articles_qs.filter(published=True)
@@ -60,8 +60,8 @@ class HomeView(MenuView, TemplateView):
         return context
 
     def get_template_names(self):
-        if has_permission(self.request.user, "home_without_articles"):
-            self.template_name = "home_without_articles.html"
+        if has_permission(self.request.user, "coordinator_home"):
+            self.template_name = "coordinator_home.html"
         else:
             self.template_name = "home.html"
 
