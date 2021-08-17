@@ -1,0 +1,5 @@
+{% extends "http_errors.html" %}
+{% load i18n %}
+{% block head_title %}403 {% trans "Accès interdit" %}{% endblock %}
+{% block http_error_code %}403{% endblock %}
+{% block http_error_name %}{% trans "Accès interdit" %}{% endblock %}
