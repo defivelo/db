@@ -56,7 +56,7 @@ urlpatterns = [
                             url(
                                 r"(?P<format>[a-z]+)-export$",
                                 ExportMonthlyTimesheets.as_view(),
-                                name="cresus-export",
+                                name="accounting-export",
                             ),
                             url(
                                 r"^(?P<pk>[0-9]+)/$",

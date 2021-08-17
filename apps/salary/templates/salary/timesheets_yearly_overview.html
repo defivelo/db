@@ -138,7 +138,7 @@
                 <a
                   title="{% blocktrans %}Télécharger au format {{ format }}{% endblocktrans %}"
                   class="btn btn-info hide"
-                  href="{% url "salary:cresus-export" year=year month=forloop.counter format=format %}{% if canton %}?canton={{ canton }}{% endif %}">
+                  href="{% url "salary:accounting-export" year=year month=forloop.counter format=format %}{% if canton %}?canton={{ canton }}{% endif %}">
                   <span class=" glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
                 </a>
               {% endwith %}
