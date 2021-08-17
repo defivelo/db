@@ -2,7 +2,10 @@ FROM python:3.7-buster
 
 RUN set -x; \
     apt-get update -qq \
-    && apt-get install -yq bash-completion postgresql-client \
+    && apt-get install -yq \
+        bash-completion \
+        postgresql-client \
+        gettext \
     && rm -rf /var/lib/apt/lists/*
 
 ARG USER_ID=1000
