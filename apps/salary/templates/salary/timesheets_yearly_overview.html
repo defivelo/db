@@ -130,7 +130,7 @@
         </tr>
       {% endif %}
       {% if user|can:'challenge_invoice_cru' %}
-        <tr>
+        <tr class="accounting-export">
           <th></th>
           {% for amount in timesheets_amount %}
             <th class="text-center">
@@ -167,10 +167,10 @@
           }
       });
       if (shouldWaitDisplayExport > 0 || shouldDisplayExport === 0){
-        $('table.timesheets-overview-table > tfoot > tr:last > th').eq(index).children("a").hide()
+        $('table.timesheets-overview-table > tfoot > tr.accounting-export > th').eq(index).children("a").hide()
       }
       if (shouldWaitDisplayExport === 0 && shouldDisplayExport > 0){
-        $('table.timesheets-overview-table > tfoot > tr:last > th').eq(index).children("a").removeClass("hide")
+        $('table.timesheets-overview-table > tfoot > tr.accounting-export > th').eq(index).children("a").removeClass("hide")
       }
     });
   });
