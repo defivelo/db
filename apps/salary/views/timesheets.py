@@ -5,8 +5,7 @@ from django.contrib import messages
 from django.contrib.sites.models import Site
 from django.core import mail
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count, F, FloatField, IntegerField, Q, Sum
-from django.db.models.functions import Cast
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect
 from django.template.defaultfilters import date as datefilter
 from django.template.loader import render_to_string
@@ -331,26 +330,6 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
         dataset = Dataset()
         _, object_list, _ = self.get_dated_items()
 
-        # Django queries to convert the ignore Bool (0 if not ignored, 1 if ignored)
-        # into an included Bool (1 if taken into account, 0 if ignored)
-        included = 1 - Cast(F("ignore"), IntegerField())
-        included_float = Cast(included, FloatField())
-
-        salary_details_list = (
-            object_list.values("user")
-            .annotate(
-                employee_code=F("user__profile__employee_code"),
-                first_name=F("user__first_name"),
-                last_name=F("user__last_name"),
-                actor_count=Sum(F("actor_count") * included),
-                leader_count=Sum(F("leader_count") * included),
-                time_helper=Sum(F("time_helper") * included_float),
-                traveltime=Sum(F("traveltime") * included_float),
-                overtime=Sum(F("overtime") * included_float),
-            )
-            .order_by()
-        )
-
         # See DEFIVELO-218
         category_codes_list = {
             "actor_count": 1106,  # Interventions
@@ -360,7 +339,7 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
             "overtime": 1103,  # Salaire heures supplémentaires
         }
 
-        for salary_details in salary_details_list:
+        for salary_details in timesheets_overview.get_salary_details_list(object_list):
             employee_line = [
                 datefilter(date.today(), "d.m.Y"),  # Date of the export
                 self.get_month(),  # Concerned month
