@@ -13,6 +13,7 @@ from django.urls import reverse
 from django.utils import formats, timezone, translation
 from django.utils.datastructures import OrderedSet
 from django.utils.dates import MONTHS_3
+from django.utils.text import format_lazy
 from django.utils.translation import ngettext as n
 from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
@@ -25,6 +26,7 @@ from tablib import Dataset
 from apps.challenge.models.session import Session
 from apps.common import DV_STATE_CHOICES
 from apps.common.views import ExportMixin
+from apps.salary import BONUS_LEADER, HOURLY_RATE_HELPER, RATE_ACTOR
 from apps.salary.forms import ControlTimesheetFormSet, TimesheetFormSet
 from apps.salary.models import Timesheet
 from defivelo.roles import has_permission
@@ -363,6 +365,87 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
                         ]
                     )
 
+        return dataset
+
+
+class ExportMonthlyControl(ExportMixin, MonthArchiveView):
+    date_field = "date"
+    month_format = "%m"
+    allow_empty = True
+    allow_future = True
+    model = Timesheet
+
+    def get_queryset(self):
+        active_canton = self.request.GET.get("canton")
+        users = timesheets_overview.get_visible_users(self.request.user).order_by(
+            "first_name", "last_name"
+        )
+        if active_canton:
+            users = users.filter(profile__affiliation_canton=active_canton)
+        return super().get_queryset().filter(validated_at__isnull=False, user__in=users)
+
+    def get_dataset_title(self):
+        return _("Export de contrôle {month} {year}").format(
+            month=self.get_month(), year=self.get_year()
+        )
+
+    @property
+    def export_filename(self):
+        return f"export-control-{self.get_year()}-{self.get_month()}"
+
+    def get_dataset(self, html=False):
+        dataset = Dataset()
+        dataset.headers = [
+            u("Numéro d’employé Crésus"),
+            u("Prénom"),
+            u("Nom"),
+            format_lazy(
+                u("Heures moni·teur·trice ({price}.-/h)"), price=HOURLY_RATE_HELPER
+            ),
+            format_lazy(u("Intervention(s) ({price}.-/Qualif’)"), price=RATE_ACTOR),
+            format_lazy(
+                u("Participation(s) comme moni·teur·trice 2 ({price}.-/Qualif’)"),
+                price=BONUS_LEADER,
+            ),
+            format_lazy(
+                u("Heures supplémentaires ({price}.-/h)"), price=HOURLY_RATE_HELPER
+            ),
+            u("Heures de trajet (aller-retour)"),
+            u("Total heures"),
+            u("Total CHF"),
+            # u("Ne compter aucune heure de travail"),
+        ]
+
+        _, object_list, _ = self.get_dated_items()
+
+        for salary_details in timesheets_overview.get_salary_details_list(
+            object_list
+        ).order_by("first_name"):
+            time_total = (
+                salary_details["time_helper"]
+                + salary_details["overtime"]
+                + salary_details["traveltime"]
+            )
+            chf_total = (
+                time_total * HOURLY_RATE_HELPER
+                + salary_details["actor_count"] * RATE_ACTOR
+                + salary_details["leader_count"] * BONUS_LEADER
+            )
+            dataset.append(
+                [
+                    # See DEFIVELO-225
+                    salary_details["employee_code"],
+                    salary_details["first_name"],
+                    salary_details["last_name"],
+                    salary_details["time_helper"],
+                    salary_details["actor_count"],
+                    salary_details["leader_count"],
+                    salary_details["overtime"],
+                    salary_details["traveltime"],
+                    time_total,
+                    chf_total,
+                ]
+            )
         return dataset
 
 

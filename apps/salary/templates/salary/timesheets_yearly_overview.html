@@ -146,6 +146,23 @@
           {% endfor %}
         </tr>
       {% endif %}
+      {% if user|can:'timesheet_control' %}
+        <tr>
+          <th>{% trans "Exports de contrôle" %}</th>
+          {% for month in months %}
+            <th class="text-center">
+              {% with "ods" as format %}
+                <a
+                  title="{% blocktrans %}Télécharger au format {{ format }}{% endblocktrans %}"
+                  class="btn btn-info"
+                  href="{% url "salary:control-export" year=year month=forloop.counter format=format %}{% if canton %}?canton={{ canton }}{% endif %}">
+                  <span class=" glyphicon glyphicon-floppy-save" ></span>
+                </a>
+              {% endwith %}
+            </th>
+          {% endfor %}
+        </tr>
+      {% endif %}
     </tfoot>
   </table>
 {% else %}
