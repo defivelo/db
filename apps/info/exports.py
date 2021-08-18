@@ -86,22 +86,19 @@ class SeasonStatsExport(SeasonSessionsMixin):
 
     def get_dataset(self, html=False):
         dataset = Dataset()
-        # Prépare le fichier
-        dataset.append(
-            [
-                u("Canton"),
-                u("Établissements"),
-                u("Sessions"),
-                u("Qualifs"),
-                u("Nombre d’élèves"),
-                u("Prêts de vélos"),
-                u("Prêts de casques"),
-                u("Nombre de personnes ayant exercé"),
-                u("… comme moniteurs 2"),
-                u("… comme moniteurs 1"),
-                u("… comme intervenants"),
-            ]
-        )
+        dataset.headers = [
+            u("Canton"),
+            u("Établissements"),
+            u("Sessions"),
+            u("Qualifs"),
+            u("Nombre d’élèves"),
+            u("Prêts de vélos"),
+            u("Prêts de casques"),
+            u("Nombre de personnes ayant exercé"),
+            u("… comme moniteurs 2"),
+            u("… comme moniteurs 1"),
+            u("… comme intervenants"),
+        ]
         volunteers = get_user_model().objects
         orgas = Organization.objects
         object_list = self.get_queryset()
@@ -169,8 +166,7 @@ class LogisticsExport(SeasonSessionsMixin):
 
     def get_dataset(self, html=False):
         dataset = Dataset()
-        # Prépare le fichier
-        row = [
+        dataset.headers = [
             u("Canton"),
             u("Établissement"),
             u("Lieu"),
@@ -183,7 +179,6 @@ class LogisticsExport(SeasonSessionsMixin):
             u("Logistique vélos"),
             u("N° de contact vélos"),
         ]
-        dataset.append(row)
         sessions = self.get_queryset()
         sessions = sessions.annotate(
             n_qualifs=Count("qualifications"),
@@ -191,7 +186,6 @@ class LogisticsExport(SeasonSessionsMixin):
             n_bikes=Sum("qualifications__n_bikes"),
             n_helmets=Sum("qualifications__n_helmets"),
         )
-        row = []
         for session in sessions:
             season = session.season
             url = None
