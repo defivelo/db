@@ -127,6 +127,7 @@ class PowerUser(AbstractUserRole):
         "challenge_season_see_state_planning": True,
         "settings_crud": True,
         "timesheet": True,
+        "timesheet_control": True,
         "timesheet_editor": True,
     }
 

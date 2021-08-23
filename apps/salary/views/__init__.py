@@ -1,5 +1,6 @@
 from .timesheets import (
     CleanupOrphanedTimesheets,
+    ExportMonthlyControl,
     ExportMonthlyTimesheets,
     RedirectUserMonthlyTimesheets,
     SendTimesheetsReminder,
