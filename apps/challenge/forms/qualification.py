@@ -98,7 +98,7 @@ class QualificationForm(forms.ModelForm):
             label=_("Intervenant"),
             queryset=available_staff.filter(
                 pk__in=actors, profile__actor_for__isnull=False
-            ),
+            ).distinct(),
             required=False,
             session=session,
         )
