@@ -42,6 +42,7 @@ DV_STATES = [
     "BL",
     "GR",
     "SZ",
+    "ZG",
 ]
 
 DV_STATE_COLORS = {
