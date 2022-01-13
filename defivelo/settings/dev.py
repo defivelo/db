@@ -26,7 +26,17 @@ INSTALLED_APPS += (
     "django_extensions",
 )
 
-DEBUG_TOOLBAR_CONFIG = {"INTERCEPT_REDIRECTS": False}
+
+def show_toolbar(request):
+    from django.conf import settings
+
+    return settings.DEBUG
+
+
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": show_toolbar,
+    "INTERCEPT_REDIRECTS": False,
+}
 
 INTERNAL_IPS = (
     "127.0.0.1",
