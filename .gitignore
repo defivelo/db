@@ -8,3 +8,5 @@ envdir/*
 /.coverage
 /.vscode/
 /docker-compose.override.yml
+/.idea
+/*.sql.gz
