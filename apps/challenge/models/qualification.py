@@ -20,7 +20,7 @@ from django.db import models
 from django.db.models import Q
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as u
+from django.utils.translation import gettext
 from django.utils.translation import ugettext_lazy as _
 
 from parler.models import TranslatableModel, TranslatedFields
@@ -211,18 +211,18 @@ class Qualification(models.Model):
     def user_errors(self, user=None):
         errors = []
         if not self.class_teacher_fullname or not self.class_teacher_natel:
-            errors.append(u("Enseignant"))
+            errors.append(gettext("Enseignant"))
         if not self.n_participants:
-            errors.append(u("Nombre de participants"))
+            errors.append(gettext("Nombre de participants"))
         if self.session.orga.coordinator != user:
             if not self.leader or self.helpers.count() != MAX_MONO1_PER_QUALI:
-                errors.append(u("Moniteurs"))
+                errors.append(gettext("Moniteurs"))
             if not self.actor:
-                errors.append(u("Intervenant"))
+                errors.append(gettext("Intervenant"))
             if not self.activity_A or not self.activity_B or not self.activity_C:
-                errors.append(u("Postes"))
+                errors.append(gettext("Postes"))
             if self.has_availability_incoherences:
-                errors.append(u("Incohérences de dispos"))
+                errors.append(gettext("Incohérences de dispos"))
         if errors:
             return mark_safe(
                 "<br />".join(

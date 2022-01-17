@@ -15,7 +15,7 @@ from django.utils.datastructures import OrderedSet
 from django.utils.dates import MONTHS_3
 from django.utils.text import format_lazy
 from django.utils.translation import ngettext as n
-from django.utils.translation import ugettext as u
+from django.utils.translation import gettext
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import RedirectView, TemplateView
 from django.views.generic.dates import MonthArchiveView
@@ -568,7 +568,7 @@ class SendTimesheetsReminder(TemplateView):
                 self.request,
             )
             return (
-                settings.EMAIL_SUBJECT_PREFIX + u("Soumission des heures"),
+                settings.EMAIL_SUBJECT_PREFIX + gettext("Soumission des heures"),
                 message,
                 settings.DEFAULT_FROM_EMAIL,
                 [user.email if user else None],

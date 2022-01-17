@@ -24,7 +24,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils.encoding import force_text
 from django.utils.html import urlencode
-from django.utils.translation import ugettext as u
+from django.utils.translation import gettext
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.dates import WeekArchiveView
 from django.views.generic.detail import DetailView
@@ -46,7 +46,7 @@ from ..models.qualification import (
 )
 from .mixins import CantonSeasonFormMixin
 
-EXPORT_NAMETEL = u("{name} - {tel}")
+EXPORT_NAMETEL = gettext("{name} - {tel}")
 
 
 class SessionMixin(CantonSeasonFormMixin, MenuView):
@@ -346,35 +346,35 @@ class SessionExportView(ExportMixin, SessionMixin, DetailView):
         # Prépare le fichier
         dataset.append_col(
             [
-                u("Date"),
-                u("Canton"),
-                u("Établissement"),
-                u("Emplacement"),
-                u("Heures"),
-                u("Nombre de qualifs"),
+                gettext("Date"),
+                gettext("Canton"),
+                gettext("Établissement"),
+                gettext("Emplacement"),
+                gettext("Heures"),
+                gettext("Nombre de qualifs"),
                 # Logistique
-                u("Moniteur + / Photographe"),
-                u("Mauvais temps"),
-                u("Logistique vélos"),
-                u("N° de contact vélos"),
-                u("Pommes"),
-                u("Total vélos"),
-                u("Total casques"),
-                u("Remarques"),
+                gettext("Moniteur + / Photographe"),
+                gettext("Mauvais temps"),
+                gettext("Logistique vélos"),
+                gettext("N° de contact vélos"),
+                gettext("Pommes"),
+                gettext("Total vélos"),
+                gettext("Total casques"),
+                gettext("Remarques"),
                 # Qualif
-                u("Classe"),
-                u("Enseignant"),
-                u("Moniteur 2"),
-                u("Moniteur 1"),
-                u("Moniteur 1"),
-                u("Nombre d’élèves"),
-                u("Nombre de vélos"),
-                u("Nombre de casques"),
+                gettext("Classe"),
+                gettext("Enseignant"),
+                gettext("Moniteur 2"),
+                gettext("Moniteur 1"),
+                gettext("Moniteur 1"),
+                gettext("Nombre d’élèves"),
+                gettext("Nombre de vélos"),
+                gettext("Nombre de casques"),
                 CATEGORY_CHOICE_A,
                 CATEGORY_CHOICE_B,
                 CATEGORY_CHOICE_C,
-                u("Intervenant"),
-                u("Remarques"),
+                gettext("Intervenant"),
+                gettext("Remarques"),
             ]
         )
         session = self.object

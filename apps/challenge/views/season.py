@@ -32,7 +32,7 @@ from django.template.loader import render_to_string
 from django.urls import Resolver404, reverse, reverse_lazy
 from django.utils.functional import cached_property
 from django.utils.translation import pgettext_lazy as _p
-from django.utils.translation import ugettext as u
+from django.utils.translation import gettext
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import ListView, RedirectView
 from django.views.generic.detail import DetailView
@@ -548,7 +548,7 @@ class SeasonToRunningView(SeasonToStateMixin):
 
         return {
             "subject": settings.EMAIL_SUBJECT_PREFIX
-            + u("Planning {season}").format(season=self.season.desc()),
+            + gettext("Planning {season}").format(season=self.season.desc()),
             "body": {
                 "pre": render_to_string(
                     "challenge/season_email_to_state_running_pre.txt",
@@ -630,7 +630,7 @@ class SeasonToOpenView(SeasonToStateMixin):
 
         return {
             "subject": settings.EMAIL_SUBJECT_PREFIX
-            + u("Planning {season}").format(season=self.season.desc()),
+            + gettext("Planning {season}").format(season=self.season.desc()),
             "body": {
                 "pre": render_to_string(
                     "challenge/season_email_to_state_open_pre.txt",
@@ -726,35 +726,35 @@ class SeasonExportView(
         # Prépare le fichier
         dataset.append_col(
             [
-                u("Date"),
-                u("Canton"),
-                u("Établissement"),
-                u("Emplacement"),
-                u("Heures"),
-                u("Nombre de qualifs"),
+                gettext("Date"),
+                gettext("Canton"),
+                gettext("Établissement"),
+                gettext("Emplacement"),
+                gettext("Heures"),
+                gettext("Nombre de qualifs"),
                 # Logistique
-                u("Moniteur + / Photographe"),
-                u("Mauvais temps"),
-                u("Logistique vélos"),
-                u("N° de contact vélos"),
-                u("Pommes"),
-                u("Total vélos"),
-                u("Total casques"),
-                u("Remarques"),
+                gettext("Moniteur + / Photographe"),
+                gettext("Mauvais temps"),
+                gettext("Logistique vélos"),
+                gettext("N° de contact vélos"),
+                gettext("Pommes"),
+                gettext("Total vélos"),
+                gettext("Total casques"),
+                gettext("Remarques"),
                 # Qualif
-                u("Classe"),
-                u("Enseignant"),
-                u("Moniteur 2"),
-                u("Moniteur 1"),
-                u("Moniteur 1"),
-                u("Nombre d’élèves"),
-                u("Nombre de vélos"),
-                u("Nombre de casques"),
+                gettext("Classe"),
+                gettext("Enseignant"),
+                gettext("Moniteur 2"),
+                gettext("Moniteur 1"),
+                gettext("Moniteur 1"),
+                gettext("Nombre d’élèves"),
+                gettext("Nombre de vélos"),
+                gettext("Nombre de casques"),
                 str(CATEGORY_CHOICE_A),
                 str(CATEGORY_CHOICE_B),
                 str(CATEGORY_CHOICE_C),
-                u("Intervenant"),
-                u("Remarques"),
+                gettext("Intervenant"),
+                gettext("Remarques"),
             ]
         )
         for session in self.season.sessions:
@@ -857,12 +857,12 @@ class SeasonPersonalPlanningExportView(
     def get_dataset(self):
         dataset = Dataset()
         firstcol = [
-            u("Date"),
-            u("Canton"),
-            u("Établissement"),
-            u("Emplacement"),
-            u("Heures"),
-            u("Nombre de qualifs"),
+            gettext("Date"),
+            gettext("Canton"),
+            gettext("Établissement"),
+            gettext("Emplacement"),
+            gettext("Heures"),
+            gettext("Nombre de qualifs"),
         ]
         # Trouve toutes les personnes qui sont présentes dans ce mois
         qs = get_user_model().objects

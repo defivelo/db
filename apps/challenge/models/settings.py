@@ -17,7 +17,7 @@
 
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.utils.translation import ugettext as u
+from django.utils.translation import gettext
 from django.utils.translation import ugettext_lazy as _
 
 from simple_history.models import HistoricalRecords
@@ -50,6 +50,6 @@ class AnnualStateSetting(models.Model):
         unique_together = (("canton", "year"),)
 
     def __str__(self):
-        return u(
+        return gettext(
             f"{self.year}: {self.canton} vélos: {self.cost_per_bike} participants: {self.cost_per_participant}"
         )
