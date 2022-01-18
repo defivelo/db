@@ -454,7 +454,7 @@ def reset_db_from_prod(c):
     c.conn.manage_py(
         f'set_default_site --name "{project_name_verbose} ({c.environment})" --domain "{c.config.settings["SITE_DOMAIN"]}"'
     )
-    c.conn.manage_py(f"set_fake_passwords", debug=True)
+    c.conn.manage_py("set_fake_passwords", debug=True)
     restart_uwsgi(c)
 
 
@@ -489,12 +489,17 @@ def import_db(c, dump_file=None):
     }
     env = {"PGPASSWORD": db_credentials_dict["PASSWORD"].replace("$", "\$")}
 
-    c.run("""
+    c.run(
+        """
         psql -h '{host}' -U '{user}' '{db}' '$(./manage.py sqldsn -q)' <<<'
             SELECT pg_terminate_backend(pid)
             FROM pg_stat_activity
             WHERE pid != pg_backend_pid()'
-        """.format(**db_info), env=env)
+        """.format(
+            **db_info
+        ),
+        env=env,
+    )
 
     c.run("dropdb -h '{host}' -U '{user}' '{db}'".format(**db_info), env=env)
     c.run("createdb -h '{host}' -U '{user}' '{db}'".format(**db_info), env=env)

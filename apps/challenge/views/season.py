@@ -31,8 +31,8 @@ from django.template.defaultfilters import date, time
 from django.template.loader import render_to_string
 from django.urls import Resolver404, reverse, reverse_lazy
 from django.utils.functional import cached_property
-from django.utils.translation import pgettext_lazy as _p
 from django.utils.translation import gettext
+from django.utils.translation import pgettext_lazy as _p
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import ListView, RedirectView
 from django.views.generic.detail import DetailView

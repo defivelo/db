@@ -14,8 +14,8 @@ from django.utils import formats, timezone, translation
 from django.utils.datastructures import OrderedSet
 from django.utils.dates import MONTHS_3
 from django.utils.text import format_lazy
-from django.utils.translation import ngettext as n
 from django.utils.translation import gettext
+from django.utils.translation import ngettext as n
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import RedirectView, TemplateView
 from django.views.generic.dates import MonthArchiveView
@@ -400,15 +400,19 @@ class ExportMonthlyControl(ExportMixin, MonthArchiveView):
             gettext("Prénom"),
             gettext("Nom"),
             format_lazy(
-                gettext("Heures moni·teur·trice ({price}.-/h)"), price=HOURLY_RATE_HELPER
+                gettext("Heures moni·teur·trice ({price}.-/h)"),
+                price=HOURLY_RATE_HELPER,
             ),
-            format_lazy(gettext("Intervention(s) ({price}.-/Qualif’)"), price=RATE_ACTOR),
+            format_lazy(
+                gettext("Intervention(s) ({price}.-/Qualif’)"), price=RATE_ACTOR
+            ),
             format_lazy(
                 gettext("Participation(s) comme moni·teur·trice 2 ({price}.-/Qualif’)"),
                 price=BONUS_LEADER,
             ),
             format_lazy(
-                gettext("Heures supplémentaires ({price}.-/h)"), price=HOURLY_RATE_HELPER
+                gettext("Heures supplémentaires ({price}.-/h)"),
+                price=HOURLY_RATE_HELPER,
             ),
             gettext("Heures de trajet (aller-retour)"),
             gettext("Total heures"),

@@ -22,8 +22,8 @@ from django.db.models import Count, Q, Sum
 from django.template.defaultfilters import date as datefilter
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext
+from django.utils.translation import gettext_lazy as _
 
 from tablib import Dataset
 
