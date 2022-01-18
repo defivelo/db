@@ -1,7 +1,9 @@
 import enum
 
 from django.contrib.auth import get_user_model
-from django.db.models import Q
+from django.db.models import F, FloatField, IntegerField, Q, Sum
+from django.db.models.functions import Cast
+from django.db.models.query import QuerySet
 
 from rolepermissions.checkers import has_permission
 
@@ -130,7 +132,7 @@ def get_orphaned_timesheets_per_month(year, users, month=None, cantons=DV_STATES
                             timesheets_by_user.get(user.pk, set()),
                         )
                     )
-            except User.profile.RelatedObjectDoesNotExist as e:
+            except User.profile.RelatedObjectDoesNotExist:
                 pass
 
         orphaned_timesheets_year[month_in_loop] = orphaned_timesheets_month
@@ -331,3 +333,25 @@ def get_missing_timesheet_status_per_month(timesheets_status_matrix):
         )
         for month_index in range(0, 12)
     ]
+
+
+def get_salary_details_list(object_list: QuerySet) -> QuerySet:
+    """
+    Return the queryset of salary details needed in multiple exports
+    """
+
+    # Django queries to convert the ignore Bool (0 if not ignored, 1 if ignored)
+    # into an included Bool (1 if taken into account, 0 if ignored)
+    included = 1 - Cast(F("ignore"), IntegerField())
+    included_float = Cast(included, FloatField())
+
+    return object_list.values("user").annotate(
+        employee_code=F("user__profile__employee_code"),
+        last_name=F("user__last_name"),
+        first_name=F("user__first_name"),
+        time_helper=Sum(F("time_helper") * included_float),
+        actor_count=Sum(F("actor_count") * included),
+        leader_count=Sum(F("leader_count") * included),
+        overtime=Sum(F("overtime") * included_float),
+        traveltime=Sum(F("traveltime") * included_float),
+    )

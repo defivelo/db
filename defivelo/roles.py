@@ -127,6 +127,7 @@ class PowerUser(AbstractUserRole):
         "challenge_season_see_state_planning": True,
         "settings_crud": True,
         "timesheet": True,
+        "timesheet_control": True,
         "timesheet_editor": True,
     }
 
@@ -137,7 +138,7 @@ class Coordinator(AbstractUserRole):
     """
 
     available_permissions = {
-        "home_without_articles": True,
+        "coordinator_home": True,
         "orga_show": True,
         "orga_edit": True,
         "challenge_see_all_orga": False,

@@ -6,6 +6,7 @@ from django.views.generic import RedirectView
 
 from apps.salary.views import (
     CleanupOrphanedTimesheets,
+    ExportMonthlyControl,
     ExportMonthlyTimesheets,
     RedirectUserMonthlyTimesheets,
     SendTimesheetsReminder,
@@ -56,7 +57,12 @@ urlpatterns = [
                             url(
                                 r"(?P<format>[a-z]+)-export$",
                                 ExportMonthlyTimesheets.as_view(),
-                                name="cresus-export",
+                                name="accounting-export",
+                            ),
+                            url(
+                                r"(?P<format>[a-z]+)-control$",
+                                ExportMonthlyControl.as_view(),
+                                name="control-export",
                             ),
                             url(
                                 r"^(?P<pk>[0-9]+)/$",
