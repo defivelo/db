@@ -356,7 +356,7 @@ SERVER_EMAIL = get_env_variable("SERVER_EMAIL", "noreply@defi-velo.ch")
 DEFAULT_FROM_EMAIL = get_env_variable("DEFAULT_FROM_EMAIL", "noreply@defi-velo.ch")
 EMAIL_SUBJECT_PREFIX = _("DÉFI VÉLO: ")
 
-if get_env_variable("USE_DB_EMAIL_BACKEND", False):
+if bool(int(get_env_variable("USE_DB_EMAIL_BACKEND", 0))):
     INSTALLED_APPS = INSTALLED_APPS + ("db_email_backend",)
     EMAIL_BACKEND = "db_email_backend.backend.DBEmailBackend"
 
