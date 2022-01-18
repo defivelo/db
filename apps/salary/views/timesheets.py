@@ -396,24 +396,24 @@ class ExportMonthlyControl(ExportMixin, MonthArchiveView):
     def get_dataset(self, html=False):
         dataset = Dataset()
         dataset.headers = [
-            u("Numéro d’employé Crésus"),
-            u("Prénom"),
-            u("Nom"),
+            gettext("Numéro d’employé Crésus"),
+            gettext("Prénom"),
+            gettext("Nom"),
             format_lazy(
-                u("Heures moni·teur·trice ({price}.-/h)"), price=HOURLY_RATE_HELPER
+                gettext("Heures moni·teur·trice ({price}.-/h)"), price=HOURLY_RATE_HELPER
             ),
-            format_lazy(u("Intervention(s) ({price}.-/Qualif’)"), price=RATE_ACTOR),
+            format_lazy(gettext("Intervention(s) ({price}.-/Qualif’)"), price=RATE_ACTOR),
             format_lazy(
-                u("Participation(s) comme moni·teur·trice 2 ({price}.-/Qualif’)"),
+                gettext("Participation(s) comme moni·teur·trice 2 ({price}.-/Qualif’)"),
                 price=BONUS_LEADER,
             ),
             format_lazy(
-                u("Heures supplémentaires ({price}.-/h)"), price=HOURLY_RATE_HELPER
+                gettext("Heures supplémentaires ({price}.-/h)"), price=HOURLY_RATE_HELPER
             ),
-            u("Heures de trajet (aller-retour)"),
-            u("Total heures"),
-            u("Total CHF"),
-            # u("Ne compter aucune heure de travail"),
+            gettext("Heures de trajet (aller-retour)"),
+            gettext("Total heures"),
+            gettext("Total CHF"),
+            # gettext("Ne compter aucune heure de travail"),
         ]
 
         _, object_list, _ = self.get_dated_items()

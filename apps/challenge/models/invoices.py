@@ -173,7 +173,7 @@ class InvoiceLine(models.Model):
         ordering = ("historical_session__day", "historical_session__begin")
 
     def __str__(self):
-        return u(
+        return gettext(
             f"{self.invoice.ref}: {self.historical_session} - Vélos: {self.nb_bikes} ({self.cost_bikes} CHF) - Participants: {self.nb_participants} ({self.cost_participants} CHF)"
         )
 

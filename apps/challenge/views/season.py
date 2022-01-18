@@ -92,7 +92,7 @@ from ..models.qualification import (
 from ..utils import get_users_roles_for_session
 from .mixins import CantonSeasonFormMixin
 
-EXPORT_NAMETEL = u("{name} - {tel}")
+EXPORT_NAMETEL = gettext("{name} - {tel}")
 
 
 class SeasonMixin(CantonSeasonFormMixin, MenuView):
