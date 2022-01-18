@@ -20,6 +20,9 @@ class TimesheetStatus(enum.IntFlag):
         return str(self.value)
 
 
+User = get_user_model()
+
+
 def timesheets_validation_status(year, month=None, cantons=DV_STATES):
     """
     Get timesheets validation status matrix, a {'canton': status} dict
@@ -119,13 +122,16 @@ def get_orphaned_timesheets_per_month(year, users, month=None, cantons=DV_STATES
         timesheets_by_user = regroup_timesheets_by_user(timesheets)
         orphaned_timesheets_month = set()
         for user in users:
-            if user.profile.affiliation_canton in cantons:
-                orphaned_timesheets_month.update(
-                    get_timesheets_without_corresponding_session(
-                        sessions_by_user.get(user.pk, set()),
-                        timesheets_by_user.get(user.pk, set()),
+            try:
+                if user.profile.affiliation_canton in cantons:
+                    orphaned_timesheets_month.update(
+                        get_timesheets_without_corresponding_session(
+                            sessions_by_user.get(user.pk, set()),
+                            timesheets_by_user.get(user.pk, set()),
+                        )
                     )
-                )
+            except User.profile.RelatedObjectDoesNotExist as e:
+                pass
 
         orphaned_timesheets_year[month_in_loop] = orphaned_timesheets_month
 
@@ -291,7 +297,6 @@ def get_visible_users(user):
     """
     Return a queryset of `User` objects the given `user` has access to.
     """
-    User = get_user_model()
 
     if has_permission(user, "cantons_all"):
         qs = User.objects.all()
