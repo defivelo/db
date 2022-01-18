@@ -132,7 +132,7 @@ def get_orphaned_timesheets_per_month(year, users, month=None, cantons=DV_STATES
                             timesheets_by_user.get(user.pk, set()),
                         )
                     )
-            except User.profile.RelatedObjectDoesNotExist as e:
+            except User.profile.RelatedObjectDoesNotExist:
                 pass
 
         orphaned_timesheets_year[month_in_loop] = orphaned_timesheets_month
