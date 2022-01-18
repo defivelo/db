@@ -2,7 +2,7 @@ from datetime import time
 from typing import Mapping
 
 from django.contrib.auth import get_user_model
-from django.utils.translation import ugettext as u
+from django.utils.translation import gettext
 
 from apps.user import FORMATION_M1, FORMATION_M2, formation_short
 
@@ -40,7 +40,7 @@ def get_users_roles_for_session(users, session) -> Mapping[User, str]:
                 break
             elif user == quali.actor:
                 # Translators: Nom court pour 'Intervenant'
-                label = u("Int.")
+                label = gettext("Int.")
                 break
         # Vérifie tout de même si l’utilisateur est déjà sélectionné
         if not label and user.id in user_session_chosen_as:
@@ -50,16 +50,16 @@ def get_users_roles_for_session(users, session) -> Mapping[User, str]:
                 label = formation_short(FORMATION_M1, True)
             elif user_session_chosen_as[user.id] == CHOSEN_AS_ACTOR:
                 # Translators: Nom court pour 'Intervenant'
-                label = u("Int.")
+                label = gettext("Int.")
             elif user_session_chosen_as[user.id] == CHOSEN_AS_REPLACEMENT:
                 # Translators: Nom court pour 'Moniteur de secours'
-                label = u("S")
+                label = gettext("S")
             else:
-                label = u("×")
+                label = gettext("×")
 
         if user == session.superleader:
             # Translators: Nom court pour 'Moniteur +'
-            label = "{} / {}".format(label, u("M+")) if label else u("M+")
+            label = "{} / {}".format(label, gettext("M+")) if label else gettext("M+")
 
         roles[user] = label
     return roles

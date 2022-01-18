@@ -22,8 +22,8 @@ from django.db.models import Count, Q, Sum
 from django.template.defaultfilters import date as datefilter
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
-from django.utils.translation import ugettext as u
 
 from tablib import Dataset
 
@@ -70,7 +70,7 @@ class SeasonSessionsMixin(object):
 class SeasonStatsExport(SeasonSessionsMixin):
     def get_dataset_title(self):
         return "{title} - {month_start} à {month_end} {year}".format(
-            title=(u("Statistiques")),
+            title=(gettext("Statistiques")),
             year=self.export_year,
             month_start=season_month_start(self.export_season),
             month_end=season_month_end(self.export_season),
@@ -87,17 +87,17 @@ class SeasonStatsExport(SeasonSessionsMixin):
     def get_dataset(self, html=False):
         dataset = Dataset()
         dataset.headers = [
-            u("Canton"),
-            u("Établissements"),
-            u("Sessions"),
-            u("Qualifs"),
-            u("Nombre d’élèves"),
-            u("Prêts de vélos"),
-            u("Prêts de casques"),
-            u("Nombre de personnes ayant exercé"),
-            u("… comme moniteurs 2"),
-            u("… comme moniteurs 1"),
-            u("… comme intervenants"),
+            gettext("Canton"),
+            gettext("Établissements"),
+            gettext("Sessions"),
+            gettext("Qualifs"),
+            gettext("Nombre d’élèves"),
+            gettext("Prêts de vélos"),
+            gettext("Prêts de casques"),
+            gettext("Nombre de personnes ayant exercé"),
+            gettext("… comme moniteurs 2"),
+            gettext("… comme moniteurs 1"),
+            gettext("… comme intervenants"),
         ]
         volunteers = get_user_model().objects
         orgas = Organization.objects
@@ -149,7 +149,7 @@ class SeasonStatsExport(SeasonSessionsMixin):
 class LogisticsExport(SeasonSessionsMixin):
     def get_dataset_title(self):
         return "{title} - {month_start} à {month_end} {year}".format(
-            title=(u("Planification logistique")),
+            title=(gettext("Planification logistique")),
             year=self.export_year,
             month_start=season_month_start(self.export_season),
             month_end=season_month_end(self.export_season),
@@ -158,8 +158,8 @@ class LogisticsExport(SeasonSessionsMixin):
     @property
     def export_filename(self):
         return "%s-%s-%s-%s" % (
-            u("Logistique"),
-            u("Mois"),
+            gettext("Logistique"),
+            gettext("Mois"),
             self.export_year,
             season_verb(self.export_season),
         )
@@ -167,17 +167,17 @@ class LogisticsExport(SeasonSessionsMixin):
     def get_dataset(self, html=False):
         dataset = Dataset()
         dataset.headers = [
-            u("Canton"),
-            u("Établissement"),
-            u("Lieu"),
-            u("Date"),
-            u("Heure"),
-            u("Classes"),
-            u("Participants"),
-            u("Vélos loués"),
-            u("Casques loués"),
-            u("Logistique vélos"),
-            u("N° de contact vélos"),
+            gettext("Canton"),
+            gettext("Établissement"),
+            gettext("Lieu"),
+            gettext("Date"),
+            gettext("Heure"),
+            gettext("Classes"),
+            gettext("Participants"),
+            gettext("Vélos loués"),
+            gettext("Casques loués"),
+            gettext("Logistique vélos"),
+            gettext("N° de contact vélos"),
         ]
         sessions = self.get_queryset()
         sessions = sessions.annotate(

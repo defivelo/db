@@ -14,8 +14,8 @@ from django.utils import formats, timezone, translation
 from django.utils.datastructures import OrderedSet
 from django.utils.dates import MONTHS_3
 from django.utils.text import format_lazy
+from django.utils.translation import gettext
 from django.utils.translation import ngettext as n
-from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import RedirectView, TemplateView
 from django.views.generic.dates import MonthArchiveView
@@ -396,24 +396,28 @@ class ExportMonthlyControl(ExportMixin, MonthArchiveView):
     def get_dataset(self, html=False):
         dataset = Dataset()
         dataset.headers = [
-            u("Numéro d’employé Crésus"),
-            u("Prénom"),
-            u("Nom"),
+            gettext("Numéro d’employé Crésus"),
+            gettext("Prénom"),
+            gettext("Nom"),
             format_lazy(
-                u("Heures moni·teur·trice ({price}.-/h)"), price=HOURLY_RATE_HELPER
+                gettext("Heures moni·teur·trice ({price}.-/h)"),
+                price=HOURLY_RATE_HELPER,
             ),
-            format_lazy(u("Intervention(s) ({price}.-/Qualif’)"), price=RATE_ACTOR),
             format_lazy(
-                u("Participation(s) comme moni·teur·trice 2 ({price}.-/Qualif’)"),
+                gettext("Intervention(s) ({price}.-/Qualif’)"), price=RATE_ACTOR
+            ),
+            format_lazy(
+                gettext("Participation(s) comme moni·teur·trice 2 ({price}.-/Qualif’)"),
                 price=BONUS_LEADER,
             ),
             format_lazy(
-                u("Heures supplémentaires ({price}.-/h)"), price=HOURLY_RATE_HELPER
+                gettext("Heures supplémentaires ({price}.-/h)"),
+                price=HOURLY_RATE_HELPER,
             ),
-            u("Heures de trajet (aller-retour)"),
-            u("Total heures"),
-            u("Total CHF"),
-            # u("Ne compter aucune heure de travail"),
+            gettext("Heures de trajet (aller-retour)"),
+            gettext("Total heures"),
+            gettext("Total CHF"),
+            # gettext("Ne compter aucune heure de travail"),
         ]
 
         _, object_list, _ = self.get_dated_items()
@@ -568,7 +572,7 @@ class SendTimesheetsReminder(TemplateView):
                 self.request,
             )
             return (
-                settings.EMAIL_SUBJECT_PREFIX + u("Soumission des heures"),
+                settings.EMAIL_SUBJECT_PREFIX + gettext("Soumission des heures"),
                 message,
                 settings.DEFAULT_FROM_EMAIL,
                 [user.email if user else None],

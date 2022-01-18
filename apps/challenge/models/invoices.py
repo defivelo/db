@@ -23,8 +23,8 @@ from django.db.models import F, Sum
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.functional import cached_property
+from django.utils.translation import gettext
 from django.utils.translation import pgettext_lazy as _p
-from django.utils.translation import ugettext as u
 from django.utils.translation import ugettext_lazy as _
 
 from simple_history.utils import get_history_manager_for_model
@@ -66,7 +66,7 @@ class Invoice(models.Model):
     )
 
     def __str__(self):
-        return u(f"Facture {self.ref} pour {self.organization} / {self.season}")
+        return gettext(f"Facture {self.ref} pour {self.organization} / {self.season}")
 
     def get_absolute_url(self):
         return reverse_lazy(
@@ -173,7 +173,7 @@ class InvoiceLine(models.Model):
         ordering = ("historical_session__day", "historical_session__begin")
 
     def __str__(self):
-        return u(
+        return gettext(
             f"{self.invoice.ref}: {self.historical_session} - Vélos: {self.nb_bikes} ({self.cost_bikes} CHF) - Participants: {self.nb_participants} ({self.cost_participants} CHF)"
         )
 

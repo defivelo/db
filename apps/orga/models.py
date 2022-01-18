@@ -23,7 +23,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as u
+from django.utils.translation import gettext
 from django.utils.translation import ugettext_lazy as _
 
 from apps.common import STDGLYPHICON
@@ -125,7 +125,7 @@ class Organization(Address, models.Model):
                 "%s %s"
                 % (
                     settings.EMAIL_SUBJECT_PREFIX,
-                    u("Nouvelles pré-inscriptions à valider"),
+                    gettext("Nouvelles pré-inscriptions à valider"),
                 ),
                 render_to_string(
                     "challenge/registration_email_to_state_manager.txt",
@@ -152,7 +152,7 @@ class Organization(Address, models.Model):
             "%s %s"
             % (
                 settings.EMAIL_SUBJECT_PREFIX,
-                u("Vos inscriptions à DEFIVELO"),
+                gettext("Vos inscriptions à DEFIVELO"),
             ),
             render_to_string(
                 "challenge/registration_email_to_coordinator.txt",
