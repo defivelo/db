@@ -8,8 +8,11 @@ from apps.common import DV_STATE_CHOICES
 
 
 class MonthlyCantonalValidationUrl(TranslatableModel):
-    translations = TranslatedFields(name=models.CharField(_("Nom"), max_length=255))
-    url = models.URLField(_("URL"))
+    translations = TranslatedFields(
+        name=models.CharField(_("Nom"), max_length=255),
+        url=models.URLField(_("URL")),
+        label=models.CharField(_("Label"), max_length=255, blank=True),
+    )
 
     class Meta:
         verbose_name = _("URL pour validation mensuelle")
