@@ -22,7 +22,8 @@ from .views import (
     LogisticsExportView,
     LogisticsView,
     NextQualifs,
-    QualifsCalendar,
+    QualifsCalendarExportView,
+    QualifsCalendarView,
     SeasonExports,
     SeasonStatsExportView,
     SeasonStatsView,
@@ -40,10 +41,16 @@ urlpatterns = [
         include(
             [
                 url(r"^$", never_cache(SeasonExports.as_view()), name="season-exports"),
+                # Calendar
                 url(
                     r"^calendar/$",
-                    never_cache(QualifsCalendar.as_view()),
+                    never_cache(QualifsCalendarView.as_view()),
                     name="qualifs-calendar",
+                ),
+                url(
+                    r"^calendar-(?P<format>[a-z]+)$",
+                    never_cache(QualifsCalendarExportView.as_view()),
+                    name="qualifs-calendar-export",
                 ),
                 # Statistiques de Mois
                 url(
