@@ -18,7 +18,7 @@ from functools import reduce
 
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
-from django.db.models import DateField, Q
+from django.db.models import Q
 from django.urls import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DetailView
@@ -26,7 +26,6 @@ from django.views.generic.edit import CreateView, UpdateView
 
 from django_filters import (
     CharFilter,
-    DateFilter,
     FilterSet,
     ModelMultipleChoiceFilter,
     MultipleChoiceFilter,
@@ -40,7 +39,6 @@ from apps.common import (
     DV_STATE_CHOICES_WITH_DEFAULT,
     MULTISELECTFIELD_REGEXP,
 )
-from apps.common.forms import SwissDateField
 from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.roles import DV_AVAILABLE_ROLES, has_permission, user_cantons
 
