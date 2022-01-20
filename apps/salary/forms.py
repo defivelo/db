@@ -259,9 +259,7 @@ class MonthlyCantonalValidationForm(forms.ModelForm):
                 label=url.name,
                 required=False,
                 widget=CheckboxInput,
-                help_text=mark_safe(
-                    f'<a href="{url.url}" target="_blank">{label}</a>'
-                ),
+                help_text=mark_safe(f'<a href="{url.url}" target="_blank">{label}</a>'),
                 initial=self.instance.validated_urls.filter(pk=url.pk).exists(),
             )
         # Refill it
