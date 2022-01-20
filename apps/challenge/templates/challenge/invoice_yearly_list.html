@@ -26,15 +26,11 @@
     </ul>
   </nav>
 
-  {% for season in seasons %}
-      {% ifchanged season.season %}
-          {% if not forloop.first %}</table>{% endif %}
-          <h2>{{ season.season_full }}</h2>
-          <table class ="table">
-      {% endifchanged %}
+  <table class ="table">
+    {% for season in seasons %}
       {% if season.nb_invoices != 0 %}
         <tr>
-          <th colspan="6">{{ season.get_cantons_display }}</th>
+          <th colspan="6">{{ season.desc }}</th>
         </tr>
         {% for invoice in season.invoices.all %}
           <tr class="{{ invoice.status_class }}">
@@ -58,6 +54,7 @@
         {% endfor %}
       {% endif %}
       {% if forloop.last %}</table>{% endif %}
-  {% endfor %}
+    {% endfor %}
+  </table>
 
 {% endblock %}
