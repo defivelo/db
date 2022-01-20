@@ -18,7 +18,7 @@ from functools import reduce
 
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
-from django.db.models import Q
+from django.db.models import DateField, Q
 from django.urls import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DetailView
@@ -26,6 +26,7 @@ from django.views.generic.edit import CreateView, UpdateView
 
 from django_filters import (
     CharFilter,
+    DateFilter,
     FilterSet,
     ModelMultipleChoiceFilter,
     MultipleChoiceFilter,
@@ -39,11 +40,13 @@ from apps.common import (
     DV_STATE_CHOICES_WITH_DEFAULT,
     MULTISELECTFIELD_REGEXP,
 )
+from apps.common.forms import SwissDateField
 from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.roles import DV_AVAILABLE_ROLES, has_permission, user_cantons
 
 from .. import FORMATION_KEYS
 from ..export import CollaboratorUserResource, UserResource
+from ..forms import SwissDateFilter
 from ..models import (
     FORMATION_CHOICES,
     USERSTATUS_ACTIVE,
@@ -187,6 +190,9 @@ class UserProfileFilterSet(FilterSet):
             pass
         return queryset.filter(reduce(operator.or_, [Q(groups__name=r) for r in value]))
 
+    def filter_updated_at(queryset, name, value):
+        return queryset.filter(profile__updated_at__gte=value)
+
     profile__language = MultipleChoiceFilter(
         label=_("Langue"),
         choices=DV_LANGUAGES_WITH_DEFAULT,
@@ -227,6 +233,12 @@ class UserProfileFilterSet(FilterSet):
             )
         ),
     )
+
+    profile__updated_at = SwissDateFilter(
+        label=_("Dernière modification après le"),
+        method=filter_updated_at,
+    )
+
     roles = MultipleChoiceFilter(
         label=_("Rôle"),
         choices=tuple((t[0] if t[0] else 0, t[1]) for t in DV_AVAILABLE_ROLES),
@@ -241,6 +253,7 @@ class UserProfileFilterSet(FilterSet):
             "profile__formation",
             "profile__actor_for",
             "profile__activity_cantons",
+            "profile__updated_at",
         ]
 
 

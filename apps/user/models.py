@@ -231,6 +231,8 @@ class UserProfile(Address, models.Model):
     bagstatus_updatetime = models.DateTimeField(null=True, blank=True)
     comments = models.TextField(_("Remarques"), blank=True)
 
+    updated_at = models.DateTimeField(auto_now=True)
+
     objects = models.Manager()
     objects_existing = ExistingUserProfileManager()
 
