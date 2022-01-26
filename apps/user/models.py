@@ -135,7 +135,7 @@ DV_PUBLIC_FIELDS = [
     "affiliation_canton",
 ]
 
-DV_PRIVATE_FIELDS = ["comments"]
+DV_PRIVATE_FIELDS = ["comments", "updated_at"]
 
 COLLABORATOR_FIELDS = [
     "natel",
