@@ -34,9 +34,10 @@ from apps.user import FORMATION_KEYS, FORMATION_M2
 from .. import CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, MAX_MONO1_PER_QUALI
 from .session import Session
 
-CATEGORY_CHOICE_A = _("Agilité")
-CATEGORY_CHOICE_B = _("Mécanique")
-CATEGORY_CHOICE_C = _("Rencontre")
+# Using non-lazy translation to be exportable in XSL
+CATEGORY_CHOICE_A = gettext("Agilité")
+CATEGORY_CHOICE_B = gettext("Mécanique")
+CATEGORY_CHOICE_C = gettext("Rencontre")
 
 CATEGORY_CHOICES = (
     ("A", CATEGORY_CHOICE_A),
