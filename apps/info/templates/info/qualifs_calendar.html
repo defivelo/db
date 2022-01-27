@@ -6,11 +6,12 @@
 {% block container-class %}container-fluid{% endblock %}
 
 {% block content %}
-{% include 'info/_season_nav.html' with nav_url=nav_url previous_period=previous_period next_period=next_period only %}
-{% with season=export_period.season year=export_period.year %}
-
-<h1>{% blocktrans with year=year season=season|season_verb %}Calendrier de la saison {{ season }} {{year}}{% endblocktrans %}</h1>
-{% endwith %}
+    {% include 'info/_season_nav.html' with nav_url=nav_url previous_period=previous_period next_period=next_period only %}
+    <h1>
+      {% blocktrans trimmed with year=export_period.year season=export_period.season|season_verb %}
+        Calendrier de la saison {{ season }} {{year}}
+      {% endblocktrans %}
+    </h1>
 
     {% if form %}
         <div class="modal fade bs-user-filters-modal" tabindex="-1" role="dialog" aria-labelledby="filters">
@@ -39,7 +40,7 @@
     {% endif %}
 
     <div class="hidden-print">
-        {% include 'export_buttons.html' with printonly=True %}
+        {% include 'export_buttons.html' with exporturl=dataset_exporturl year=export_period.year season=export_period.season %}
 
         {% if form %}
             <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target=".bs-user-filters-modal">
