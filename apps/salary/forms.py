@@ -254,13 +254,12 @@ class MonthlyCantonalValidationForm(forms.ModelForm):
         )
         # urls are MonthlyCantonalValidationUrl
         for url in urls:
+            label = url.label if url.label else url.url
             self.fields[f"url_{url.pk}"] = forms.BooleanField(
                 label=url.name,
                 required=False,
                 widget=CheckboxInput,
-                help_text=mark_safe(
-                    f'<a href="{url.url}" target="_blank">{url.url}</a>'
-                ),
+                help_text=mark_safe(f'<a href="{url.url}" target="_blank">{label}</a>'),
                 initial=self.instance.validated_urls.filter(pk=url.pk).exists(),
             )
         # Refill it
