@@ -18,5 +18,10 @@ from django.contrib import admin
 
 from .models import UserManagedState, UserProfile
 
-admin.site.register(UserProfile)
+
+class AdminUserProfile(admin.ModelAdmin):
+    list_filter = ["updated_at"]
+
+
+admin.site.register(UserProfile, AdminUserProfile)
 admin.site.register(UserManagedState)
