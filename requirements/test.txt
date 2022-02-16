@@ -22,7 +22,7 @@ certifi==2021.10.8
     #   sentry-sdk
 cffi==1.15.0
     # via cryptography
-charset-normalizer==2.0.11
+charset-normalizer==2.0.12
     # via requests
 click==8.0.3
     # via black
@@ -97,7 +97,7 @@ django-multiselectfield==0.1.12
     # via -r requirements/base.in
 django-parler==2.3
     # via -r requirements/base.in
-django-phonenumber-field==6.0.0
+django-phonenumber-field==6.1.0
     # via -r requirements/base.in
 django-recurrence==1.11.1
     # via django-ical
@@ -113,7 +113,7 @@ et-xmlfile==1.1.0
     # via openpyxl
 factory-boy==3.2.1
     # via -r requirements/test.in
-faker==12.1.0
+faker==13.0.0
     # via factory-boy
 flake8==4.0.1
     # via
@@ -169,17 +169,17 @@ pathspec==0.9.0
     # via black
 pexpect==4.8.0
     # via ipython
-phonenumbers==8.12.42
+phonenumbers==8.12.43
     # via -r requirements/base.in
 pickleshare==0.7.5
     # via ipython
 pillow==9.0.1
     # via -r requirements/base.in
-platformdirs==2.4.1
+platformdirs==2.5.0
     # via black
 pluggy==1.0.0
     # via pytest
-prompt-toolkit==3.0.27
+prompt-toolkit==3.0.28
     # via ipython
 psycopg2-binary==2.8.6
     # via -r requirements/base.in
@@ -199,7 +199,7 @@ pyjwt[crypto]==2.3.0
     # via django-allauth
 pyparsing==3.0.7
     # via packaging
-pytest==7.0.0
+pytest==7.0.1
     # via
     #   -r requirements/test.in
     #   pytest-cov
@@ -235,7 +235,7 @@ requests-oauthlib==1.3.1
     # via django-allauth
 rjsmin==1.2.0
     # via django-compressor
-sentry-sdk==1.5.4
+sentry-sdk==1.5.5
     # via -r requirements/base.in
 six==1.16.0
     # via
@@ -268,7 +268,7 @@ traitlets==5.1.1
     #   matplotlib-inline
 typed-ast==1.5.2
     # via black
-typing-extensions==4.0.1
+typing-extensions==4.1.1
     # via
     #   black
     #   faker
