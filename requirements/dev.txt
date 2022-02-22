@@ -30,11 +30,11 @@ cffi==1.15.0
     #   pynacl
 charset-normalizer==2.0.12
     # via requests
-click==8.0.3
+click==8.0.4
     # via
     #   black
     #   pip-tools
-coverage[toml]==6.3.1
+coverage[toml]==6.3.2
     # via pytest-cov
 cryptography==3.3.2
     # via
@@ -205,7 +205,7 @@ pillow==9.0.1
     # via -r requirements/base.in
 pip-tools==6.5.1
     # via -r requirements/dev.in
-platformdirs==2.5.0
+platformdirs==2.5.1
     # via black
 pluggy==1.0.0
     # via pytest
