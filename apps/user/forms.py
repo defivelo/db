@@ -21,6 +21,7 @@ from django.db.models import Q
 from django.forms import modelform_factory
 from django.utils.translation import ugettext_lazy as _
 
+from django_filters import DateFilter
 from localflavor.ch.forms import (
     CHSocialSecurityNumberField,
     CHStateSelect,
@@ -43,6 +44,10 @@ from defivelo.roles import DV_AUTOMATIC_ROLES, DV_AVAILABLE_ROLES
 
 from . import STATE_CHOICES_WITH_DEFAULT
 from .models import UserProfile
+
+
+class SwissDateFilter(DateFilter):
+    field_class = SwissDateField
 
 
 class SimpleUserProfileForm(forms.ModelForm):

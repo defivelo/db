@@ -5,6 +5,10 @@
 {% load dv_filters %}
 {% block head_title %}{% trans "Utilisateurs" %}{% endblock %}
 
+{% block bootstrap3_extra_script %}
+  {% include 'snippets/datetimepicker_js.html' %}
+{% endblock %}
+
 {% block content %}
     {% if filter.form %}
         <div class="modal fade bs-user-filters-modal" tabindex="-1" role="dialog" aria-labelledby="filters">

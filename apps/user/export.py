@@ -186,6 +186,12 @@ class UserResource(resources.ModelResource):
         widget=ObjectMethodWidget(method="managed_cantons"),
     )
 
+    profile__updated_at = fields.Field(
+        column_name=_("Dernière mise à jour"),
+        attribute="profile__updated_at",
+        widget=widgets.DateWidget(format="%d.%m.%Y %H:%M"),
+    )
+
     class Meta:
         model = get_user_model()
         fields = ALL_PROFILE_FIELDS

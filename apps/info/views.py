@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import date, timedelta
+from datetime import date
 
 from django.http import JsonResponse
 from django.urls import resolve
@@ -32,7 +32,13 @@ from apps.common import DV_SEASON_AUTUMN, DV_SEASON_SPRING
 from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.views.common import MenuView
 
-from .exports import LogisticsExport, SeasonSessionsMixin, SeasonStatsExport
+from . import utils
+from .exports import (
+    LogisticsExport,
+    QualifsCalendarExport,
+    SeasonSessionsMixin,
+    SeasonStatsExport,
+)
 from .forms import CantonFilterForm
 
 
@@ -111,53 +117,6 @@ class SeasonExportsMixin(MenuView):
         return context
 
 
-class QualifsCalendar(SeasonSessionsMixin, SeasonExportsMixin, ListView):
-    limit_to_my_cantons = False
-    template_name = "info/qualifs_calendar.html"
-    context_object_name = "sessions"
-
-    def post(self, request, *args, **kwargs):
-        form = CantonFilterForm(request.POST)
-        if form.is_valid():
-            self.cantons = form.cleaned_data["canton"]
-        return self.get(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super(QualifsCalendar, self).get_context_data(**kwargs)
-        context["menu_category"] = "season"
-        context["submenu_category"] = "qualifs-calendar"
-        # Add the form for picking a new helper
-        context["form"] = CantonFilterForm()
-        our_sessions = context["sessions"]
-        if hasattr(self, "cantons") and len(self.cantons) > 0:
-            our_sessions = our_sessions.filter(orga__address_canton__in=self.cantons)
-        our_sessions = list(our_sessions)
-
-        if len(our_sessions) == 0:
-            return context
-        context["date_sessions"] = []
-        context["legend_cantons"] = {s.orga.address_canton: "" for s in our_sessions}
-        # Get to its monday (see https://stackoverflow.com/questions/1622038/find-mondays-date-with-python)
-        first_session_day = our_sessions[0].day
-        first_monday = first_session_day + timedelta(days=-first_session_day.weekday())
-        thisday = first_monday
-        offset = 0
-        while len(our_sessions) > 0:
-            thisday = first_monday + timedelta(days=offset)
-            struct = {"day": thisday, "sessions": []}
-            while our_sessions and our_sessions[0].day == thisday:
-                struct["sessions"].append(our_sessions.pop(0))
-            context["date_sessions"].append(struct)
-            # Go to next day
-            offset = offset + 1
-        # Fill in the missing days
-        while thisday.weekday() != 6:
-            thisday = first_monday + timedelta(days=offset)
-            context["date_sessions"].append({"day": thisday, "sessions": []})
-            offset = offset + 1
-        return context
-
-
 class IfDatasetExportMixin(object):
     def get_context_data(self, **kwargs):
         context = super(IfDatasetExportMixin, self).get_context_data(**kwargs)
@@ -178,6 +137,61 @@ class SeasonExports(
     def get_context_data(self, **kwargs):
         context = super(SeasonExports, self).get_context_data(**kwargs)
         context["submenu_category"] = "statistics-season"
+        return context
+
+
+class QualifsCalendarView(SeasonSessionsMixin, SeasonExportsMixin, ListView):
+    limit_to_my_cantons = False
+    template_name = "info/qualifs_calendar.html"
+    context_object_name = "sessions"
+
+    def post(self, request, *args, **kwargs):
+        form = CantonFilterForm(request.POST)
+        if form.is_valid():
+            self.cantons = form.cleaned_data["canton"]
+        return self.get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(QualifsCalendarView, self).get_context_data(**kwargs)
+        context["menu_category"] = "season"
+        context["submenu_category"] = "qualifs-calendar"
+        # Add the form for picking a new helper
+        context["form"] = CantonFilterForm()
+        our_sessions = context["sessions"]
+        if hasattr(self, "cantons") and len(self.cantons) > 0:
+            our_sessions = our_sessions.filter(orga__address_canton__in=self.cantons)
+        our_sessions = list(our_sessions)
+
+        if len(our_sessions) == 0:
+            return context
+
+        context["legend_cantons"] = {s.orga.address_canton: "" for s in our_sessions}
+
+        context["date_sessions"] = utils._get_qualifs_calendar_structured_data(
+            our_sessions
+        )
+
+        return context
+
+
+class QualifsCalendarExportView(
+    QualifsCalendarExport, SeasonExportsMixin, ExportMixin, ListView
+):
+    def get_context_data(self, **kwargs):
+        context = super(QualifsCalendarExportView, self).get_context_data(**kwargs)
+        our_sessions = context["session_list"]
+        if hasattr(self, "cantons") and len(self.cantons) > 0:
+            our_sessions = our_sessions.filter(orga__address_canton__in=self.cantons)
+        our_sessions = list(our_sessions)
+
+        if len(our_sessions) == 0:
+            return context
+
+        context["legend_cantons"] = {s.orga.address_canton: "" for s in our_sessions}
+        context["date_sessions"] = utils._get_qualifs_calendar_structured_data(
+            our_sessions
+        )
+
         return context
 
 

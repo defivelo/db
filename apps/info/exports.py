@@ -67,6 +67,57 @@ class SeasonSessionsMixin(object):
         return sessions
 
 
+class QualifsCalendarExport(SeasonSessionsMixin):
+    def get_dataset_title(self):
+        return "Calendar export dataset title"
+
+    @property
+    def export_filename(self):
+        return "%s-%s-%s" % (
+            _("Calendar"),
+            self.export_year,
+            season_verb(self.export_season),
+        )
+
+    def get_dataset(self, html=False):
+        dataset = Dataset()
+        dataset.headers = [
+            gettext("Semaine"),
+            gettext("Lundi"),
+            gettext("Mardi"),
+            gettext("Mercredi"),
+            gettext("Jeudi"),
+            gettext("Vendredi"),
+            gettext("Samedi"),
+            gettext("Dimanche"),
+        ]
+
+        calendar_data = self.get_context_data()["date_sessions"]
+
+        row = []
+        for day_data in calendar_data:
+            day = day_data["day"]
+
+            if day.weekday() == 0:
+                row.append(day.strftime("%W"))
+
+            text = day.strftime("%Y-%m-%d")
+
+            for session in day_data["sessions"]:
+                text += "\n{} {} {}".format(
+                    session.begin if session.begin else "",
+                    session.orga.abbr if session.orga.abbr else session.orga.name,
+                    session.orga.address_canton,
+                )
+            row.append(text)
+
+            if day.weekday() == 6:
+                dataset.append(row)
+                row = []
+
+        return dataset
+
+
 class SeasonStatsExport(SeasonSessionsMixin):
     def get_dataset_title(self):
         return "{title} - {month_start} à {month_end} {year}".format(
