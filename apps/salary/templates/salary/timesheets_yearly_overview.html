@@ -151,7 +151,7 @@
           <th>{% trans "Exports de contrôle" %}</th>
           {% for month in months %}
             <th class="text-center">
-              {% with "ods" as format %}
+              {% with "xls" as format %}
                 <a
                   title="{% blocktrans %}Télécharger au format {{ format }}{% endblocktrans %}"
                   class="btn btn-info"
