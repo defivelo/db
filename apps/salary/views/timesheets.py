@@ -13,6 +13,7 @@ from django.urls import reverse
 from django.utils import formats, timezone, translation
 from django.utils.datastructures import OrderedSet
 from django.utils.dates import MONTHS_3
+from django.utils.encoding import force_str
 from django.utils.text import format_lazy
 from django.utils.translation import gettext
 from django.utils.translation import ngettext as n
@@ -399,21 +400,16 @@ class ExportMonthlyControl(ExportMixin, MonthArchiveView):
             gettext("Numéro d’employé Crésus"),
             gettext("Prénom"),
             gettext("Nom"),
-            format_lazy(
-                gettext("Heures moni·teur·trice ({price}.-/h)"),
-                price=HOURLY_RATE_HELPER,
-            ),
-            format_lazy(
-                gettext("Intervention(s) ({price}.-/Qualif’)"), price=RATE_ACTOR
-            ),
-            format_lazy(
-                gettext("Participation(s) comme moni·teur·trice 2 ({price}.-/Qualif’)"),
-                price=BONUS_LEADER,
-            ),
-            format_lazy(
-                gettext("Heures supplémentaires ({price}.-/h)"),
-                price=HOURLY_RATE_HELPER,
-            ),
+            gettext(
+                "Heures moni·teur·trice ({price}.-/h)"
+            ).format(price=HOURLY_RATE_HELPER),
+            gettext("Intervention(s) ({price}.-/Qualif’)").format(price=RATE_ACTOR),
+            gettext(
+                "Participation(s) comme moni·teur·trice 2 ({price}.-/Qualif’)"
+            ).format(price=BONUS_LEADER),
+            gettext(
+                "Heures supplémentaires ({price}.-/h)"
+            ).format(price=HOURLY_RATE_HELPER),
             gettext("Heures de trajet (aller-retour)"),
             gettext("Total heures"),
             gettext("Total CHF"),
