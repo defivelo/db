@@ -136,8 +136,9 @@ class UserProfileFilterSet(FilterSet):
                     USERSTATUS_DELETED,
                 ]
             )
-            # Remove roles' filter, there's no reason for a collaborator to filter on roles
+            # Remove filters that should be displayed to admins only
             del self.filters["roles"]
+            del self.filters["profile__updated_at"]
 
     def filter_multi_nonempty(queryset, name, values):
         if values:
