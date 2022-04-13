@@ -1,21 +1,20 @@
 dj-database-url
-Django>2.2,<3
+Django~=3.2.0
 pytz
 django-bootstrap3
-# https://github.com/psycopg/psycopg2/issues/1293
-psycopg2-binary<2.9
+psycopg2-binary
 django-compressor
 libsass
 csscompressor
-# django-stronghold
--e git+https://github.com/mgrouchy/django-stronghold#egg=django-stronghold==0.3.0+django21
+django-stronghold
+# -e git+https://github.com/mgrouchy/django-stronghold#egg=django-stronghold==0.3.0+django21
 django-allauth
 django-localflavor
 django-phonenumber-field
 phonenumbers
 django-bootstrap3-datetimepicker-2
-# django-autocomplete-light
--e git+https://github.com/yourlabs/django-autocomplete-light@e46300d6085510#egg=django-autocomplete-light==3.5.0+jqfix
+django-autocomplete-light
+# -e git+https://github.com/yourlabs/django-autocomplete-light@e46300d6085510#egg=django-autocomplete-light==3.5.0+jqfix
 django-autocomplete-light
 django-parler
 django-multiselectfield

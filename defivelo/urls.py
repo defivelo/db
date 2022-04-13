@@ -15,39 +15,40 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.conf import settings
-from django.conf.urls import include, url
+from django.conf.urls import include
 from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
+from django.urls import re_path
+from django.utils.translation import gettext_lazy as _
 
 from .views.common import HomeView, LicenseView
 
 admin.autodiscover()
 
 urlpatterns = [
-    url(r"^admin/", admin.site.urls),
-    url(r"^i18n/", include("django.conf.urls.i18n")),
-    url(r"^accounts/", include("allauth.urls")),
-    url(r"^license/", LicenseView.as_view(), name="license"),
-    url(r"^agpl-", include("django_agpl.urls")),
-    url(r"^article/", include("apps.article.urls")),
-    url(r"^tinymce/", include("tinymce.urls")),
+    re_path(r"^admin/", admin.site.urls),
+    re_path(r"^i18n/", include("django.conf.urls.i18n")),
+    re_path(r"^accounts/", include("allauth.urls")),
+    re_path(r"^license/", LicenseView.as_view(), name="license"),
+    re_path(r"^agpl-", include("django_agpl.urls")),
+    re_path(r"^article/", include("apps.article.urls")),
+    re_path(r"^tinymce/", include("tinymce.urls")),
 ]
 
 urlpatterns += i18n_patterns(
-    url(r"^$", HomeView.as_view(), name="home"),
-    url(r"^season/", include("apps.challenge.urls")),
-    url(r"^orga/", include("apps.orga.urls")),
-    url(r"^user/", include("apps.user.urls")),
-    url(r"^info/", include("apps.info.urls")),
-    url(r"^finance/", include("apps.salary.urls")),
+    re_path(r"^$", HomeView.as_view(), name="home"),
+    re_path(r"^season/", include("apps.challenge.urls")),
+    re_path(r"^orga/", include("apps.orga.urls")),
+    re_path(r"^user/", include("apps.user.urls")),
+    re_path(r"^info/", include("apps.info.urls")),
+    re_path(r"^finance/", include("apps.salary.urls")),
 )
 
 if settings.DEBUG:
     import debug_toolbar
 
     urlpatterns = [
-        url(r"^__debug__/", include(debug_toolbar.urls)),
+        re_path(r"^__debug__/", include(debug_toolbar.urls)),
     ] + urlpatterns
 
 admin.site.site_header = _("Intranet DÉFI VÉLO")

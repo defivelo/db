@@ -425,3 +425,5 @@ BOOTSTRAP3 = {
         "inline": "defivelo.bootstrap3.DvInlineFieldRenderer",
     },
 }
+
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"

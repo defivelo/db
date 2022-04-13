@@ -23,7 +23,7 @@ from django.db.models import F, Q
 from django.template.defaultfilters import date
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from simple_history.models import HistoricalRecords
 

@@ -21,7 +21,7 @@ from django.db.models import Q
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from parler.models import TranslatableModel, TranslatedFields
 from sentry_sdk import capture_message as sentry_message

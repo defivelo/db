@@ -17,7 +17,7 @@
 import uuid
 
 from django.utils.translation import gettext
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from localflavor.ch.ch_states import STATE_CHOICES
 from memoize import memoize

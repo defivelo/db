@@ -14,7 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import include, url
+from django.conf.urls import include
+from django.urls import re_path
 from django.views.decorators.cache import never_cache
 
 from .views import (
@@ -30,46 +31,46 @@ from .views import (
 )
 
 urlpatterns = [
-    url(r"^qualifs/$", never_cache(NextQualifs.as_view()), name="public-nextqualifs"),
-    url(
+    re_path(r"^qualifs/$", never_cache(NextQualifs.as_view()), name="public-nextqualifs"),
+    re_path(
         r"^qualifs.json$",
         never_cache(JSONNextQualifs.as_view()),
         name="public-json-nextqualifs",
     ),
-    url(
+    re_path(
         r"^(?:(?P<year>[0-9]{4})_(?P<dv_season>[0-9]+)/)?",
         include(
             [
-                url(r"^$", never_cache(SeasonExports.as_view()), name="season-exports"),
+                re_path(r"^$", never_cache(SeasonExports.as_view()), name="season-exports"),
                 # Calendar
-                url(
+                re_path(
                     r"^calendar/$",
                     never_cache(QualifsCalendarView.as_view()),
                     name="qualifs-calendar",
                 ),
-                url(
+                re_path(
                     r"^calendar-(?P<format>[a-z]+)$",
                     never_cache(QualifsCalendarExportView.as_view()),
                     name="qualifs-calendar-export",
                 ),
                 # Statistiques de Mois
-                url(
+                re_path(
                     r"^stats/$",
                     never_cache(SeasonStatsView.as_view()),
                     name="season-stats",
                 ),
-                url(
+                re_path(
                     r"^stats-(?P<format>[a-z]+)$",
                     never_cache(SeasonStatsExportView.as_view()),
                     name="season-stats-export",
                 ),
                 # Planification Logistique
-                url(
+                re_path(
                     r"^logistics/$",
                     never_cache(LogisticsView.as_view()),
                     name="logistics",
                 ),
-                url(
+                re_path(
                     r"^logistics-(?P<format>[a-z]+)$",
                     never_cache(LogisticsExportView.as_view()),
                     name="logistics-export",

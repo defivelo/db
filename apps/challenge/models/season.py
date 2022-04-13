@@ -26,7 +26,7 @@ from django.utils.dates import MONTHS
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import pgettext_lazy as _p
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from multiselectfield import MultiSelectField
 from simple_history.models import HistoricalRecords

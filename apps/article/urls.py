@@ -14,16 +14,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import url
+from django.urls import re_path
 
 from .views import ArticleCreateView, ArticleDeleteView, ArticleUpdateView
 
 urlpatterns = [
-    url(r"^new/$", ArticleCreateView.as_view(), name="article-create"),
-    url(
+    re_path(r"^new/$", ArticleCreateView.as_view(), name="article-create"),
+    re_path(
         r"^(?P<pk>[0-9]+)/update/$", ArticleUpdateView.as_view(), name="article-update"
     ),
-    url(
+    re_path(
         r"^(?P<pk>[0-9]+)/delete/$", ArticleDeleteView.as_view(), name="article-delete"
     ),
 ]

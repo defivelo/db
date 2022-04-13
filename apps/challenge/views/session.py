@@ -22,10 +22,10 @@ from django.core.exceptions import FieldError, PermissionDenied
 from django.template.defaultfilters import date, time
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.html import urlencode
 from django.utils.translation import gettext
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic.dates import WeekArchiveView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
@@ -339,7 +339,7 @@ class SessionExportView(ExportMixin, SessionMixin, DetailView):
 
     @property
     def export_filename(self):
-        return _("Session") + "-" + force_text(self.object)
+        return _("Session") + "-" + force_str(self.object)
 
     def get_dataset(self):
         dataset = Dataset()

@@ -20,7 +20,7 @@ from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.urls import reverse_lazy
 from django.utils.dates import MONTHS_3
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic.dates import MonthArchiveView, YearArchiveView
 from django.views.generic.edit import UpdateView
 

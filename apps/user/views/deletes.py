@@ -17,7 +17,7 @@
 from django.contrib.sites.models import Site
 from django.forms import Form as DjangoEmptyForm
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic.edit import FormView
 
 from rolepermissions.mixins import HasPermissionsMixin

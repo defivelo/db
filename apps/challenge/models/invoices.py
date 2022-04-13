@@ -25,7 +25,7 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext
 from django.utils.translation import pgettext_lazy as _p
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from simple_history.utils import get_history_manager_for_model
 
