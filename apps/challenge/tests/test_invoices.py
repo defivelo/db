@@ -57,11 +57,9 @@ def test_invoice_out_of_date(db):
     assert not invoice.is_up_to_date
 
     # Now align it all
-    invoice.organization.address_canton = invoice.season.cantons.split("|")[0]
+    invoice.organization.address_canton = invoice.season.cantons[0]
     invoice.organization.save()
-    # This is a quick-fix for SeasonFactory that puts a single canton instead of an array
-    invoice.season.cantons = [invoice.season.cantons]
-    invoice.season.save()
+
     # Create a 1-block, then a space, then a 2-block, then a space, etc
     dayshift = 0
     nth_in_sequence = 1

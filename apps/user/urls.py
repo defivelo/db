@@ -48,7 +48,9 @@ urlpatterns = [
     ),
     re_path(r"^new/$", UserCreate.as_view(), name="user-create"),
     re_path(r"^me/$", never_cache(UserDetail.as_view()), name="profile-detail"),
-    re_path(r"^(?P<pk>[0-9]+)/$", never_cache(UserDetail.as_view()), name="user-detail"),
+    re_path(
+        r"^(?P<pk>[0-9]+)/$", never_cache(UserDetail.as_view()), name="user-detail"
+    ),
     re_path(
         r"^(?P<pk>[0-9]+)/sendcreds/$",
         never_cache(SendUserCredentials.as_view()),

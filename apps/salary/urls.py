@@ -1,5 +1,5 @@
 from django.conf.urls import include
-from django.urls import reverse_lazy, re_path
+from django.urls import re_path, reverse_lazy
 from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from django.views.generic import RedirectView

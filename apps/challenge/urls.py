@@ -293,5 +293,7 @@ urlpatterns = [
     # Registrations
     re_path(r"^registration/$", register, name="registration-create"),
     re_path(r"^registration/confirm/$", register_confirm, name="registration-confirm"),
-    re_path(r"^registrations/validate/$", register_validate, name="registration-validate"),
+    re_path(
+        r"^registrations/validate/$", register_validate, name="registration-validate"
+    ),
 ]

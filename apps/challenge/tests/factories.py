@@ -47,7 +47,7 @@ class SeasonFactory(DjangoModelFactory):
     month_start = fuzzy.FuzzyChoice([k for k, v in MONTHS.items()])
     n_months = fuzzy.FuzzyInteger(1, 15)
     # Juste un canton
-    cantons = fuzzy.FuzzyChoice(DV_STATES)
+    cantons = [fuzzy.FuzzyChoice(DV_STATES).fuzz()]
     leader = factory.SubFactory(UserFactory)
     state = DV_SEASON_STATE_OPEN
 

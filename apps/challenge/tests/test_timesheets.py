@@ -5,6 +5,7 @@ from django.urls import reverse
 from apps.salary.models import Timesheet
 from apps.salary.tests.factories import TimesheetFactory
 from apps.user.tests.factories import UserFactory
+from defivelo.tests.utils import PowerUserAuthClient
 
 from .. import CHOSEN_AS_ACTOR
 from ..models import HelperSessionAvailability
@@ -13,10 +14,14 @@ from .factories import (
     QualificationFactory,
     SessionFactory,
 )
-from .test_seasons import PowerUserTest as SeasonPowerUserTest
+from .test_seasons import SeasonTestCaseMixin
 
 
-class TimesheetsTestCase(SeasonPowerUserTest):
+class TimesheetsTestCase(SeasonTestCaseMixin):
+    def setUp(self):
+        self.client = PowerUserAuthClient()
+        super(TimesheetsTestCase, self).setUp()
+
     def test_related_timesheets_are_displayed_on_quali_edition(self):
         user = self.client.user
         session1 = self.sessions[0]

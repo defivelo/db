@@ -42,7 +42,7 @@ class RegistrationForm(forms.ModelForm):
             year=data.year,
             month_start__lte=data.month,
             n_months__gt=data.month - F("month_start"),
-            cantons__contains=self.instance.organization.address_canton,
+            cantons__contains=[self.instance.organization.address_canton],
         ).exists():
             raise ValidationError(
                 _(

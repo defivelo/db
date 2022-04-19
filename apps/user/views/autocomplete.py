@@ -22,7 +22,6 @@ from dal_select2.views import Select2QuerySetView
 from six import get_unbound_function
 
 from apps.challenge import MAX_MONO1_PER_QUALI
-from apps.common import MULTISELECTFIELD_REGEXP
 from defivelo.roles import has_permission
 
 from .. import FORMATION_KEYS, FORMATION_M2
@@ -84,11 +83,8 @@ class PersonsRelevantForSessions(PersonAutocomplete):
         # Filtre par les cantons s'ils existent
         cantons = self.forwarded.get("cantons", [])
         if len(cantons) > 0:
-            cantons_regexp = MULTISELECTFIELD_REGEXP % "|".join(
-                [v for v in cantons if v]
-            )
             qs = qs.filter(
-                Q(profile__activity_cantons__regex=cantons_regexp)
+                Q(profile__activity_cantons__overlap=cantons)
                 | Q(profile__affiliation_canton__in=cantons)
             )
         return qs.distinct()

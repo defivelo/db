@@ -91,8 +91,6 @@ DV_STATE_CHOICES_WITH_DEFAULT = tuple(
     + list(DV_STATE_CHOICES)
 )
 
-MULTISELECTFIELD_REGEXP = "(^|,)%s(,|$)"
-
 DV_LANGUAGES = LANGUAGES = (
     ("fr", _("French")),
     ("de", _("German")),

@@ -14,8 +14,8 @@ from django.utils import formats, timezone, translation
 from django.utils.datastructures import OrderedSet
 from django.utils.dates import MONTHS_3
 from django.utils.translation import gettext
-from django.utils.translation import ngettext as n
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ngettext as n
 from django.views.generic import RedirectView, TemplateView
 from django.views.generic.dates import MonthArchiveView
 from django.views.generic.edit import FormView

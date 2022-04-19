@@ -25,10 +25,9 @@ from django.urls import reverse
 from django.utils.dates import MONTHS
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
-from django.utils.translation import pgettext_lazy as _p
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import pgettext_lazy as _p
 
-from multiselectfield import MultiSelectField
 from simple_history.models import HistoricalRecords
 
 from apps.common import (
@@ -45,6 +44,7 @@ from apps.common import (
     DV_STATE_CHOICES,
     STDGLYPHICON,
 )
+from apps.common.fields import ChoiceArrayField
 from defivelo.templatetags.dv_filters import cantons_abbr
 
 
@@ -59,7 +59,15 @@ class Season(models.Model):
         default=1,
         validators=[MinValueValidator(1), MaxValueValidator(24)],
     )
-    cantons = MultiSelectField(_("Cantons"), choices=sorted(DV_STATE_CHOICES))
+    cantons = ChoiceArrayField(
+        models.CharField(
+            max_length=2,
+            choices=sorted(DV_STATE_CHOICES),
+        ),
+        verbose_name=_("Cantons"),
+        default=list,
+    )
+
     leader = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name=_("Chargé de projet"),

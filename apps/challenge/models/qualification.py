@@ -265,7 +265,7 @@ class Qualification(models.Model):
                 | Q(user__qualifs_mon1=self)
             )
             & Q(date=self.session.day)
-        ).distinct()
+        )
 
     def has_related_timesheets(self):
         return self.get_related_timesheets().exsists()

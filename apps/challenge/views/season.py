@@ -32,8 +32,8 @@ from django.template.loader import render_to_string
 from django.urls import Resolver404, reverse, reverse_lazy
 from django.utils.functional import cached_property
 from django.utils.translation import gettext
-from django.utils.translation import pgettext_lazy as _p
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import pgettext_lazy as _p
 from django.views.generic import ListView, RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
@@ -52,7 +52,6 @@ from apps.common import (
     DV_SEASON_STATE_RUNNING,
     DV_SEASON_STATES,
     DV_STATES,
-    MULTISELECTFIELD_REGEXP,
 )
 from apps.common.views import ExportMixin
 from apps.user import FORMATION_KEYS, FORMATION_M1, FORMATION_M2
@@ -257,9 +256,8 @@ class SeasonHelpersMixin(SeasonMixin):
             if self.season:
                 seasoncantons = self.season.cantons
                 # S'il y au moins un canton en commun
-                cantons_regexp = MULTISELECTFIELD_REGEXP % "|".join(seasoncantons)
                 cantons_filter = [
-                    Q(profile__activity_cantons__regex=cantons_regexp)
+                    Q(profile__activity_cantons__overlap=seasoncantons)
                 ] + [Q(profile__affiliation_canton__in=seasoncantons)]
                 qs = qs.filter(reduce(operator.or_, cantons_filter))
 

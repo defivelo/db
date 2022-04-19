@@ -31,7 +31,9 @@ from .views import (
 )
 
 urlpatterns = [
-    re_path(r"^qualifs/$", never_cache(NextQualifs.as_view()), name="public-nextqualifs"),
+    re_path(
+        r"^qualifs/$", never_cache(NextQualifs.as_view()), name="public-nextqualifs"
+    ),
     re_path(
         r"^qualifs.json$",
         never_cache(JSONNextQualifs.as_view()),
@@ -41,7 +43,9 @@ urlpatterns = [
         r"^(?:(?P<year>[0-9]{4})_(?P<dv_season>[0-9]+)/)?",
         include(
             [
-                re_path(r"^$", never_cache(SeasonExports.as_view()), name="season-exports"),
+                re_path(
+                    r"^$", never_cache(SeasonExports.as_view()), name="season-exports"
+                ),
                 # Calendar
                 re_path(
                     r"^calendar/$",

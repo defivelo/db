@@ -1,3 +1,5 @@
+from django import forms
+from django.contrib.postgres.fields import ArrayField
 from django.forms import widgets
 
 
@@ -51,3 +53,25 @@ class CheckboxInput(widgets.Input):
         # HTML checkboxes don't appear in POST data if not checked, so it's
         # never known if the value is actually omitted.
         return False
+
+
+class CheckboxMultipleChoiceField(forms.MultipleChoiceField):
+    widget = forms.CheckboxSelectMultiple
+
+
+class ChoiceArrayField(ArrayField):
+    """
+    A field that allows us to store an array of choices.
+    Uses Django's Postgres ArrayField
+    and a MultipleChoiceField for its formfield.
+    """
+
+    def formfield(self, **kwargs):
+        defaults = {
+            "form_class": CheckboxMultipleChoiceField,
+            "choices": self.base_field.choices,
+        }
+
+        defaults.update(kwargs)
+        # Skip the parent's formfield implementation completely as it does not matter.
+        return super(ArrayField, self).formfield(**defaults)

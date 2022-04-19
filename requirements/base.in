@@ -17,7 +17,6 @@ django-autocomplete-light
 # -e git+https://github.com/yourlabs/django-autocomplete-light@e46300d6085510#egg=django-autocomplete-light==3.5.0+jqfix
 django-autocomplete-light
 django-parler
-django-multiselectfield
 django-filter
 django-import-export
 django-agpl

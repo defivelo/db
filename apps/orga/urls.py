@@ -27,7 +27,9 @@ from .views import (
 )
 
 urlpatterns = [
-    re_path(r"^$", never_cache(OrganizationsListView.as_view()), name="organization-list"),
+    re_path(
+        r"^$", never_cache(OrganizationsListView.as_view()), name="organization-list"
+    ),
     re_path(
         r"^(?P<void>)?(?P<format>[a-z]+)export/$",
         never_cache(OrganizationListExport.as_view()),
