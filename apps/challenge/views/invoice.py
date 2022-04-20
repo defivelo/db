@@ -138,7 +138,7 @@ class InvoiceYearlyListView(SeasonListView, HasPermissionsMixin, ListView):
         return (
             super()
             .get_queryset(**kwargs)
-            .filter(cantons__contains=(user_cantons(self.request.user)))
+            .filter(cantons__overlap=user_cantons(self.request.user))
             .prefetch_related("invoices", "invoices__lines", "invoices__organization")
             .annotate(nb_invoices=Count("invoices", distinct=True))
         )
