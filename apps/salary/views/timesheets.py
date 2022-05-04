@@ -340,7 +340,9 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
             "overtime": 1103,  # Salaire heures supplémentaires
         }
 
-        for salary_details in timesheets_overview.get_salary_details_list(object_list):
+        for salary_details in timesheets_overview.get_salary_details_list(
+            object_list
+        ).order_by():
             employee_line = [
                 datefilter(date.today(), "d.m.Y"),  # Date of the export
                 self.get_month(),  # Concerned month
