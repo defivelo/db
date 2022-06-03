@@ -3,6 +3,8 @@
 import django.contrib.postgres.fields
 from django.contrib.auth import get_user_model
 from django.db import migrations, models
+from django.db.models import Value, F
+from django.db.models.functions import Concat
 
 import apps
 
@@ -11,14 +13,10 @@ def forward(apps, schema_editor):
     """
     Reformat data for the new FieldType
     """
-    User = get_user_model()
-    for user in User.objects.all():
-        user.profile.__setattr__(
-            "activity_cantons",
-            "{" + ",".join(user.profile.activity_cantons.split(",")) + "}"
-        )
-
-        user.profile.save()
+    UserProfile = apps.get_model('user', 'UserProfile')
+    UserProfile.objects.update(
+        activity_cantons=Concat(Value('{'), F('activity_cantons'), Value('}'))
+    )
 
 
 class Migration(migrations.Migration):

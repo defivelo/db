@@ -257,8 +257,7 @@ class UserProfile(Address, models.Model):
                 self.activity_cantons.remove(self.affiliation_canton)
             except (ValueError, AttributeError):
                 pass
-        # isinstance required to run migration 0072
-        if self.languages_challenges and isinstance(self.languages_challenges, list):
+        if self.languages_challenges:
             if not self.language:
                 self.language = self.languages_challenges.pop(0)
             # Remove the main language from the languages_challenges
