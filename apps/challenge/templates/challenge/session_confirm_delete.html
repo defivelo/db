@@ -38,7 +38,7 @@
                 {% trans "Saisies d'heures qui seront supprimées" %}
             </div>
             <div class="panel-body">
-                {% for timesheet in session.get_related_timesheets %}
+                {% for timesheet in session.get_related_timesheets.distinct %}
                     <p><a href="{% url 'salary:user-timesheets' year=timesheet.date.year month=timesheet.date.month pk=timesheet.user.pk %}">
                         {{ timesheet.user.get_full_name }} - {{ timesheet.date }}
                     </a></p>

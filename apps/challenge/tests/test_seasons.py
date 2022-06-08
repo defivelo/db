@@ -96,7 +96,7 @@ class SeasonTestCaseMixin(TestCase):
             s.day = self.foreignseason.begin
             s.save()
             for i in range(0, 4):
-                QualificationFactory(session=s).save()
+                QualificationFactory(session=s)
             self.foreignsessions.append(s)
 
 

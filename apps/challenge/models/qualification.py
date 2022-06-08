@@ -258,6 +258,8 @@ class Qualification(models.Model):
         return self._get_label("actor")
 
     def get_related_timesheets(self):
+        # Do not distinct, so deletion is possible.
+        # Requires distinct for display.
         return Timesheet.objects.filter(
             (
                 Q(user__qualifs_actor=self)
