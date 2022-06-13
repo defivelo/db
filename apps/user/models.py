@@ -520,6 +520,11 @@ class UserProfile(Address, models.Model):
         )
 
     @cached_property
+    def languages_challenges_text(self):
+        languages = dict(DV_LANGUAGES)
+        return ", ".join([str(languages[code]) for code in self.languages_challenges])
+
+    @cached_property
     def can_login(self):
         return self.user.is_active and self.user.has_usable_password()
 
