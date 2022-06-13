@@ -30,7 +30,11 @@ django-countries
 django-simple-history
 sentry-sdk
 six
-django-db-email-backend
+
+# Only for staging,
+# Base version "django-db-email-backend" not compatible with Django 3
+kn-django-db-email-backend==0.5.4
+
 django-ical
 # Cryptography needs Rust from 3.4 on.
 cryptography>3.3,<3.4

@@ -60,7 +60,6 @@ django==3.2.13
     #   django-allauth
     #   django-appconf
     #   django-bootstrap3
-    #   django-db-email-backend
     #   django-debug-toolbar
     #   django-extensions
     #   django-filter
@@ -74,6 +73,7 @@ django==3.2.13
     #   django-recurrence
     #   django-role-permissions
     #   django-taggit
+    #   kn-django-db-email-backend
 django-agpl==4.0.0
     # via -r requirements/base.in
 django-allauth==0.50.0
@@ -89,8 +89,6 @@ django-bootstrap3-datetimepicker-2==2.8.2
 django-compressor==3.1
     # via -r requirements/base.in
 django-countries==7.3.2
-    # via -r requirements/base.in
-django-db-email-backend==0.4.1
     # via -r requirements/base.in
 django-debug-toolbar==3.2.4
     # via -r requirements/dev.in
@@ -169,6 +167,8 @@ isort==5.10.1
     # via flake8-isort
 jedi==0.18.1
     # via ipython
+kn-django-db-email-backend==0.5.4
+    # via -r requirements/base.in
 libsass==0.21.0
     # via -r requirements/base.in
 markuppy==1.14
@@ -255,8 +255,8 @@ pytz==2022.1
     # via
     #   -r requirements/base.in
     #   django
-    #   django-db-email-backend
     #   icalendar
+    #   kn-django-db-email-backend
 pyyaml==6.0
     # via tablib
 rcssmin==1.1.0
