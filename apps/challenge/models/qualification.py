@@ -269,9 +269,6 @@ class Qualification(models.Model):
             & Q(date=self.session.day)
         )
 
-    def has_related_timesheets(self):
-        return self.get_related_timesheets().exsists()
-
     def save(self, *args, **kwargs):
         # Forcibly fix availability incoherences
         self.fix_availability_incoherences()
