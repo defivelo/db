@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import url
+from django.urls import re_path
 from django.views.decorators.cache import never_cache
 
 from .views import (
@@ -27,24 +27,26 @@ from .views import (
 )
 
 urlpatterns = [
-    url(r"^$", never_cache(OrganizationsListView.as_view()), name="organization-list"),
-    url(
+    re_path(
+        r"^$", never_cache(OrganizationsListView.as_view()), name="organization-list"
+    ),
+    re_path(
         r"^(?P<void>)?(?P<format>[a-z]+)export/$",
         never_cache(OrganizationListExport.as_view()),
         name="organization-list-export",
     ),
-    url(r"^new/$", OrganizationCreateView.as_view(), name="organization-create"),
-    url(
+    re_path(r"^new/$", OrganizationCreateView.as_view(), name="organization-create"),
+    re_path(
         r"^(?P<pk>[0-9]+)/$",
         never_cache(OrganizationDetailView.as_view()),
         name="organization-detail",
     ),
-    url(
+    re_path(
         r"^(?P<pk>[0-9]+)/update/$",
         OrganizationUpdateView.as_view(),
         name="organization-update",
     ),
-    url(
+    re_path(
         r"^autocomplete/$",
         OrganizationAutocomplete.as_view(),
         name="organization-autocomplete",

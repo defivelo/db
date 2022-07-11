@@ -22,7 +22,6 @@ from django.views.generic.edit import CreateView, UpdateView
 
 from rolepermissions.mixins import HasPermissionsMixin
 
-from apps.common import MULTISELECTFIELD_REGEXP
 from apps.orga.models import Organization
 from defivelo.roles import has_permission, user_cantons
 
@@ -139,11 +138,7 @@ class InvoiceYearlyListView(SeasonListView, HasPermissionsMixin, ListView):
         return (
             super()
             .get_queryset(**kwargs)
-            .filter(
-                cantons__regex=(
-                    MULTISELECTFIELD_REGEXP % "|".join(user_cantons(self.request.user))
-                )
-            )
+            .filter(cantons__overlap=user_cantons(self.request.user))
             .prefetch_related("invoices", "invoices__lines", "invoices__organization")
             .annotate(nb_invoices=Count("invoices", distinct=True))
         )

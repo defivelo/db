@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import F
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from apps.challenge.models import Qualification, Season, Session
 from apps.challenge.models.registration import Registration
@@ -42,7 +42,7 @@ class RegistrationForm(forms.ModelForm):
             year=data.year,
             month_start__lte=data.month,
             n_months__gt=data.month - F("month_start"),
-            cantons__contains=self.instance.organization.address_canton,
+            cantons__contains=[self.instance.organization.address_canton],
         ).exists():
             raise ValidationError(
                 _(

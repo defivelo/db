@@ -23,7 +23,7 @@ from django.db.models import F, Q
 from django.template.defaultfilters import date
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from simple_history.models import HistoricalRecords
 
@@ -109,7 +109,7 @@ class Session(Address, models.Model):
                 | Q(user__qualifs_mon1__in=self.qualifications.all())
             )
             & Q(date=self.day)
-        ).distinct()
+        )
 
     def has_related_timesheets(self):
         return self.get_related_timesheets().exists()
@@ -284,7 +284,7 @@ class Session(Address, models.Model):
             year=self.day.year,
             month_start__lte=self.day.month,
             n_months__gt=self.day.month - F("month_start"),
-            cantons__contains=self.orga.address_canton,
+            cantons__contains=[self.orga.address_canton],
         ).first()
 
         if season:
@@ -294,7 +294,7 @@ class Session(Address, models.Model):
         for offset in [1, 2]:
             seasons = Season.objects.filter(
                 year=self.day.year - offset,
-                cantons__contains=self.orga.address_canton,
+                cantons__contains=[self.orga.address_canton],
             )
             for s in seasons.all():
                 if s.begin <= self.day <= s.end:

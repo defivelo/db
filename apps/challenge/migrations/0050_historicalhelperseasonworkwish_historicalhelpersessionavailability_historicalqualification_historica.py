@@ -5,7 +5,6 @@ import datetime
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import multiselectfield.db.fields
 import simple_history.models
 
 
@@ -118,7 +117,7 @@ class Migration(migrations.Migration):
                 ('created_on', models.DateTimeField(blank=True, editable=False)),
                 ('year', models.PositiveSmallIntegerField(verbose_name='Ann\xe9e')),
                 ('season', models.PositiveSmallIntegerField(choices=[(1, 'Printemps'), (3, 'Automne')], default=1, verbose_name='Saison')),
-                ('cantons', multiselectfield.db.fields.MultiSelectField(choices=[(b'AR', 'Appenzell Ausserrhoden'), (b'BE', 'Berne'), (b'BS', 'Basel-Stadt'), (b'FR', 'Fribourg'), (b'GE', 'Geneva'), (b'JU', 'Jura'), (b'LU', 'Lucerne'), (b'NE', 'Neuchatel'), (b'SG', 'St. Gallen'), (b'VD', 'Vaud'), (b'VS', 'Valais'), ('WS', 'Haut-Valais'), (b'ZH', 'Zurich')], max_length=38, verbose_name='Cantons')),
+                ('cantons', models.CharField(choices=[(b'AR', 'Appenzell Ausserrhoden'), (b'BE', 'Berne'), (b'BS', 'Basel-Stadt'), (b'FR', 'Fribourg'), (b'GE', 'Geneva'), (b'JU', 'Jura'), (b'LU', 'Lucerne'), (b'NE', 'Neuchatel'), (b'SG', 'St. Gallen'), (b'VD', 'Vaud'), (b'VS', 'Valais'), ('WS', 'Haut-Valais'), (b'ZH', 'Zurich')], max_length=38, verbose_name='Cantons')),
                 ('state', models.PositiveSmallIntegerField(choices=[(1, 'Planification (invisible)'), (2, 'Annonc\xe9e (rentr\xe9e des disponibilit\xe9s)'), (3, 'En cours (corrections que par charg\xe9\xb7e\xb7s de projet)'), (4, 'Termin\xe9e'), (5, 'Archiv\xe9e')], default=1, verbose_name='\xc9tat')),
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
                 ('history_change_reason', models.CharField(max_length=100, null=True)),

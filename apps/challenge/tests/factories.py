@@ -26,8 +26,10 @@ from apps.common import DV_SEASON_STATE_OPEN, DV_STATES
 from apps.orga.tests.factories import OrganizationFactory
 from apps.user.tests.factories import UserFactory
 
+from .. import CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER
 from ..models import (
     AnnualStateSetting,
+    HelperSessionAvailability,
     Invoice,
     InvoiceLine,
     Qualification,
@@ -47,7 +49,7 @@ class SeasonFactory(DjangoModelFactory):
     month_start = fuzzy.FuzzyChoice([k for k, v in MONTHS.items()])
     n_months = fuzzy.FuzzyInteger(1, 15)
     # Juste un canton
-    cantons = fuzzy.FuzzyChoice(DV_STATES)
+    cantons = [fuzzy.FuzzyChoice(DV_STATES).fuzz()]
     leader = factory.SubFactory(UserFactory)
     state = DV_SEASON_STATE_OPEN
 
@@ -68,6 +70,44 @@ class QualificationFactory(DjangoModelFactory):
     class_teacher_fullname = Faker("name")
     n_bikes = fuzzy.FuzzyInteger(1, 10)
     n_participants = fuzzy.FuzzyInteger(10, 20)
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        """
+        If actor and session is provided, make sure an actor availability object
+        exists for this session.
+        """
+        if "actor" in kwargs and "session" in kwargs:
+            HelperSessionAvailability.objects.get_or_create(
+                session=kwargs["session"],
+                helper=kwargs["actor"],
+                availability="y",
+                chosen_as=CHOSEN_AS_ACTOR,
+            )
+
+        if "leader" in kwargs and "session" in kwargs:
+            HelperSessionAvailability.objects.get_or_create(
+                session=kwargs["session"],
+                helper=kwargs["leader"],
+                availability="y",
+                chosen_as=CHOSEN_AS_LEADER,
+            )
+        return super()._create(model_class, *args, **kwargs)
+
+    @factory.post_generation
+    def helpers(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            for helper in extracted:
+                HelperSessionAvailability.objects.get_or_create(
+                    session=self.session,
+                    helper=helper,
+                    availability="y",
+                    chosen_as=CHOSEN_AS_HELPER,
+                )
+                self.helpers.add(helper)
 
 
 class AnnualStateSettingFactory(DjangoModelFactory):

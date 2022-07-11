@@ -19,7 +19,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.forms import modelform_factory
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from django_filters import DateFilter
 from localflavor.ch.forms import (
@@ -29,7 +29,6 @@ from localflavor.ch.forms import (
 )
 from localflavor.generic import forms as localforms
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
-from multiselectfield.forms.fields import MultiSelectFormField
 from rolepermissions.roles import get_user_roles
 
 from apps.common import DV_STATE_CHOICES
@@ -42,6 +41,7 @@ from apps.common.forms import (
 from apps.orga.models import Organization
 from defivelo.roles import DV_AUTOMATIC_ROLES, DV_AVAILABLE_ROLES
 
+from ..common.fields import CheckboxMultipleChoiceField
 from . import STATE_CHOICES_WITH_DEFAULT
 from .models import UserProfile
 
@@ -212,10 +212,10 @@ class UserAssignRoleForm(forms.Form):
             disabled_values=DV_AUTOMATIC_ROLES,
         ),
     )
-    managed_states = MultiSelectFormField(
+    managed_states = CheckboxMultipleChoiceField(
         label=_("Cantons gérés"), choices=sorted(DV_STATE_CHOICES), required=False
     )
-    managed_organizations = MultiSelectFormField(
+    managed_organizations = CheckboxMultipleChoiceField(
         label=_("Établissements gérés"),
         required=False,
     )

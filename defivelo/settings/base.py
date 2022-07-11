@@ -69,7 +69,6 @@ UPSTREAM_APPS = (
     "localflavor",
     "phonenumber_field",
     "parler",
-    "multiselectfield",
     "django_countries",
     "django_filters",
     "import_export",
@@ -425,3 +424,5 @@ BOOTSTRAP3 = {
         "inline": "defivelo.bootstrap3.DvInlineFieldRenderer",
     },
 }
+
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"

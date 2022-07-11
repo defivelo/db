@@ -1,5 +1,4 @@
 from django.db import migrations, models
-import multiselectfield.db.fields
 
 from memoize import delete_memoized
 
@@ -63,7 +62,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="userprofile",
             name="activity_cantons",
-            field=multiselectfield.db.fields.MultiSelectField(
+            field=models.CharField(
                 blank=True,
                 choices=[
                     ("AG", "Aargau"),

@@ -82,12 +82,11 @@ class SeasonTestCaseMixin(TestCase):
             s.day = self.season.begin
             s.save()
             for i in range(0, 4):
-                QualificationFactory(session=s).save()
+                QualificationFactory(session=s)
             self.sessions.append(s)
 
         self.foreigncantons = [c for c in DV_STATES if c not in self.mycantons]
         self.foreignseason = SeasonFactory(cantons=self.foreigncantons)
-        self.foreignseason.save()
 
         self.foreignsessions = []
         for canton in self.foreigncantons:
@@ -97,7 +96,7 @@ class SeasonTestCaseMixin(TestCase):
             s.day = self.foreignseason.begin
             s.save()
             for i in range(0, 4):
-                QualificationFactory(session=s).save()
+                QualificationFactory(session=s)
             self.foreignsessions.append(s)
 
 

@@ -15,8 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.contrib.auth import get_user_model
-from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy as _
 
 from import_export import fields, resources, widgets
 
@@ -35,7 +35,7 @@ class FirstMedWidget(widgets.Widget):
         final = _("Yes") if value.firstmed_course else _("No")
         if value.firstmed_course_comm:
             final += " - " + value.firstmed_course_comm
-        return force_text(final)
+        return force_str(final)
 
 
 class ObjectMethodWidget(widgets.Widget):
@@ -48,7 +48,7 @@ class ObjectMethodWidget(widgets.Widget):
         if isinstance(attribute, list):
             attribute = ", ".join(attribute)
         if attribute:
-            return force_text(attribute)
+            return force_str(attribute)
         return ""
 
 

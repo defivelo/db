@@ -21,7 +21,7 @@ from django.db.models import Q
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from parler.models import TranslatableModel, TranslatedFields
 from sentry_sdk import capture_message as sentry_message
@@ -258,6 +258,8 @@ class Qualification(models.Model):
         return self._get_label("actor")
 
     def get_related_timesheets(self):
+        # Do not distinct, so deletion is possible.
+        # Requires distinct for display.
         return Timesheet.objects.filter(
             (
                 Q(user__qualifs_actor=self)
@@ -265,10 +267,7 @@ class Qualification(models.Model):
                 | Q(user__qualifs_mon1=self)
             )
             & Q(date=self.session.day)
-        ).distinct()
-
-    def has_related_timesheets(self):
-        return self.get_related_timesheets().exsists()
+        )
 
     def save(self, *args, **kwargs):
         # Forcibly fix availability incoherences

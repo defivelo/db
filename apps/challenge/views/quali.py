@@ -17,7 +17,7 @@
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from defivelo.roles import has_permission
@@ -98,7 +98,7 @@ class QualiUpdateView(QualiMixin, SuccessMessageMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["timesheets"] = self.object.get_related_timesheets()
+        context["timesheets"] = self.object.get_related_timesheets().distinct()
         return context
 
 
@@ -115,7 +115,7 @@ class QualiDeleteView(QualiMixin, DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["timesheets"] = self.object.get_related_timesheets()
+        context["timesheets"] = self.object.get_related_timesheets().distinct()
         return context
 
     def post(self, request, *args, **kwargs):

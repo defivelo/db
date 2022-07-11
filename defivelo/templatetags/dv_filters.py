@@ -24,10 +24,10 @@ from django.core.exceptions import PermissionDenied
 from django.template.defaultfilters import date as datefilter
 from django.urls import reverse
 from django.utils.dates import MONTHS
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from memoize import memoize
 from rolepermissions.templatetags.permission_tags import can_template_tag
@@ -379,7 +379,7 @@ def date_ch_short(date):
 @register.filter
 def cantons_abbr(cantons, abbr=True, long=True):
     return [
-        force_text(c[1])
+        force_str(c[1])
         if not abbr
         else mark_safe(
             '<abbr title="{title}">{abbr}</abbr>'.format(

@@ -24,8 +24,8 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext
+from django.utils.translation import gettext_lazy as _
 from django.utils.translation import pgettext_lazy as _p
-from django.utils.translation import ugettext_lazy as _
 
 from simple_history.utils import get_history_manager_for_model
 
@@ -255,9 +255,13 @@ class InvoiceLine(models.Model):
         # Maps "consecutive days" to "percentage of reduction"
         reductions_in_percent = {2: 5, 3: 10, 4: 20, 5: 30}
         # Get the other lines of this invoice, with their daily differences to ours
-        lines_diff_days = self.invoice.lines.annotate(
-            diff_days=(F("historical_session__day") - self.historical_session.day)
-        ).values_list("diff_days", flat=True)
+        lines_diff_days = [
+            diff_days.days
+            for diff_days in self.invoice.lines.annotate(
+                diff_days=(F("historical_session__day") - self.historical_session.day)
+            ).values_list("diff_days", flat=True)
+        ]
+
         max_days_diff_to_check = max(reductions_in_percent.keys())
 
         # Check the days before first

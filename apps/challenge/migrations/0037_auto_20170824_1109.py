@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import multiselectfield.db.fields
 
 
 class Migration(migrations.Migration):
@@ -42,7 +41,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='season',
             name='cantons',
-            field=multiselectfield.db.fields.MultiSelectField(choices=[('AP', 'Appenzell'), ('BE', 'Berne'), ('BS', 'Basel-Stadt'), ('FR', 'Fribourg'), ('GE', 'Geneva'), ('VS-OW', 'Haut-Valais'), ('JU', 'Jura'), ('LU', 'Lucerne'), ('NE', 'Neuchatel'), ('SG', 'St. Gallen'), ('VS', 'Valais'), ('VD', 'Vaud'), ('ZH', 'Zurich')], max_length=41, verbose_name='Cantons'),
+            field=models.CharField(choices=[('AP', 'Appenzell'), ('BE', 'Berne'), ('BS', 'Basel-Stadt'), ('FR', 'Fribourg'), ('GE', 'Geneva'), ('VS-OW', 'Haut-Valais'), ('JU', 'Jura'), ('LU', 'Lucerne'), ('NE', 'Neuchatel'), ('SG', 'St. Gallen'), ('VS', 'Valais'), ('VD', 'Vaud'), ('ZH', 'Zurich')], max_length=41, verbose_name='Cantons'),
         ),
         migrations.AlterField(
             model_name='session',

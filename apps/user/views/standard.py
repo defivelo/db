@@ -20,7 +20,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
 from django.urls import reverse_lazy
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 
@@ -34,11 +34,7 @@ from django_filters.views import FilterView
 from rolepermissions.mixins import HasPermissionsMixin
 
 from apps.challenge.models import QualificationActivity
-from apps.common import (
-    DV_LANGUAGES_WITH_DEFAULT,
-    DV_STATE_CHOICES_WITH_DEFAULT,
-    MULTISELECTFIELD_REGEXP,
-)
+from apps.common import DV_LANGUAGES_WITH_DEFAULT, DV_STATE_CHOICES_WITH_DEFAULT
 from apps.common.views import ExportMixin, PaginatorMixin
 from defivelo.roles import DV_AVAILABLE_ROLES, has_permission, user_cantons
 
@@ -150,10 +146,7 @@ class UserProfileFilterSet(FilterSet):
     def filter_cantons(queryset, name, values):
         if values and any(values):
             # S'il y au moins un canton en commun
-            cantons_regexp = MULTISELECTFIELD_REGEXP % "|".join(
-                [v for v in values if v]
-            )
-            allcantons_filter = [Q(profile__activity_cantons__regex=cantons_regexp)] + [
+            allcantons_filter = [Q(profile__activity_cantons__overlap=values)] + [
                 Q(profile__affiliation_canton=v) for v in values if v
             ]
             return queryset.filter(reduce(operator.or_, allcantons_filter))
@@ -162,8 +155,7 @@ class UserProfileFilterSet(FilterSet):
     def filter_languages(queryset, name, values):
         if values and any(values):
             # S'il y au moins une langue en commun
-            lang_regexp = MULTISELECTFIELD_REGEXP % "|".join([v for v in values if v])
-            alllangs_filter = [Q(profile__languages_challenges__regex=lang_regexp)] + [
+            alllangs_filter = [Q(profile__languages_challenges__overlap=values)] + [
                 Q(profile__language=v) for v in values if v
             ]
             return queryset.filter(reduce(operator.or_, alllangs_filter))

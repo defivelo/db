@@ -175,7 +175,7 @@ class PowerUserTest(SettingsViewsTestCase):
         self.client = PowerUserAuthClient()
         super().setUp()
 
-    def test_settings_list_access(self):
+    def test_settings_list_access_power(self):
         # The restricted urls are allowed to power user
         for url in self.restricted_urls:
             self.assertEqual(self.client.get(url).status_code, 200, url)

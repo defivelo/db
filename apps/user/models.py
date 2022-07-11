@@ -13,7 +13,6 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
@@ -28,14 +27,13 @@ from django.utils.encoding import smart_text
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from allauth.account.models import EmailAddress
 from django_countries.fields import CountryField
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
 from localflavor.generic.models import IBANField
 from memoize import delete_memoized, memoize
-from multiselectfield import MultiSelectField
 from rolepermissions.checkers import has_role
 from rolepermissions.roles import assign_role, clear_roles
 
@@ -46,12 +44,12 @@ from apps.common import (
     DV_SEASON_STATE_PLANNING,
     DV_STATE_CHOICES,
     DV_STATE_CHOICES_WITH_DEFAULT,
-    MULTISELECTFIELD_REGEXP,
     STDGLYPHICON,
 )
 from apps.common.models import Address
 from defivelo.roles import has_permission, user_cantons
 
+from ..common.fields import ChoiceArrayField
 from . import FORMATION_CHOICES, formation_short, get_new_username
 
 USERSTATUS_UNDEF = 0
@@ -170,9 +168,17 @@ class UserProfile(Address, models.Model):
     language = models.CharField(
         _("Langue"), max_length=7, choices=DV_LANGUAGES_WITH_DEFAULT, blank=True
     )
-    languages_challenges = MultiSelectField(
-        _("Prêt à animer en"), choices=DV_LANGUAGES, blank=True
+
+    languages_challenges = ChoiceArrayField(
+        models.CharField(
+            max_length=2,
+            choices=DV_LANGUAGES,
+        ),
+        verbose_name=_("Prêt à animer en"),
+        default=list,
+        blank=True,
     )
+
     birthdate = models.DateField(_("Date de naissance"), blank=True, null=True)
     nationality = CountryField(_("Nationalité"), default="CH")
     work_permit = models.CharField(_("Permis de travail"), max_length=255, blank=True)
@@ -194,9 +200,17 @@ class UserProfile(Address, models.Model):
         max_length=2,
         blank=True,
     )
-    activity_cantons = MultiSelectField(
-        _("Défi Vélo mobile"), choices=DV_STATE_CHOICES, blank=True
+
+    activity_cantons = ChoiceArrayField(
+        models.CharField(
+            max_length=2,
+            choices=DV_STATE_CHOICES,
+        ),
+        verbose_name=_("Défi Vélo mobile"),
+        default=list,
+        blank=True,
     )
+
     formation = models.CharField(
         _("Formation"), max_length=2, choices=FORMATION_CHOICES, blank=True
     )
@@ -506,6 +520,11 @@ class UserProfile(Address, models.Model):
         )
 
     @cached_property
+    def languages_challenges_text(self):
+        languages = dict(DV_LANGUAGES)
+        return ", ".join([str(languages[code]) for code in self.languages_challenges])
+
+    @cached_property
     def can_login(self):
         return self.user.is_active and self.user.has_usable_password()
 
@@ -541,13 +560,10 @@ class UserProfile(Address, models.Model):
         ]
 
         # Unique'ify, discard empty values
-        usercantons = set([c for c in usercantons if c])
+        usercantons = list(set(usercantons))
 
-        if usercantons:
-            cantons_regexp = MULTISELECTFIELD_REGEXP % "|".join(usercantons)
-            return qs.filter(cantons__regex=cantons_regexp)
-
-        return qs.none()
+        # Au moins un canton en commun
+        return qs.filter(cantons__overlap=usercantons) if usercantons else qs.none()
 
     @cached_property
     def deleted(self):
