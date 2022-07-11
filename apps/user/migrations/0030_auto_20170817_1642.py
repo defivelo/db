@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-import multiselectfield.db.fields
 
 
 class Migration(migrations.Migration):
@@ -20,6 +19,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='userprofile',
             name='languages_challenges',
-            field=multiselectfield.db.fields.MultiSelectField(blank=True, choices=[('fr', 'French'), ('de', 'German'), ('it', 'Italian'), ('en', 'English')], max_length=11, verbose_name='Prêt à animer en'),
+            field=models.CharField(blank=True, choices=[('fr', 'French'), ('de', 'German'), ('it', 'Italian'), ('en', 'English')], max_length=11, verbose_name='Prêt à animer en'),
         ),
     ]

@@ -1,5 +1,4 @@
 from django.db import migrations
-import multiselectfield.db.fields
 
 
 def ws_to_vs(apps, schema_editor):

@@ -26,9 +26,6 @@ follow the instructions in the `docker-compose.override.example.yml` file.
 Note the `INITIAL` flag should not be set for subsequent container starts unless
 you want to reset the database.
 
-Old migrations require the deprecated `django-multiselectfield`. You need to install it manually if you need to run
-migrations from scratch. The easiest is to import the production database (see below).
-
 ## Roles & permissions
 After adding a new permission in `defivelo/roles.py`, run the following inside docker to apply them:
 ```
