@@ -23,7 +23,7 @@ from django.dispatch import receiver
 from django.forms import ValidationError
 from django.template.loader import render_to_string
 from django.utils import timezone
-from django.utils.encoding import smart_text
+from django.utils.encoding import smart_str
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext
@@ -437,7 +437,7 @@ class UserProfile(Address, models.Model):
 
     @cached_property
     def actor_inline(self):
-        return " - ".join([smart_text(a) for a in self.actor_for.all()])
+        return " - ".join([smart_str(a) for a in self.actor_for.all()])
 
     def actor_icon(self):
         if self.actor_inline:
