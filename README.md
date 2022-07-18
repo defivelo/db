@@ -35,10 +35,14 @@ docker-compose exec backend ./manage.py sync_roles --reset_user_permissions
 ## Clone production database
 Import DB
 ```shell
-docker-compose run backend fab prod import-db
+docker-compose exec backend fab prod import-db
+```
+Run any pending migrations
+```shell
+docker-compose exec backend ./manage.py migrate
 ```
 Set all passwords to "password"
-```
+```shell
 docker-compose exec backend ./manage.py set_fake_passwords
 ```
 
