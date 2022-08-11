@@ -1,5 +1,5 @@
 dj-database-url
-Django~=3.2.0
+Django~=3.2.15
 pytz
 django-bootstrap3
 psycopg2-binary
