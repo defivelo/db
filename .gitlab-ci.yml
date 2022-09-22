@@ -1,5 +1,16 @@
+include:
+  - project: 'liipops/django-hoster'
+    file: django-hosting.yml
+    ref: main
+
+variables:
+  DJANGO_SETTINGS_MODULE: defivelo.settings.base
+  GUNICORN_APP_NAME: defivelo.wsgi
+  LIIP_DOCKER_PYTHON_VERSION: "3.7"
+
 stages:
   - test
+  - build
 
 test:
   stage: test

@@ -167,6 +167,11 @@ COMPRESS_ENABLED = True
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 DATABASES = {"default": dj_database_url.parse(get_env_variable("DATABASE_URL"))}
+# Allow using a password from a k8s secret
+DATABASE_PASSWORD = get_env_variable("DATABASE_PASSWORD", False)
+if DATABASE_PASSWORD:
+    DATABASES["default"]["PASSWORD"] = DATABASE_PASSWORD
+
 
 SITE_ID = 1
 
