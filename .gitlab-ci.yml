@@ -32,6 +32,8 @@ test:
     key: *test_image
     paths:
       - .cache/pip
+  before_script:
+    - apt-get update; apt-get --no-install-recommends -y install sassc
   script:
     - pip install -r requirements/test.txt
     - |
