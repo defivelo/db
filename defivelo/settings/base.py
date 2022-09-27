@@ -64,6 +64,7 @@ UPSTREAM_APPS = (
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "crispy_forms",
     "compressor",
     "stronghold",
     "localflavor",
@@ -144,12 +145,7 @@ TEMPLATES = [
 COMPRESS_PRECOMPILERS = (
     (
         "text/x-scss",
-        os.path.join(
-            sys.exec_prefix,
-            "bin",
-            "sassc",
-        )
-        + " {infile} {outfile}",
+        "/usr/bin/sassc" + " {infile} {outfile}",
     ),
 )
 
@@ -160,8 +156,7 @@ COMPRESS_FILTERS = {
     ],
     "js": ["compressor.filters.jsmin.JSMinFilter"],
 }
-# Only allow online compression because we are not able to pre-compress some dynamic assets
-COMPRESS_OFFLINE = False
+COMPRESS_OFFLINE = True
 COMPRESS_ENABLED = True
 
 # Database
