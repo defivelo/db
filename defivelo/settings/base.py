@@ -112,7 +112,12 @@ WSGI_APPLICATION = "defivelo.wsgi.application"
 
 LOGGING = {
     "version": 1,
-    "handlers": {"console": {"level": "INFO", "class": "logging.StreamHandler"}},
+    "disable_existing_loggers": False,
+    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
     "loggers": {
         "apps": {"handlers": ["console"], "level": "DEBUG", "propagate": True},
         "django": {"handlers": ["console"], "level": "DEBUG", "propagate": True},
