@@ -82,11 +82,11 @@ class SeasonExportsMixin(MenuView):
     def dispatch(self, *args, **kwargs):
         try:
             self.export_year = int(kwargs.pop("year"))
-        except TypeError:
+        except (TypeError, KeyError):
             self.export_year = date.today().year
         try:
             self.export_season = int(kwargs.pop("dv_season"))
-        except TypeError:
+        except (TypeError, KeyError):
             self.export_season = self.current_season()
         return super(SeasonExportsMixin, self).dispatch(*args, **kwargs)
 
