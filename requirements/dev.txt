@@ -91,6 +91,8 @@ django-compressor==4.0
     # via -r requirements/base.in
 django-countries==7.3.2
     # via -r requirements/base.in
+django-crispy-forms==1.14.0
+    # via -r requirements/base.in
 django-debug-toolbar==3.5.0
     # via -r requirements/dev.in
 django-discover-runner==1.0

@@ -6,6 +6,7 @@ RUN set -x; \
         bash-completion \
         postgresql-client \
         gettext \
+        sassc \
     && rm -rf /var/lib/apt/lists/*
 
 ARG USER_ID=1000

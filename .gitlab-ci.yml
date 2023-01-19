@@ -1,5 +1,18 @@
+include:
+  - project: 'liipops/django-hoster'
+    file: django-hosting.yml
+    ref: main
+
+variables:
+  DJANGO_SETTINGS_MODULE: defivelo.settings.base
+  GUNICORN_APP_NAME: defivelo.wsgi
+  LIIP_DOCKER_PYTHON_VERSION: "3.7"
+  BASE_ADDITIONAL_APKS: sassc
+  HTTPD_RUN_COMPRESS: "true"
+
 stages:
   - test
+  - build
 
 test:
   stage: test
@@ -19,6 +32,8 @@ test:
     key: *test_image
     paths:
       - .cache/pip
+  before_script:
+    - apt-get update; apt-get --no-install-recommends -y install sassc
   script:
     - pip install -r requirements/test.txt
     - |

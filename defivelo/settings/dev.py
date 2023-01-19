@@ -21,6 +21,8 @@ TEMPLATES[0]["OPTIONS"]["debug"] = DEBUG
 SECRET_KEY = "notsosecret"
 NEVERCACHE_KEY = "notsosecret"
 
+COMPRESS_ENABLED = False
+
 INSTALLED_APPS += (
     "debug_toolbar",
     "django_extensions",

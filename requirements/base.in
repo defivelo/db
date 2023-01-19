@@ -9,6 +9,7 @@ csscompressor
 django-stronghold
 # -e git+https://github.com/mgrouchy/django-stronghold#egg=django-stronghold==0.3.0+django21
 django-allauth
+django-crispy-forms
 django-localflavor
 django-phonenumber-field
 phonenumbers

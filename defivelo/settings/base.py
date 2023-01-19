@@ -64,6 +64,7 @@ UPSTREAM_APPS = (
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "crispy_forms",
     "compressor",
     "stronghold",
     "localflavor",
@@ -111,7 +112,12 @@ WSGI_APPLICATION = "defivelo.wsgi.application"
 
 LOGGING = {
     "version": 1,
-    "handlers": {"console": {"level": "INFO", "class": "logging.StreamHandler"}},
+    "disable_existing_loggers": False,
+    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
     "loggers": {
         "apps": {"handlers": ["console"], "level": "DEBUG", "propagate": True},
         "django": {"handlers": ["console"], "level": "DEBUG", "propagate": True},
@@ -144,12 +150,7 @@ TEMPLATES = [
 COMPRESS_PRECOMPILERS = (
     (
         "text/x-scss",
-        os.path.join(
-            sys.exec_prefix,
-            "bin",
-            "sassc",
-        )
-        + " {infile} {outfile}",
+        "/usr/bin/sassc" + " {infile} {outfile}",
     ),
 )
 
@@ -160,13 +161,17 @@ COMPRESS_FILTERS = {
     ],
     "js": ["compressor.filters.jsmin.JSMinFilter"],
 }
-# Only allow online compression because we are not able to pre-compress some dynamic assets
-COMPRESS_OFFLINE = False
+COMPRESS_OFFLINE = True
 COMPRESS_ENABLED = True
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 DATABASES = {"default": dj_database_url.parse(get_env_variable("DATABASE_URL"))}
+# Allow using a password from a k8s secret
+DATABASE_PASSWORD = get_env_variable("DATABASE_PASSWORD", False)
+if DATABASE_PASSWORD:
+    DATABASES["default"]["PASSWORD"] = DATABASE_PASSWORD
+
 
 SITE_ID = 1
 
