@@ -147,10 +147,12 @@ TEMPLATES = [
     },
 ]
 
+SASSC_BIN_PATH = get_env_variable("SASSC_BIN_PATH", "/usr/bin/sassc")
+
 COMPRESS_PRECOMPILERS = (
     (
         "text/x-scss",
-        "/usr/bin/sassc" + " {infile} {outfile}",
+        SASSC_BIN_PATH + " {infile} {outfile}",
     ),
 )
 
