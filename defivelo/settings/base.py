@@ -163,7 +163,9 @@ COMPRESS_FILTERS = {
     ],
     "js": ["compressor.filters.jsmin.JSMinFilter"],
 }
-COMPRESS_OFFLINE = True
+# Only allow online compression because we are not able to pre-compress some dynamic assets
+# (see declarations of "bootstrap3_extra_script" block in templates)
+COMPRESS_OFFLINE = False
 COMPRESS_ENABLED = True
 
 # Database
