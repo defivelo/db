@@ -13,6 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import pdb
+import datetime
 
 from django.db.models import Count
 from django.shortcuts import get_object_or_404
@@ -26,9 +28,10 @@ from apps.orga.models import Organization
 from defivelo.roles import has_permission, user_cantons
 
 from ..forms import InvoiceForm, InvoiceFormQuick
-from ..models import Invoice
+from ..models import Invoice, InvoiceLine
 from .mixins import CantonSeasonFormMixin
 from .season import SeasonListView, SeasonMixin
+from .settings import AnnualStateSetting
 
 
 def user_can_edit_invoice(user, invoice: Invoice = None, locked: bool = False):
@@ -95,9 +98,70 @@ class InvoiceDetailView(InvoiceMixin, DetailView):
         context = super().get_context_data(**kwargs)
         # Add our menu_category context
         invoice = self.get_object()
+        annual_state_setting = AnnualStateSetting
+
+        # my_lines = invoice.lines.all().order_by("-nb_participants")
+        # my_lines = invoice.lines.all()
+
+        # from django.db.models import Max
+        #
+        # hist_arr = set()
+        # lines_per_day = dict()
+        # result = []
+
+
+        # for line in invoice.lines.all():
+        #     date_of_current_line = line.historical_session.day
+        #     print("date_of_current_line: ", date_of_current_line)
+        #     # lines_per_day.update({"day": date_of_current_line})
+        #
+        #
+        #
+        #
+        #     if lines_per_day.get("date_of_current_line"):
+        #         print("FOUND DATE OF CURRENT LINE")
+        #         lines_per_day.update({date: date_of_current_line})
+                # lines_per_day.update({"something": "something"})
+                # lines_per_day.update({line: date_of_current_line})
+
+            # if lines_per_day["date_of_current_line"].nb_participants < line.nb_participants:
+            #        lines_per_day.update({line: line})
+
+
+        # for line in invoice.lines.all().distinct():
+        #     hist = line.historical_session.day
+        #     hist_arr.add(hist)
+        #
+        # for date in hist_arr:
+        #     max_nb_participants_per_day = invoice.lines.filter(historical_session__day=date)
+        #     result.append(max_nb_participants_per_day)
+
+            # obj = invoice.lines.all().filter(historical_session=date, nb_participants=max_nb_participants).first()
+            # print("-----------------------")
+            # print("--------MYOBJ--------")
+            # print(obj)
+            # print("-----------------------")
+
+
+
+        # dates=my_lines.historical_session.values('day').distinct()
+
+        # for date in dates:
+        #
+        #     max_cost=Expense.objects.filter(date=date['date']).aggregate(Max('cost'))[
+        #         'cost__max']
+        #
+        #     obj=Expense.objects.filter(date=date['date'], cost=max_cost).first()
+        #
+        #     result.append({"date": obj.date, "cost": obj.cost})
+
+
         context["user_can_edit_invoice"] = user_can_edit_invoice(
             self.request.user, invoice
         )
+        context["cost_per_participant"] = annual_state_setting.objects.filter(canton=self.organization.address_canton, year=self.season.year).first().cost_per_participant
+        context["cost_per_bike"] = annual_state_setting.objects.filter(canton=self.organization.address_canton, year=self.season.year).first().cost_per_bike
+
         if not invoice.is_locked and not invoice.is_up_to_date:
             context["refresh_form"] = InvoiceFormQuick(instance=invoice)
         return context
