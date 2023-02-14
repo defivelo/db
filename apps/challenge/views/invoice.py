@@ -28,7 +28,7 @@ from apps.orga.models import Organization
 from defivelo.roles import has_permission, user_cantons
 
 from ..forms import InvoiceForm, InvoiceFormQuick
-from ..models import Invoice, InvoiceLine
+from ..models import Invoice
 from .mixins import CantonSeasonFormMixin
 from .season import SeasonListView, SeasonMixin
 from .settings import AnnualStateSetting
@@ -99,69 +99,109 @@ class InvoiceDetailView(InvoiceMixin, DetailView):
         # Add our menu_category context
         invoice = self.get_object()
         annual_state_setting = AnnualStateSetting
-
-        # my_lines = invoice.lines.all().order_by("-nb_participants")
-        # my_lines = invoice.lines.all()
-
-        # from django.db.models import Max
-        #
-        # hist_arr = set()
-        # lines_per_day = dict()
-        # result = []
+        lines_per_day = dict()
+        nb_bikes_arr = []
+        unique_lines = dict()
+        bikes_to_eleminate = []
 
 
         # for line in invoice.lines.all():
-        #     date_of_current_line = line.historical_session.day
-        #     print("date_of_current_line: ", date_of_current_line)
-        #     # lines_per_day.update({"day": date_of_current_line})
+        #     line_date = line.historical_session.day
         #
-        #
-        #
-        #
-        #     if lines_per_day.get("date_of_current_line"):
-        #         print("FOUND DATE OF CURRENT LINE")
-        #         lines_per_day.update({date: date_of_current_line})
-                # lines_per_day.update({"something": "something"})
-                # lines_per_day.update({line: date_of_current_line})
-
-            # if lines_per_day["date_of_current_line"].nb_participants < line.nb_participants:
-            #        lines_per_day.update({line: line})
+        #     if line_date not in unique_lines:
+        #         # min_nb_bikes = min(
+        #         #     [line.nb_bikes,
+        #         #      unique_lines[line_date]["max_nb_bikes"]])
+        #         # unique_lines[line_date]["max_nb_bikes"] = min_nb_bikes
+        #         bikes_to_eleminate.append(line.nb_bikes)
+        #     # else:
+        #     #     bikes_to_eleminate.append(0)
 
 
-        # for line in invoice.lines.all().distinct():
-        #     hist = line.historical_session.day
-        #     hist_arr.add(hist)
-        #
-        # for date in hist_arr:
-        #     max_nb_participants_per_day = invoice.lines.filter(historical_session__day=date)
-        #     result.append(max_nb_participants_per_day)
+        for line in invoice.lines.all():
+            line_date = line.historical_session.day
+            if line_date in unique_lines:
+                max_nb_bikes = max(
+                    [line.nb_bikes,
+                     unique_lines[line_date]["max_nb_bikes"]])
+                unique_lines[line_date]["max_nb_bikes"] = max_nb_bikes
+            else:
+                unique_lines.update(
+                    {
+                        line_date: {
+                            "lino": line,
+                            "max_nb_bikes": line.nb_bikes,
+                        }
+                    })
+                nb_bikes_arr.append(line.nb_bikes)
 
-            # obj = invoice.lines.all().filter(historical_session=date, nb_participants=max_nb_participants).first()
-            # print("-----------------------")
-            # print("--------MYOBJ--------")
-            # print(obj)
-            # print("-----------------------")
+            print("UNIQUE LINES =====>>> : ", unique_lines)
+            print("ACCUMULATED ARRY =====>>> : ", nb_bikes_arr)
+            # print("TO ELEMINATE ARRY =====>>> : ", bikes_to_eleminate)
+
+        adjusted_sum_of_bikes = sum(nb_bikes_arr)
+        # sum_of_bikes_to_eleminate = sum(bikes_to_eleminate)
+
+
+        # pdb.set_trace()
 
 
 
-        # dates=my_lines.historical_session.values('day').distinct()
 
-        # for date in dates:
-        #
-        #     max_cost=Expense.objects.filter(date=date['date']).aggregate(Max('cost'))[
-        #         'cost__max']
-        #
-        #     obj=Expense.objects.filter(date=date['date'], cost=max_cost).first()
-        #
-        #     result.append({"date": obj.date, "cost": obj.cost})
+        for line in invoice.lines.all():
+            date_of_current_line = line.historical_session.day
 
+
+
+            if date_of_current_line in lines_per_day:
+                lines_per_day[date_of_current_line]["line_sum_nb_participants"] = lines_per_day[date_of_current_line]["line_sum_nb_participants"] + line.nb_participants
+                lines_per_day[date_of_current_line]["line_sum_cost_participants"] = lines_per_day[date_of_current_line]["line_sum_cost_participants"] + line.cost_participants
+
+                max_nb_bikes = max([line.nb_bikes, lines_per_day[date_of_current_line]["max_nb_bikes"]])
+                lines_per_day[date_of_current_line]["max_nb_bikes"] = max_nb_bikes
+
+                lines_per_day[date_of_current_line]["line_sum_nb_of_bikes"] = lines_per_day[date_of_current_line]["line_sum_nb_of_bikes"] + line.nb_bikes
+
+                lines_per_day[date_of_current_line]["max_cost_bikes"] = max([line.cost_bikes, lines_per_day[date_of_current_line]["max_cost_bikes"]])
+
+                lines_per_day[date_of_current_line]["line_total"] = lines_per_day[date_of_current_line]["line_total"] + line.cost_participants
+
+                lines_per_day[date_of_current_line]["max_cost_bikes_reduced"] = max([line.cost_bikes_reduced, lines_per_day[date_of_current_line]["max_cost_bikes_reduced"]])
+
+
+                # adjusted_total_nb_bikes = lines_per_day[date_of_current_line].get(
+                #     "max_nb_bikes")
+
+
+            else:
+                lines_per_day.update(
+                    {
+                        date_of_current_line: {
+                            "obj": line,
+                            "line_sum_nb_participants": line.nb_participants,
+                            "max_nb_bikes": line.nb_bikes,
+                            "line_sum_nb_of_bikes": line.nb_bikes,
+                            "max_cost_bikes": line.cost_bikes,
+                            "line_total": line.cost_bikes_reduced + line.cost_participants,
+                            "line_sum_cost_participants": line.cost_participants,
+                            "max_cost_bikes_reduced": line.cost_bikes_reduced
+                            # "adjusted_total_nb_bikes": adjusted_total_nb_bikes,
+                        }
+                    }
+                )
 
         context["user_can_edit_invoice"] = user_can_edit_invoice(
             self.request.user, invoice
         )
-        context["cost_per_participant"] = annual_state_setting.objects.filter(canton=self.organization.address_canton, year=self.season.year).first().cost_per_participant
-        context["cost_per_bike"] = annual_state_setting.objects.filter(canton=self.organization.address_canton, year=self.season.year).first().cost_per_bike
-
+        context["cost_per_participant"] = annual_state_setting.objects.filter(
+            canton=self.organization.address_canton,
+            year=self.season.year).first().cost_per_participant
+        context["cost_per_bike"] = annual_state_setting.objects.filter(
+            canton=self.organization.address_canton,
+            year=self.season.year).first().cost_per_bike
+        context["filtered_lines"] = lines_per_day
+        context["adjusted_sum_of_bikes"] = adjusted_sum_of_bikes
+        # context["sum_of_bikes_to_eleminate"] = sum_of_bikes_to_eleminate
         if not invoice.is_locked and not invoice.is_up_to_date:
             context["refresh_form"] = InvoiceFormQuick(instance=invoice)
         return context
