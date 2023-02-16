@@ -129,15 +129,12 @@
           <td class="text-right">{{ line.line_sum_nb_participants }}</td>
           <td class="text-right">{{ line.line_sum_cost_participants }}</td>
           <td class="text-right">{{ line.max_nb_bikes }}</td>
-          {% if line.obj.has_cost_bikes %}
-            <td class="text-right"{% if not line.obj.cost_bikes_reduction_percent %}
-                colspan="3"{% endif %}>{{ line.max_cost_bikes }}</td>
-            {% if line.obj.cost_bikes_reduction_percent %}
-              <td class="text-right">-{{ line.obj.cost_bikes_reduction_percent }} %</td>
-              <td class="text-right">{{ line.max_cost_bikes_reduced }}</td>
-            {% endif %}
-          {% else %}
-            <td class="text-center" colspan="3">–</td>
+          <td class="text-right"{% if not line.cost_bikes_reduction_percent %} colspan="3"{% endif %}>
+            {{ line.max_cost_bikes }}
+          </td>
+          {% if line.cost_bikes_reduction_percent %}
+            <td class="text-right">-{{ line.cost_bikes_reduction_percent }} %</td>
+            <td class="text-right">{{ line.cost_bikes_reduced }}</td>
           {% endif %}
           <td class="text-right">
             {{ line.line_total }}
@@ -151,8 +148,7 @@
         <td></td>
         <td class="text-right">{{ invoice.sum_nb_participants }}</td>
         <th class="text-right">{{ invoice.sum_cost_participants }}</th>
-        <td class="text-right">sum: {{ invoice.sum_nb_bikes }}, adj: {{ adjusted_sum_of_bikes }}
-          eli: {{ sum_of_bikes_to_eleminate }}</td>
+        <td class="text-right">{{ adjusted_sum_of_bikes }}</td>
         <th class="text-right" colspan="3">{{ invoice.sum_cost_bikes_reduced }}</th>
         <th class="text-right invoice-total">{{ invoice.sum_cost }}</th>
       </tr>
