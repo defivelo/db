@@ -29,7 +29,6 @@ from ..forms import InvoiceForm, InvoiceFormQuick
 from ..models import Invoice
 from .mixins import CantonSeasonFormMixin
 from .season import SeasonListView, SeasonMixin
-from .settings import AnnualStateSetting
 
 
 def user_can_edit_invoice(user, invoice: Invoice = None, locked: bool = False):
@@ -96,7 +95,6 @@ class InvoiceDetailView(InvoiceMixin, DetailView):
         context = super().get_context_data(**kwargs)
         # Add our menu_category context
         invoice = self.get_object()
-        annual_state_setting = AnnualStateSetting
         lines_per_day = dict()
 
         for line in invoice.lines.all():
@@ -176,20 +174,8 @@ class InvoiceDetailView(InvoiceMixin, DetailView):
         context["user_can_edit_invoice"] = user_can_edit_invoice(
             self.request.user, invoice
         )
-        context["cost_per_participant"] = (
-            annual_state_setting.objects.filter(
-                canton=self.organization.address_canton, year=self.season.year
-            )
-            .first()
-            .cost_per_participant
-        )
-        context["cost_per_bike"] = (
-            annual_state_setting.objects.filter(
-                canton=self.organization.address_canton, year=self.season.year
-            )
-            .first()
-            .cost_per_bike
-        )
+        context["cost_per_participant"] = invoice.settings.cost_per_participant
+        context["cost_per_bike"] = invoice.settings.cost_per_bike
         context["filtered_lines"] = lines_per_day
         context["adjusted_sum_of_bikes"] = adjusted_sum_of_bikes
         if not invoice.is_locked and not invoice.is_up_to_date:
