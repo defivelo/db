@@ -69,10 +69,16 @@
       <thead>
       <tr>
         <th scope="col">{% trans "Sessions" %}</th>
-        <th scope="col" colspan="2">{% trans "Participant.e.s (coût: CHF" %}
-          {{ cost_per_participant|floatformat:"0" }}{% trans ".-/part.)" %}</th>
-        <th scope="col" colspan="4">{% trans "Vélos (facturation journalière: coût: CHF " %}
-          {{ cost_per_bike|floatformat:"0" }}{% trans ".-/vélo/jour)" %}</th>
+        <th scope="col" colspan="2">
+          {% blocktrans with cost_per_participant=cost_per_participant|floatformat:"0" %}
+          Participant.e.s (coût: CHF {{ cost_per_participant }}.-/part.)
+          {% endblocktrans %}
+        </th>
+        <th scope="col" colspan="4">
+          {% blocktrans with cost_per_bike=cost_per_bike|floatformat:"0" %}
+          Vélos (facturation journalière: coût: CHF {{ cost_per_bike }}.-/vélo/jour)
+          {% endblocktrans %}
+        </th>
         <th scope="col">{% trans "Total (CHF)" %}</th>
       </tr>
       </thead>

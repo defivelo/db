@@ -110,10 +110,9 @@ class InvoiceDetailView(InvoiceMixin, DetailView):
                     + line.cost_participants
                 )
 
-                max_nb_bikes = max(
+                lines_per_day[date_of_current_line]["max_nb_bikes"] = max(
                     [line.nb_bikes, lines_per_day[date_of_current_line]["max_nb_bikes"]]
                 )
-                lines_per_day[date_of_current_line]["max_nb_bikes"] = max_nb_bikes
 
                 lines_per_day[date_of_current_line]["line_sum_nb_of_bikes"] = (
                     lines_per_day[date_of_current_line]["line_sum_nb_of_bikes"]
