@@ -58,6 +58,7 @@ from .views import (
     SessionStaffChoiceView,
     SessionUpdateView,
 )
+from .views.invoice import InvoiceListExport
 from .views.registration import register, register_confirm, register_validate
 
 urlpatterns = [
@@ -98,6 +99,11 @@ urlpatterns = [
                     r"^invoices/$",
                     never_cache(InvoiceYearlyListView.as_view()),
                     name="invoices-yearly-list",
+                ),
+                re_path(
+                    r"^invoices/(?P<void>)?(?P<format>[a-z]+)export/$",
+                    never_cache(InvoiceListExport.as_view()),
+                    name="invoices-yearly-list-export",
                 ),
                 re_path(
                     r"(?P<dv_season>[0-4]{1})/$",
