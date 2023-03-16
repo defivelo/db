@@ -230,6 +230,7 @@ class InvoiceYearlyListView(SeasonListView, HasPermissionsMixin, ListView):
 class InvoiceListExport(ExportMixin, YearMixin, ListView):
     export_class = InvoiceResource()
     export_filename = _("Invoices")
+    required_permission = "export_yearly_invoices"
 
     def get_queryset(self):
         queryset = Invoice.objects.filter(

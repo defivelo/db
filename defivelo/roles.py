@@ -129,6 +129,7 @@ class PowerUser(AbstractUserRole):
         "timesheet": True,
         "timesheet_control": True,
         "timesheet_editor": True,
+        "export_yearly_invoices": True,
     }
 
 
