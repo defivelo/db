@@ -120,7 +120,7 @@ LOGGING = {
     },
     "loggers": {
         "apps": {"handlers": ["console"], "level": "DEBUG", "propagate": True},
-        "django": {"handlers": ["console"], "level": "DEBUG", "propagate": True},
+        "django": {"handlers": ["console"], "level": "WARNING", "propagate": True},
         "werkzeug": {"handlers": ["console"], "level": "DEBUG", "propagate": True},
     },
 }

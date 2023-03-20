@@ -6,17 +6,17 @@
 {% block content %}
 
   <div class="invoice-address-from">
-    <strong>{% trans "Coordination DÉFI VÉLO" %}</strong></br>
-    {% trans "c/o IDEE 21" %}</br>
-    {% trans "Rue Sébeillon 9a" %}</br>
+    <strong>{% trans "Coordination DÉFI VÉLO" %}</strong><br/>
+    {% trans "c/o IDEE 21" %}<br/>
+    {% trans "Rue Sébeillon 9a" %}<br/>
     {% trans "1004 Lausanne" %}
   </div>
 
   <div class="invoice-address-to">
-    <strong>{{ invoice.organization.name }}</strong></br>
-    {{ invoice.organization.address_street }} {{ invoice.organization.address_no }}</br>
-    {% if invoice.organization.address_additional %}{{ invoice.organization.address_additional }}</br>{% endif %}
-    {{ invoice.organization.address_zip }} {{ invoice.organization.address_city }}</br>
+    <strong>{{ invoice.organization.name }}</strong><br/>
+    {{ invoice.organization.address_street }} {{ invoice.organization.address_no }}<br/>
+    {% if invoice.organization.address_additional %}{{ invoice.organization.address_additional }}<br/>{% endif %}
+    {{ invoice.organization.address_zip }} {{ invoice.organization.address_city }}<br/>
   </div>
 
   <div class="hidden-print invoice-status">
@@ -124,18 +124,18 @@
   </div>
 
   <div class="invoice-bank-details">
-    {% trans "Banque Cantonale Bernoise SA" %}</br>
-    {% trans "3000" %} {% trans "Berne" %}</br>
+    {% trans "Banque Cantonale Bernoise SA" %}<br/>
+    {% trans "3000" %} {% trans "Berne" %}<br/>
     {% trans "CCP" %}: <span style="font-family: monospace">{% trans "30-106-9" %}</span>
   </div>
   <div class="invoice-bank-details">
     {% trans "IBAN" %}: <span style="font-family: monospace">{% trans "CH41 0079 0016 9412 2759 3" %}</span></br>
-    {% trans "PRO VELO SCHWEIZ" %}</br>
-    {% trans "Birkenweg 61" %}</br>
+    {% trans "PRO VELO SCHWEIZ" %}<br/>
+    {% trans "Birkenweg 61" %}<br/>
     {% trans "3001" %} {% trans "Berne" %}
   </div>
   <div class="invoice-footer-closing">
-    {% trans "Avec nos remerciements," %}</br></br>
+    {% trans "Avec nos remerciements," %}<br/><br/>
     {% trans "DÉFI VÉLO" %}
   </div>
 {% endblock %}

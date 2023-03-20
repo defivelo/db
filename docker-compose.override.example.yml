@@ -44,11 +44,12 @@
 #      - default
 #      - pontsun
 #    labels:
+#      # With traefik 2.8~
 #      - 'traefik.enable=true'
-#      - 'traefik.docker.network=pontsun'
-#      - 'traefik.backend=defivelo'
-#      - 'traefik.port=8000'
-#      - 'traefik.frontend.rule=Host:defivelo.docker.test'
+#      - 'traefik.http.routers.defivelo.entrypoints=http,https'
+#      - 'traefik.http.routers.defivelo.middlewares=https_redirect@file'
+#      - 'traefik.http.routers.defivelo.rule=Host(`defivelo.docker.test`)'
+#      - 'traefik.http.services.defivelo.loadbalancer.server.port=8000'
 # networks:
 #   pontsun:
 #     external:
