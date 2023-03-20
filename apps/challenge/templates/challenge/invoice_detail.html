@@ -1,124 +1,141 @@
 {% extends "base.html" %}
 {% load i18n bootstrap3 dv_filters %}
 {% block body_class %}dv-invoice{% endblock %}
-{% block head_title %}{% blocktrans with ref=invoice.ref %}Facture {{ref}}{% endblocktrans %}{% endblock %}
+{% block head_title %}{% blocktrans with ref=invoice.ref %}Facture {{ ref }}{% endblocktrans %}{% endblock %}
 
 {% block content %}
 
-<div class="invoice-address-from">
-  <strong>{% trans "Coordination DÉFI VÉLO" %}</strong></br>
-  {% trans "c/o Label Vert sàrl" %}</br>
-  {% trans "Rue Sébeillon 9a" %}</br>
-  {% trans "1004 Lausanne" %}
-</div>
+  <div class="invoice-address-from">
+    <strong>{% trans "Coordination DÉFI VÉLO" %}</strong></br>
+    {% trans "c/o IDEE 21" %}</br>
+    {% trans "Rue Sébeillon 9a" %}</br>
+    {% trans "1004 Lausanne" %}
+  </div>
 
-<div class="invoice-address-to">
-  <strong>{{ invoice.organization.name }}</strong></br>
-  {{ invoice.organization.address_street }} {{ invoice.organization.address_no }}</br>
-  {% if invoice.organization.address_additional %}{{ invoice.organization.address_additional }}</br>{% endif %}
-  {{ invoice.organization.address_zip }} {{ invoice.organization.address_city }}</br>
-</div>
+  <div class="invoice-address-to">
+    <strong>{{ invoice.organization.name }}</strong></br>
+    {{ invoice.organization.address_street }} {{ invoice.organization.address_no }}</br>
+    {% if invoice.organization.address_additional %}{{ invoice.organization.address_additional }}</br>{% endif %}
+    {{ invoice.organization.address_zip }} {{ invoice.organization.address_city }}</br>
+  </div>
 
-<div class="hidden-print invoice-status">
+  <div class="hidden-print invoice-status">
     <dl>
-        <dt>{% trans "Statut" %}</dt>
-        <dd>
-            {{ invoice.get_status_display }}
-            {% if invoice.is_locked %}<br />{% include 'export_buttons.html' with printonly=True %}{% endif %}
-        </dd>
+      <dt>{% trans "Statut" %}</dt>
+      <dd>
+        {{ invoice.get_status_display }}
+        {% if invoice.is_locked %}<br/>{% include 'export_buttons.html' with printonly=True %}{% endif %}
+      </dd>
     </dl>
     {% if user_can_edit_invoice %}
-        {% if refresh_form %}
-          <strong>{% trans "La facture n’est pas à jour."%}</strong>
-          <form method="POST" action="{% url 'invoice-update' seasonpk=invoice.season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">
-            {% csrf_token %}
-            {{ refresh_form }}
-            {% buttons %}
-                <button type="submit" class="btn btn-warning pull-right" title="{% trans "Rafraîchir" %}"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
-            {% endbuttons %}
-          </form>
-        {% endif %}
-        <div>
-            <a class="btn btn-{% if invoice.is_locked %}danger{% else %}primary{% endif %}" href="{% url 'invoice-update' seasonpk=invoice.season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">{% trans "Éditer" %}</a>
-        </div>
+      {% if refresh_form %}
+        <strong>{% trans "La facture n’est pas à jour." %}</strong>
+        <form method="POST"
+              action="{% url 'invoice-update' seasonpk=invoice.season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">
+          {% csrf_token %}
+          {{ refresh_form }}
+          {% buttons %}
+            <button type="submit" class="btn btn-warning pull-right" title="{% trans "Rafraîchir" %}"><span
+              class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
+          {% endbuttons %}
+        </form>
+      {% endif %}
+      <div>
+        <a class="btn btn-{% if invoice.is_locked %}danger{% else %}primary{% endif %}"
+           href="{% url 'invoice-update' seasonpk=invoice.season.pk orgapk=invoice.organization.pk invoiceref=invoice.ref %}">{% trans "Éditer" %}</a>
+      </div>
     {% endif %}
-</div>
+  </div>
 
-<div class="invoice-date">
-  {% now "DATE_FORMAT" as date %}
-  {% blocktrans %}Lausanne, le {{ date }}{% endblocktrans %}
-</div>
+  <div class="invoice-date">
+    {% now "DATE_FORMAT" as date %}
+    {% blocktrans %}Lausanne, le {{ date }}{% endblocktrans %}
+  </div>
 
-<h4 class="invoice-title">{{ invoice.ref }}{% if invoice.title %}: {{ invoice.title }}{% endif %}</h4>
+  <h4 class="invoice-title">{{ invoice.ref }}{% if invoice.title %}: {{ invoice.title }}{% endif %}</h4>
 
-<div class="invoice-header-text">
-    {% blocktrans with nb_participants=invoice.sum_nb_participants %}Prochainement, {{ nb_participants }} étudiant·e·s de votre établissement vont participer à « DÉFI VÉLO », compétition inter-cantonale pour la promotion du vélo. Par la participation de votre établissement, vous contribuez au succès d’une action innovante de promotion du vélo, de l’activité physique et de la sécurité routière, qui place le plaisir et l’apprentissage par l’action au premier plan. DÉFI VÉLO est largement reconnu pour ces qualités: il est notamment soutenu par Promotion Santé Suisse, le Fonds suisse de sécurité routière et l’Office fédéral de l’énergie (OFEN). Nous nous réjouissons de votre confiance et vous remercions par avance de votre collaboration.{% endblocktrans %}
-</div>
+  <div class="invoice-header-text">
+    {% blocktrans with nb_participants=invoice.sum_nb_participants %}Prochainement, {{ nb_participants }} étudiant·e·s
+      de votre établissement vont participer à « DÉFI VÉLO », compétition inter-cantonale pour la promotion du vélo. Par
+      la participation de votre établissement, vous contribuez au succès d’une action innovante de promotion du vélo, de
+      l’activité physique et de la sécurité routière, qui place le plaisir et l’apprentissage par l’action au premier
+      plan. DÉFI VÉLO est largement reconnu pour ces qualités: il est notamment soutenu par Promotion Santé Suisse, le
+      Fonds suisse de sécurité routière et l’Office fédéral de l’énergie (OFEN). Nous nous réjouissons de votre
+      confiance et vous remercions par avance de votre collaboration.{% endblocktrans %}
+  </div>
 
-{% if invoice.lines %}
-<table class="table invoice-table">
-    <thead>
+  {% if invoice.lines %}
+    <table class="table invoice-table">
+      <thead>
+      <tr>
+        <th scope="col">{% trans "Sessions" %}</th>
+        <th scope="col" colspan="2">
+          {% blocktrans with cost_per_participant=cost_per_participant|floatformat:"0" %}
+          Participant.e.s (coût: CHF {{ cost_per_participant }}.-/part.)
+          {% endblocktrans %}
+        </th>
+        <th scope="col" colspan="4">
+          {% blocktrans with cost_per_bike=cost_per_bike|floatformat:"0" %}
+          Vélos (facturation journalière: coût: CHF {{ cost_per_bike }}.-/vélo/jour)
+          {% endblocktrans %}
+        </th>
+        <th scope="col">{% trans "Total (CHF)" %}</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for date, line in filtered_lines.items %}
         <tr>
-            <th scope="col">{% trans "Sessions" %}</th>
-            <th scope="col" colspan="2">{% trans "Participants" %}</th>
-            <th scope="col" colspan="4">{% trans "Vélo (facturation journalière)" %}</th>
-            <th scope="col">{% trans "Total" %}</th>
+          <td class="text-left">{{ date }}</td>
+          <td class="text-right">{{ line.line_sum_nb_participants }}</td>
+          <td class="text-right">{{ line.line_sum_cost_participants }}</td>
+          <td class="text-right">{{ line.max_nb_bikes }}</td>
+          <td class="text-right"{% if not line.cost_bikes_reduction_percent %} colspan="3"{% endif %}>
+            {{ line.max_cost_bikes }}
+          </td>
+          {% if line.cost_bikes_reduction_percent %}
+            <td class="text-right">-{{ line.cost_bikes_reduction_percent }} %</td>
+            <td class="text-right">{{ line.cost_bikes_reduced }}</td>
+          {% endif %}
+          <td class="text-right">
+            {{ line.line_total }}
+          </td>
+
         </tr>
-    </thead>
-    <tbody>
-    {% for line in invoice.lines.all %}
-        <tr>
-            <td class="text-left">{{ line.historical_session.day }}{% if line.historical_session.begin %} - {{ line.historical_session.begin }}{% endif %}</td>
-            <td class="text-right">{{ line.nb_participants }}</td>
-            <td class="text-right">{{ line.cost_participants }}</td>
-            <td class="text-right">{{ line.nb_bikes }}</td>
-            {% if line.has_cost_bikes %}
-              <td class="text-right"{% if not line.cost_bikes_reduction_percent %} colspan="3"{% endif %}>{{ line.cost_bikes }}</td>
-              {% if line.cost_bikes_reduction_percent %}
-                <td class="text-right">-{{ line.cost_bikes_reduction_percent }} %</td>
-                <td class="text-right">{{ line.cost_bikes_reduced }}</td>
-              {% endif %}
-            {% else %}
-              <td class="text-center" colspan="3">–</td>
-            {% endif %}
-            <td class="text-right">{{ line.cost }}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
+      {% endfor %}
+      </tbody>
+      <tfoot>
+      <tr>
+        <td></td>
+        <td class="text-right">{{ invoice.sum_nb_participants }}</td>
+        <th class="text-right">{{ invoice.sum_cost_participants }}</th>
+        <td class="text-right">{{ adjusted_sum_of_bikes }}</td>
+        <th class="text-right" colspan="3">{{ invoice.sum_cost_bikes_reduced }}</th>
+        <th class="text-right invoice-total">{{ invoice.sum_cost }}</th>
+      </tr>
+      </tfoot>
+    </table>
+  {% endif %}
 
-    <tfoot>
-        <tr>
-            <td></td>
-            <td class="text-right">{{ invoice.sum_nb_participants }}</td>
-            <th class="text-right">{{ invoice.sum_cost_participants }}</th>
-            <td class="text-right">{{ invoice.sum_nb_bikes }}</td>
-            <th class="text-right" colspan="3">{{ invoice.sum_cost_bikes_reduced }}</th>
-            <th class="text-right invoice-total">{{ invoice.sum_cost }}</th>
-        </tr>
-    </tfoot>
-</table>
-{% endif %}
+  <div class="invoice-footer-text">
+    {% blocktrans %}La facture est établie selon les listes fournies par le·la coordinateur·trice de
+      l’établissement.{% endblocktrans %}<br/>
+    {% blocktrans with ref=invoice.ref %}Paiement à 30 jours sur le compte de notre mandataire, avec la mention « DÉFI
+      VÉLO {{ ref }} »{% endblocktrans %}
+  </div>
 
-<div class="invoice-footer-text">
-  {% blocktrans %}La facture est établie selon les listes fournies par le·la coordinateur·trice de l’établissement.{% endblocktrans %}<br/>
-  {% blocktrans with ref=invoice.ref %}Paiement à 30 jours sur le compte de notre mandataire, avec la mention « DÉFI VÉLO {{ref}} »{% endblocktrans %}
-</div>
-
-<div class="invoice-bank-details">
-  {% trans "Banque Cantonale Bernoise SA" %}</br>
-  {% trans "3000" %} {% trans "Berne" %}</br>
-  {% trans "CCP" %}: <span style="font-family: monospace">{% trans "30-106-9" %}</span>
-</div>
-<div class="invoice-bank-details">
-  {% trans "IBAN" %}: <span style="font-family: monospace">{% trans "CH41 0079 0016 9412 2759 3" %}</span></br>
-  {% trans "PRO VELO SCHWEIZ" %}</br>
-  {% trans "Birkenweg 61" %}</br>
-  {% trans "3001" %} {% trans "Berne" %}
-</div>
-
-
-<div class="invoice-footer-closing">
-  {% trans "Avec nos remerciements," %}</br></br>
-  {% trans "DÉFI VÉLO" %}
-</div>
+  <div class="invoice-bank-details">
+    {% trans "Banque Cantonale Bernoise SA" %}</br>
+    {% trans "3000" %} {% trans "Berne" %}</br>
+    {% trans "CCP" %}: <span style="font-family: monospace">{% trans "30-106-9" %}</span>
+  </div>
+  <div class="invoice-bank-details">
+    {% trans "IBAN" %}: <span style="font-family: monospace">{% trans "CH41 0079 0016 9412 2759 3" %}</span></br>
+    {% trans "PRO VELO SCHWEIZ" %}</br>
+    {% trans "Birkenweg 61" %}</br>
+    {% trans "3001" %} {% trans "Berne" %}
+  </div>
+  <div class="invoice-footer-closing">
+    {% trans "Avec nos remerciements," %}</br></br>
+    {% trans "DÉFI VÉLO" %}
+  </div>
 {% endblock %}

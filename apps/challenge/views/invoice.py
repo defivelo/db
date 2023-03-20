@@ -95,9 +95,88 @@ class InvoiceDetailView(InvoiceMixin, DetailView):
         context = super().get_context_data(**kwargs)
         # Add our menu_category context
         invoice = self.get_object()
+        lines_per_day = dict()
+
+        for line in invoice.lines.all():
+            date_of_current_line = line.historical_session.day
+
+            if date_of_current_line in lines_per_day:
+                lines_per_day[date_of_current_line]["line_sum_nb_participants"] = (
+                    lines_per_day[date_of_current_line]["line_sum_nb_participants"]
+                    + line.nb_participants
+                )
+                lines_per_day[date_of_current_line]["line_sum_cost_participants"] = (
+                    lines_per_day[date_of_current_line]["line_sum_cost_participants"]
+                    + line.cost_participants
+                )
+
+                lines_per_day[date_of_current_line]["max_nb_bikes"] = max(
+                    [line.nb_bikes, lines_per_day[date_of_current_line]["max_nb_bikes"]]
+                )
+
+                lines_per_day[date_of_current_line]["line_sum_nb_of_bikes"] = (
+                    lines_per_day[date_of_current_line]["line_sum_nb_of_bikes"]
+                    + line.nb_bikes
+                )
+
+                lines_per_day[date_of_current_line]["max_cost_bikes"] = max(
+                    [
+                        line.cost_bikes,
+                        lines_per_day[date_of_current_line]["max_cost_bikes"],
+                    ]
+                )
+
+                lines_per_day[date_of_current_line]["line_total"] = (
+                    lines_per_day[date_of_current_line]["line_total"]
+                    + line.cost_participants
+                    + line.cost_bikes_reduced
+                )
+
+                lines_per_day[date_of_current_line]["max_cost_bikes_reduced"] = max(
+                    [
+                        line.cost_bikes_reduced,
+                        lines_per_day[date_of_current_line]["max_cost_bikes_reduced"],
+                    ]
+                )
+
+            else:
+                lines_per_day.update(
+                    {
+                        date_of_current_line: {
+                            "obj": line,
+                            "line_sum_nb_participants": line.nb_participants,
+                            "max_nb_bikes": line.nb_bikes,
+                            "line_sum_nb_of_bikes": line.nb_bikes,
+                            "max_cost_bikes": line.cost_bikes,
+                            "line_total": line.cost_bikes_reduced
+                            + line.cost_participants,
+                            "line_sum_cost_participants": line.cost_participants,
+                            "max_cost_bikes_reduced": line.cost_bikes_reduced,
+                        }
+                    }
+                )
+
+            if line.has_cost_bikes:
+                lines_per_day[date_of_current_line]["cost_bikes"] = line.cost_bikes
+                if line.cost_bikes_reduction_percent():
+                    lines_per_day[date_of_current_line][
+                        "cost_bikes_reduced"
+                    ] = line.cost_bikes_reduced
+                    lines_per_day[date_of_current_line][
+                        "cost_bikes_reduction_percent"
+                    ] = line.cost_bikes_reduction_percent
+
+        adjusted_sum_of_bikes = sum(
+            [line["max_nb_bikes"] for _, line in lines_per_day.items()]
+        )
+
         context["user_can_edit_invoice"] = user_can_edit_invoice(
             self.request.user, invoice
         )
+        context["cost_per_participant"] = invoice.settings.cost_per_participant
+        context["cost_per_bike"] = invoice.settings.cost_per_bike
+        context["filtered_lines"] = lines_per_day
+        context["adjusted_sum_of_bikes"] = adjusted_sum_of_bikes
         if not invoice.is_locked and not invoice.is_up_to_date:
             context["refresh_form"] = InvoiceFormQuick(instance=invoice)
         return context
