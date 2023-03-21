@@ -19,6 +19,7 @@ from django.forms import Form as DjangoEmptyForm
 from django.utils.translation import gettext_lazy as _
 from django.views.generic.edit import FormView
 
+from rolepermissions.checkers import has_role
 from rolepermissions.mixins import HasPermissionsMixin
 
 from defivelo.roles import has_permission, user_cantons
@@ -95,24 +96,32 @@ class ResendUserCredentials(HasPermissionsMixin, UserCredentials):
             raise PermissionDenied
 
 
-class UserAssignRole(ProfileMixin, HasPermissionsMixin, FormView):
+class UserAssignRole(ProfileMixin, FormView):
     template_name = "roles/assign.html"
     success_message = _("Rôle assigné à l’utilisa·teur·trice")
     form_class = UserAssignRoleForm
-    required_permission = "user_set_role"
     cantons = False
 
     def dispatch(self, request, *args, **kwargs):
         # Forbid if self
         user = self.get_object()
+
         if user != self.request.user and user.profile.can_login:
-            return super(UserAssignRole, self).dispatch(request, *args, **kwargs)
+            if has_permission(self.request.user, "user_set_role") or has_permission(
+                self.request.user, "assign_only_coordinator_role"
+            ):
+                return super(UserAssignRole, self).dispatch(request, *args, **kwargs)
         else:
             raise PermissionDenied
 
     def get_context_data(self, **kwargs):
         context = super(UserAssignRole, self).get_context_data(**kwargs)
         context["userprofile"] = self.get_object()
+        context["user_has_a_role"] = self.get_object().groups.exists()
+        context["profile_is_coordinator"] = has_role(self.get_object(), "coordinator")
+        context["requester_is_state_manager"] = has_role(
+            self.request.user, "state_manager"
+        )
         return context
 
     def get_form_kwargs(self):
