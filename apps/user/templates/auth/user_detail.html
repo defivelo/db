@@ -246,7 +246,7 @@
                 {% trans "Éditer" %}
             </a>
         {% endif %}
-        {% if request.user.pk != userprofile.pk and userprofile.profile.can_login and request.user|can:"user_set_role" or request.user|can:"assign_only_coordinator_role" and requester_is_state_manager and profile_is_coordinator or not user_has_a_role %}
+        {% if request.user.pk != userprofile.pk and userprofile.profile.can_login and request.user|can:"user_set_role" or request.user|can:"assign_only_coordinator_role" and profile_is_coordinator or not user_has_a_role %}
             <a class="btn btn-warning pull-right" href="{% url 'user-assign-role' pk=userprofile.pk %}">
               <span class="glyphicon glyphicon-lock" aria-hidden="true" title="{% trans "Modifier le niveau d’accès" %}"></span>
               {% if profile_is_coordinator %}{% trans "Modifier les établissements gérés" %}

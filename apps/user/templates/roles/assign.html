@@ -8,7 +8,7 @@
           <h2 class="panel-title">
             {% if requester_is_state_manager and profile_is_coordinator %}
             {% blocktrans with name=userprofile.get_full_name %}Modifier les établissements gérés de {{name}} ?{% endblocktrans %}
-            {% else %}{% blocktrans with name=userprofile.get_full_name %}le niveau d’accès de {{name}} ?{% endblocktrans %}{% endif %}
+            {% else %}{% blocktrans with name=userprofile.get_full_name %}Modifier le niveau d’accès de {{name}} ?{% endblocktrans %}{% endif %}
           </h2>
     </div>
     <div class="panel-body">
@@ -45,22 +45,14 @@ function onlyStatesIfStateManager() {
 
 $( '#id_role' ).change( onlyStatesIfStateManager );
 
-{% if request.user|can:"assign_only_coordinator_role" and requester_is_state_manager and not user_has_a_role %}
-
+{% if request.user|can:"assign_only_coordinator_role" %}
   function onlySelectCoordinatorIfProjectManager() {
-    console.log("User is project manager & profile has no role")
     $('#id_role option:not([value="coordinator"])').prop('disabled', true);
     $('#id_role option[value="coordinator"]').prop('disabled', false);
-    $('#id_role option[value=""]').prop('disabled', false);
+    {% if not user_has_a_role %}
+      $('#id_role option[value=""]').prop('disabled', false);
+    {% endif %}
   }
-{% elif  request.user|can:"assign_only_coordinator_role" and requester_is_state_manager and user_has_a_role %}
-
-  function onlySelectCoordinatorIfProjectManager() {
-    console.log("User is project manager & profile has a role")
-    $('#id_role option:not([value="coordinator"])').prop('disabled', true);
-    $('#id_role option[value="coordinator"]').prop('disabled', false);
-  }
-
 {% endif %}
 
 onlyStatesIfStateManager();

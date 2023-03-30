@@ -74,7 +74,6 @@ class UserDetail(UserSelfAccessMixin, ProfileMixin, DetailView):
         context["requester_is_state_manager"] = has_role(
             self.request.user, "state_manager"
         )
-        context["profile_role"] = context["userprofile"].profile.access_level()
         context["user_has_a_role"] = self.get_object().groups.exists()
         return context
 
