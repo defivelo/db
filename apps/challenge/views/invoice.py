@@ -234,7 +234,7 @@ class InvoiceListExport(ExportMixin, YearMixin, ListView):
 
     def get_queryset(self):
         queryset = Invoice.objects.filter(
-            season__year=self.get_year(), status=1
+            season__year=self.get_year(), status=Invoice.STATUS_VALIDATED
         ).order_by("generated_at")
         return queryset
 

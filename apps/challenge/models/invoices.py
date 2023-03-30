@@ -146,18 +146,12 @@ class Invoice(models.Model):
         lines_per_day = dict()
         for line in self.lines.all():
             date_of_current_line = line.historical_session.day
-            if date_of_current_line in lines_per_day:
-                lines_per_day[date_of_current_line]["max_nb_bikes"] = max(
-                    [line.nb_bikes, lines_per_day[date_of_current_line]["max_nb_bikes"]]
-                )
-            else:
-                lines_per_day.update(
-                    {
-                        date_of_current_line: {
-                            "max_nb_bikes": line.nb_bikes,
-                        }
-                    }
-                )
+            nb_bikes = lines_per_day.get(date_of_current_line, {}).get(
+                "max_nb_bikes", 0
+            )
+            lines_per_day[date_of_current_line] = {
+                "max_nb_bikes": max(line.nb_bikes, nb_bikes)
+            }
 
         adjusted_sum_of_bikes = sum(
             [line["max_nb_bikes"] for _, line in lines_per_day.items()]
@@ -167,8 +161,7 @@ class Invoice(models.Model):
 
     @property
     def month_of_the_invoice(self):
-        month_of_the_invoice = self.generated_at.strftime("%B")
-        return month_of_the_invoice
+        return self.generated_at.strftime("%B")
 
 
 def round_CHF(n: D):
