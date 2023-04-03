@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.forms import Form as DjangoEmptyForm
 from django.utils.translation import gettext_lazy as _
 from django.views.generic.edit import FormView
@@ -130,5 +130,14 @@ class UserAssignRole(ProfileMixin, FormView):
         return form_kwargs
 
     def form_valid(self, form):
-        form.save()
+        if has_role(self.get_object(), "coordinator") and has_permission(
+            self.request.user, "assign_only_coordinator_role"
+        ):
+            if not form["role"].data == "coordinator":
+                raise ValidationError(
+                    _("vous ne pouvez pas annuler l'attribution du rôle")
+                )
+
+        else:
+            form.save()
         return super(UserAssignRole, self).form_valid(form)
