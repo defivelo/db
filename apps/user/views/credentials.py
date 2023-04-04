@@ -138,6 +138,5 @@ class UserAssignRole(ProfileMixin, FormView):
                     _("vous ne pouvez pas annuler l'attribution du rôle")
                 )
 
-        else:
-            form.save()
+        form.save()
         return super(UserAssignRole, self).form_valid(form)
