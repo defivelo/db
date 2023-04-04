@@ -864,7 +864,7 @@ class SeasonPersonalPlanningExportView(
         ]
         # Trouve toutes les personnes qui sont présentes dans ce mois
         qs = get_user_model().objects
-        user_filter = [
+        user_filters = [
             # Ceux qui ont répondu (quoi que ce soit)
             Q(availabilities__session__in=self.season.sessions_with_qualifs),
             # Moniteurs +
@@ -876,10 +876,16 @@ class SeasonPersonalPlanningExportView(
             # Intervenants
             Q(qualifs_actor__session__in=self.season.sessions_with_qualifs),
         ]
+        # Get users that match any filter in `user_filters`.
+        # We used to do it in a single DB query with OR clauses,
+        # but the production DB would execute this query in multiple minutes!
+        user_ids = set()
+        for user_filter in user_filters:
+            user_ids.update(qs.filter(user_filter).values_list("id", flat=True))
         qs = (
-            qs.filter(reduce(operator.or_, user_filter))
-            .distinct()
+            qs.filter(id__in=user_ids)
             .order_by("first_name", "last_name")
+            .select_related("profile")
         )
         resolvermatch = self.request.resolver_match
         try:
