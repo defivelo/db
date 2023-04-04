@@ -130,8 +130,10 @@ class UserAssignRole(ProfileMixin, FormView):
         return form_kwargs
 
     def form_valid(self, form):
-        if has_role(self.get_object(), "coordinator") and has_permission(
-            self.request.user, "assign_only_coordinator_role"
+        if (
+            has_role(self.get_object(), "coordinator")
+            and has_permission(self.request.user, "assign_only_coordinator_role")
+            and not has_permission(self.request.user, "user_set_role")
         ):
             if not form["role"].data == "coordinator":
                 raise ValidationError(

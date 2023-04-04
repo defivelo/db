@@ -45,7 +45,7 @@ function onlyStatesIfStateManager() {
 
 $( '#id_role' ).change( onlyStatesIfStateManager );
 
-{% if request.user|can:"assign_only_coordinator_role" %}
+{% if request.user|can:"assign_only_coordinator_role" and not request.user|can:"user_set_role" %}
   function onlySelectCoordinatorIfProjectManager() {
     $('#id_role option:not([value="coordinator"])').prop('disabled', true);
     $('#id_role option[value="coordinator"]').prop('disabled', false);
