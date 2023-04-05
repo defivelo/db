@@ -31,6 +31,7 @@ from django_filters import (
     MultipleChoiceFilter,
 )
 from django_filters.views import FilterView
+from rolepermissions.checkers import has_role
 from rolepermissions.mixins import HasPermissionsMixin
 
 from apps.challenge.models import QualificationActivity
@@ -69,6 +70,11 @@ class UserDetail(UserSelfAccessMixin, ProfileMixin, DetailView):
         context["userprofilecanton"] = (
             user_cantons_intersection[0] if user_cantons_intersection else None
         )
+        context["profile_is_coordinator"] = has_role(self.object, "coordinator")
+        context["requester_is_state_manager"] = has_role(
+            self.request.user, "state_manager"
+        )
+        context["user_has_a_role"] = self.get_object().groups.exists()
         return context
 
 

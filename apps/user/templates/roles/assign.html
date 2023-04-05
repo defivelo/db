@@ -5,7 +5,11 @@
 {% block content %}
   <div class="panel panel-warning">
     <div class="panel-heading">
-      <h2 class="panel-title">{% blocktrans with name=userprofile.get_full_name %}Modifier le niveau d’accès de {{name}} ?{% endblocktrans %}</h2>
+          <h2 class="panel-title">
+            {% if requester_is_state_manager and profile_is_coordinator %}
+            {% blocktrans with name=userprofile.get_full_name %}Modifier les établissements gérés de {{name}} ?{% endblocktrans %}
+            {% else %}{% blocktrans with name=userprofile.get_full_name %}Modifier le niveau d’accès de {{name}} ?{% endblocktrans %}{% endif %}
+          </h2>
     </div>
     <div class="panel-body">
       <form method="POST" action="" class="form-horizontal">
@@ -41,6 +45,17 @@ function onlyStatesIfStateManager() {
 
 $( '#id_role' ).change( onlyStatesIfStateManager );
 
+{% if request.user|can:"assign_only_coordinator_role" and not request.user|can:"user_set_role" %}
+  function onlySelectCoordinatorIfProjectManager() {
+    $('#id_role option:not([value="coordinator"])').prop('disabled', true);
+    $('#id_role option[value="coordinator"]').prop('disabled', false);
+    {% if not user_has_a_role %}
+      $('#id_role option[value=""]').prop('disabled', false);
+    {% endif %}
+  }
+{% endif %}
+
 onlyStatesIfStateManager();
+onlySelectCoordinatorIfProjectManager()
 </script>
 {% endblock %}
