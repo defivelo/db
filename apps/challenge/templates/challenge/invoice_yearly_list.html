@@ -26,6 +26,12 @@
     </ul>
   </nav>
 
+      <div class="hidden-print">
+        {% if request.user|can:"export_yearly_invoices" %}
+            {% include 'export_buttons.html' with exporturl='invoices-yearly-list-export' exportargs=year filter_querystring=filter_querystring only %}
+        {% endif %}
+      </div>
+
   <table class ="table">
     {% for season in seasons %}
       {% if season.nb_invoices != 0 %}

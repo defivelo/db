@@ -16,15 +16,19 @@
 
 from django.db.models import Count
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
+from django.views.generic.dates import YearMixin
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 
 from rolepermissions.mixins import HasPermissionsMixin
 
+from apps.challenge.export import InvoiceResource
 from apps.orga.models import Organization
 from defivelo.roles import has_permission, user_cantons
 
+from ...common.views import ExportMixin
 from ..forms import InvoiceForm, InvoiceFormQuick
 from ..models import Invoice
 from .mixins import CantonSeasonFormMixin
@@ -221,6 +225,18 @@ class InvoiceYearlyListView(SeasonListView, HasPermissionsMixin, ListView):
             .prefetch_related("invoices", "invoices__lines", "invoices__organization")
             .annotate(nb_invoices=Count("invoices", distinct=True))
         )
+
+
+class InvoiceListExport(ExportMixin, YearMixin, ListView):
+    export_class = InvoiceResource()
+    export_filename = _("Invoices")
+    required_permission = "export_yearly_invoices"
+
+    def get_queryset(self):
+        queryset = Invoice.objects.filter(
+            season__year=self.get_year(), status=Invoice.STATUS_VALIDATED
+        ).order_by("generated_at")
+        return queryset
 
 
 class InvoiceUpdateView(InvoiceMixin, UpdateView):
