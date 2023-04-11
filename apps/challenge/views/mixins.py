@@ -17,7 +17,7 @@
 from django.core.exceptions import PermissionDenied
 from django.utils.functional import cached_property
 
-from defivelo.roles import user_cantons
+from defivelo.roles import has_permission, user_cantons
 
 from ..models import Season
 
@@ -59,7 +59,9 @@ class CantonSeasonFormMixin(object):
                 set(usercantons).intersection(set(season.cantons))
             ):
                 # If the user is marked as state manager for that season
-                if season.leader == self.request.user:
+                if season.leader == self.request.user or has_permission(
+                    self.request.user, "read_only_season_availability"
+                ):
                     return season
                 # Verify that this state manager can access that canton as mobile
                 if (

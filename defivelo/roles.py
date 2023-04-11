@@ -88,6 +88,7 @@ class StateManager(AbstractUserRole):
         "timesheet": True,
         "timesheet_editor": True,
         "registration_validate": True,
+        "read_only_season_availability": True,
     }
 
 

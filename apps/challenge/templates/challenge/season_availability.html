@@ -38,6 +38,7 @@
         {% include 'export_buttons.html' with exporturl='season-planning-export' exportargs=season.pk filter_querystring=filter_querystring only %}
     </div>
     {% if season.manager_can_crud %}
+        {% if request.user.is_superuser or season.leader == request.user %}
         <form method="POST" action="" class="form-inline"  style="display: inline;" novalidate>
             {% csrf_token %}
             {% bootstrap_form form %}
@@ -47,6 +48,7 @@
         </form>
 
         <a class="pull-right btn btn-primary" href="{% url 'season-staff-update' season.pk %}">{% trans "Attribuer les moniteurs" %}</a>
+        {% endif %}
     {% endif %}
 </div>
 {% endblock %}

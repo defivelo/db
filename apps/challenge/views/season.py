@@ -190,6 +190,16 @@ class SeasonListView(SeasonMixin, ListView):
             else:
                 # Will never happen
                 raise PermissionDenied
+        season_activity = set()
+        for season in context["seasons"]:
+            if any(
+                [
+                    canton in self.request.user.profile.activity_cantons
+                    for canton in season.cantons
+                ]
+            ):
+                season_activity.add(season.id)
+        context["season_activity"] = season_activity
         return context
 
 
@@ -208,6 +218,8 @@ class SeasonDetailView(SeasonMixin, DetailView):
                 allowed = True
             elif has_permission(request.user, self.required_permission):
                 # State Managers
+                allowed = True
+            elif has_permission(request.user, "read_only_season_availability"):
                 allowed = True
 
             if allowed:

@@ -51,7 +51,7 @@
           {% endif %}
         </td>
         <td>
-          {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons or user == season.leader %}
+          {% if user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons or user == season.leader or user|can:"read_only_season_availability" and season.id in season_activity %}
             <a class="btn btn-xs btn-primary" href="{% url 'season-availabilities' season.pk %}"
                title="{% trans "Planning" %}"><span class="glyphicon glyphicon-th"></span></a>
           {% elif season.staff_can_update_availability and user.profile.is_paid_staff %}
