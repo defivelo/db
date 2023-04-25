@@ -92,11 +92,11 @@
           {% if not line.cost_bikes_reduction_percent and not any_line_has_reduction %}
           <td class="text-right" colspan="3">{{ line.max_cost_bikes }}</td>
           {% elif not line.cost_bikes_reduction_percent %}
-          <td class="text-right">{{ line.max_cost_bikes }}</td>>
+          <td class="text-right">{{ line.max_cost_bikes }}</td>
           <td class="text-right"></td>
           <td class="text-right">{{ line.max_cost_bikes }}</td>
           {% elif line.cost_bikes_reduction_percent %}
-          <td class="text-right">{{ line.max_cost_bikes }}</td>>
+          <td class="text-right">{{ line.max_cost_bikes }}</td>
           <td class="text-right">-{{ line.cost_bikes_reduction_percent }} %</td>
           <td class="text-right">{{ line.cost_bikes_reduced }}</td>
           {% endif %}

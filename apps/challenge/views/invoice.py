@@ -181,7 +181,12 @@ class InvoiceDetailView(InvoiceMixin, DetailView):
         context["cost_per_bike"] = invoice.settings.cost_per_bike
         context["filtered_lines"] = lines_per_day
         context["adjusted_sum_of_bikes"] = adjusted_sum_of_bikes
-        context["any_line_has_reduction"] = any([line['obj'].cost_bikes_reduction_percent() for line in lines_per_day.values()])
+        context["any_line_has_reduction"] = any(
+            [
+                line["obj"].cost_bikes_reduction_percent()
+                for line in lines_per_day.values()
+            ]
+        )
         if not invoice.is_locked and not invoice.is_up_to_date:
             context["refresh_form"] = InvoiceFormQuick(instance=invoice)
         return context
