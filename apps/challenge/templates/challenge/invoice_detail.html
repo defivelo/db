@@ -66,7 +66,7 @@
 
   {% if invoice.lines %}
     <table class="table invoice-table">
-      <thead>
+    <thead>
       <tr>
         <th scope="col">{% trans "Sessions" %}</th>
         <th scope="col" colspan="2">
@@ -89,17 +89,15 @@
           <td class="text-right">{{ line.line_sum_nb_participants }}</td>
           <td class="text-right">{{ line.line_sum_cost_participants }}</td>
           <td class="text-right">{{ line.max_nb_bikes }}</td>
-          <td class="text-right"{% if not line.cost_bikes_reduction_percent %} colspan="3"{% endif %}>
-            {{ line.max_cost_bikes }}
-          </td>
-          {% if line.cost_bikes_reduction_percent %}
-            <td class="text-right">-{{ line.cost_bikes_reduction_percent }} %</td>
-            <td class="text-right">{{ line.cost_bikes_reduced }}</td>
+          <td class="text-right">{{ line.max_cost_bikes }}</td>
+          {% if not line.cost_bikes_reduction_percent %}
+          <td class="text-right">0 %</td>
+          <td class="text-right">{{ line.max_cost_bikes }}</td>
+          {% elif line.cost_bikes_reduction_percent %}
+          <td class="text-right">-{{ line.cost_bikes_reduction_percent }} %</td>
+          <td class="text-right">{{ line.cost_bikes_reduced }}</td>
           {% endif %}
-          <td class="text-right">
-            {{ line.line_total }}
-          </td>
-
+          <td class="text-right">{{ line.line_total }}</td>
         </tr>
       {% endfor %}
       </tbody>
