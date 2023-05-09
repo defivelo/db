@@ -4,6 +4,7 @@ include:
     ref: main
 
 variables:
+  LIIPOPS_HOSTS: swing-defivelo-intranet.k8s.liip.ch
   DJANGO_SETTINGS_MODULE: defivelo.settings.base
   GUNICORN_APP_NAME: defivelo.wsgi
   LIIP_DOCKER_PYTHON_VERSION: "3.7"
