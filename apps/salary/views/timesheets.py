@@ -148,7 +148,9 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
         }
         context["orphaned_timesheets"] = (
             Timesheet.objects.filter(
-                user=self.selected_user, date__month=context["month"].month
+                user=self.selected_user,
+                date__year=context["year"],
+                date__month=context["month"].month,
             )
             .exclude(date__in=[o["day"] for o in self.object_list])
             .order_by("date")
