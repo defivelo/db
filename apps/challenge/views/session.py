@@ -207,7 +207,7 @@ class SessionDetailView(SessionMixin, DetailView):
                 ),
             }
             context["session_mailtoall"] = "mailto:{emaillist}?{options}".format(
-                emaillist="; ".join(session_helpers),
+                emaillist=", ".join(session_helpers),
                 options=urlencode(emailparts, quote_via=quote),
             )
 
