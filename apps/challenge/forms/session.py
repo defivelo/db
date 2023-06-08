@@ -90,7 +90,7 @@ class SessionForm(forms.ModelForm):
             self.fields["day"].widget.attrs["readonly"] = True
 
     day = SwissDateField(label=_("Date"))
-    begin = SwissTimeField(label=_("Début"), required=False)
+    begin = SwissTimeField(label=_("Début"))
     address_canton = forms.ChoiceField(
         label=_("Canton"),
         widget=CHStateSelect,
