@@ -370,14 +370,17 @@ class Session(Address, models.Model):
         """
         Same as __str__ but without spaces and parentheses
         """
-        orga = "_%s" % (self.orga.abbr if self.orga.abbr else self.orga.name).replace(
-            " ", "-"
+        orga = (
+            "_%s"
+            % (self.orga.abbr if self.orga.abbr else self.orga.name).replace(" ", "-")
+            if self.orga
+            else ""
         )
 
         return (
             date(self.day, "Ymd")
             + ("_%s" % date(self.begin, "Hi") if self.begin else "")
-            + (orga if orga else "")
+            + orga
             + (
                 "_%s"
                 % (
