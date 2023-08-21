@@ -39,3 +39,5 @@ kn-django-db-email-backend==0.5.4
 django-ical
 # Cryptography needs Rust from 3.4 on.
 cryptography>3.3,<3.4
+# PyYaml doesn't build under Python 3.7: https://github.com/yaml/pyyaml/issues/724
+pyyaml>5.3,<5.4

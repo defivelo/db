@@ -136,8 +136,10 @@ pytz==2022.1
     #   django
     #   icalendar
     #   kn-django-db-email-backend
-pyyaml==6.0
-    # via tablib
+pyyaml==5.3.1
+    # via
+    #   -r requirements/base.in
+    #   tablib
 rcssmin==1.1.0
     # via django-compressor
 requests==2.28.1
