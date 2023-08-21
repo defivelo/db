@@ -365,3 +365,32 @@ class Session(Address, models.Model):
                 )
             )
         )
+
+    def get_export_filename(self):
+        """
+        Same as __str__ but without spaces and parentheses
+        """
+        orga = (
+            "_%s"
+            % (self.orga.abbr if self.orga.abbr else self.orga.name).replace(" ", "-")
+            if self.orga
+            else ""
+        )
+
+        return (
+            date(self.day, "Ymd")
+            + ("_%s" % date(self.begin, "Hi") if self.begin else "")
+            + orga
+            + (
+                "_%s"
+                % (
+                    self.address_city
+                    if self.address_city
+                    else (
+                        self.orga.address_city
+                        if (self.orga and self.orga.address_city)
+                        else ""
+                    )
+                )
+            )
+        )

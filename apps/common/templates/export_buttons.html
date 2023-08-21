@@ -23,3 +23,18 @@
         {% endwith %}
     {% endif %}
 </div>
+
+{% if pdf_file_name %}
+    <script>
+      window.addEventListener("beforeprint", (event) => {
+        const fileName = "{{ pdf_file_name }}";
+        document.getElementById("dv-title-non-print").innerHTML = document.title;
+        document.title = fileName;
+      });
+      window.addEventListener("afterprint", (event) => {
+        var initPageTitle = document.getElementById("dv-title-non-print").innerHTML;
+        document.title = initPageTitle;
+      });
+    </script>
+    <div id="dv-title-non-print" class="hidden"></div>
+{% endif %}

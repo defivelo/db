@@ -9,11 +9,11 @@
     <table class="table">
     {% for session in sessions_by_orga %}
         {% ifchanged session.orga %}
-            <tr><th colspan="3">{{ session.orga }}</th></th>
+            <tr><th colspan="3">{{ session.orga }}</th></tr>
         {% endifchanged %}
         {% include "challenge/session_item_in_list.html" with session=session season=season user=request.user only %}
     {% endfor %}
     </table>
-     
+
     {% include "challenge/session_list_links.html" %}
 {% endblock %}
