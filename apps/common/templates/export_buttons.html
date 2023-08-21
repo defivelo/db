@@ -2,7 +2,7 @@
 <div class="btn-group hidden-print" role="group" aria-label="exports">
     {% if not noprint %}
         <a class="btn btn-default btn-sm" title="{% blocktrans %}Imprimer{% endblocktrans %}"
-            href="javascript:window.print()">
+            href="javascript:void(0);" onclick="printDocument('{{ pdf_file_name }}')">
             <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
         </a>
     {% endif %}
@@ -23,3 +23,17 @@
         {% endwith %}
     {% endif %}
 </div>
+
+<script>
+  function printDocument(fileName = "") {
+    // Print with a different PDF file title if provided
+    if (fileName.length > 0) {
+      const webTitle = document.title;
+      document.title = fileName;
+      window.print();
+      document.title = webTitle;
+    } else {
+      window.print();
+    }
+  }
+</script>

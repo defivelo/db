@@ -40,7 +40,7 @@ class ExportMixin(object):
         except AttributeError:
             dataset = self.get_dataset()
 
-        filename = _("DV-{exportfilename}-{YMD_date}.{extension}").format(
+        filename = _("DV-{exportfilename}_{YMD_date}.{extension}").format(
             exportfilename=self.export_filename,
             YMD_date=timezone.now().strftime("%Y%m%d"),
             extension=format.get_extension(),

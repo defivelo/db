@@ -189,6 +189,9 @@ class InvoiceDetailView(InvoiceMixin, DetailView):
         )
         if not invoice.is_locked and not invoice.is_up_to_date:
             context["refresh_form"] = InvoiceFormQuick(instance=invoice)
+
+        context["pdf_file_name"] = _("Facture") + "_" + self.object.ref + "_DEFIVELO"
+
         return context
 
 

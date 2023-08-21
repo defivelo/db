@@ -221,7 +221,7 @@
             <a class="btn btn-danger pull-right" href="{% url 'session-delete' seasonpk=season.pk pk=session.pk %}">{% trans "Supprimer" %}</a>
         {% endif %}
         <div class="btn-group" role="group" aria-label="exports">
-            {% include 'export_buttons.html' with exporturl='session-export' seasonpk=season.pk exportargs=session.pk filter_querystring=filter_querystring only %}
+            {% include 'export_buttons.html' with exporturl='session-export' seasonpk=season.pk exportargs=session.pk filter_querystring=filter_querystring pdf_file_name=pdf_file_name only %}
         </div>
         <a class="btn btn-default" href="{% url 'season-detail' pk=season.pk %}">{% trans "Retour au mois" %}</a>
     </div>

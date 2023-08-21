@@ -22,6 +22,7 @@ from django.core.exceptions import FieldError, PermissionDenied
 from django.template.defaultfilters import date, time
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 from django.utils.encoding import force_str
 from django.utils.html import urlencode
 from django.utils.translation import gettext
@@ -153,6 +154,10 @@ class SessionDetailView(SessionMixin, DetailView):
     # Allow season fetch even for non-state managers
     allow_season_fetch = True
 
+    @property
+    def print_filename(self):
+        return _("Session") + "_" + force_str(self.object.get_export_filename())
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         try:
@@ -210,6 +215,11 @@ class SessionDetailView(SessionMixin, DetailView):
                 emaillist=", ".join(session_helpers),
                 options=urlencode(emailparts, quote_via=quote),
             )
+
+        context["pdf_file_name"] = _("DV-{print_filename}_{YMD_date}").format(
+            print_filename=self.print_filename,
+            YMD_date=timezone.now().strftime("%Y%m%d"),
+        )
 
         return context
 
@@ -339,7 +349,7 @@ class SessionExportView(ExportMixin, SessionMixin, DetailView):
 
     @property
     def export_filename(self):
-        return _("Session") + "-" + force_str(self.object)
+        return _("Session") + "_" + force_str(self.object.get_export_filename())
 
     def get_dataset(self):
         dataset = Dataset()
