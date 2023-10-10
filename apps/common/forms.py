@@ -24,7 +24,7 @@ from django_countries.fields import LazyTypedChoiceField
 from django_countries.widgets import CountrySelectWidget
 from localflavor.generic.forms import DEFAULT_DATE_INPUT_FORMATS, DateField
 from phonenumber_field.formfields import PhoneNumberField
-from phonenumber_field.widgets import PhoneNumberInternationalFallbackWidget
+from phonenumber_field.widgets import RegionalPhoneNumberWidget
 
 SWISS_DATE_INPUT_FORMAT = "%d.%m.%Y"
 SWISS_DATE_DISPLAY_FORMAT = "DD.MM.YYYY"
@@ -84,7 +84,7 @@ class CHPhoneNumberField(PhoneNumberField):
 
     def __init__(self, *args, **kwargs):
         super(CHPhoneNumberField, self).__init__(
-            widget=PhoneNumberInternationalFallbackWidget, *args, **kwargs
+            widget=RegionalPhoneNumberWidget, *args, **kwargs
         )
 
 

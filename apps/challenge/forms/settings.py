@@ -26,7 +26,6 @@ from ..models import AnnualStateSetting
 
 
 class AnnualStateSettingForm(forms.ModelForm):
-
     year = forms.IntegerField(
         label=_("Année"),
         widget=DateTimePicker({"placeholder": "YYYY"}, options={"format": "YYYY"}),

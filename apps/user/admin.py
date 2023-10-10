@@ -37,7 +37,10 @@ class EmailAddressAdminForm(forms.ModelForm):
 
     def save(self, commit=True):
         if self.cleaned_data["primary"] is True:
-            EmailAddress.objects.filter(user=self.instance.user, primary=True,).exclude(
+            EmailAddress.objects.filter(
+                user=self.instance.user,
+                primary=True,
+            ).exclude(
                 id=self.instance.id
             ).update(primary=False)
 

@@ -112,7 +112,9 @@ class Session(Address, models.Model):
         )
 
     def has_related_timesheets(self):
-        return self.get_related_timesheets().exists()
+        if self.pk:
+            return self.get_related_timesheets().exists()
+        return False
 
     @cached_property
     def has_availability_incoherences(self):

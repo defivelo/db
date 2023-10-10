@@ -1,5 +1,5 @@
 dj-database-url
-Django~=3.2.0
+Django~=4.2.0
 pytz
 django-bootstrap3
 psycopg2-binary
@@ -7,7 +7,6 @@ django-compressor
 libsass
 csscompressor
 django-stronghold
-# -e git+https://github.com/mgrouchy/django-stronghold#egg=django-stronghold==0.3.0+django21
 django-allauth
 django-crispy-forms
 django-localflavor
@@ -15,29 +14,28 @@ django-phonenumber-field
 phonenumbers
 django-bootstrap3-datetimepicker-2
 django-autocomplete-light
-# -e git+https://github.com/yourlabs/django-autocomplete-light@e46300d6085510#egg=django-autocomplete-light==3.5.0+jqfix
 django-autocomplete-light
 django-parler
 django-filter
 django-import-export
-django-agpl
+
+# Need to drop that unmaintained dependency
+-e git+https://github.com/liip-forks/django-agpl#egg=django-agpl
+
 tablib
 django-taggit
 pillow
 django-role-permissions
-django-tinymce>=3.0.2
+django-tinymce
 django-memoize
 django-countries
 django-simple-history
 sentry-sdk
 six
 
-# Only for staging,
-# Base version "django-db-email-backend" not compatible with Django 3
-kn-django-db-email-backend==0.5.4
+# TODO: Get rid of this unmaintained dependency by using mailhog (DEFIVELO-260)
+-e git+https://github.com/liip-forks/django-db-email-backend#egg=kn-django-db-email-backend
 
 django-ical
-# Cryptography needs Rust from 3.4 on.
-cryptography>3.3,<3.4
-# PyYaml doesn't build under Python 3.7: https://github.com/yaml/pyyaml/issues/724
-pyyaml>5.3,<5.4
+cryptography
+pyyaml

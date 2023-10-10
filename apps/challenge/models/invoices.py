@@ -83,8 +83,10 @@ class Invoice(models.Model):
         return self.season.sessions.filter(orga=self.organization)
 
     def sum_of(self, things: Iterable[str]):
-        fields = sum(F(thing) for thing in things)
-        return self.lines.aggregate(total=Sum(fields))["total"]
+        if self.pk:
+            fields = sum(F(thing) for thing in things)
+            return self.lines.aggregate(total=Sum(fields))["total"]
+        return None
 
     def sum_cost_bikes_reduced(self):
         return sum([l.cost_bikes_reduced for l in self.lines.all()])

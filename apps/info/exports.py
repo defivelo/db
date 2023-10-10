@@ -153,7 +153,7 @@ class SeasonStatsExport(SeasonSessionsMixin):
         volunteers = get_user_model().objects
         orgas = Organization.objects
         object_list = self.get_queryset()
-        for (canton, canton_verb) in DV_STATE_CHOICES:
+        for canton, canton_verb in DV_STATE_CHOICES:
             cantonal_sessions = object_list.filter(
                 orga__address_canton=canton
             ).annotate(
