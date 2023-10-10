@@ -34,6 +34,8 @@ click==8.1.7
     # via black
 coverage[toml]==7.3.2
     # via pytest-cov
+crispy-bootstrap3==2022.1
+    # via -r requirements/base.in
 cryptography==41.0.4
     # via
     #   -r requirements/base.in
@@ -55,6 +57,7 @@ dj-database-url==2.1.0
 django==4.2.6
     # via
     #   -r requirements/base.in
+    #   crispy-bootstrap3
     #   dj-database-url
     #   django-agpl
     #   django-allauth
@@ -88,7 +91,9 @@ django-compressor==4.4
 django-countries==7.5.1
     # via -r requirements/base.in
 django-crispy-forms==2.0
-    # via -r requirements/base.in
+    # via
+    #   -r requirements/base.in
+    #   crispy-bootstrap3
 django-filter==23.3
     # via -r requirements/base.in
 django-ical==1.9.2

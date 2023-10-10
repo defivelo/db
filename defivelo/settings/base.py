@@ -68,6 +68,7 @@ UPSTREAM_APPS = (
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "crispy_forms",
+    "crispy_bootstrap3",
     "compressor",
     "stronghold",
     "localflavor",
@@ -83,6 +84,9 @@ UPSTREAM_APPS = (
     "simple_history",
     "memoize",
 )
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap3"
+CRISPY_TEMPLATE_PACK = "bootstrap3"
 
 # Project apps tested by jenkins (everything in apps/)
 APPS_DIR = os.path.join(PROJECT_ROOT, "apps")

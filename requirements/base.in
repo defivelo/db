@@ -8,6 +8,7 @@ libsass
 csscompressor
 django-stronghold
 django-allauth
+crispy-bootstrap3
 django-crispy-forms
 django-localflavor
 django-phonenumber-field
