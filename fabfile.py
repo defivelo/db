@@ -29,7 +29,7 @@ ENVIRONMENTS = {
             "MEDIA_ROOT": "/var/www/intranet.defi-velo.ch/prod/media/",
             "STATIC_ROOT": "/var/www/intranet.defi-velo.ch/prod/static/",
             "SITE_DOMAIN": "intranet.defi-velo.ch",
-            "SASSC_BIN_PATH": "/var/www/intranet.defi-velo.ch/prod/venv/bin/sassc",
+            "SASSC_BIN_PATH": "/var/www/intranet.defi-velo.ch/prod/venv/bin/pysassc",
             "VIRTUAL_ENV": "/var/www/intranet.defi-velo.ch/prod/venv",
         },
     },
@@ -37,8 +37,8 @@ ENVIRONMENTS = {
         "root": "/var/www/intranet.defi-velo.ch/staging/",
         # "host": "wpy10809@onhp-python3.iron.bsa.oriented.ch:29992",  # OLD
         "host": "wpy10809@onhp-python2.iron.bsa.oriented.ch:29992",  # NEW
-        "pid": "/run/uwsgi/app/staging.intranet.defi-velo.ch/pid",
-        "ini": "/etc/uwsgi/apps-enabled/staging.intranet.defi-velo.ch.ini",
+        "pid": "/run/uwsgi/app/staging-intranet.defi-velo.ch/pid",
+        "ini": "/etc/uwsgi/apps-enabled/staging-intranet.defi-velo.ch.ini",
         "requirements": "staging",
         "settings": {
             "ALLOWED_HOSTS": "\n".join(["staging.intranet.defi-velo.ch"]),
@@ -47,7 +47,7 @@ ENVIRONMENTS = {
             "MEDIA_ROOT": "/var/www/intranet.defi-velo.ch/staging/media/",
             "STATIC_ROOT": "/var/www/intranet.defi-velo.ch/staging/static/",
             "SITE_DOMAIN": "staging.intranet.defi-velo.ch",
-            "SASSC_BIN_PATH": "/var/www/intranet.defi-velo.ch/staging/venv/bin/sassc",
+            "SASSC_BIN_PATH": "/var/www/intranet.defi-velo.ch/staging/venv/bin/pysassc",
             "VIRTUAL_ENV": "/var/www/intranet.defi-velo.ch/staging/venv",
             "USE_DB_EMAIL_BACKEND": "1",
             "DJANGO_SETTINGS_MODULE": "defivelo.settings.staging",
