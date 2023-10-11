@@ -524,7 +524,6 @@ def deploy(c):
     c.conn.dump_db(c.conn.backups_root)
     install_requirements(c)
     dj_collect_static(c)
-    django_compress(c)
     dj_migrate_database(c)
     dj_sync_roles(c)
     compile_messages(c)
@@ -680,15 +679,6 @@ def restart_uwsgi(c):
     c.conn.run(f"uwsgi --stop '{c.conn.config.pid}'")
     time.sleep(2)
     c.conn.run(f"uwsgi --start '{c.conn.config.ini}'")
-
-
-@task
-@remote
-def django_compress(c):
-    """
-    Minify assets with django-compressor
-    """
-    c.conn.manage_py("compress --force")
 
 
 @task
