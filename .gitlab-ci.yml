@@ -7,7 +7,7 @@ variables:
   LIIPOPS_HOSTS: swing-defivelo-intranet.k8s.liip.ch
   DJANGO_SETTINGS_MODULE: defivelo.settings.base
   GUNICORN_APP_NAME: defivelo.wsgi
-  LIIP_DOCKER_PYTHON_VERSION: "3.7"
+  LIIP_DOCKER_PYTHON_VERSION: "3.11"
   BASE_ADDITIONAL_APKS: sassc
   HTTPD_RUN_COMPRESS: "true"
 
@@ -24,9 +24,9 @@ test:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   tags:
     - docker-nonswiss-ok
-  image: &test_image 'python:3.7.4-buster'
+  image: &test_image 'python:3.11-bullseye'
   services:
-    - name: postgres:11.8
+    - name: postgres:15
       alias: db
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
