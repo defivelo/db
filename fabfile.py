@@ -19,7 +19,8 @@ from invoke.exceptions import UnexpectedExit
 ENVIRONMENTS = {
     "prod": {
         "root": "/var/www/intranet.defi-velo.ch/prod/",
-        "host": "wpy10809@onhp-python3.iron.bsa.oriented.ch:29992",
+        "host": "wpy10809@onhp-python3.iron.bsa.oriented.ch:29992",  # OLD
+        # "host": "wpy10809@onhp-python2.iron.bsa.oriented.ch:29992",  # NEW
         "pid": "/run/uwsgi/app/intranet.defi-velo.ch/pid",
         "ini": "/etc/uwsgi/apps-enabled/intranet.defi-velo.ch.ini",
         "settings": {
