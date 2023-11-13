@@ -38,8 +38,8 @@ ENVIRONMENTS = {
         "root": "/var/www/intranet.defi-velo.ch/staging/",
         # "host": "wpy10809@onhp-python3.iron.bsa.oriented.ch:29992",  # OLD
         "host": "wpy10809@onhp-python2.iron.bsa.oriented.ch:29992",  # NEW
-        "pid": "/run/uwsgi/app/staging-intranet.defi-velo.ch/pid",
-        "ini": "/etc/uwsgi/apps-enabled/staging-intranet.defi-velo.ch.ini",
+        "pid": "/run/uwsgi/app/staging.intranet.defi-velo.ch/pid",
+        "ini": "/etc/uwsgi/apps-enabled/staging.intranet.defi-velo.ch.ini",
         "requirements": "staging",
         "settings": {
             "ALLOWED_HOSTS": "\n".join(["staging.intranet.defi-velo.ch"]),
