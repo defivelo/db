@@ -6,5 +6,15 @@
   ],
   "major": {
     "enabled": false
+  },
+  "pip_requirements": {
+    "description": "Configuration object for the pip_requirements manager",
+    "type": "object",
+    "default": {
+      "fileMatch": [
+        "(^|/)[\\w-]*requirements((-|/)\\w+)?\\.(txt|pip)$"
+      ]
+    },
+    "$ref": "#"
   }
 }
