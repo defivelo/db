@@ -1,4 +1,4 @@
-FROM python:3.7-buster
+FROM python:3.11-bullseye
 
 RUN set -x; \
     apt-get update -qq \
@@ -22,7 +22,9 @@ RUN set -x; \
     useradd --create-home -u $USER_ID -g app -s /bin/bash app && \
     install -o app -g app -d /code "$VIRTUAL_ENV"
 USER app
+RUN python -m ensurepip --upgrade
 RUN python -m venv "$VIRTUAL_ENV"
+RUN python -m pip install --upgrade pip
 WORKDIR /code
 
 COPY entrypoint.sh /

@@ -317,6 +317,8 @@ class MonthlyCantonalValidationForm(forms.ModelForm):
                         self.instance.validated_urls.add(mcvu)
                     else:
                         self.instance.validated_urls.remove(mcvu)
-                except ValueError:  # Conversion of k.split("_")[1] to int; it's not an url
+                except (
+                    ValueError
+                ):  # Conversion of k.split("_")[1] to int; it's not an url
                     pass
         return super().save(commit)

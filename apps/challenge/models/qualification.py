@@ -47,7 +47,6 @@ CATEGORY_CHOICES = (
 
 
 class QualificationActivity(TranslatableModel):
-
     translations = TranslatedFields(name=models.CharField(_("Nom"), max_length=255))
     category = models.CharField(
         _("Catégorie"), max_length=1, choices=CATEGORY_CHOICES, blank=True

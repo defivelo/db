@@ -68,6 +68,7 @@ UPSTREAM_APPS = (
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "crispy_forms",
+    "crispy_bootstrap3",
     "compressor",
     "stronghold",
     "localflavor",
@@ -83,6 +84,9 @@ UPSTREAM_APPS = (
     "simple_history",
     "memoize",
 )
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap3"
+CRISPY_TEMPLATE_PACK = "bootstrap3"
 
 # Project apps tested by jenkins (everything in apps/)
 APPS_DIR = os.path.join(PROJECT_ROOT, "apps")
@@ -103,6 +107,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "stronghold.middleware.LoginRequiredMiddleware",
@@ -188,7 +193,6 @@ SITE_ID = 1
 LANGUAGE_CODE = "fr"
 TIME_ZONE = "Europe/Zurich"
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 
 DATE_FORMAT = "j F Y"

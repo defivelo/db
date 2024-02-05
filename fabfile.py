@@ -19,7 +19,8 @@ from invoke.exceptions import UnexpectedExit
 ENVIRONMENTS = {
     "prod": {
         "root": "/var/www/intranet.defi-velo.ch/prod/",
-        "host": "wpy10809@onhp-python3.iron.bsa.oriented.ch:29992",
+        # "host": "wpy10809@onhp-python3.iron.bsa.oriented.ch:29992",  # OLD
+        "host": "wpy10809@onhp-python2.iron.bsa.oriented.ch:29992",  # NEW
         "pid": "/run/uwsgi/app/intranet.defi-velo.ch/pid",
         "ini": "/etc/uwsgi/apps-enabled/intranet.defi-velo.ch.ini",
         "settings": {
@@ -29,13 +30,14 @@ ENVIRONMENTS = {
             "MEDIA_ROOT": "/var/www/intranet.defi-velo.ch/prod/media/",
             "STATIC_ROOT": "/var/www/intranet.defi-velo.ch/prod/static/",
             "SITE_DOMAIN": "intranet.defi-velo.ch",
-            "SASSC_BIN_PATH": "/var/www/intranet.defi-velo.ch/prod/venv/bin/sassc",
+            "SASSC_BIN_PATH": "/var/www/intranet.defi-velo.ch/prod/venv/bin/pysassc",
             "VIRTUAL_ENV": "/var/www/intranet.defi-velo.ch/prod/venv",
         },
     },
     "staging": {
         "root": "/var/www/intranet.defi-velo.ch/staging/",
-        "host": "wpy10809@onhp-python3.iron.bsa.oriented.ch:29992",
+        # "host": "wpy10809@onhp-python3.iron.bsa.oriented.ch:29992",  # OLD
+        "host": "wpy10809@onhp-python2.iron.bsa.oriented.ch:29992",  # NEW
         "pid": "/run/uwsgi/app/staging.intranet.defi-velo.ch/pid",
         "ini": "/etc/uwsgi/apps-enabled/staging.intranet.defi-velo.ch.ini",
         "requirements": "staging",
@@ -46,7 +48,7 @@ ENVIRONMENTS = {
             "MEDIA_ROOT": "/var/www/intranet.defi-velo.ch/staging/media/",
             "STATIC_ROOT": "/var/www/intranet.defi-velo.ch/staging/static/",
             "SITE_DOMAIN": "staging.intranet.defi-velo.ch",
-            "SASSC_BIN_PATH": "/var/www/intranet.defi-velo.ch/staging/venv/bin/sassc",
+            "SASSC_BIN_PATH": "/var/www/intranet.defi-velo.ch/staging/venv/bin/pysassc",
             "VIRTUAL_ENV": "/var/www/intranet.defi-velo.ch/staging/venv",
             "USE_DB_EMAIL_BACKEND": "1",
             "DJANGO_SETTINGS_MODULE": "defivelo.settings.staging",
@@ -523,7 +525,6 @@ def deploy(c):
     c.conn.dump_db(c.conn.backups_root)
     install_requirements(c)
     dj_collect_static(c)
-    django_compress(c)
     dj_migrate_database(c)
     dj_sync_roles(c)
     compile_messages(c)
@@ -679,15 +680,6 @@ def restart_uwsgi(c):
     c.conn.run(f"uwsgi --stop '{c.conn.config.pid}'")
     time.sleep(2)
     c.conn.run(f"uwsgi --start '{c.conn.config.ini}'")
-
-
-@task
-@remote
-def django_compress(c):
-    """
-    Minify assets with django-compressor
-    """
-    c.conn.manage_py("compress --force")
 
 
 @task

@@ -12,6 +12,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='invoiceline',
-            options={'ordering': ('session__date', 'session__hour')},
+            options={'ordering': ('session__day', 'session__begin')},
         ),
     ]
