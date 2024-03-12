@@ -22,7 +22,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from defivelo.roles import has_permission
 
-from ..forms import QualificationForm
+from ..forms import QualificationDeleteForm, QualificationForm
 from ..models import Qualification, Session
 from .session import SessionMixin
 
@@ -104,6 +104,7 @@ class QualiUpdateView(QualiMixin, SuccessMessageMixin, UpdateView):
 
 class QualiDeleteView(QualiMixin, DeleteView):
     success_message = _("Qualif’ supprimée")
+    form_class = QualificationDeleteForm
 
     def dispatch(self, *args, **kwargs):
         """
@@ -118,6 +119,14 @@ class QualiDeleteView(QualiMixin, DeleteView):
         context["timesheets"] = self.object.get_related_timesheets().distinct()
         return context
 
-    def post(self, request, *args, **kwargs):
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs.pop("season", None)
+        form_kwargs.pop("cantons", None)
+        form_kwargs.pop("session", None)
+        form_kwargs.pop("is_for_coordinator", None)
+        return form_kwargs
+
+    def form_valid(self, *args, **kwargs):
         self.get_object().get_related_timesheets().delete()
-        return super().post(request, *args, **kwargs)
+        return super().form_valid(*args, **kwargs)

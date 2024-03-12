@@ -47,6 +47,10 @@ class QualificationFormQuick(forms.ModelForm):
         fields = ["session", "name", "class_teacher_natel"]
 
 
+class QualificationDeleteForm(forms.Form):
+    pass
+
+
 class QualificationForm(forms.ModelForm):
     class_teacher_natel = CHPhoneNumberField(
         label=_("Natel enseignant"), required=False
