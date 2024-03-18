@@ -48,6 +48,8 @@ class QualificationFormQuick(forms.ModelForm):
 
 
 class QualificationDeleteForm(forms.Form):
+    """Validation based on POST data."""
+
     pass
 
 

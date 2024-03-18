@@ -81,6 +81,7 @@ from ..forms import (
     SeasonStaffChoiceForm,
     SeasonToSpecificStateForm,
 )
+from ..forms.season import SeasonDeleteForm
 from ..models import HelperSessionAvailability, Qualification, Season
 from ..models.availability import HelperSeasonWorkWish
 from ..models.qualification import (
@@ -1244,6 +1245,11 @@ class SeasonCreateView(
 class SeasonDeleteView(
     SeasonMixin, HasPermissionsMixin, SuccessMessageMixin, DeleteView
 ):
+    # FIXME:
+    #  Fixed to work with Django 4.2 (DeleteView have forms).
+    #  SeasonDeleteView's url is not referenced anywhere. Dead code?
+    form_class = SeasonDeleteForm
+
     success_message = _("Mois supprimé")
     success_url = reverse_lazy("season-list")
 

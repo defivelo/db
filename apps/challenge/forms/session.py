@@ -159,3 +159,14 @@ class SessionForm(forms.ModelForm):
             "comments",
             "visible",
         ]
+
+
+class SessionDeleteForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        kwargs.pop("cantons", None)
+        self.season = kwargs.pop("season", None)
+        super().__init__(**kwargs)
+
+    class Meta:
+        model = Session
+        fields = []

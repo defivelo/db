@@ -230,7 +230,7 @@ class TimesheetsTestCase(SeasonTestCaseMixin):
             user=user, date=session.day + datetime.timedelta(days=1)
         ).pk
 
-        self.client.post(
+        response = self.client.post(
             reverse(
                 "session-delete",
                 kwargs={
@@ -239,6 +239,7 @@ class TimesheetsTestCase(SeasonTestCaseMixin):
                 },
             )
         )
+        assert response.status_code == 302
 
         assert not Timesheet.objects.filter(pk=timesheet1_pk).exists()
         assert Timesheet.objects.filter(pk=timesheet2_pk).exists()
