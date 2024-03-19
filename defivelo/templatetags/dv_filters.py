@@ -104,10 +104,11 @@ def tel_link(tel):
         return ""
     if tel[0:3] == "+41" and len(tel) == 12:
         # Convert to swiss local number
-        return "0{} {} {} {}".format(tel[3:5], tel[5:8], tel[8:10], tel[10:12])
-    return tel
+        tel_str = "0{} {} {} {}".format(tel[3:5], tel[5:8], tel[8:10], tel[10:12])
+    else:
+        tel_str = tel
     return mark_safe(
-        '<a href="tel:{tel_int}">{tel}</a>'.format(tel_int=tel_int(tel), tel=tel)
+        '<a href="tel:{tel_int}">{tel}</a>'.format(tel_int=tel_int(tel), tel=tel_str)
     )
 
 
