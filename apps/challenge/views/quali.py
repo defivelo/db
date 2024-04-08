@@ -120,12 +120,12 @@ class QualiDeleteView(QualiMixin, DeleteView):
         return context
 
     def get_form_kwargs(self):
-        form_kwargs = super().get_form_kwargs()
-        form_kwargs.pop("season", None)
-        form_kwargs.pop("cantons", None)
-        form_kwargs.pop("session", None)
-        form_kwargs.pop("is_for_coordinator", None)
-        return form_kwargs
+        # Cleanup unused kwargs genereated by QualiMixin
+        return {
+            k: v
+            for (k, v) in super().get_form_kwargs().items()
+            if k not in ["season", "cantons", "session", "is_for_coordinator"]
+        }
 
     def form_valid(self, *args, **kwargs):
         self.get_object().get_related_timesheets().delete()
