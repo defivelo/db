@@ -13,7 +13,6 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
@@ -31,15 +30,18 @@ class ArticleMixin(HasPermissionsMixin, SuccessMessageMixin, MenuView):
     required_permission = "home_article_cud"
     model = Article
     context_object_name = "article"
-    form_class = ArticleForm
     success_url = reverse_lazy("home")
 
 
-class ArticleCreateView(ArticleMixin, CreateView):
+class ArticleInputMixin(ArticleMixin):
+    form_class = ArticleForm
+
+
+class ArticleCreateView(ArticleInputMixin, CreateView):
     success_message = _("Article créé")
 
 
-class ArticleUpdateView(ArticleMixin, UpdateView):
+class ArticleUpdateView(ArticleInputMixin, UpdateView):
     success_message = _("Article mis à jour")
 
 

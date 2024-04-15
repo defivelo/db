@@ -48,7 +48,6 @@ restrictedspecificurls = [
     "season-actorlist",
     "season-availabilities",
     "season-staff-update",
-    "season-delete",
     "season-set-running",
     "season-set-open",
 ]

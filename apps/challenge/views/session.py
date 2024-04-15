@@ -39,6 +39,7 @@ from defivelo.templatetags.dv_filters import lettercounter
 from defivelo.views import MenuView
 
 from ..forms import QualificationFormQuick, SessionForm
+from ..forms.session import SessionDeleteForm
 from ..models import Session
 from ..models.qualification import (
     CATEGORY_CHOICE_A,
@@ -318,6 +319,7 @@ class SessionCreateView(SessionMixin, SuccessMessageMixin, CreateView):
 
 class SessionDeleteView(SessionMixin, SuccessMessageMixin, DeleteView):
     success_message = _("Session supprimée")
+    form_class = SessionDeleteForm
 
     def dispatch(self, request, *args, **kwargs):
         """
@@ -331,9 +333,9 @@ class SessionDeleteView(SessionMixin, SuccessMessageMixin, DeleteView):
             return super().dispatch(request, *args, **kwargs)
         raise PermissionDenied
 
-    def post(self, request, *args, **kwargs):
+    def form_valid(self, form):
         self.get_object().get_related_timesheets().delete()
-        return super().post(request, *args, **kwargs)
+        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse_lazy("season-detail", kwargs={"pk": self.kwargs["seasonpk"]})

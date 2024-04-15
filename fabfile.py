@@ -413,7 +413,6 @@ def reset_db_from_prod(c):
     prod_ctx.conn.config.load_overrides(prod_conf)
 
     with NamedTemporaryFile() as local_transit_file:
-
         # Handle the production part:
         with prod_ctx.conn as conn:
             # Dump the PROD DB

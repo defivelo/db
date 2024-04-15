@@ -19,7 +19,6 @@
                     {% if not article.published %}<span class="glyphicon glyphicon-hourglass" aria-hidden="true"></span>{% endif %}
                     {{ article.title }}
                 </h3>
-                
                 <span class="pull-right">
                     <small><em>{{ article.modified }}</em></small>
                     {% if user|can:"home_article_cud" %}
