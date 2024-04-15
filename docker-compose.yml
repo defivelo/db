@@ -1,5 +1,3 @@
-version: '3.4'
-
 x-environment:
   &x-environment
   INITIAL: "${INITIAL:-0}"
