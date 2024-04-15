@@ -36,7 +36,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.translation import pgettext_lazy as _p
 from django.views.generic import ListView, RedirectView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView
 
 from django_ical.views import ICalFeed
 from rolepermissions.checkers import has_role
@@ -81,7 +81,6 @@ from ..forms import (
     SeasonStaffChoiceForm,
     SeasonToSpecificStateForm,
 )
-from ..forms.season import SeasonDeleteForm
 from ..models import HelperSessionAvailability, Qualification, Season
 from ..models.availability import HelperSeasonWorkWish
 from ..models.qualification import (
@@ -1240,18 +1239,6 @@ class SeasonCreateView(
     SeasonMixin, HasPermissionsMixin, SuccessMessageMixin, CreateView
 ):
     success_message = _("Mois créé")
-
-
-class SeasonDeleteView(
-    SeasonMixin, HasPermissionsMixin, SuccessMessageMixin, DeleteView
-):
-    # FIXME:
-    #  Fixed to work with Django 4.2 (DeleteView have forms).
-    #  SeasonDeleteView's url is not referenced anywhere. Dead code?
-    form_class = SeasonDeleteForm
-
-    success_message = _("Mois supprimé")
-    success_url = reverse_lazy("season-list")
 
 
 class SeasonHelperListView(HelpersList, HasPermissionsMixin, SeasonMixin):

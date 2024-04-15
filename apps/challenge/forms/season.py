@@ -16,7 +16,6 @@
 
 from django import forms
 from django.contrib.auth import get_user_model
-from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
@@ -79,25 +78,6 @@ class SeasonForm(forms.ModelForm):
     class Meta:
         model = Season
         fields = ["year", "month_start", "n_months", "cantons", "state", "leader"]
-
-
-class SeasonDeleteForm(SeasonForm):
-    def __init__(self, *args, **kwargs):
-        cantons = kwargs.pop("cantons", None)
-        kwargs.pop("season", None)
-        super().__init__(**kwargs)
-
-        if cantons:
-            # Only permit deletion within the allowed cantons
-            choices = self.fields["cantons"].choices
-            choices = ((k, v) for (k, v) in choices if k in cantons)
-            self.fields["cantons"].choices = choices
-
-    def clean(self):
-        cleaned_data = super().clean()
-        if len(self.fields["cantons"].choices) == 0:
-            raise PermissionDenied
-        return cleaned_data
 
 
 class SeasonToSpecificStateForm(forms.ModelForm):

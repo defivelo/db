@@ -28,7 +28,6 @@ from .season import (
     SeasonAvailabilityUpdateView,
     SeasonAvailabilityView,
     SeasonCreateView,
-    SeasonDeleteView,
     SeasonDetailView,
     SeasonErrorsListView,
     SeasonExportView,

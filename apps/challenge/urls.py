@@ -34,7 +34,6 @@ from .views import (
     SeasonAvailabilityUpdateView,
     SeasonAvailabilityView,
     SeasonCreateView,
-    SeasonDeleteView,
     SeasonDetailView,
     SeasonErrorsListView,
     SeasonExportView,
@@ -195,11 +194,6 @@ urlpatterns = [
                     r"^availability/(?P<helperpk>[0-9]+)/$",
                     SeasonAvailabilityUpdateView.as_view(),
                     name="season-availabilities-update",
-                ),
-                re_path(
-                    r"^delete/$",
-                    SeasonDeleteView.as_view(),
-                    name="season-delete",
                 ),
             ]
         ),
