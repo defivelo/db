@@ -7,9 +7,15 @@
   "major": {
     "enabled": false
   },
-  "pip_requirements": {
+  "pip-compile": {
     "fileMatch": [
-      "(^|/)[\\w-]*requirements((-|/)\\w+)?\\.(txt|pip)$"
+      "(^|/)[\\w-]*requirements((-|/)\\w+)?\\.txt$"
     ]
+  },
+  "pip_requirements": {
+    "enabled": false
+  },
+  "pip_setup": {
+    "enabled": false
   }
 }
