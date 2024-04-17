@@ -13,7 +13,7 @@
     ]
   },
   "pip_requirements": {
-    "enabled": false
+    "enabled": true
   },
   "pip_setup": {
     "enabled": false
