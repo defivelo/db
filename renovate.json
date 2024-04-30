@@ -9,7 +9,7 @@
   },
   "pip-compile": {
     "fileMatch": [
-      "(^|/)[\\w-]*requirements((-|/)\\w+)?\\.txt$"
+      "(^|/)[\\w-]*requirements((-|/)\\w+)?\\.in$"
     ]
   },
   "pip_requirements": {
