@@ -17,5 +17,8 @@
   },
   "pip_setup": {
     "enabled": false
+  },
+  "constraints": {
+    "python": "==3.11"
   }
 }
