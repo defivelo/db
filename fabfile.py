@@ -285,7 +285,7 @@ class CustomConnection(Connection):
 
     def restore_dump(self, db_dump_gz):
         """
-        Restore a gz DB dump to our database
+        Restore a gz DB dump to our database.
         """
         db_creds = self.db_creds()
         self.run(
