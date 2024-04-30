@@ -20,5 +20,21 @@
   },
   "constraints": {
     "python": "==3.11"
+  },
+  "docker-compose": {
+    "major": {
+      "enabled": false
+    },
+    "minor": {
+      "enabled": true
+    }
+  },
+  "dockerfile": {
+    "major": {
+      "enabled": false
+    },
+    "minor": {
+      "enabled": false
+    }
   }
 }
