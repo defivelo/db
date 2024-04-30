@@ -6,4 +6,5 @@ Werkzeug
 
 # Deployment requirements
 fabric
+# Fixed version
 dulwich==0.19.15
