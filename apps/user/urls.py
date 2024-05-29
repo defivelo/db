@@ -17,6 +17,7 @@
 from django.conf.urls import include
 from django.urls import re_path
 from django.views.decorators.cache import never_cache
+# from .views.autocomplete import get_form_field
 
 from .views import (
     ResendUserCredentials,
@@ -36,6 +37,7 @@ from .views.autocomplete import (
     Helpers,
     Leaders,
     PersonsRelevantForSessions,
+    OfsAutoComplete,
 )
 from .views.deletes import UserDelete
 
@@ -85,6 +87,7 @@ urlpatterns = [
     ),
     re_path(r"^(?P<pk>[0-9]+)/update/$", UserUpdate.as_view(), name="user-update"),
     re_path(r"^ac/all/$", AllPersons.as_view(), name="user-AllPersons-ac"),
+    re_path(r"^ofs-autocomplete/$", OfsAutoComplete.as_view(), name="ofs-autocomplete"),
     re_path(r"^ac/coordinator/$", AllCoordinators.as_view(), name="user-coordinators"),
     re_path(
         r"^ac/prfs/$",
