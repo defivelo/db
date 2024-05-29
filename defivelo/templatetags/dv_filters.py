@@ -382,12 +382,11 @@ def cantons_abbr(cantons, abbr=True, long=True):
     return [
         force_str(c[1])
         if not abbr
-        else mark_safe(
-            '<abbr title="{title}">{abbr}</abbr>'.format(
+        else (c[0] if not long
+              else mark_safe('<abbr title="{title}">{abbr}</abbr>'.format(
                 abbr=c[0],
                 title=c[1],
-            )
-        )
+                )))
         for c in DV_STATE_CHOICES
         if c[0] in cantons
     ]
