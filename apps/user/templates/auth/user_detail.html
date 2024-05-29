@@ -64,6 +64,8 @@
                     <dl class="dl-horizontal">
                         <dt>{% trans "Nom" %}</dt>
                             <dd>{{ userprofile.get_full_name }}</dd>
+<!--                            <dt>{% trans "Genre" %}</dt>-->
+<!--                            <dd>{{ userprofile.profile.genre }}</dd>-->
                         {% if userprofile.profile.has_address %}
                           <dt>{% trans "Adresse" %}</dt>
                             <dd>
@@ -75,6 +77,10 @@
                                     {% endif %}
                                 </div>
                             </dd>
+                            {% if userprofile.profile.address_ofs_no %}
+                                <dt>{% trans "Commune OFS" %}</dt>
+                                  <dd>{{ userprofile.profile.address_ofs_no }}</dd>
+                            {% endif %}
                         {% endif %}
                     </dl>
                 </div>
@@ -111,7 +117,7 @@
                         {% endif %}
                         {% if userprofile.profile.work_permit %}
                             <dt>{% trans "Permis de travail" %}</dt>
-                                <dd>{{ userprofile.profile.work_permit }}</dd>
+                                <dd>{{ userprofile.profile.work_permit_full }}</dd>
                         {% endif %}
                         {% if userprofile.profile.tax_jurisdiction %}
                             <dt>{% trans "Lieu d’imposition" %}</dt>
