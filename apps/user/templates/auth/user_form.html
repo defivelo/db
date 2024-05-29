@@ -36,6 +36,9 @@
         <!-- Tab panes -->
         <div{% comment %} class="tab-content"{% endcomment %}>
             <div role="tabpanel" class="tab-pane active" id="addr">
+<!--                {% if form.gender %}-->
+<!--                    {% bootstrap_field form.gender layout='horizontal' size='small' %}-->
+<!--                {% endif %}-->
                 {% bootstrap_field form.first_name layout='horizontal' size='small' %}
                 {% bootstrap_field form.last_name layout='horizontal' size='small' %}
                 {% bootstrap_field form.language layout='horizontal' size='small' %}
@@ -185,9 +188,42 @@ function noWorkPermitForSwiss() {
 //     $( '#id_tax_jurisdiction' ).prop('disabled', is_swiss);
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+  const countryField = document.getElementById('id_address_country');
+  const cityAutoContainer = document.getElementById('address_city_auto_container');
+  const cityContainer = document.getElementById('address_city_container');
+  const zipCodeContainer = document.getElementById('address_zip_container');
+
+  function toggleAddressFields() {
+    const isSwitzerland = countryField.value === 'CH';
+    if (isSwitzerland) {
+      cityAutoContainer.style.display = 'block';
+      cityContainer.style.display = 'none';
+      zipCodeContainer.style.display = 'block';
+    } else {
+      cityAutoContainer.style.display = 'none';
+      cityContainer.style.display = 'block';
+      zipCodeContainer.style.display = 'none';
+    }
+  }
+
+  countryField.addEventListener('change', toggleAddressFields);
+  toggleAddressFields();
+});
+
+ function selectedDataAutocomplete() {
+   $("#id_address_city_autocomplete").on("select2:select", function (e) {
+     const selectedData = e.params.data;
+     $("#id_address_ofs_no").val(selectedData.id);
+     $("#address_city_autocomplete").val(selectedData.text);
+     console.log(selectedData.id, selectedData.text);
+    });
+  }
+
 $( "#id_affiliation_canton" ).change( dvCantonsNotAffiliatedToMobile );
 $( "#id_language" ).change( dvLanguagesCannotBeMain );
 $( '#id_nationality' ).change( noWorkPermitForSwiss );
+$("#id_address_city_autocomplete").change( selectedDataAutocomplete );
 
 dvCantonsNotAffiliatedToMobile();
 dvLanguagesCannotBeMain();
