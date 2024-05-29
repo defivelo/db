@@ -20,7 +20,7 @@ from django.utils.translation import gettext_lazy as _
 
 from import_export import fields, resources, widgets
 
-from defivelo.templatetags.dv_filters import canton_abbr, cantons_abbr
+from defivelo.templatetags.dv_filters import canton_abbr, cantons_abbr, canton_abbr_short
 
 from .models import COLLABORATOR_FIELDS, STD_PROFILE_FIELDS
 
@@ -198,7 +198,7 @@ class UserResource(resources.ModelResource):
         export_order = ALL_PROFILE_FIELDS
 
     def dehydrate_profile__address_canton(self, field):
-        return canton_abbr(field.profile.address_canton, abbr=False, long=True)
+        return canton_abbr_short(field.profile.address_canton)
 
     def dehydrate_profile__affiliation_canton(self, field):
         return canton_abbr(field.profile.affiliation_canton, abbr=False, long=True)
