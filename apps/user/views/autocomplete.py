@@ -13,7 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+from dal import autocomplete
+import requests
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
@@ -115,3 +116,33 @@ class Actors(PersonAutocomplete):
     def get_queryset(self):
         qs = super(Actors, self).get_queryset()
         return qs.exclude(profile__actor_for__isnull=True).distinct()
+
+
+# https://django-autocomplete-light.readthedocs.io/en/master/tutorial.html#autocompleting-based-on-a-list-of-strings
+class OfsAutoComplete(autocomplete.Select2ListView):
+    def get_list(self):
+        if not self.q:
+            return []
+
+        response = requests.get(
+            'https://api3.geo.admin.ch/rest/services/api/SearchServer', params={
+                'searchText': self.q,
+                'type': 'locations',
+                'origins': 'gg25'
+            })
+
+        if response.status_code == 200:
+            data = response.json()
+            results = []
+
+            for result in data.get('results', []):
+                attrs = result.get('attrs', {})
+                label = attrs.get('label')
+                feature_id = attrs.get('featureId')
+                origin = attrs.get('origin')
+
+                if label and feature_id and origin == 'gg25':
+                    results.append([feature_id, label])
+            return results
+        else:
+            return []
