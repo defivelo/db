@@ -77,7 +77,11 @@ MARITALSTATUS_MARRIED = 20
 MARITALSTATUS_DIVORCED = 30
 MARITALSTATUS_WIDOW = 40
 MARITALSTATUS_PACS = 50
+MARITALSTATUS_PALD = 60
+MARITALSTATUS_PADD = 70
+MARITALSTATUS_PADADA = 80
 
+# https://www.bj.admin.ch/bj/fr/home/gesellschaft/zivilstand.html
 MARITALSTATUS_CHOICES = (
     (MARITALSTATUS_UNDEF, "---------"),
     (MARITALSTATUS_SINGLE, _("Célibataire")),
@@ -85,6 +89,12 @@ MARITALSTATUS_CHOICES = (
     (MARITALSTATUS_DIVORCED, _("Divorcé·e")),
     (MARITALSTATUS_WIDOW, _("Veu·f·ve")),
     (MARITALSTATUS_PACS, _("En partenariat enregistré")),
+    (MARITALSTATUS_PALD, _("En partenariat dissous judiciairement")),
+    # partnership legally dissolved
+    (MARITALSTATUS_PADD, _("En partenariat dissous par décès")),
+    # partnership dissolved by death
+    (MARITALSTATUS_PADADA, _("En partenariat dissous ensuite de déclaration d’absence"))
+    # partnership dissolved after declaration of absence
 )
 
 BAGSTATUS_NONE = 0
@@ -98,6 +108,59 @@ BAGSTATUS_CHOICES = (
     (BAGSTATUS_PAID, _("Payé")),
     (BAGSTATUS_GIFT, _("Offert")),
 )
+# https://www.sem.admin.ch/sem/fr/home/themen/aufenthalt.html
+WORKPERMIT_UNDEF = 0
+WORKPERMIT_EU_EFTA_B = 10
+WORKPERMIT_EU_EFTA_C = 20
+WORKPERMIT_EU_EFTA_CI = 30
+WORKPERMIT_EU_EFTA_G = 40
+WORKPERMIT_EU_EFTA_L = 50
+
+WORKPERMIT_TC_B = 60  # TC = Third Country
+WORKPERMIT_TC_C = 70
+WORKPERMIT_TC_CI = 80
+WORKPERMIT_TC_F = 90
+WORKPERMIT_TC_G = 100
+WORKPERMIT_TC_L = 110
+WORKPERMIT_TC_N = 120
+WORKPERMIT_TC_S = 130
+
+WORKPERMIT_CHOICES = (
+    (WORKPERMIT_UNDEF, "---"),
+    (WORKPERMIT_EU_EFTA_B, _("Permis B UE/AELE")),
+    (WORKPERMIT_EU_EFTA_C, _("Permis C UE/AELE")),
+    (WORKPERMIT_EU_EFTA_CI, _("Permis Ci UE/AELE")),
+    (WORKPERMIT_EU_EFTA_G, _("Permis G UE/AELE")),
+    (WORKPERMIT_EU_EFTA_L, _("Permis L UE/AELE")),
+    (WORKPERMIT_TC_B, _("Livret B Etat tiers")),
+    (WORKPERMIT_TC_C, _("Livret C Etat tiers")),
+    (WORKPERMIT_TC_CI, _("Livret Ci Etat tiers")),
+    (WORKPERMIT_TC_F, _("Livret F Etat tiers")),  # étrangers admis provisoirement
+    (WORKPERMIT_TC_G, _("Livret G Etat tiers")),
+    (WORKPERMIT_TC_L, _("Livret L Etat tiers")),
+    (WORKPERMIT_TC_N, _("Livret N Etat tiers")),  # requérants d’asile
+    (WORKPERMIT_TC_S, _("Livret S Etat tiers")),  # personnes à protéger
+)
+# https://www.reimaginegender.org/insights/gender-and-forms
+# GENDER_UNDEF = 0
+# GENDER_WOMAN = 10
+# GENDER_MAN = 20
+# GENDER_TRANSGENDER_WOMAN = 30
+# GENDER_TRANSGENDER_MAN = 40
+# GENDER_NON_BINARY = 50
+# GENDER_AGENDER = 60
+# GENDER_NOT_LISTED = 70
+#
+# GENDER_CHOICES = (
+#     (GENDER_UNDEF, "------"),
+#     (GENDER_WOMAN, _("Femme")),
+#     (GENDER_MAN, _("Homme")),
+#     (GENDER_TRANSGENDER_WOMAN, _("Femme transgenre")),
+#     (GENDER_TRANSGENDER_MAN, _("Homme transgenre")),
+#     (GENDER_NON_BINARY, _("Non-binaire")),
+#     (GENDER_AGENDER, _("Agender")),
+#     (GENDER_NOT_LISTED, _("Non listé")),
+# )
 
 PERSONAL_FIELDS = [
     "language",
@@ -110,6 +173,8 @@ PERSONAL_FIELDS = [
     "address_zip",
     "address_city",
     "address_canton",
+    "address_ofs_no",
+    "address_country",
     "nationality",
     "work_permit",
     "tax_jurisdiction",
@@ -144,6 +209,7 @@ COLLABORATOR_FIELDS = [
     "language",
     "formation",
     "actor_for",
+    # "gender"
 ]
 
 STD_PROFILE_FIELDS = PERSONAL_FIELDS + DV_PUBLIC_FIELDS + DV_PRIVATE_FIELDS
@@ -166,6 +232,9 @@ class UserProfile(Address, models.Model):
         on_delete=models.CASCADE,
     )
     employee_code = models.CharField(_("Code salarié·e"), max_length=63, blank=True)
+    # gender = models.PositiveSmallIntegerField(
+    #     _("Genre"), choices=GENDER_CHOICES, default=GENDER_UNDEF, blank=True
+    # )
     language = models.CharField(
         _("Langue"), max_length=7, choices=DV_LANGUAGES_WITH_DEFAULT, blank=True
     )
@@ -182,7 +251,10 @@ class UserProfile(Address, models.Model):
 
     birthdate = models.DateField(_("Date de naissance"), blank=True, null=True)
     nationality = CountryField(_("Nationalité"), default="CH")
-    work_permit = models.CharField(_("Permis de travail"), max_length=255, blank=True)
+    work_permit_legacy = models.CharField(_("Permis de travail"), max_length=255, blank=True)
+    work_permit = models.PositiveSmallIntegerField(
+        _("Permis de travail"), choices=WORKPERMIT_CHOICES, default=WORKPERMIT_UNDEF
+    )
     tax_jurisdiction = models.CharField(
         _("Lieu d’imposition"), max_length=511, blank=True
     )
@@ -406,6 +478,17 @@ class UserProfile(Address, models.Model):
         if self.marital_status:
             return dict(MARITALSTATUS_CHOICES)[self.marital_status]
         return ""
+    @cached_property
+    def work_permit_full(self):
+        if self.work_permit:
+            return dict(WORKPERMIT_CHOICES)[self.work_permit]
+        return ""
+    #
+    # @cached_property
+    # def gender_full(self):
+    #     if self.gender:
+    #         return dict(GENDER_CHOICES)[self.gender]
+    #     return ""
 
     def status_icon(self):
         icon = ""
