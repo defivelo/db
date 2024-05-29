@@ -18,6 +18,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from localflavor.ch.ch_states import STATE_CHOICES
+from django_countries.fields import CountryField
 
 
 class Address(models.Model):
@@ -29,6 +30,8 @@ class Address(models.Model):
     address_zip = models.CharField(_("NPA"), max_length=4, blank=True)
     address_city = models.CharField(_("Ville"), max_length=64, blank=True)
     address_canton = models.CharField(_("Canton"), max_length=2, blank=True)
+    address_ofs_no = models.CharField(_("Commune OFS"), max_length=4, blank=True)
+    address_country = CountryField(_("Pays"), default="CH")
 
     @property
     def address_canton_full(self):
