@@ -17,7 +17,6 @@
 from django.conf.urls import include
 from django.urls import re_path
 from django.views.decorators.cache import never_cache
-# from .views.autocomplete import get_form_field
 
 from .views import (
     ResendUserCredentials,
@@ -36,10 +35,13 @@ from .views.autocomplete import (
     AllPersons,
     Helpers,
     Leaders,
-    PersonsRelevantForSessions,
     OfsAutoComplete,
+    PersonsRelevantForSessions,
 )
 from .views.deletes import UserDelete
+
+# from .views.autocomplete import get_form_field
+
 
 urlpatterns = [
     re_path(r"^$", never_cache(UserList.as_view()), name="user-list"),
