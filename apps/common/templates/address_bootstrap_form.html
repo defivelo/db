@@ -1,9 +1,12 @@
 {% load bootstrap3 %}
 
-<div class="form-group form-group-sm">
-    {% bootstrap_label form.address_country.label label_class='col-md-3 visible-md-block visible-lg-block control-label' %}
-    {% bootstrap_field form.address_country size='small' field_class='col-md-9' form_group_class='none' show_label=False %}
-</div>
+{% if "address_country" in form %}
+  <div class="form-group form-group-sm">
+      {% bootstrap_label form.address_country.label label_class='col-md-3 visible-md-block visible-lg-block control-label' %}
+      {% bootstrap_field form.address_country size='small' field_class='col-md-9' form_group_class='none' show_label=False %}
+  </div>
+{% endif %}
+
 <div class="form-group form-group-sm">
     {% bootstrap_label form.address_street.label label_class='col-md-3 control-label' %}
 
@@ -20,23 +23,29 @@
 {% endif %}
 <div class="form-group form-group-sm">
     {% bootstrap_label form.address_city.label label_class='col-md-3 visible-md-block visible-lg-block control-label' %}
-<div id="address_zip_container" style="display: none;">
-    {% bootstrap_label form.address_zip.label label_class='col-md-3 hidden-md hidden-lg control-label' %}
-    {% bootstrap_field form.address_zip       size='small' field_class='col-md-2' form_group_class='none' show_label=False %}
-</div>
-<div id="address_city_container">
-    {% bootstrap_label form.address_zip_no_validation.label label_class='col-md-3 hidden-md hidden-lg control-label' %}
-    {% bootstrap_field form.address_zip_no_validation  size='small' field_class='col-md-2' form_group_class='none' show_label=False %}
+  <div id="address_zip_container" style="display: none;">
+      {% bootstrap_label form.address_zip.label label_class='col-md-3 hidden-md hidden-lg control-label' %}
+      {% bootstrap_field form.address_zip       size='small' field_class='col-md-2' form_group_class='none' show_label=False %}
+  </div>
+  <div id="address_city_container">
+    {% if "address_zip_no_validation" in form %}
+      {% bootstrap_label form.address_zip_no_validation.label label_class='col-md-3 hidden-md hidden-lg control-label' %}
+      {% bootstrap_field form.address_zip_no_validation  size='small' field_class='col-md-2' form_group_class='none' show_label=False %}
+    {% endif %}
 
-    {% bootstrap_label form.address_city.label label_class='col-md-3 hidden-md hidden-lg control-label' %}
-    {% bootstrap_field form.address_city       size='small' field_class='col-md-7' form_group_class='none' show_label=False %}
-    {% bootstrap_field form.address_ofs_no field_class='hidden' form_group_class='none' show_label=False %}
-</div>
-<div id="address_city_auto_container" style="display: none;">
-    {% bootstrap_label form.address_city_autocomplete.label label_class='col-md-3 hidden-md hidden-lg control-label' %}
-    {% bootstrap_field form.address_city_autocomplete size='small' field_class='col-md-5' form_group_class='none' show_label=False %}
+      {% bootstrap_label form.address_city.label label_class='col-md-3 hidden-md hidden-lg control-label' %}
+      {% bootstrap_field form.address_city       size='small' field_class='col-md-7' form_group_class='none' show_label=False %}
 
-    {% bootstrap_label form.address_canton.label label_class='col-md-3 hidden-md hidden-lg control-label' %}
-    {% bootstrap_field form.address_canton       size='small' field_class='col-md-2' form_group_class='none' show_label=False %}
-</div>
+    {% if "address_ofs_no" in form %}
+      {% bootstrap_field form.address_ofs_no field_class='hidden' form_group_class='none' show_label=False %}
+    {% endif %}
+  </div>
+  <div id="address_city_auto_container" style="display: none;">
+    {% if "address_city_autocomplete" in form %}
+      {% bootstrap_label form.address_city_autocomplete.label label_class='col-md-3 hidden-md hidden-lg control-label' %}
+      {% bootstrap_field form.address_city_autocomplete size='small' field_class='col-md-5' form_group_class='none' show_label=False %}
+    {% endif %}
+      {% bootstrap_label form.address_canton.label label_class='col-md-3 hidden-md hidden-lg control-label' %}
+      {% bootstrap_field form.address_canton       size='small' field_class='col-md-2' form_group_class='none' show_label=False %}
+  </div>
 </div>

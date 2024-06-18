@@ -20,7 +20,11 @@ from django.utils.translation import gettext_lazy as _
 
 from import_export import fields, resources, widgets
 
-from defivelo.templatetags.dv_filters import canton_abbr, cantons_abbr, canton_abbr_short
+from defivelo.templatetags.dv_filters import (
+    canton_abbr,
+    canton_abbr_short,
+    cantons_abbr,
+)
 
 from .models import COLLABORATOR_FIELDS, STD_PROFILE_FIELDS
 
