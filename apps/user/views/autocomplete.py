@@ -13,12 +13,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from dal import autocomplete
-import requests
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 
+import requests
+from dal import autocomplete
 from dal_select2.views import Select2QuerySetView
 from six import get_unbound_function
 
@@ -125,23 +125,21 @@ class OfsAutoComplete(autocomplete.Select2ListView):
             return []
 
         response = requests.get(
-            'https://api3.geo.admin.ch/rest/services/api/SearchServer', params={
-                'searchText': self.q,
-                'type': 'locations',
-                'origins': 'gg25'
-            })
+            "https://api3.geo.admin.ch/rest/services/api/SearchServer",
+            params={"searchText": self.q, "type": "locations", "origins": "gg25"},
+        )
 
         if response.status_code == 200:
             data = response.json()
             results = []
 
-            for result in data.get('results', []):
-                attrs = result.get('attrs', {})
-                label = attrs.get('label')
-                feature_id = attrs.get('featureId')
-                origin = attrs.get('origin')
+            for result in data.get("results", []):
+                attrs = result.get("attrs", {})
+                label = attrs.get("label")
+                feature_id = attrs.get("featureId")
+                origin = attrs.get("origin")
 
-                if label and feature_id and origin == 'gg25':
+                if label and feature_id and origin == "gg25":
                     results.append([feature_id, label])
             return results
         else:

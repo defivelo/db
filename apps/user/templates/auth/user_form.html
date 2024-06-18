@@ -36,9 +36,11 @@
         <!-- Tab panes -->
         <div{% comment %} class="tab-content"{% endcomment %}>
             <div role="tabpanel" class="tab-pane active" id="addr">
-<!--                {% if form.gender %}-->
-<!--                    {% bootstrap_field form.gender layout='horizontal' size='small' %}-->
-<!--                {% endif %}-->
+              {% comment %}
+              {% if form.gender %}
+                {% bootstrap_field form.gender layout='horizontal' size='small' %}
+              {% endif %}
+              {% endcomment %}
                 {% bootstrap_field form.first_name layout='horizontal' size='small' %}
                 {% bootstrap_field form.last_name layout='horizontal' size='small' %}
                 {% bootstrap_field form.language layout='horizontal' size='small' %}

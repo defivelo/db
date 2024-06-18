@@ -15,12 +15,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django import forms
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.forms import modelform_factory
 from django.utils.translation import gettext_lazy as _
 
+from dal import autocomplete
 from django_filters import DateFilter
 from localflavor.ch.forms import (
     CHSocialSecurityNumberField,
@@ -41,10 +43,9 @@ from apps.common.forms import (
 from apps.orga.models import Organization
 from defivelo.roles import DV_AUTOMATIC_ROLES, DV_AVAILABLE_ROLES
 
-from dal import autocomplete
 from ..common.fields import CheckboxMultipleChoiceField
 from . import STATE_CHOICES_WITH_DEFAULT
-from .models import UserProfile, WORKPERMIT_CHOICES
+from .models import UserProfile
 
 
 class SwissDateFilter(DateFilter):
@@ -145,22 +146,32 @@ class UserProfileForm(SimpleUserProfileForm):
         # Import all generated fields from UserProfile
         self.fields.update(modelform_factory(UserProfile, exclude=("user",))().fields)
         self.fields["address_city_autocomplete"] = autocomplete.Select2ListChoiceField(
-            widget=autocomplete.ListSelect2(url='ofs-autocomplete',
-                                            attrs={'id': 'id_address_city_autocomplete',
-                                                   'placeholder': 'Ville',
-                                                   'style': 'display: none;'}),
-            required=False)
-        self.fields["address_zip_no_validation"] = (
-            forms.CharField(required=False,
-                            widget=forms.TextInput(
-                                attrs={'id': 'id_address_zip_no_validation',
-                                       'placeholder': 'Code postal'})))
+            widget=autocomplete.ListSelect2(
+                url="ofs-autocomplete",
+                attrs={
+                    "id": "id_address_city_autocomplete",
+                    "placeholder": "Ville",
+                    "style": "display: none;",
+                },
+            ),
+            required=False,
+        )
+        self.fields["address_zip_no_validation"] = forms.CharField(
+            required=False,
+            widget=forms.TextInput(
+                attrs={
+                    "id": "id_address_zip_no_validation",
+                    "placeholder": "Code postal",
+                }
+            ),
+        )
         # Some manual fixes lost by importing UserProfile
         for fieldname, fieldclass in {
             "address_zip": CHZipCodeField(required=False),
             "address_country": BS3CountriesField(required=False),
-            "address_ofs_no": forms.CharField(widget=forms.HiddenInput(),
-                                              required=False),
+            "address_ofs_no": forms.CharField(
+                widget=forms.HiddenInput(), required=False
+            ),
             "birthdate": SwissDateField(required=False),
             # "gender": forms.ChoiceField(
             #     choices=GENDER_CHOICES,
@@ -180,9 +191,9 @@ class UserProfileForm(SimpleUserProfileForm):
                 required=False,
             ),
             "work_permit": forms.ChoiceField(
-                choices=WORKPERMIT_CHOICES,
+                choices=settings.WORK_PERMIT_CHOICES,
                 required=False,
-            )
+            ),
         }.items():
             label = self.fields[fieldname].label
             self.fields[fieldname] = fieldclass

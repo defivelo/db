@@ -17,8 +17,8 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from localflavor.ch.ch_states import STATE_CHOICES
 from django_countries.fields import CountryField
+from localflavor.ch.ch_states import STATE_CHOICES
 
 
 class Address(models.Model):
