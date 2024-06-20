@@ -1,8 +1,10 @@
 {% extends "base.html" %}
-{% load i18n %}
-{% load account %}
-{% load bootstrap3 %}
-{% load dv_filters %}
+{% load account bootstrap3 dv_filters i18n static %}
+
+{% block extra_css_head %}
+  {{ block.super }}
+  {{ form.media.css }}
+{% endblock %}
 
 {% block head_title %}{% trans "Profil" %}{% endblock %}
 
@@ -185,52 +187,31 @@ function dvLanguagesCannotBeMain() {
 }
 
 function noWorkPermitForSwiss() {
-    is_swiss = ($('#id_nationality').val() == 'CH');
-    $( '#id_work_permit' ).prop('disabled', is_swiss);
-//     $( '#id_tax_jurisdiction' ).prop('disabled', is_swiss);
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-  const countryField = document.getElementById('id_address_country');
-  const cityAutoContainer = document.getElementById('address_city_auto_container');
-  const cityContainer = document.getElementById('address_city_container');
-  const zipCodeContainer = document.getElementById('address_zip_container');
-
-  function toggleAddressFields() {
-    const isSwitzerland = countryField.value === 'CH';
-    if (isSwitzerland) {
-      cityAutoContainer.style.display = 'block';
-      cityContainer.style.display = 'none';
-      zipCodeContainer.style.display = 'block';
+    const $nationality_field = $('#id_nationality');
+    const $permit_field = $('#id_work_permit');
+    const is_swiss = ($nationality_field.val() === 'CH');
+    const group = $permit_field.closest('.form-group');
+    if (is_swiss) {
+        $permit_field.prop('disabled', true);
+        group.hide();
     } else {
-      cityAutoContainer.style.display = 'none';
-      cityContainer.style.display = 'block';
-      zipCodeContainer.style.display = 'none';
+        $permit_field.prop('disabled', false);
+        group.show()
     }
-  }
-
-  countryField.addEventListener('change', toggleAddressFields);
-  toggleAddressFields();
-});
-
- function selectedDataAutocomplete() {
-   $("#id_address_city_autocomplete").on("select2:select", function (e) {
-     const selectedData = e.params.data;
-     $("#id_address_ofs_no").val(selectedData.id);
-     $("#address_city_autocomplete").val(selectedData.text);
-     console.log(selectedData.id, selectedData.text);
-    });
-  }
+    // $( '#id_tax_jurisdiction' ).prop('disabled', is_swiss);
+}
 
 $( "#id_affiliation_canton" ).change( dvCantonsNotAffiliatedToMobile );
 $( "#id_language" ).change( dvLanguagesCannotBeMain );
 $( '#id_nationality' ).change( noWorkPermitForSwiss );
-$("#id_address_city_autocomplete").change( selectedDataAutocomplete );
 
 dvCantonsNotAffiliatedToMobile();
 dvLanguagesCannotBeMain();
 noWorkPermitForSwiss();
 </script>
+
+<script src="{% static 'js/address-ofs.js' %}" type="text/javascript" charset="utf-8"></script>
+
 {% include 'snippets/datetimepicker_js.html' %}
 {% endblock %}
 

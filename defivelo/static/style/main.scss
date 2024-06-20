@@ -46,3 +46,10 @@ body {
 @import "partials/invoices";
 @import "partials/timesheets";
 @import "partials/season_tostate_emails";
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 1.7;
+}
+.select2-container.select2-container--default{
+  width: 100% !important;
+}

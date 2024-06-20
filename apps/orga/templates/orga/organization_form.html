@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-{% load i18n %}
-{% load bootstrap3 %}
+{% load bootstrap3 i18n static %}
 {% block head_title %}{% if organization %}{% trans "Édition de l’établissement" %}{% else %}{% trans "Nouvel établissement" %}{% endif %}{% endblock %}
 
-{% block bootstrap3_extra_head %}
+{% block extra_css_head %}
 {{ form.media.css }}
 {% endblock %}
 {% block bootstrap3_extra_script %}
 {{ form.media.js }}
+<script src="{% static 'js/address-ofs.js' %}" type="text/javascript" charset="utf-8"></script>
 {% endblock %}
 
 {% block content %}

@@ -12,6 +12,7 @@
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
     <link rel="icon" type="image/x-icon" href="{% static "favicon.ico" %}" />
+    {% block extra_css_head %}{% endblock %}
     {% compress css %}
         <link rel="stylesheet" type="text/x-scss" href="{% static "style/main.scss" %}">
         <link rel="stylesheet" type="text/x-scss" media="print" href="{% static "style/print.scss" %}">

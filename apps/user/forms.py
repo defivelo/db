@@ -13,11 +13,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core import validators
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 from django.db.models import Q
 from django.forms import modelform_factory
 from django.utils.translation import gettext_lazy as _
@@ -27,7 +28,7 @@ from django_filters import DateFilter
 from localflavor.ch.forms import (
     CHSocialSecurityNumberField,
     CHStateSelect,
-    CHZipCodeField,
+    zip_re, CHZipCodeField,
 )
 from localflavor.generic import forms as localforms
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
@@ -134,7 +135,38 @@ class SimpleUserProfileForm(forms.ModelForm):
                     _("Moniteurs/intervenants ont besoin d’un canton d’affiliation.")
                 ),
             )
+
+        # Validate zipcode only if Country is CH (like in CHZipCodeField)
+        if cleaned_data["address_country"] == "CH":
+            value = str(cleaned_data["address_zip"])
+            if not zip_re.search(value):
+                self.add_error(
+                    "address_zip",
+                    ValidationError(
+                        CHZipCodeField.default_error_messages["invalid"],
+                        params={"value": value}
+                    )
+                )
+
         return cleaned_data
+
+
+class OFSNumberSelect2ListChoiceField(autocomplete.Select2ListChoiceField):
+    """Allows a list of values to be used with a ChoiceField.
+
+    Avoids unusual things that can happen if Select2ListView is used for
+    a form where the text and value for choices are not the same.
+    """
+
+    def valid_value(self, value):
+        """
+        Override to consider any int value as a valid choice.
+        """
+        try:
+            int(value)
+        except ValueError:
+            return False
+        return True
 
 
 class UserProfileForm(SimpleUserProfileForm):
@@ -145,29 +177,30 @@ class UserProfileForm(SimpleUserProfileForm):
         super().__init__(*args, **kwargs)
         # Import all generated fields from UserProfile
         self.fields.update(modelform_factory(UserProfile, exclude=("user",))().fields)
-        self.fields["address_city_autocomplete"] = autocomplete.Select2ListChoiceField(
+        self.fields["address_city_autocomplete"] = OFSNumberSelect2ListChoiceField(
             widget=autocomplete.ListSelect2(
                 url="ofs-autocomplete",
                 attrs={
                     "id": "id_address_city_autocomplete",
-                    "placeholder": "Ville",
+                    "data-placeholder": "Ville",
                     "style": "display: none;",
                 },
             ),
             required=False,
         )
-        self.fields["address_zip_no_validation"] = forms.CharField(
-            required=False,
-            widget=forms.TextInput(
-                attrs={
-                    "id": "id_address_zip_no_validation",
-                    "placeholder": "Code postal",
-                }
-            ),
-        )
+
         # Some manual fixes lost by importing UserProfile
         for fieldname, fieldclass in {
-            "address_zip": CHZipCodeField(required=False),
+            # Use CHZipCodeField's validation only when Country is CH
+            "address_zip": forms.CharField(
+                required=False,
+                widget=forms.TextInput(
+                    attrs={
+                        "id": "id_address_zip",
+                        "placeholder": "Code postal",
+                    }
+                ),
+            ),
             "address_country": BS3CountriesField(required=False),
             "address_ofs_no": forms.CharField(
                 widget=forms.HiddenInput(), required=False

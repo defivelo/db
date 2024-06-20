@@ -27,7 +27,7 @@ class Address(models.Model):
     address_additional = models.CharField(
         _("Complément d’adresse"), max_length=255, blank=True
     )
-    address_zip = models.CharField(_("NPA"), max_length=4, blank=True)
+    address_zip = models.CharField(_("NPA"), max_length=10, blank=True)
     address_city = models.CharField(_("Ville"), max_length=64, blank=True)
     address_canton = models.CharField(_("Canton"), max_length=2, blank=True)
     address_ofs_no = models.CharField(_("Commune OFS"), max_length=4, blank=True)

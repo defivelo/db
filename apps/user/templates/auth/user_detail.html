@@ -81,6 +81,8 @@
                                 <dt>{% trans "Commune OFS" %}</dt>
                                   <dd>{{ userprofile.profile.address_ofs_no }}</dd>
                             {% endif %}
+                          <dt>{% trans "Pays" %}</dt>
+                          <dd>{{ userprofile.profile.address_country.name }} ({{ userprofile.profile.address_country }})</dd>
                         {% endif %}
                     </dl>
                 </div>
