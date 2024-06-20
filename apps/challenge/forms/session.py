@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+from dal import autocomplete
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -32,6 +32,7 @@ from apps.user import STATE_CHOICES_WITH_DEFAULT
 from apps.user.models import USERSTATUS_DELETED
 
 from ..models import Session
+from ...user.forms import OFSNumberSelect2ListChoiceField
 
 nodate_change_warning = _(
     "La date ne peut plus être modifiée, car des heures ont déjà été "
@@ -88,6 +89,31 @@ class SessionForm(forms.ModelForm):
         if self.instance.pk and self.instance.has_related_timesheets():
             self.fields["day"].help_text = nodate_change_warning
             self.fields["day"].widget.attrs["readonly"] = True
+
+        country = self.instance.address_country if self.instance and self.instance.pk else "CH"
+        self.fields["address_country"] = forms.CharField(
+            widget=forms.HiddenInput(), required=False, disabled=True, label=None, initial=country
+        )
+
+        self.fields["address_ofs_no"] = forms.CharField(
+            widget=forms.HiddenInput(), required=False
+        )
+        self.fields["address_city_autocomplete"] = OFSNumberSelect2ListChoiceField(
+            widget=autocomplete.ListSelect2(
+                url="ofs-autocomplete",
+                attrs={
+                    "id": "id_address_city_autocomplete",
+                    "placeholder": "Ville",
+                    "style": "display: none;",
+                },
+            ),
+            attrs={"placeholder": "Plouf"},
+            required=False,
+        )
+
+        # FIXME: Save city label (not ofs nb)
+        # if address_city_autocomplete:
+        #     userprofile.address_city = address_city_autocomplete
 
     day = SwissDateField(label=_("Date"))
     begin = SwissTimeField(label=_("Début"))

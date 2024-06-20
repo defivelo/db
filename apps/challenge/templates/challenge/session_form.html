@@ -1,9 +1,13 @@
 {% extends "base.html" %}
-{% load i18n %}
-{% load bootstrap3 %}
+{% load bootstrap3 i18n static %}
+
 {% block head_title %}{% if session %}{% trans "Édition de la session" %}{% else %}{% trans "Nouvelle session" %}{% endif %}{% endblock %}
 
-{% block bootstrap3_extra_head %}{{ form.media.css }}{% endblock %}
+{% block extra_css_head %}
+  {{ block.super }}
+  {{ form.media.css }}
+{% endblock %}
+
 {% block bootstrap3_extra_script %}
 {{ form.media.js }}
 {% include 'snippets/datetimepicker_js.html' %}
@@ -31,9 +35,11 @@ function updateHelpersPlace() {
   }
 }
 
-$( "#id_begin" ).change( updateHelpersTime );
-$( "#id_place" ).change( updateHelpersPlace );
+$('#id_begin').change( updateHelpersTime );
+$('#id_place').change( updateHelpersPlace );
 </script>
+
+  <script src="{% static 'js/address-ofs.js' %}" type="text/javascript" charset="utf-8"></script>
 {% endblock %}
 
 {% block content %}
@@ -46,7 +52,7 @@ $( "#id_place" ).change( updateHelpersPlace );
         {% bootstrap_field form.day layout='horizontal' size='small' %}
         {% bootstrap_field form.begin layout='horizontal' size='small' %}
         {% bootstrap_field form.place layout='horizontal' size='small' %}
-        {% include "address_bootstrap_form.html" with has_additional=True %}
+        {% include "address_bootstrap_form.html" with has_additional=True force_country="CH" %}
         {% bootstrap_field form.fallback_plan layout='horizontal' size='small' %}
         {% if form.visible %}
           <h3>{% trans "Logistique" %}</h3>
