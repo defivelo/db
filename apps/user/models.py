@@ -119,6 +119,7 @@ PERSONAL_FIELDS = [
     "address_country",
     "nationality",
     "work_permit",
+    "work_permit_legacy",
     "tax_jurisdiction",
     "bank_name",
     "iban",

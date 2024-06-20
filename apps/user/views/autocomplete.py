@@ -13,6 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import re
+
+from bs4 import BeautifulSoup
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
@@ -125,6 +128,7 @@ class OfsAutoComplete(autocomplete.Select2ListView):
             return []
 
         response = requests.get(
+            # FIXME: Settings
             "https://api3.geo.admin.ch/rest/services/api/SearchServer",
             params={"searchText": self.q, "type": "locations", "origins": "gg25"},
         )
@@ -135,7 +139,11 @@ class OfsAutoComplete(autocomplete.Select2ListView):
 
             for result in data.get("results", []):
                 attrs = result.get("attrs", {})
-                label = attrs.get("label")
+
+                # Parse city: "<p>Lausanne (VD)</p>" => "Lausanne"
+                soup = BeautifulSoup(attrs.get("label"))
+                label = soup.get_text()
+
                 feature_id = attrs.get("featureId")
                 origin = attrs.get("origin")
 

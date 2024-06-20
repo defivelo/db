@@ -149,20 +149,15 @@ class ProfileMixin(MenuView):
                     related_manager.set(form.cleaned_data[field])
                 else:
                     setattr(userprofile, field, form.cleaned_data[field])
+
         address_ofs_no = self.request.POST.get("address_ofs_no", "")
-        address_city_autocomplete = self.request.POST.get(
-            "address_city_autocomplete", ""
-        )
-        print(address_city_autocomplete, address_ofs_no)
-        address_zip_no_validation = self.request.POST.get(
-            "address_zip_no_validation", ""
-        )
         if address_ofs_no:
             userprofile.address_ofs_no = address_ofs_no
-        if address_city_autocomplete:
-            userprofile.address_city = address_city_autocomplete
-        if address_zip_no_validation:
-            userprofile.address_zip = address_zip_no_validation
+
+        # Work permit is disabled in Frontend when nationality is CH, use 0
+        work_permit = form.cleaned_data.get("work_permit")
+        userprofile.work_permit = work_permit if work_permit else 0
+
         userprofile.save()
         return ret
 
