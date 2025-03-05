@@ -18,7 +18,7 @@ git clone --recursive git@gitlab.liip.ch:swing/defivelo/intranet
 
 2. Open the file `docker-compose.override.example.yml` and follow the instructions in it
 
-3. Run the command `INITIAL=1 docker-compose up`
+3. Run the command `INITIAL=1 docker-compose up -d` and check the result via `docker compose logs -f backend`
 
 This will start the containers and set up the initial data. To access the site,
 follow the instructions in the `docker-compose.override.example.yml` file.
@@ -34,9 +34,17 @@ docker-compose exec backend ./manage.py sync_roles --reset_user_permissions
 
 ## Clone production database
 Import DB
+
+* Check that your ssh-agent is connected:
+```shell
+docker-compose exec backend ssh-add -L
+```
+
+* Then run fab to import the database:
 ```shell
 docker-compose exec backend fab prod import-db
 ```
+
 Run any pending migrations
 ```shell
 docker-compose exec backend ./manage.py migrate

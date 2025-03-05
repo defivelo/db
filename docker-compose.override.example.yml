@@ -39,7 +39,8 @@
 #       args:
 #         <<: *x-build-args
 #    volumes:
-#      - pontsun_sshagent_socket_dir:/.ssh-agent
+#      - pontsun_sshagent_socket_dir:/.ssh-agent => On Mac
+#      - $SSH_AUTH_SOCK:/.ssh-agent/proxy-socket => On Linux
 #    networks:
 #      - default
 #      - pontsun
