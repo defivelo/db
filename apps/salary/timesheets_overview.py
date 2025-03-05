@@ -10,6 +10,7 @@ from rolepermissions.checkers import has_permission
 from apps.challenge.models.session import Session
 from apps.common import DV_STATES
 from apps.salary.models import Timesheet
+from apps.user.models import UserProfile
 from defivelo.roles import user_cantons
 
 
@@ -38,12 +39,14 @@ def timesheets_validation_status(year, month=None, cantons=DV_STATES):
     if month:
         months = [month]
 
-    user_cache_key = "-".join(cantons)
+    user_cache_key = f"{'-'.join(cantons)}-{year}"
     if user_cache_key not in timesheets_validation_status.all_users:
-        timesheets_validation_status.all_users[user_cache_key] = (
-            get_user_model()
-            .objects.filter(profile__affiliation_canton__in=cantons)
-            .prefetch_related("profile")
+        timesheets_validation_status.all_users[
+            user_cache_key
+        ] = UserProfile.get_users_that_worked_in_cantons(
+            cantons, year=year
+        ).prefetch_related(
+            "profile"
         )
 
     users = timesheets_validation_status.all_users[user_cache_key]
@@ -303,9 +306,8 @@ def get_visible_users(user):
     if has_permission(user, "cantons_all"):
         qs = User.objects.all()
     elif has_permission(user, "cantons_mine"):
-        cantons = user_cantons(user)
-        qs = User.objects.filter(
-            Q(profile__affiliation_canton__in=cantons) | Q(pk=user.pk)
+        qs = UserProfile.get_users_that_worked_in_cantons(
+            user_cantons(user), [Q(pk=user.pk)]
         )
     else:
         qs = User.objects.filter(pk=user.pk)
