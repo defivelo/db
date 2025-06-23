@@ -4,20 +4,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('challenge', '0076_registration'),
+        ("challenge", "0076_registration"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='registration',
-            name='is_archived',
-            field=models.BooleanField(default=False, verbose_name='Archivée'),
+            model_name="registration",
+            name="is_archived",
+            field=models.BooleanField(default=False, verbose_name="Archivée"),
         ),
         migrations.AlterField(
-            model_name='registration',
-            name='day_time',
-            field=models.CharField(choices=[('08:30:00', 'Matin'), ('13:30:00', 'Après-midi')], default='08:30:00', max_length=8, verbose_name='Moment de la journée'),
+            model_name="registration",
+            name="day_time",
+            field=models.CharField(
+                choices=[("08:30:00", "Matin"), ("13:30:00", "Après-midi")],
+                default="08:30:00",
+                max_length=8,
+                verbose_name="Moment de la journée",
+            ),
         ),
     ]

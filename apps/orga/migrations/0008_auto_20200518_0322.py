@@ -4,26 +4,25 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('orga', '0007_organization_organizator_migrate'),
+        ("orga", "0007_organization_organizator_migrate"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='organization',
-            name='coordinator_email',
+            model_name="organization",
+            name="coordinator_email",
         ),
         migrations.RemoveField(
-            model_name='organization',
-            name='coordinator_fullname',
+            model_name="organization",
+            name="coordinator_fullname",
         ),
         migrations.RemoveField(
-            model_name='organization',
-            name='coordinator_natel',
+            model_name="organization",
+            name="coordinator_natel",
         ),
         migrations.RemoveField(
-            model_name='organization',
-            name='coordinator_phone',
+            model_name="organization",
+            name="coordinator_phone",
         ),
     ]

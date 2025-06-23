@@ -79,9 +79,9 @@ class ValidationsMixin(HasPermissionsMixin, MenuView):
         # Add our menu_category context
         context["menu_category"] = "finance"
         context["timesheets_statuses"] = self.timesheets_statuses
-        context[
-            "mcv_urls"
-        ] = MonthlyCantonalValidationUrl.objects.all().prefetch_related("translations")
+        context["mcv_urls"] = (
+            MonthlyCantonalValidationUrl.objects.all().prefetch_related("translations")
+        )
         return context
 
     def queryset_all_mcvs_in_month(self, queryset, year, month):

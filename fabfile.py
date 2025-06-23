@@ -498,9 +498,7 @@ def import_db(c, dump_file=None):
             SELECT pg_terminate_backend(pid)
             FROM pg_stat_activity
             WHERE pid != pg_backend_pid()'
-        """.format(
-            **db_info
-        ),
+        """.format(**db_info),
         env=env,
     )
 

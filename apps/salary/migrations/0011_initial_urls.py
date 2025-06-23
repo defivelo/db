@@ -28,7 +28,6 @@ def empty_validation_urls(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("salary", "0010_monthlycantonalvalidation_validated_urls"),
     ]

@@ -1,5 +1,4 @@
 from django.db import migrations, models
-
 from memoize import delete_memoized
 
 from defivelo.roles import user_cantons
@@ -25,7 +24,6 @@ def ws_to_vs(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("user", "0063_use_u2019_quote"),
     ]

@@ -5,24 +5,31 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('challenge', '0044_season_state'),
+        ("challenge", "0044_season_state"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='season',
-            options={'ordering': ['year', '-season', 'cantons'], 'verbose_name': 'Saison', 'verbose_name_plural': 'Saisons'},
+            name="season",
+            options={
+                "ordering": ["year", "-season", "cantons"],
+                "verbose_name": "Saison",
+                "verbose_name_plural": "Saisons",
+            },
         ),
         migrations.AddField(
-            model_name='session',
-            name='bikes_concept',
-            field=models.CharField(blank=True, max_length=512, verbose_name='Logistique v\xe9los'),
+            model_name="session",
+            name="bikes_concept",
+            field=models.CharField(
+                blank=True, max_length=512, verbose_name="Logistique v\xe9los"
+            ),
         ),
         migrations.AddField(
-            model_name='session',
-            name='bikes_phone',
-            field=models.CharField(blank=True, max_length=13, verbose_name='N\xb0 de contact v\xe9los'),
+            model_name="session",
+            name="bikes_phone",
+            field=models.CharField(
+                blank=True, max_length=13, verbose_name="N\xb0 de contact v\xe9los"
+            ),
         ),
     ]

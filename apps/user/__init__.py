@@ -50,16 +50,12 @@ def formation_short(formation, real_gettext=False):
     if formation == FORMATION_M1:
         return (
             # Translators: FORMATION_M1 - Moniteur 1
-            gettext("M1")
-            if real_gettext
-            else _("M1")
+            gettext("M1") if real_gettext else _("M1")
         )
     elif formation == FORMATION_M2:
         return (
             # Translators: FORMATION_M2 - Moniteur 2
-            gettext("M2")
-            if real_gettext
-            else _("M2")
+            gettext("M2") if real_gettext else _("M2")
         )
     return ""
 

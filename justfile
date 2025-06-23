@@ -36,13 +36,14 @@ alias validate := lint
 alias l := lint
 # Lint the code
 lint:
-  docker compose exec {{BACKEND_CONTAINER}} flake8 apps defivelo fabfile.py
+  docker compose exec {{BACKEND_CONTAINER}} ruff check defivelo apps fabfile.py
+  docker compose exec {{BACKEND_CONTAINER}} ruff format --check defivelo apps fabfile.py
 
 alias fix := format
 # Fix styling offenses and format code
-format:
-  docker compose exec {{BACKEND_CONTAINER}} black apps defivelo fabfile.py
-  docker compose exec {{BACKEND_CONTAINER}} isort apps defivelo fabfile.py
+format *args:
+  docker compose exec {{BACKEND_CONTAINER}} ruff format defivelo apps fabfile.py "$@"
+  docker compose exec {{BACKEND_CONTAINER}} ruff check --select I --fix defivelo apps fabfile.py
 
 alias c := compile
 # Compile the requirements files

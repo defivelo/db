@@ -16,7 +16,6 @@ def ws_to_vs(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("challenge", "0073_correct_season_state_labels"),
     ]

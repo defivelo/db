@@ -18,7 +18,8 @@ class MonthlyCantonalValidationUrlAdmin(TranslatableAdmin):
 
     def missing_languages(self, obj):
         missing_languages = list(
-            set([l[0] for l in settings.LANGUAGES]) - set(obj.get_available_languages())
+            set([lang[0] for lang in settings.LANGUAGES])
+            - set(obj.get_available_languages())
         )
         if missing_languages:
             return " | ".join(missing_languages)

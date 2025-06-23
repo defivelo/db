@@ -41,12 +41,10 @@ def timesheets_validation_status(year, month=None, cantons=DV_STATES):
 
     user_cache_key = f"{'-'.join(cantons)}-{year}"
     if user_cache_key not in timesheets_validation_status.all_users:
-        timesheets_validation_status.all_users[
-            user_cache_key
-        ] = UserProfile.get_users_that_worked_in_cantons(
-            cantons, year=year
-        ).prefetch_related(
-            "profile"
+        timesheets_validation_status.all_users[user_cache_key] = (
+            UserProfile.get_users_that_worked_in_cantons(
+                cantons, year=year
+            ).prefetch_related("profile")
         )
 
     users = timesheets_validation_status.all_users[user_cache_key]

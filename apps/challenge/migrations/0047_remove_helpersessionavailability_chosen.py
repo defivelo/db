@@ -5,14 +5,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('challenge', '0046_add_helpersessionavailability_chosen_as'),
+        ("challenge", "0046_add_helpersessionavailability_chosen_as"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='helpersessionavailability',
-            name='chosen',
+            model_name="helpersessionavailability",
+            name="chosen",
         ),
     ]

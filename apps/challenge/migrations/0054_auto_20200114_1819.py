@@ -4,20 +4,63 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('challenge', '0053_after_update_of_deps'),
+        ("challenge", "0053_after_update_of_deps"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='historicalseason',
-            name='cantons',
-            field=models.CharField(choices=[('AG', 'Aargau'), ('AR', 'Appenzell Ausserrhoden'), ('BE', 'Berne'), ('BL', 'Basel-Land'), ('BS', 'Basel-Stadt'), ('FR', 'Fribourg'), ('GE', 'Geneva'), ('GR', 'Graubuenden'), ('JU', 'Jura'), ('LU', 'Lucerne'), ('NE', 'Neuchatel'), ('SG', 'St. Gallen'), ('SO', 'Solothurn'), ('VD', 'Vaud'), ('VS', 'Valais'), ('WS', 'Haut-Valais'), ('ZH', 'Zurich')], max_length=50, verbose_name='Cantons'),
+            model_name="historicalseason",
+            name="cantons",
+            field=models.CharField(
+                choices=[
+                    ("AG", "Aargau"),
+                    ("AR", "Appenzell Ausserrhoden"),
+                    ("BE", "Berne"),
+                    ("BL", "Basel-Land"),
+                    ("BS", "Basel-Stadt"),
+                    ("FR", "Fribourg"),
+                    ("GE", "Geneva"),
+                    ("GR", "Graubuenden"),
+                    ("JU", "Jura"),
+                    ("LU", "Lucerne"),
+                    ("NE", "Neuchatel"),
+                    ("SG", "St. Gallen"),
+                    ("SO", "Solothurn"),
+                    ("VD", "Vaud"),
+                    ("VS", "Valais"),
+                    ("WS", "Haut-Valais"),
+                    ("ZH", "Zurich"),
+                ],
+                max_length=50,
+                verbose_name="Cantons",
+            ),
         ),
         migrations.AlterField(
-            model_name='season',
-            name='cantons',
-            field=models.CharField(choices=[('AG', 'Aargau'), ('AR', 'Appenzell Ausserrhoden'), ('BE', 'Berne'), ('BL', 'Basel-Land'), ('BS', 'Basel-Stadt'), ('FR', 'Fribourg'), ('GE', 'Geneva'), ('GR', 'Graubuenden'), ('JU', 'Jura'), ('LU', 'Lucerne'), ('NE', 'Neuchatel'), ('SG', 'St. Gallen'), ('SO', 'Solothurn'), ('VD', 'Vaud'), ('VS', 'Valais'), ('WS', 'Haut-Valais'), ('ZH', 'Zurich')], max_length=50, verbose_name='Cantons'),
+            model_name="season",
+            name="cantons",
+            field=models.CharField(
+                choices=[
+                    ("AG", "Aargau"),
+                    ("AR", "Appenzell Ausserrhoden"),
+                    ("BE", "Berne"),
+                    ("BL", "Basel-Land"),
+                    ("BS", "Basel-Stadt"),
+                    ("FR", "Fribourg"),
+                    ("GE", "Geneva"),
+                    ("GR", "Graubuenden"),
+                    ("JU", "Jura"),
+                    ("LU", "Lucerne"),
+                    ("NE", "Neuchatel"),
+                    ("SG", "St. Gallen"),
+                    ("SO", "Solothurn"),
+                    ("VD", "Vaud"),
+                    ("VS", "Valais"),
+                    ("WS", "Haut-Valais"),
+                    ("ZH", "Zurich"),
+                ],
+                max_length=50,
+                verbose_name="Cantons",
+            ),
         ),
     ]

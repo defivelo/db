@@ -89,7 +89,7 @@ class Invoice(models.Model):
         return None
 
     def sum_cost_bikes_reduced(self):
-        return sum([l.cost_bikes_reduced for l in self.lines.all()])
+        return sum([line.cost_bikes_reduced for line in self.lines.all()])
 
     def sum_cost(self):
         return self.sum_cost_bikes_reduced() + (self.sum_cost_participants or 0)
@@ -134,7 +134,7 @@ class Invoice(models.Model):
         """
         # First check if the individual lines are OK.
         lines = self.lines.prefetch_related("session", "historical_session")
-        if not all([l.is_up_to_date for l in lines.all()]):
+        if not all([line.is_up_to_date for line in lines.all()]):
             return False
         # Check if the invoice lines correspond to the concerned sessions
         if set(lines.values_list("session_id", flat=True)) != set(

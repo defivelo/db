@@ -4,20 +4,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('user', '0067_role_reset_for_coordinator_access'),
+        ("user", "0067_role_reset_for_coordinator_access"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='userprofile',
-            old_name='cresus_employee_number',
-            new_name='employee_code',
+            model_name="userprofile",
+            old_name="cresus_employee_number",
+            new_name="employee_code",
         ),
         migrations.AlterField(
-            model_name='userprofile',
-            name='employee_code',
-            field=models.CharField(blank=True, max_length=63, verbose_name='Code salarié·e'),
+            model_name="userprofile",
+            name="employee_code",
+            field=models.CharField(
+                blank=True, max_length=63, verbose_name="Code salarié·e"
+            ),
         ),
     ]

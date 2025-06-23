@@ -3,15 +3,13 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 
-from apps.common import (
-    DV_SEASON_STATE_OPEN, DV_SEASON_STATE_ARCHIVED, DV_SEASON_AUTUMN
-)
+from apps.common import DV_SEASON_AUTUMN, DV_SEASON_STATE_ARCHIVED, DV_SEASON_STATE_OPEN
 
 
 def make_all_seasons_visible(apps, schema_editor):
     # We can't import the Person model directly as it may be a newer
     # version than this migration expects. We use the historical version.
-    Season = apps.get_model('challenge', 'Season')
+    Season = apps.get_model("challenge", "Season")
     for season in Season.objects.all():
         if season.year == 2017 and season.season == DV_SEASON_AUTUMN:
             season.state = DV_SEASON_STATE_OPEN
@@ -19,17 +17,27 @@ def make_all_seasons_visible(apps, schema_editor):
             season.state = DV_SEASON_STATE_ARCHIVED
         season.save()
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
-        ('challenge', '0043_VS-OW_to_WS'),
+        ("challenge", "0043_VS-OW_to_WS"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='season',
-            name='state',
-            field=models.PositiveSmallIntegerField(choices=[(1, 'Planification (invisible)'), (2, 'Annonc\xe9e (rentr\xe9e des disponibilit\xe9s)'), (3, 'En cours (corrections que par charg\xe9\xb7e\xb7s de projet)'), (4, 'Termin\xe9e'), (5, 'Archiv\xe9e')], default=1, verbose_name='\xc9tat'),
+            model_name="season",
+            name="state",
+            field=models.PositiveSmallIntegerField(
+                choices=[
+                    (1, "Planification (invisible)"),
+                    (2, "Annonc\xe9e (rentr\xe9e des disponibilit\xe9s)"),
+                    (3, "En cours (corrections que par charg\xe9\xb7e\xb7s de projet)"),
+                    (4, "Termin\xe9e"),
+                    (5, "Archiv\xe9e"),
+                ],
+                default=1,
+                verbose_name="\xc9tat",
+            ),
         ),
         migrations.RunPython(make_all_seasons_visible, migrations.RunPython.noop),
     ]

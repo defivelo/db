@@ -4,15 +4,39 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('salary', '0011_initial_urls'),
+        ("salary", "0011_initial_urls"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='monthlycantonalvalidation',
-            name='canton',
-            field=models.CharField(choices=[('AG', 'Aargau'), ('AR', 'Appenzell Ausserrhoden'), ('BS', 'Basel-Stadt'), ('BL', 'Basel-Land'), ('BE', 'Berne'), ('FR', 'Fribourg'), ('GE', 'Geneva'), ('GR', 'Graubuenden'), ('JU', 'Jura'), ('LU', 'Lucerne'), ('NE', 'Neuchatel'), ('SZ', 'Schwyz'), ('SO', 'Solothurn'), ('SG', 'St. Gallen'), ('VS', 'Valais'), ('VD', 'Vaud'), ('ZH', 'Zurich'), ('WS', 'Haut-Valais')], max_length=2, unique_for_month='date', unique_for_year='date', verbose_name='Canton'),
+            model_name="monthlycantonalvalidation",
+            name="canton",
+            field=models.CharField(
+                choices=[
+                    ("AG", "Aargau"),
+                    ("AR", "Appenzell Ausserrhoden"),
+                    ("BS", "Basel-Stadt"),
+                    ("BL", "Basel-Land"),
+                    ("BE", "Berne"),
+                    ("FR", "Fribourg"),
+                    ("GE", "Geneva"),
+                    ("GR", "Graubuenden"),
+                    ("JU", "Jura"),
+                    ("LU", "Lucerne"),
+                    ("NE", "Neuchatel"),
+                    ("SZ", "Schwyz"),
+                    ("SO", "Solothurn"),
+                    ("SG", "St. Gallen"),
+                    ("VS", "Valais"),
+                    ("VD", "Vaud"),
+                    ("ZH", "Zurich"),
+                    ("WS", "Haut-Valais"),
+                ],
+                max_length=2,
+                unique_for_month="date",
+                unique_for_year="date",
+                verbose_name="Canton",
+            ),
         ),
     ]

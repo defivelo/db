@@ -2,24 +2,19 @@
 
 from django.db import migrations, models
 
-
 urls = {}
 
 
 def _save_urls(apps, schema_editor):
     MonthlyCantonalValidationUrl = apps.get_model(
-        "salary",
-        "MonthlyCantonalValidationUrl"
+        "salary", "MonthlyCantonalValidationUrl"
     )
-    urls.update({
-        obj.id: obj.url for obj in MonthlyCantonalValidationUrl.objects.all()
-    })
+    urls.update({obj.id: obj.url for obj in MonthlyCantonalValidationUrl.objects.all()})
 
 
 def _add_translated_urls(apps, schema_editor):
     MonthlyCantonalValidationUrlTranslation = apps.get_model(
-        "salary",
-        "MonthlyCantonalValidationUrlTranslation"
+        "salary", "MonthlyCantonalValidationUrlTranslation"
     )
     for master_id, url in urls.items():
         MonthlyCantonalValidationUrlTranslation.objects.filter(
@@ -28,21 +23,20 @@ def _add_translated_urls(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('salary', '0016_monthlycantonalvalidationurltranslation_label'),
+        ("salary", "0016_monthlycantonalvalidationurltranslation_label"),
     ]
 
     operations = [
         migrations.RunPython(_save_urls, migrations.RunPython.noop),
         migrations.RemoveField(
-            model_name='monthlycantonalvalidationurl',
-            name='url',
+            model_name="monthlycantonalvalidationurl",
+            name="url",
         ),
         migrations.AddField(
-            model_name='monthlycantonalvalidationurltranslation',
-            name='url',
-            field=models.URLField(default='', verbose_name='URL'),
+            model_name="monthlycantonalvalidationurltranslation",
+            name="url",
+            field=models.URLField(default="", verbose_name="URL"),
             preserve_default=False,
         ),
         migrations.RunPython(_add_translated_urls, migrations.RunPython.noop),

@@ -4,25 +4,30 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('challenge', '0067_merge_20201027_1719'),
+        ("challenge", "0067_merge_20201027_1719"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='helperseasonworkwish',
-            name='amount',
-            field=models.PositiveSmallIntegerField(default=0, verbose_name='Quantité d’engagements souhaités'),
+            model_name="helperseasonworkwish",
+            name="amount",
+            field=models.PositiveSmallIntegerField(
+                default=0, verbose_name="Quantité d’engagements souhaités"
+            ),
         ),
         migrations.AlterField(
-            model_name='historicalhelperseasonworkwish',
-            name='amount',
-            field=models.PositiveSmallIntegerField(default=0, verbose_name='Quantité d’engagements souhaités'),
+            model_name="historicalhelperseasonworkwish",
+            name="amount",
+            field=models.PositiveSmallIntegerField(
+                default=0, verbose_name="Quantité d’engagements souhaités"
+            ),
         ),
         migrations.AlterField(
-            model_name='historicalsession',
-            name='address_additional',
-            field=models.CharField(blank=True, max_length=255, verbose_name='Complément d’adresse'),
+            model_name="historicalsession",
+            name="address_additional",
+            field=models.CharField(
+                blank=True, max_length=255, verbose_name="Complément d’adresse"
+            ),
         ),
     ]

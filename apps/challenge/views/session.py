@@ -171,10 +171,9 @@ class SessionDetailView(SessionMixin, DetailView):
                 "name": _("Classe %s") % lettercounter(mysession.n_qualifications + 1),
             }
         )
-        context[
-            "statemanager_can_access"
-        ] = self.season_object.manager_can_crud and has_permission(
-            self.request.user, "challenge_session_crud"
+        context["statemanager_can_access"] = (
+            self.season_object.manager_can_crud
+            and has_permission(self.request.user, "challenge_session_crud")
         )
         context["coordinator_can_access"] = (
             self.season_object.coordinator_can_update
