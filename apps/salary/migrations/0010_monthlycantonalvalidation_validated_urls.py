@@ -4,15 +4,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('salary', '0009_monthlycantonalvalidationurl_monthlycantonalvalidationurltranslation'),
+        (
+            "salary",
+            "0009_monthlycantonalvalidationurl_monthlycantonalvalidationurltranslation",
+        ),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='monthlycantonalvalidation',
-            name='validated_urls',
-            field=models.ManyToManyField(to='salary.MonthlyCantonalValidationUrl'),
+            model_name="monthlycantonalvalidation",
+            name="validated_urls",
+            field=models.ManyToManyField(to="salary.MonthlyCantonalValidationUrl"),
         ),
     ]

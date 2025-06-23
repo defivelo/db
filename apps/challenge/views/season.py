@@ -378,9 +378,8 @@ class SeasonAvailabilityMixin(SeasonHelpersMixin):
                 # Seulement des sessions concernées
                 .filter(session__day__in=all_sessions.values_list("day", flat=True))
                 # Seulement dans les états qui nous intéressent
-                .filter(chosen_as__in=CHOSEN_KEYS).prefetch_related(
-                    "session", "session__orga"
-                )
+                .filter(chosen_as__in=CHOSEN_KEYS)
+                .prefetch_related("session", "session__orga")
             )
             for helper_category, helpers in all_helpers:
                 helpers_conflicts = list(potential_conflicts.filter(helper__in=helpers))
@@ -591,7 +590,7 @@ class SeasonToRunningView(SeasonToStateMixin):
         """
         # Save first
         form_result = super().form_valid(form)
-        if form.cleaned_data["sendemail"] == True:
+        if form.cleaned_data["sendemail"]:
             for helper in self.season_helpers:
                 email = self.get_email(helper)
                 body = "\n".join(
@@ -689,7 +688,7 @@ class SeasonToOpenView(SeasonToStateMixin):
         """
         # Save first
         form_result = super().form_valid(form)
-        if form.cleaned_data["sendemail"] == True:
+        if form.cleaned_data["sendemail"]:
             # Then send emails
             for helper in self.get_email_recipients():
                 email = self.get_email(helper)

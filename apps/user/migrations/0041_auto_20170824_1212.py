@@ -5,25 +5,81 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('user', '0040_auto_20170824_1109'),
+        ("user", "0040_auto_20170824_1109"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='usermanagedstate',
-            name='canton',
-            field=models.CharField(choices=[('AR', 'Appenzell Ausserrhoden'), ('BS', 'Basel-Stadt'), ('BE', 'Berne'), ('FR', 'Fribourg'), ('GE', 'Geneva'), ('JU', 'Jura'), ('LU', 'Lucerne'), ('NE', 'Neuchatel'), ('SG', 'St. Gallen'), ('VS', 'Valais'), ('VD', 'Vaud'), ('ZH', 'Zurich'), ('VS-OW', 'Haut-Valais')], max_length=5, verbose_name='Canton'),
+            model_name="usermanagedstate",
+            name="canton",
+            field=models.CharField(
+                choices=[
+                    ("AR", "Appenzell Ausserrhoden"),
+                    ("BS", "Basel-Stadt"),
+                    ("BE", "Berne"),
+                    ("FR", "Fribourg"),
+                    ("GE", "Geneva"),
+                    ("JU", "Jura"),
+                    ("LU", "Lucerne"),
+                    ("NE", "Neuchatel"),
+                    ("SG", "St. Gallen"),
+                    ("VS", "Valais"),
+                    ("VD", "Vaud"),
+                    ("ZH", "Zurich"),
+                    ("VS-OW", "Haut-Valais"),
+                ],
+                max_length=5,
+                verbose_name="Canton",
+            ),
         ),
         migrations.AlterField(
-            model_name='userprofile',
-            name='activity_cantons',
-            field=models.CharField(blank=True, choices=[('AR', 'Appenzell Ausserrhoden'), ('BS', 'Basel-Stadt'), ('BE', 'Berne'), ('FR', 'Fribourg'), ('GE', 'Geneva'), ('JU', 'Jura'), ('LU', 'Lucerne'), ('NE', 'Neuchatel'), ('SG', 'St. Gallen'), ('VS', 'Valais'), ('VD', 'Vaud'), ('ZH', 'Zurich'), ('VS-OW', 'Haut-Valais')], max_length=41, verbose_name='Défi Vélo mobile'),
+            model_name="userprofile",
+            name="activity_cantons",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("AR", "Appenzell Ausserrhoden"),
+                    ("BS", "Basel-Stadt"),
+                    ("BE", "Berne"),
+                    ("FR", "Fribourg"),
+                    ("GE", "Geneva"),
+                    ("JU", "Jura"),
+                    ("LU", "Lucerne"),
+                    ("NE", "Neuchatel"),
+                    ("SG", "St. Gallen"),
+                    ("VS", "Valais"),
+                    ("VD", "Vaud"),
+                    ("ZH", "Zurich"),
+                    ("VS-OW", "Haut-Valais"),
+                ],
+                max_length=41,
+                verbose_name="Défi Vélo mobile",
+            ),
         ),
         migrations.AlterField(
-            model_name='userprofile',
-            name='affiliation_canton',
-            field=models.CharField(blank=True, choices=[('', '---------'), ('AR', 'Appenzell Ausserrhoden'), ('BS', 'Basel-Stadt'), ('BE', 'Berne'), ('FR', 'Fribourg'), ('GE', 'Geneva'), ('JU', 'Jura'), ('LU', 'Lucerne'), ('NE', 'Neuchatel'), ('SG', 'St. Gallen'), ('VS', 'Valais'), ('VD', 'Vaud'), ('ZH', 'Zurich'), ('VS-OW', 'Haut-Valais')], max_length=5, verbose_name="Canton d'affiliation"),
+            model_name="userprofile",
+            name="affiliation_canton",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("", "---------"),
+                    ("AR", "Appenzell Ausserrhoden"),
+                    ("BS", "Basel-Stadt"),
+                    ("BE", "Berne"),
+                    ("FR", "Fribourg"),
+                    ("GE", "Geneva"),
+                    ("JU", "Jura"),
+                    ("LU", "Lucerne"),
+                    ("NE", "Neuchatel"),
+                    ("SG", "St. Gallen"),
+                    ("VS", "Valais"),
+                    ("VD", "Vaud"),
+                    ("ZH", "Zurich"),
+                    ("VS-OW", "Haut-Valais"),
+                ],
+                max_length=5,
+                verbose_name="Canton d'affiliation",
+            ),
         ),
     ]

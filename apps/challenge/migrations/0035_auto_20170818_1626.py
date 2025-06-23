@@ -5,19 +5,40 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('challenge', '0034_auto_20170814_1552'),
+        ("challenge", "0034_auto_20170814_1552"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='session',
-            options={'ordering': ['day', 'begin', 'orga__name'], 'verbose_name': 'Session', 'verbose_name_plural': 'Sessions'},
+            name="session",
+            options={
+                "ordering": ["day", "begin", "orga__name"],
+                "verbose_name": "Session",
+                "verbose_name_plural": "Sessions",
+            },
         ),
         migrations.AlterField(
-            model_name='season',
-            name='cantons',
-            field=models.CharField(choices=[('BS', 'Basel-Stadt'), ('BE', 'Berne'), ('FR', 'Fribourg'), ('GE', 'Geneva'), ('JU', 'Jura'), ('LU', 'Lucerne'), ('NE', 'Neuchatel'), ('SG', 'St. Gallen'), ('VS', 'Valais'), ('VD', 'Vaud'), ('ZH', 'Zurich'), ('VS-OW', 'Haut-Valais'), ('AP', 'Appenzell')], max_length=41, verbose_name='Cantons'),
+            model_name="season",
+            name="cantons",
+            field=models.CharField(
+                choices=[
+                    ("BS", "Basel-Stadt"),
+                    ("BE", "Berne"),
+                    ("FR", "Fribourg"),
+                    ("GE", "Geneva"),
+                    ("JU", "Jura"),
+                    ("LU", "Lucerne"),
+                    ("NE", "Neuchatel"),
+                    ("SG", "St. Gallen"),
+                    ("VS", "Valais"),
+                    ("VD", "Vaud"),
+                    ("ZH", "Zurich"),
+                    ("VS-OW", "Haut-Valais"),
+                    ("AP", "Appenzell"),
+                ],
+                max_length=41,
+                verbose_name="Cantons",
+            ),
         ),
     ]

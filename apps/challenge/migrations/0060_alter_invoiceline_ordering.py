@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('challenge', '0059_auto_20200305_1631'),
+        ("challenge", "0059_auto_20200305_1631"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='invoiceline',
-            options={'ordering': ('session__day', 'session__begin')},
+            name="invoiceline",
+            options={"ordering": ("session__day", "session__begin")},
         ),
     ]

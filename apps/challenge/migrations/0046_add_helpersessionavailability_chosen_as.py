@@ -3,34 +3,45 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 
+
 def chosen_to_chosen_as(apps, schema_editor):
     # We can't import the HelperSessionAvailability model directly as it may be a newer
     # version than this migration expects. We use the historical version.
-    HelperSessionAvailability = apps.get_model('challenge', 'HelperSessionAvailability')
+    HelperSessionAvailability = apps.get_model("challenge", "HelperSessionAvailability")
     for hsa in HelperSessionAvailability.objects.all():
         hsa.chosen_as = 1 if hsa.chosen else 0
         hsa.save()
 
+
 def chosen_as_to_chosen(apps, schema_editor):
     # We can't import the HelperSessionAvailability model directly as it may be a newer
     # version than this migration expects. We use the historical version.
-    HelperSessionAvailability = apps.get_model('challenge', 'HelperSessionAvailability')
+    HelperSessionAvailability = apps.get_model("challenge", "HelperSessionAvailability")
     for hsa in HelperSessionAvailability.objects.all():
-        hsa.chosen = (hsa.chosen_as != 0)
+        hsa.chosen = hsa.chosen_as != 0
         hsa.save()
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
-        ('challenge', '0045_auto_20170904_1750'),
+        ("challenge", "0045_auto_20170904_1750"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='helpersessionavailability',
-            name='chosen_as',
-            field=models.PositiveSmallIntegerField(choices=[(0, 'Pas choisi'), (1, 'Choisi'), (2, 'Comme intervenant'), (3, 'Moniteur 1'), (4, 'Moniteur 2')], default=0, verbose_name='S\xe9lectionn\xe9 pour la session comme'),
+            model_name="helpersessionavailability",
+            name="chosen_as",
+            field=models.PositiveSmallIntegerField(
+                choices=[
+                    (0, "Pas choisi"),
+                    (1, "Choisi"),
+                    (2, "Comme intervenant"),
+                    (3, "Moniteur 1"),
+                    (4, "Moniteur 2"),
+                ],
+                default=0,
+                verbose_name="S\xe9lectionn\xe9 pour la session comme",
+            ),
         ),
-        migrations.RunPython(chosen_to_chosen_as,
-                             chosen_as_to_chosen),
+        migrations.RunPython(chosen_to_chosen_as, chosen_as_to_chosen),
     ]

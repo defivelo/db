@@ -5,15 +5,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('user', '0036_userprofile_tax_jurisdiction'),
+        ("user", "0036_userprofile_tax_jurisdiction"),
     ]
 
     operations = [
         migrations.AlterModelManagers(
-            name='userprofile',
-            managers=[
-            ],
+            name="userprofile",
+            managers=[],
         ),
     ]

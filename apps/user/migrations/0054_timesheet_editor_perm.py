@@ -2,7 +2,6 @@
 
 from django.contrib.auth import get_user_model
 from django.db import migrations
-
 from rolepermissions.checkers import has_role
 from rolepermissions.permissions import revoke_permission
 from rolepermissions.roles import assign_role
@@ -27,7 +26,6 @@ def revoke_perms(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("user", "0053_allow_power_user_to_crud_settings"),
     ]

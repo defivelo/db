@@ -6,11 +6,8 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('common', '0005_VS-OW_to_WS'),
+        ("common", "0005_VS-OW_to_WS"),
     ]
 
-    operations = [
-        UnaccentExtension()
-    ]
+    operations = [UnaccentExtension()]

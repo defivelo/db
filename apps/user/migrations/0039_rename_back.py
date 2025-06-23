@@ -5,19 +5,18 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('user', '0038_multify_actor_for'),
+        ("user", "0038_multify_actor_for"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='userprofile',
-            name='actor_for',
+            model_name="userprofile",
+            name="actor_for",
         ),
         migrations.RenameField(
-            model_name='userprofile',
-            old_name='actor_for_multi',
-            new_name='actor_for',
+            model_name="userprofile",
+            old_name="actor_for_multi",
+            new_name="actor_for",
         ),
     ]

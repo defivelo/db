@@ -19,7 +19,6 @@ def season_to_months(apps, schema_editor):
 def months_to_season(apps, schema_editor):
     Season = apps.get_model("challenge", "Season")
     for s in Season.objects.all():
-
         # We would loose data by applying this reverse migration.
         s.season = DV_SEASON_AUTUMN
         if s.month_start <= DV_SEASON_LAST_SPRING_MONTH:
@@ -28,7 +27,6 @@ def months_to_season(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("challenge", "0069_use_u2019_quote_qualif"),
     ]

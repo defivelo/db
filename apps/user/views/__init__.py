@@ -13,7 +13,6 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from .autocomplete import *
 from .credentials import ResendUserCredentials, SendUserCredentials, UserAssignRole
 from .mixins import ProfileMixin
 from .standard import (
@@ -25,3 +24,17 @@ from .standard import (
     UserListExport,
     UserUpdate,
 )
+
+__all__ = [
+    "ActorsList",
+    "HelpersList",
+    "UserCreate",
+    "UserDetail",
+    "UserList",
+    "UserListExport",
+    "UserUpdate",
+    "ProfileMixin",
+    "ResendUserCredentials",
+    "SendUserCredentials",
+    "UserAssignRole",
+]

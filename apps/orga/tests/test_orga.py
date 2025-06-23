@@ -132,7 +132,7 @@ class OrgaPowerUserTest(OrgaBasicTest):
         initial["address_canton"] = "JU"
 
         for key in initial:
-            initial[key] = "" if initial[key] == None else initial[key]
+            initial[key] = "" if initial[key] is None else initial[key]
 
         response = self.client.post(url, initial)
         self.assertEqual(response.status_code, self.expected_save_code, url)
@@ -253,7 +253,7 @@ class OrgaStateManagerUserTest(TestCase):
         initial["address_no"] = self.myorga.address_no + 1
 
         for key in initial:
-            initial[key] = "" if initial[key] == None else initial[key]
+            initial[key] = "" if initial[key] is None else initial[key]
 
         response = self.client.post(url, initial)
         # Code 302 because update succeeded
@@ -338,7 +338,7 @@ class OrgaCoordinatorUserTest(TestCase):
         initial["address_no"] = self.myorga.address_no + 1
 
         for key in initial:
-            initial[key] = "" if initial[key] == None else initial[key]
+            initial[key] = "" if initial[key] is None else initial[key]
 
         response = self.client.post(url, initial)
         # Code 302 because update succeeded

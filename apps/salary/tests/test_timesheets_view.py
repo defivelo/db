@@ -250,7 +250,7 @@ def test_collaborator_cannot_validate_timesheet(db):
     )
     assert (
         Timesheet.objects.count() == 1
-        and Timesheet.objects.first().validated_at == None
+        and Timesheet.objects.first().validated_at is None
     )
 
 

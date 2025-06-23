@@ -4,11 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('challenge', '0066_invoicelines_with_nullable_sessions'),
-        ('challenge', '0066_add_schwyz'),
+        ("challenge", "0066_invoicelines_with_nullable_sessions"),
+        ("challenge", "0066_add_schwyz"),
     ]
 
-    operations = [
-    ]
+    operations = []

@@ -50,7 +50,6 @@ def update_timesheets(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("salary", "0005_timesheet_leader_count"),
     ]

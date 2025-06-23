@@ -5,15 +5,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('user', '0039_rename_back'),
+        ("user", "0039_rename_back"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='userprofile',
-            name='actor_for',
-            field=models.ManyToManyField(blank=True, related_name='actor_for', to='challenge.QualificationActivity', verbose_name='Intervenant'),
+            model_name="userprofile",
+            name="actor_for",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="actor_for",
+                to="challenge.QualificationActivity",
+                verbose_name="Intervenant",
+            ),
         ),
     ]

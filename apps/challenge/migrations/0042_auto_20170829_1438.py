@@ -5,22 +5,25 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('challenge', '0041_seasons_are_seasons'),
+        ("challenge", "0041_seasons_are_seasons"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='season',
-            options={'ordering': ['year', 'season'], 'verbose_name': 'Saison', 'verbose_name_plural': 'Saisons'},
+            name="season",
+            options={
+                "ordering": ["year", "season"],
+                "verbose_name": "Saison",
+                "verbose_name_plural": "Saisons",
+            },
         ),
         migrations.RemoveField(
-            model_name='season',
-            name='begin',
+            model_name="season",
+            name="begin",
         ),
         migrations.RemoveField(
-            model_name='season',
-            name='end',
+            model_name="season",
+            name="end",
         ),
     ]

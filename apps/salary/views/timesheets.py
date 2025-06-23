@@ -277,22 +277,22 @@ class YearlyTimesheets(TemplateView):
 
         context["months"] = MONTHS_3
         context["timesheets_status_matrix"] = timesheets_status_matrix
-        context[
-            "show_reminder_button_months"
-        ] = timesheets_overview.get_missing_timesheet_status_per_month(
-            global_timesheets_status_matrix
+        context["show_reminder_button_months"] = (
+            timesheets_overview.get_missing_timesheet_status_per_month(
+                global_timesheets_status_matrix
+            )
         )
-        context[
-            "timesheets_amount"
-        ] = timesheets_overview.get_timesheets_amount_by_month(year=year, users=users)
-        context[
-            "orphaned_timesheets"
-        ] = timesheets_overview.get_orphaned_timesheets_per_month(
-            year=year,
-            users=users,
-            cantons=[active_canton]
-            if active_canton in dict(DV_STATE_CHOICES)
-            else None,
+        context["timesheets_amount"] = (
+            timesheets_overview.get_timesheets_amount_by_month(year=year, users=users)
+        )
+        context["orphaned_timesheets"] = (
+            timesheets_overview.get_orphaned_timesheets_per_month(
+                year=year,
+                users=users,
+                cantons=[active_canton]
+                if active_canton in dict(DV_STATE_CHOICES)
+                else None,
+            )
         )
         context["cantons"] = DV_STATE_CHOICES
         context["active_canton"] = (

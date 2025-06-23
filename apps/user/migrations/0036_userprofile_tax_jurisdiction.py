@@ -5,15 +5,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('user', '0035_userprofile_formation_firstdate'),
+        ("user", "0035_userprofile_formation_firstdate"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userprofile',
-            name='tax_jurisdiction',
-            field=models.CharField(blank=True, max_length=511, verbose_name="Lieu d'imposition (si pas en Suisse)"),
+            model_name="userprofile",
+            name="tax_jurisdiction",
+            field=models.CharField(
+                blank=True,
+                max_length=511,
+                verbose_name="Lieu d'imposition (si pas en Suisse)",
+            ),
         ),
     ]

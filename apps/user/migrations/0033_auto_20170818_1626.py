@@ -5,30 +5,90 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('user', '0032_set_deletion_roles'),
+        ("user", "0032_set_deletion_roles"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='usermanagedstate',
-            name='canton',
-            field=models.CharField(choices=[('BS', 'Basel-Stadt'), ('BE', 'Berne'), ('FR', 'Fribourg'), ('GE', 'Geneva'), ('JU', 'Jura'), ('LU', 'Lucerne'), ('NE', 'Neuchatel'), ('SG', 'St. Gallen'), ('VS', 'Valais'), ('VD', 'Vaud'), ('ZH', 'Zurich'), ('VS-OW', 'Haut-Valais'), ('AP', 'Appenzell')], max_length=5, verbose_name='Canton'),
+            model_name="usermanagedstate",
+            name="canton",
+            field=models.CharField(
+                choices=[
+                    ("BS", "Basel-Stadt"),
+                    ("BE", "Berne"),
+                    ("FR", "Fribourg"),
+                    ("GE", "Geneva"),
+                    ("JU", "Jura"),
+                    ("LU", "Lucerne"),
+                    ("NE", "Neuchatel"),
+                    ("SG", "St. Gallen"),
+                    ("VS", "Valais"),
+                    ("VD", "Vaud"),
+                    ("ZH", "Zurich"),
+                    ("VS-OW", "Haut-Valais"),
+                    ("AP", "Appenzell"),
+                ],
+                max_length=5,
+                verbose_name="Canton",
+            ),
         ),
         migrations.AlterField(
-            model_name='userprofile',
-            name='activity_cantons',
-            field=models.CharField(blank=True, choices=[('BS', 'Basel-Stadt'), ('BE', 'Berne'), ('FR', 'Fribourg'), ('GE', 'Geneva'), ('JU', 'Jura'), ('LU', 'Lucerne'), ('NE', 'Neuchatel'), ('SG', 'St. Gallen'), ('VS', 'Valais'), ('VD', 'Vaud'), ('ZH', 'Zurich'), ('VS-OW', 'Haut-Valais'), ('AP', 'Appenzell')], max_length=41, verbose_name='Défi Vélo mobile'),
+            model_name="userprofile",
+            name="activity_cantons",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("BS", "Basel-Stadt"),
+                    ("BE", "Berne"),
+                    ("FR", "Fribourg"),
+                    ("GE", "Geneva"),
+                    ("JU", "Jura"),
+                    ("LU", "Lucerne"),
+                    ("NE", "Neuchatel"),
+                    ("SG", "St. Gallen"),
+                    ("VS", "Valais"),
+                    ("VD", "Vaud"),
+                    ("ZH", "Zurich"),
+                    ("VS-OW", "Haut-Valais"),
+                    ("AP", "Appenzell"),
+                ],
+                max_length=41,
+                verbose_name="Défi Vélo mobile",
+            ),
         ),
         migrations.AlterField(
-            model_name='userprofile',
-            name='affiliation_canton',
-            field=models.CharField(blank=True, choices=[('', '---------'), ('BS', 'Basel-Stadt'), ('BE', 'Berne'), ('FR', 'Fribourg'), ('GE', 'Geneva'), ('JU', 'Jura'), ('LU', 'Lucerne'), ('NE', 'Neuchatel'), ('SG', 'St. Gallen'), ('VS', 'Valais'), ('VD', 'Vaud'), ('ZH', 'Zurich'), ('VS-OW', 'Haut-Valais'), ('AP', 'Appenzell')], max_length=5, verbose_name="Canton d'affiliation"),
+            model_name="userprofile",
+            name="affiliation_canton",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("", "---------"),
+                    ("BS", "Basel-Stadt"),
+                    ("BE", "Berne"),
+                    ("FR", "Fribourg"),
+                    ("GE", "Geneva"),
+                    ("JU", "Jura"),
+                    ("LU", "Lucerne"),
+                    ("NE", "Neuchatel"),
+                    ("SG", "St. Gallen"),
+                    ("VS", "Valais"),
+                    ("VD", "Vaud"),
+                    ("ZH", "Zurich"),
+                    ("VS-OW", "Haut-Valais"),
+                    ("AP", "Appenzell"),
+                ],
+                max_length=5,
+                verbose_name="Canton d'affiliation",
+            ),
         ),
         migrations.AlterField(
-            model_name='userprofile',
-            name='bagstatus',
-            field=models.PositiveSmallIntegerField(choices=[(0, '---'), (10, 'En prêt'), (20, 'Payé'), (20, 'Offert')], default=0, verbose_name='Sac Défi Vélo'),
+            model_name="userprofile",
+            name="bagstatus",
+            field=models.PositiveSmallIntegerField(
+                choices=[(0, "---"), (10, "En prêt"), (20, "Payé"), (20, "Offert")],
+                default=0,
+                verbose_name="Sac Défi Vélo",
+            ),
         ),
     ]

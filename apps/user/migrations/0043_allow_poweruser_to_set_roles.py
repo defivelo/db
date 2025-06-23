@@ -3,38 +3,38 @@ from __future__ import unicode_literals
 
 from django.contrib.auth import get_user_model
 from django.db import migrations
-
 from rolepermissions.checkers import has_role
-from rolepermissions.permissions import grant_permission, revoke_permission
+from rolepermissions.permissions import revoke_permission
 from rolepermissions.roles import assign_role, clear_roles
+
 
 def add_user_set_role_to_power_user(apps, schema_editor):
     # We can't import the Person model directly as it may be a newer
     # version than this migration expects. We use the historical version.
     User = get_user_model()
     for user in User.objects.all():
-        if has_role(user, 'power_user'):
+        if has_role(user, "power_user"):
             clear_roles(user)
-            assign_role(user, 'power_user')
+            assign_role(user, "power_user")
+
 
 def remove_user_set_role_from_power_user(apps, schema_editor):
     # We can't import the Person model directly as it may be a newer
     # version than this migration expects. We use the historical version.
     User = get_user_model()
     for user in User.objects.all():
-        if has_role(user, 'power_user'):
-            revoke_permission(user, 'user_set_role')
+        if has_role(user, "power_user"):
+            revoke_permission(user, "user_set_role")
             user.save()
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
-        ('user', '0042_VS-OW_to_WS'),
+        ("user", "0042_VS-OW_to_WS"),
     ]
 
     operations = [
-        migrations.RunPython(add_user_set_role_to_power_user,
-                             remove_user_set_role_from_power_user),
+        migrations.RunPython(
+            add_user_set_role_to_power_user, remove_user_set_role_from_power_user
+        ),
     ]
-
-

@@ -668,7 +668,7 @@ class UserManagedState(models.Model):
         return [c[1] for c in DV_STATE_CHOICES if c[0] == self.address_canton][0]
 
     def __str__(self):
-        return _("{name} est chargé·e de projet pour le canton " "{canton}").format(
+        return _("{name} est chargé·e de projet pour le canton {canton}").format(
             name=self.user.get_full_name(), canton=self.canton
         )
 

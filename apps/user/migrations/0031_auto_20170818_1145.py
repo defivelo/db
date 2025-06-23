@@ -5,15 +5,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('user', '0030_auto_20170817_1642'),
+        ("user", "0030_auto_20170817_1642"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='userprofile',
-            name='status',
-            field=models.PositiveSmallIntegerField(choices=[(0, '---------'), (10, 'Actif'), (20, 'Réserve'), (30, 'Inactif'), (40, 'Archive'), (99, 'Supprimé')], default=0, verbose_name='Statut'),
+            model_name="userprofile",
+            name="status",
+            field=models.PositiveSmallIntegerField(
+                choices=[
+                    (0, "---------"),
+                    (10, "Actif"),
+                    (20, "Réserve"),
+                    (30, "Inactif"),
+                    (40, "Archive"),
+                    (99, "Supprimé"),
+                ],
+                default=0,
+                verbose_name="Statut",
+            ),
         ),
     ]

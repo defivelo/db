@@ -16,7 +16,6 @@ def ws_to_vs(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("salary", "0013_add_ignore_to_timesheets"),
     ]

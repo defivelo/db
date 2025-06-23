@@ -4,20 +4,39 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('challenge', '0072_season_to_month_in_names'),
+        ("challenge", "0072_season_to_month_in_names"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='historicalseason',
-            name='state',
-            field=models.PositiveSmallIntegerField(choices=[(1, 'Planification (invisible)'), (2, 'Annoncé (rentrée des disponibilités)'), (3, 'En cours (corrections que par chargé·e·s de projet)'), (4, 'Terminé'), (5, 'Archivé')], default=1, verbose_name='État'),
+            model_name="historicalseason",
+            name="state",
+            field=models.PositiveSmallIntegerField(
+                choices=[
+                    (1, "Planification (invisible)"),
+                    (2, "Annoncé (rentrée des disponibilités)"),
+                    (3, "En cours (corrections que par chargé·e·s de projet)"),
+                    (4, "Terminé"),
+                    (5, "Archivé"),
+                ],
+                default=1,
+                verbose_name="État",
+            ),
         ),
         migrations.AlterField(
-            model_name='season',
-            name='state',
-            field=models.PositiveSmallIntegerField(choices=[(1, 'Planification (invisible)'), (2, 'Annoncé (rentrée des disponibilités)'), (3, 'En cours (corrections que par chargé·e·s de projet)'), (4, 'Terminé'), (5, 'Archivé')], default=1, verbose_name='État'),
+            model_name="season",
+            name="state",
+            field=models.PositiveSmallIntegerField(
+                choices=[
+                    (1, "Planification (invisible)"),
+                    (2, "Annoncé (rentrée des disponibilités)"),
+                    (3, "En cours (corrections que par chargé·e·s de projet)"),
+                    (4, "Terminé"),
+                    (5, "Archivé"),
+                ],
+                default=1,
+                verbose_name="État",
+            ),
         ),
     ]

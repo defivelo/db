@@ -5,15 +5,32 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('challenge', '0038_auto_20170824_1212'),
+        ("challenge", "0038_auto_20170824_1212"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='season',
-            name='cantons',
-            field=models.CharField(choices=[('AR', 'Appenzell Ausserrhoden'), ('BE', 'Berne'), ('BS', 'Basel-Stadt'), ('FR', 'Fribourg'), ('GE', 'Geneva'), ('JU', 'Jura'), ('LU', 'Lucerne'), ('NE', 'Neuchatel'), ('SG', 'St. Gallen'), ('VD', 'Vaud'), ('VS', 'Valais'), ('VS-OW', 'Haut-Valais'), ('ZH', 'Zurich')], max_length=41, verbose_name='Cantons'),
+            model_name="season",
+            name="cantons",
+            field=models.CharField(
+                choices=[
+                    ("AR", "Appenzell Ausserrhoden"),
+                    ("BE", "Berne"),
+                    ("BS", "Basel-Stadt"),
+                    ("FR", "Fribourg"),
+                    ("GE", "Geneva"),
+                    ("JU", "Jura"),
+                    ("LU", "Lucerne"),
+                    ("NE", "Neuchatel"),
+                    ("SG", "St. Gallen"),
+                    ("VD", "Vaud"),
+                    ("VS", "Valais"),
+                    ("VS-OW", "Haut-Valais"),
+                    ("ZH", "Zurich"),
+                ],
+                max_length=41,
+                verbose_name="Cantons",
+            ),
         ),
     ]

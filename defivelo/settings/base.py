@@ -24,7 +24,6 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
 import os
-import sys
 
 from django.utils.translation import gettext_lazy as _
 
@@ -33,7 +32,10 @@ import dj_database_url
 from .. import get_project_root_path
 from . import get_env_variable
 
-gettext = lambda s: s
+
+def gettext(s):
+    return s
+
 
 PROJECT_ROOT = get_project_root_path()
 

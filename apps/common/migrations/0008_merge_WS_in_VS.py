@@ -7,7 +7,6 @@ def ws_to_vs(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("common", "0007_use_u2019_quote"),
     ]

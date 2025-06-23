@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('salary', '0004_auto_20200407_0949'),
+        ("salary", "0004_auto_20200407_0949"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='timesheet',
-            name='leader_count',
-            field=models.IntegerField(default=0, verbose_name='Participation(s) comme moniteur 2'),
+            model_name="timesheet",
+            name="leader_count",
+            field=models.IntegerField(
+                default=0, verbose_name="Participation(s) comme moniteur 2"
+            ),
         ),
     ]

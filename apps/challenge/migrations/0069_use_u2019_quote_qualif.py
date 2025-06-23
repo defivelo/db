@@ -4,28 +4,39 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('challenge', '0068_use_u2019_quote'),
+        ("challenge", "0068_use_u2019_quote"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='historicalqualification',
-            options={'get_latest_by': 'history_date', 'ordering': ('-history_date', '-history_id'), 'verbose_name': 'historical Qualif’'},
+            name="historicalqualification",
+            options={
+                "get_latest_by": "history_date",
+                "ordering": ("-history_date", "-history_id"),
+                "verbose_name": "historical Qualif’",
+            },
         ),
         migrations.AlterModelOptions(
-            name='qualification',
-            options={'ordering': ['session', 'created_on', 'name'], 'verbose_name': 'Qualif’', 'verbose_name_plural': 'Qualifs'},
+            name="qualification",
+            options={
+                "ordering": ["session", "created_on", "name"],
+                "verbose_name": "Qualif’",
+                "verbose_name_plural": "Qualifs",
+            },
         ),
         migrations.AlterField(
-            model_name='historicalsession',
-            name='place',
-            field=models.CharField(blank=True, max_length=512, verbose_name='Lieu de la Qualif’'),
+            model_name="historicalsession",
+            name="place",
+            field=models.CharField(
+                blank=True, max_length=512, verbose_name="Lieu de la Qualif’"
+            ),
         ),
         migrations.AlterField(
-            model_name='session',
-            name='place',
-            field=models.CharField(blank=True, max_length=512, verbose_name='Lieu de la Qualif’'),
+            model_name="session",
+            name="place",
+            field=models.CharField(
+                blank=True, max_length=512, verbose_name="Lieu de la Qualif’"
+            ),
         ),
     ]

@@ -24,7 +24,6 @@ def historical_to_session(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("challenge", "0061_invoiceline_historical_session"),
     ]
