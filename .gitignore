@@ -10,3 +10,4 @@ envdir/*
 /docker-compose.override.yml
 /.idea
 /*.sql.gz
+override.justfile
