@@ -20,3 +20,5 @@ COMPRESS_OFFLINE = False
 
 SECRET_KEY = "notsosecret"
 NEVERCACHE_KEY = "notsosecret"
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

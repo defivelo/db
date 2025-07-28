@@ -6,8 +6,6 @@
 #
 -e git+https://github.com/liip-forks/django-agpl#egg=django-agpl
     # via -r /code/requirements/base.in
--e git+https://github.com/liip-forks/django-db-email-backend#egg=kn-django-db-email-backend
-    # via -r /code/requirements/base.in
 asgiref==3.7.2
     # via
     #   django
@@ -38,6 +36,8 @@ diff-match-patch==20230430
     # via django-import-export
 dj-database-url==2.1.0
     # via -r /code/requirements/base.in
+dj-email-url==1.0.6
+    # via -r /code/requirements/base.in
 django==4.2.6
     # via
     #   -r /code/requirements/base.in
@@ -60,7 +60,6 @@ django==4.2.6
     #   django-recurrence
     #   django-role-permissions
     #   django-taggit
-    #   kn-django-db-email-backend
 django-allauth==0.57.0
     # via -r /code/requirements/base.in
 django-appconf==1.0.5
@@ -147,7 +146,6 @@ pytz==2023.3.post1
     # via
     #   -r /code/requirements/base.in
     #   icalendar
-    #   kn-django-db-email-backend
 pyyaml==6.0.1
     # via
     #   -r /code/requirements/base.in

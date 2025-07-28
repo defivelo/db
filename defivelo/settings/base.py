@@ -28,6 +28,7 @@ import os
 from django.utils.translation import gettext_lazy as _
 
 import dj_database_url
+import dj_email_url
 
 from .. import get_project_root_path
 from . import get_env_variable
@@ -368,15 +369,6 @@ if SENTRY_DSN:
 
 ROLEPERMISSIONS_MODULE = "defivelo.roles"
 
-# Email sender settings
-SERVER_EMAIL = get_env_variable("SERVER_EMAIL", "noreply@defi-velo.ch")
-DEFAULT_FROM_EMAIL = get_env_variable("DEFAULT_FROM_EMAIL", "noreply@defi-velo.ch")
-EMAIL_SUBJECT_PREFIX = _("DÉFI VÉLO: ")
-
-if get_env_variable("USE_DB_EMAIL_BACKEND", False):
-    INSTALLED_APPS = INSTALLED_APPS + ("db_email_backend",)
-    EMAIL_BACKEND = "db_email_backend.backend.DBEmailBackend"
-
 LOGIN_REDIRECT_URL = "/"
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 2048  # Up from '1000'
@@ -444,3 +436,28 @@ BOOTSTRAP3 = {
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+#############
+# E-Mailing #
+#############
+EMAIL_URL = get_env_variable("EMAIL_URL", "console://")
+email_config = dj_email_url.parse(EMAIL_URL)
+
+# Email sender settings
+EMAIL_SUBJECT_PREFIX = _("DÉFI VÉLO: ")
+SERVER_EMAIL = email_config.get(
+    "SERVER_EMAIL", get_env_variable("SERVER_EMAIL", "noreply@defi-velo.ch")
+)
+DEFAULT_FROM_EMAIL = email_config.get(
+    "DEFAULT_FROM_EMAIL", get_env_variable("DEFAULT_FROM_EMAIL", "noreply@defi-velo.ch")
+)
+
+# Email backend settings
+EMAIL_FILE_PATH = email_config["EMAIL_FILE_PATH"]
+EMAIL_HOST_USER = email_config["EMAIL_HOST_USER"]
+EMAIL_HOST_PASSWORD = email_config["EMAIL_HOST_PASSWORD"]
+EMAIL_HOST = email_config["EMAIL_HOST"]
+EMAIL_PORT = email_config["EMAIL_PORT"]
+EMAIL_BACKEND = email_config["EMAIL_BACKEND"]
+EMAIL_USE_TLS = email_config["EMAIL_USE_TLS"]
+EMAIL_USE_SSL = email_config["EMAIL_USE_SSL"]
