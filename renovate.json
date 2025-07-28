@@ -2,21 +2,28 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
-    "group:allNonMajor"
+    "group:allNonMajor",
+    "schedule:weekly"
+  ],
+  "baseBranches": [
+    "staging"
+  ],
+  "ignorePaths": [
+    "envdir/**",
+    "ext/**",
+    "scripts/**"
   ],
   "major": {
     "enabled": false
   },
   "pip-compile": {
-    "fileMatch": [
-      "(^|/)[\\w-]*requirements((-|/)\\w+)?\\.txt$"
-    ]
+    "managerFilePatterns": ["/(^|/)[\\w-]*requirements((-|/)\\w+)?\\.txt$/"]
   },
   "pip_requirements": {
     "enabled": false
   },
   "pip_setup": {
-    "enabled": false
+    "enabled": true
   },
   "constraints": {
     "python": "==3.11"
@@ -36,5 +43,25 @@
     "minor": {
       "enabled": false
     }
-  }
+  },
+  "packageRules": [
+    {
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "python"
+      ],
+      "allowedVersions": "^3.11"
+    },
+    {
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "postgres"
+      ],
+      "allowedVersions": "^15.0"
+    }
+  ]
 }
