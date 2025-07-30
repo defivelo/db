@@ -17,10 +17,11 @@
     "enabled": false
   },
   "pip-compile": {
-    "managerFilePatterns": ["/(^|/)[\\w-]*requirements((-|/)\\w+)?\\.txt$/"]
+    "enabled": false
   },
   "pip_requirements": {
-    "enabled": false
+    "enabled": true,
+    "managerFilePatterns": ["/(^|/)[\\w-]*requirements/([-.\\w]+)\\.(txt|pip)$/"]
   },
   "pip_setup": {
     "enabled": true
@@ -62,6 +63,10 @@
         "postgres"
       ],
       "allowedVersions": "^15.0"
+    },
+    {
+      "managers": ["html"],
+      "enabled": false
     }
   ]
 }
