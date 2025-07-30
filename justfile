@@ -47,16 +47,16 @@ format:
 alias c := compile
 # Compile the requirements files
 compile:
-  docker compose exec {{BACKEND_CONTAINER}} pip-compile requirements/base.in
-  docker compose exec {{BACKEND_CONTAINER}} pip-compile requirements/dev.in
-  docker compose exec {{BACKEND_CONTAINER}} pip-compile requirements/staging.in
-  docker compose exec {{BACKEND_CONTAINER}} pip-compile requirements/test.in
+  docker compose exec {{BACKEND_CONTAINER}} bash -c 'cd requirements; pip-compile base.in'
+  docker compose exec {{BACKEND_CONTAINER}} bash -c 'cd requirements; pip-compile dev.in'
+  docker compose exec {{BACKEND_CONTAINER}} bash -c 'cd requirements; pip-compile staging.in'
+  docker compose exec {{BACKEND_CONTAINER}} bash -c 'cd requirements; pip-compile test.in'
 
 compile-upgrade:
-  docker compose exec {{BACKEND_CONTAINER}} pip-compile --upgrade requirements/base.in
-  docker compose exec {{BACKEND_CONTAINER}} pip-compile --upgrade requirements/dev.in
-  docker compose exec {{BACKEND_CONTAINER}} pip-compile --upgrade requirements/staging.in
-  docker compose exec {{BACKEND_CONTAINER}} pip-compile --upgrade requirements/test.in
+  docker compose exec {{BACKEND_CONTAINER}} bash -c 'cd requirements; pip-compile --upgrade base.in'
+  docker compose exec {{BACKEND_CONTAINER}} bash -c 'cd requirements; pip-compile --upgrade dev.in'
+  docker compose exec {{BACKEND_CONTAINER}} bash -c 'cd requirements; pip-compile --upgrade staging.in'
+  docker compose exec {{BACKEND_CONTAINER}} bash -c 'cd requirements; pip-compile --upgrade test.in'
 
 alias i := install
 # Install pip and npm dependencies
