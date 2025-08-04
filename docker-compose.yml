@@ -13,7 +13,8 @@ services:
       - pgdata:/var/lib/postgresql/data
     ports:
       - 5432
-
+  mailpit:
+    image: axllent/mailpit:latest
   backend:
     build:
       context: .
@@ -23,6 +24,7 @@ services:
       ALLOWED_HOSTS: >-
         localhost
       DATABASE_URL: postgresql://postgres@db/defivelo
+      EMAIL_URL: smtp://mailpit:1025
     ports:
       - 8000
     volumes:

@@ -50,5 +50,3 @@ MIDDLEWARE += [
 
 # Adapt Stronghold for Debug
 STRONGHOLD_PUBLIC_URLS += [r"^/__debug__/.*$"]
-
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

@@ -567,7 +567,11 @@ class SendTimesheetsReminder(TemplateView):
             message = render_to_string(
                 "salary/email_send_timesheets_reminder.txt",
                 {
-                    "profile": {"get_full_name": _("{Prénom} {Nom}")},
+                    "profile": {
+                        "get_full_name": f"{user.first_name} {user.last_name}"
+                        if user
+                        else _("{Prénom} {Nom}")
+                    },
                     "current_site": Site.objects.get_current(),
                     "timesheets_url": timesheets_url,
                 },
