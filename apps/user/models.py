@@ -193,8 +193,8 @@ class UserProfile(Address, models.Model):
         blank=True,
     )
     social_security = models.CharField(_("N° AVS"), max_length=16, blank=True)
-    natel = models.CharField(max_length=13, blank=True)
-    phone = models.CharField(_("Téléphone"), max_length=13, blank=True)
+    natel = models.CharField(max_length=17, blank=True)
+    phone = models.CharField(_("Téléphone"), max_length=17, blank=True)
     affiliation_canton = models.CharField(
         _("Canton d’affiliation"),
         choices=DV_STATE_CHOICES_WITH_DEFAULT,
