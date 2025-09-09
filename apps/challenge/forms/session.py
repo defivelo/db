@@ -41,6 +41,21 @@ nodate_change_warning = _(
 
 
 class SessionForm(forms.ModelForm):
+    address_country = forms.CharField(
+        widget=forms.HiddenInput(), required=False, disabled=True, label=None
+    )
+    address_city_autocomplete = OFSNumberSelect2ListChoiceField(
+        widget=autocomplete.ListSelect2(
+            url="ofs-autocomplete",
+            attrs={
+                "id": "id_address_city_autocomplete",
+                "data-placeholder": "Ville",
+                "style": "display: none;",
+            },
+        ),
+        required=False,
+    )
+
     def __init__(self, *args, **kwargs):
         kwargs.pop("cantons", None)
         self.season = kwargs.pop("season", None)
@@ -82,6 +97,8 @@ class SessionForm(forms.ModelForm):
                     "address_no",
                     "address_zip",
                     "address_city",
+                    "address_city_autocomplete",
+                    "address_ofs_no",
                     "address_canton",
                 ]:
                     del self.fields[f]
@@ -95,33 +112,7 @@ class SessionForm(forms.ModelForm):
             if self.instance and self.instance.pk
             else "CH"
         )
-        self.fields["address_country"] = forms.CharField(
-            widget=forms.HiddenInput(),
-            required=False,
-            disabled=True,
-            label=None,
-            initial=country,
-        )
-
-        self.fields["address_ofs_no"] = forms.CharField(
-            widget=forms.HiddenInput(), required=False
-        )
-        self.fields["address_city_autocomplete"] = OFSNumberSelect2ListChoiceField(
-            widget=autocomplete.ListSelect2(
-                url="ofs-autocomplete",
-                attrs={
-                    "id": "id_address_city_autocomplete",
-                    "placeholder": "Ville",
-                    "style": "display: none;",
-                },
-            ),
-            attrs={"placeholder": "Plouf"},
-            required=False,
-        )
-
-        # FIXME: Save city label (not ofs nb)
-        # if address_city_autocomplete:
-        #     userprofile.address_city = address_city_autocomplete
+        self.fields["address_country"].initial = country
 
     day = SwissDateField(label=_("Date"))
     begin = SwissTimeField(label=_("Début"))
@@ -183,6 +174,7 @@ class SessionForm(forms.ModelForm):
             "address_no",
             "address_zip",
             "address_city",
+            "address_ofs_no",
             "address_canton",
             "superleader",
             "apples",
@@ -193,6 +185,9 @@ class SessionForm(forms.ModelForm):
             "comments",
             "visible",
         ]
+        widgets = {
+            "address_ofs_no": forms.HiddenInput(),
+        }
 
 
 class SessionDeleteForm(forms.ModelForm):

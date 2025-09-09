@@ -171,6 +171,21 @@ class OFSNumberSelect2ListChoiceField(autocomplete.Select2ListChoiceField):
 
 
 class UserProfileForm(SimpleUserProfileForm):
+    address_country = forms.CharField(
+        widget=forms.HiddenInput(), required=False, disabled=True, label=None
+    )
+    address_city_autocomplete = OFSNumberSelect2ListChoiceField(
+        widget=autocomplete.ListSelect2(
+            url="ofs-autocomplete",
+            attrs={
+                "id": "id_address_city_autocomplete",
+                "data-placeholder": "Ville",
+                "style": "display: none;",
+            },
+        ),
+        required=False,
+    )
+
     def __init__(self, *args, **kwargs):
         # Whether to permit no-affiliation-canton creation
         affiliation_canton_required = kwargs.pop("affiliation_canton_required", True)
@@ -178,17 +193,6 @@ class UserProfileForm(SimpleUserProfileForm):
         super().__init__(*args, **kwargs)
         # Import all generated fields from UserProfile
         self.fields.update(modelform_factory(UserProfile, exclude=("user",))().fields)
-        self.fields["address_city_autocomplete"] = OFSNumberSelect2ListChoiceField(
-            widget=autocomplete.ListSelect2(
-                url="ofs-autocomplete",
-                attrs={
-                    "id": "id_address_city_autocomplete",
-                    "data-placeholder": "Ville",
-                    "style": "display: none;",
-                },
-            ),
-            required=False,
-        )
 
         # Some manual fixes lost by importing UserProfile
         for fieldname, fieldclass in {
@@ -202,7 +206,6 @@ class UserProfileForm(SimpleUserProfileForm):
                     }
                 ),
             ),
-            "address_country": BS3CountriesField(required=False),
             "address_ofs_no": forms.CharField(
                 widget=forms.HiddenInput(), required=False
             ),
@@ -237,6 +240,13 @@ class UserProfileForm(SimpleUserProfileForm):
         self.fields["tax_jurisdiction"].widget.attrs["placeholder"] = _(
             "… si pas en Suisse"
         )
+
+        try:
+            profile = getattr(self.instance, "profile", None)
+            country = profile.address_country if profile and profile.pk else "CH"
+        except Exception:
+            country = "CH"
+        self.fields["address_country"].initial = country
 
         for field in (
             "first_name",
