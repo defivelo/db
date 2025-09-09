@@ -29,6 +29,21 @@ from .models import Organization
 
 
 class OrganizationForm(forms.ModelForm):
+    address_country = forms.CharField(
+        widget=forms.HiddenInput(), required=False, disabled=True, label=None
+    )
+    address_city_autocomplete = OFSNumberSelect2ListChoiceField(
+        widget=autocomplete.ListSelect2(
+            url="ofs-autocomplete",
+            attrs={
+                "id": "id_address_city_autocomplete",
+                "data-placeholder": "Ville",
+                "style": "display: none;",
+            },
+        ),
+        required=False,
+    )
+
     def __init__(self, *args, **kwargs):
         cantons = kwargs.pop("cantons", None)
         super().__init__(**kwargs)
@@ -45,27 +60,7 @@ class OrganizationForm(forms.ModelForm):
             if self.instance and self.instance.pk
             else "CH"
         )
-        self.fields["address_country"] = forms.CharField(
-            widget=forms.HiddenInput(),
-            required=False,
-            disabled=True,
-            label=None,
-            initial=country,
-        )
-        self.fields["address_ofs_no"] = forms.CharField(
-            widget=forms.HiddenInput(), required=False
-        )
-        self.fields["address_city_autocomplete"] = OFSNumberSelect2ListChoiceField(
-            widget=autocomplete.ListSelect2(
-                url="ofs-autocomplete",
-                attrs={
-                    "id": "id_address_city_autocomplete",
-                    "placeholder": "Ville",
-                    "style": "display: none;",
-                },
-            ),
-            required=False,
-        )
+        self.fields["address_country"].initial = country
 
     address_canton = forms.ChoiceField(
         label=_("Canton"),
@@ -94,9 +89,13 @@ class OrganizationForm(forms.ModelForm):
             "address_additional",
             "address_zip",
             "address_city",
+            "address_ofs_no",
             "address_canton",
             "website",
             "coordinator",
             "status",
             "comments",
         ]
+        widgets = {
+            "address_ofs_no": forms.HiddenInput(),
+        }

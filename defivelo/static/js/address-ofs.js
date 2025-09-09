@@ -8,7 +8,6 @@ function selectedDataAutocomplete() {
     const regex = /(^.*)( \(([A-Z]{2})\))$/;
     const matches = label.match(regex);
     if (matches) {
-      console.log("Update state to: ", matches[3])
       $("#id_address_city").val(matches[1]);
       $("#id_address_canton").val(matches[3]);
     } else {
@@ -46,9 +45,8 @@ function initAddressAutocompleteField($autocompleteField) {
   /**
    * Try to fill the autocomplete field with a default value, before the first request to the OFS API.
    **/
-  const initialValOfs = $("#id_address_ofs_no").val() | 0;
+  const initialValOfs = $("#id_address_ofs_no").val();
   const initialValLabel = $("#id_address_city").val();
-  console.log("YES", initialValLabel, initialValOfs);
   if (initialValLabel) {
     const $option = $("<option selected></option>").val(initialValOfs).text(initialValLabel);
     $autocompleteField.append($option).trigger('change');
