@@ -83,26 +83,17 @@ BAGSTATUS_CHOICES = (
     (BAGSTATUS_GIFT, _("Offert")),
 )
 
-# https://www.reimaginegender.org/insights/gender-and-forms
-# GENDER_UNDEF = 0
-# GENDER_WOMAN = 10
-# GENDER_MAN = 20
-# GENDER_TRANSGENDER_WOMAN = 30
-# GENDER_TRANSGENDER_MAN = 40
-# GENDER_NON_BINARY = 50
-# GENDER_AGENDER = 60
-# GENDER_NOT_LISTED = 70
-#
-# GENDER_CHOICES = (
-#     (GENDER_UNDEF, "------"),
-#     (GENDER_WOMAN, _("Femme")),
-#     (GENDER_MAN, _("Homme")),
-#     (GENDER_TRANSGENDER_WOMAN, _("Femme transgenre")),
-#     (GENDER_TRANSGENDER_MAN, _("Homme transgenre")),
-#     (GENDER_NON_BINARY, _("Non-binaire")),
-#     (GENDER_AGENDER, _("Agender")),
-#     (GENDER_NOT_LISTED, _("Non listé")),
-# )
+GENDER_UNDEF = 0
+GENDER_WOMAN = 10
+GENDER_MAN = 20
+GENDER_NON_BINARY = 30
+
+GENDER_CHOICES = (
+    (GENDER_UNDEF, "------"),
+    (GENDER_WOMAN, _("Femme")),
+    (GENDER_MAN, _("Homme")),
+    (GENDER_NON_BINARY, _("Non-binaire")),
+)
 
 PERSONAL_FIELDS = [
     "language",
@@ -128,6 +119,7 @@ PERSONAL_FIELDS = [
     "marital_status",
     "status",
     "activity_cantons",
+    "gender",
 ]
 
 DV_PUBLIC_FIELDS = [
@@ -152,7 +144,7 @@ COLLABORATOR_FIELDS = [
     "language",
     "formation",
     "actor_for",
-    # "gender"
+    "gender",
 ]
 
 STD_PROFILE_FIELDS = PERSONAL_FIELDS + DV_PUBLIC_FIELDS + DV_PRIVATE_FIELDS
@@ -175,9 +167,9 @@ class UserProfile(Address, models.Model):
         on_delete=models.CASCADE,
     )
     employee_code = models.CharField(_("Code salarié·e"), max_length=63, blank=True)
-    # gender = models.PositiveSmallIntegerField(
-    #     _("Genre"), choices=GENDER_CHOICES, default=GENDER_UNDEF, blank=True
-    # )
+    gender = models.PositiveSmallIntegerField(
+        _("Genre"), choices=GENDER_CHOICES, default=GENDER_UNDEF, blank=True
+    )
     language = models.CharField(
         _("Langue"), max_length=7, choices=DV_LANGUAGES_WITH_DEFAULT, blank=True
     )
@@ -430,12 +422,14 @@ class UserProfile(Address, models.Model):
             return dict(settings.WORK_PERMIT_CHOICES)[self.work_permit]
         return ""
 
-    #
-    # @cached_property
-    # def gender_full(self):
-    #     if self.gender:
-    #         return dict(GENDER_CHOICES)[self.gender]
-    #     return ""
+    @cached_property
+    def gender_full(self):
+        if self.gender is not None:
+            try:
+                return dict(GENDER_CHOICES)[self.gender]
+            except Exception:
+                return ""
+        return ""
 
     def status_icon(self):
         icon = ""
