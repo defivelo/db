@@ -27,7 +27,7 @@ def _legacy_to_new_workpermit(apps, schema_editor):
         }
 
         # Try to resolve legacy permit with regex
-        match = re.match(pattern="^(permis )?(ci|b|c|f|g|l|n|s).*$", string=legacy)
+        match = re.match(pattern="^(permi[st] )?(ci|b|c|f|g|l|n|s).*$", string=legacy)
         if match:
             letter = match.groups()[1]
 
