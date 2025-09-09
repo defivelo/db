@@ -47,7 +47,7 @@ from defivelo.roles import DV_AUTOMATIC_ROLES, DV_AVAILABLE_ROLES
 
 from ..common.fields import CheckboxMultipleChoiceField
 from . import STATE_CHOICES_WITH_DEFAULT
-from .models import UserProfile
+from .models import GENDER_CHOICES, UserProfile
 
 
 class SwissDateFilter(DateFilter):
@@ -59,7 +59,7 @@ class SimpleUserProfileForm(forms.ModelForm):
         allow_email = kwargs.pop("allow_email", False)
         kwargs.pop("affiliation_canton_required", None)
         kwargs.pop("cantons", None)
-        profile_fields = ["natel", "phone", "language", "comments"]
+        profile_fields = ["natel", "phone", "language", "comments", "gender"]
         if kwargs.pop("affiliation_canton", False):
             profile_fields.append("activity_cantons")
             profile_fields.append("affiliation_canton")
@@ -207,10 +207,10 @@ class UserProfileForm(SimpleUserProfileForm):
                 widget=forms.HiddenInput(), required=False
             ),
             "birthdate": SwissDateField(required=False),
-            # "gender": forms.ChoiceField(
-            #     choices=GENDER_CHOICES,
-            #     required=False,
-            # ),
+            "gender": forms.ChoiceField(
+                choices=GENDER_CHOICES,
+                required=False,
+            ),
             "natel": CHPhoneNumberField(required=False),
             "phone": CHPhoneNumberField(required=False),
             "nationality": BS3CountriesField(required=False),
