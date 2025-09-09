@@ -26,6 +26,7 @@ from dal_select2.views import Select2QuerySetView
 from six import get_unbound_function
 
 from apps.challenge import MAX_MONO1_PER_QUALI
+from django.conf import settings
 from defivelo.roles import has_permission
 
 from .. import FORMATION_KEYS, FORMATION_M2
@@ -128,8 +129,7 @@ class OfsAutoComplete(autocomplete.Select2ListView):
             return []
 
         response = requests.get(
-            # FIXME: Settings
-            "https://api3.geo.admin.ch/rest/services/api/SearchServer",
+            settings.OFS_API_URL,
             params={"searchText": self.q, "type": "locations", "origins": "gg25"},
         )
 
