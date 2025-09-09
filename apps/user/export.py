@@ -103,6 +103,7 @@ class UserResource(resources.ModelResource):
         attribute="profile__birthdate",
         widget=widgets.DateWidget(format="%d.%m.%Y"),
     )
+    profile__gender = fields.Field(column_name=_("Genre"), attribute="profile__gender")
     profile__nationality = fields.Field(
         column_name=_("Nationalité"), attribute="profile__nationality"
     )

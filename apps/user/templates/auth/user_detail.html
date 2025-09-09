@@ -64,8 +64,10 @@
                     <dl class="dl-horizontal">
                         <dt>{% trans "Nom" %}</dt>
                             <dd>{{ userprofile.get_full_name }}</dd>
-<!--                            <dt>{% trans "Genre" %}</dt>-->
-<!--                            <dd>{{ userprofile.profile.genre }}</dd>-->
+                        {% if userprofile.profile.gender %}
+                            <dt>{% trans "Genre" %}</dt>
+                                <dd>{{ userprofile.profile.gender_full }}</dd>
+                        {% endif %}
                         {% if userprofile.profile.has_address %}
                           <dt>{% trans "Adresse" %}</dt>
                             <dd>
