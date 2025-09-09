@@ -28,7 +28,8 @@ from django_filters import DateFilter
 from localflavor.ch.forms import (
     CHSocialSecurityNumberField,
     CHStateSelect,
-    zip_re, CHZipCodeField,
+    CHZipCodeField,
+    zip_re,
 )
 from localflavor.generic import forms as localforms
 from localflavor.generic.countries.sepa import IBAN_SEPA_COUNTRIES
@@ -144,8 +145,8 @@ class SimpleUserProfileForm(forms.ModelForm):
                     "address_zip",
                     ValidationError(
                         CHZipCodeField.default_error_messages["invalid"],
-                        params={"value": value}
-                    )
+                        params={"value": value},
+                    ),
                 )
 
         return cleaned_data

@@ -15,12 +15,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import re
 
-from bs4 import BeautifulSoup
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 
 import requests
+from bs4 import BeautifulSoup
 from dal import autocomplete
 from dal_select2.views import Select2QuerySetView
 from six import get_unbound_function
