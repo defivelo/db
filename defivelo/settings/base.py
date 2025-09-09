@@ -479,6 +479,11 @@ WORK_PERMIT_CHOICES = [
     (130, "Livret S Etat tiers"),
 ]
 
+# Base URL for the Swiss OFS (geo.admin.ch) search API used for city autocomplete
+OFS_API_URL = get_env_variable(
+    "OFS_API_URL", "https://api3.geo.admin.ch/rest/services/api/SearchServer"
+)
+
 MARITAL_STATUS_CHOICES = [
     (0, "---------"),
     (10, "Célibataire"),
