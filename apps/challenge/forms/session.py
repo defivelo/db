@@ -13,13 +13,13 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from dal import autocomplete
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import date
 from django.utils.translation import gettext_lazy as _
 
+from dal import autocomplete
 from localflavor.ch.forms import CHStateSelect
 
 from apps.common.forms import (
@@ -31,8 +31,8 @@ from apps.common.forms import (
 from apps.user import STATE_CHOICES_WITH_DEFAULT
 from apps.user.models import USERSTATUS_DELETED
 
-from ..models import Session
 from ...user.forms import OFSNumberSelect2ListChoiceField
+from ..models import Session
 
 nodate_change_warning = _(
     "La date ne peut plus être modifiée, car des heures ont déjà été "
@@ -90,9 +90,17 @@ class SessionForm(forms.ModelForm):
             self.fields["day"].help_text = nodate_change_warning
             self.fields["day"].widget.attrs["readonly"] = True
 
-        country = self.instance.address_country if self.instance and self.instance.pk else "CH"
+        country = (
+            self.instance.address_country
+            if self.instance and self.instance.pk
+            else "CH"
+        )
         self.fields["address_country"] = forms.CharField(
-            widget=forms.HiddenInput(), required=False, disabled=True, label=None, initial=country
+            widget=forms.HiddenInput(),
+            required=False,
+            disabled=True,
+            label=None,
+            initial=country,
         )
 
         self.fields["address_ofs_no"] = forms.CharField(
