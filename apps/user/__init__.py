@@ -62,3 +62,34 @@ def formation_short(formation, real_gettext=False):
 
 def get_new_username():
     return uuid.uuid4().hex[0:30]
+
+
+# Application-specific choices
+WORK_PERMIT_CHOICES = [
+    (0, "---"),
+    (10, "Permis B UE/AELE"),
+    (20, "Permis C UE/AELE"),
+    (30, "Permis Ci UE/AELE"),
+    (40, "Permis G UE/AELE"),
+    (50, "Permis L UE/AELE"),
+    (60, "Livret B Etat tiers"),
+    (70, "Livret C Etat tiers"),
+    (80, "Livret Ci Etat tiers"),
+    (90, "Livret F Etat tiers"),
+    (100, "Livret G Etat tiers"),
+    (110, "Livret L Etat tiers"),
+    (120, "Livret N Etat tiers"),
+    (130, "Livret S Etat tiers"),
+]
+
+MARITAL_STATUS_CHOICES = [
+    (0, "---------"),
+    (10, "Célibataire"),
+    (20, "Marié·e"),
+    (30, "Divorcé·e"),
+    (40, "Veu·f·ve"),
+    (50, "En partenariat enregistré"),
+    (60, "En partenariat dissous judiciairement"),
+    (70, "En partenariat dissous par décès"),
+    (80, "En partenariat dissous ensuite de déclaration d’absence"),
+]

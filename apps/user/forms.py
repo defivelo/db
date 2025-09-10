@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from django import forms
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -44,7 +43,7 @@ from apps.orga.models import Organization
 from defivelo.roles import DV_AUTOMATIC_ROLES, DV_AVAILABLE_ROLES
 
 from ..common.fields import CheckboxMultipleChoiceField
-from . import STATE_CHOICES_WITH_DEFAULT
+from . import STATE_CHOICES_WITH_DEFAULT, WORK_PERMIT_CHOICES
 from .models import GENDER_CHOICES, UserProfile
 
 
@@ -229,7 +228,7 @@ class UserProfileForm(SimpleUserProfileForm):
                 required=False,
             ),
             "work_permit": forms.ChoiceField(
-                choices=settings.WORK_PERMIT_CHOICES,
+                choices=WORK_PERMIT_CHOICES,
                 required=False,
             ),
         }.items():
