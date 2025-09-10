@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('user', '0075_prepare_work_permit_migration'),
+        ('user', '0076_prepare_work_permit_migration'),
     ]
 
     operations = [
