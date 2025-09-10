@@ -5,7 +5,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("user", "0074_alter_userprofile_iban"),
+        ("user", "0075_phone_length_fix"),
     ]
 
     operations = [
