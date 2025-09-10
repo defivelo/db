@@ -24,6 +24,7 @@ from rolepermissions.roles import get_user_roles
 
 from apps.common import DV_STATES
 from apps.user import FORMATION_M1, FORMATION_M2
+from apps.user.forms import UserProfileForm
 from apps.user.models import (
     BAGSTATUS_LOAN,
     BAGSTATUS_NONE,
@@ -208,6 +209,76 @@ class AuthUserTest(ProfileTestCase):
         self.assertEqual(me.profile.formation, FORMATION_M1)
         self.assertEqual(me.profile.bagstatus, BAGSTATUS_LOAN)
         self.assertEqual(me.profile.affiliation_canton, "GE")
+
+    def test_work_permit_defaults_to_zero_when_blank(self):
+        self.client.user.profile.nationality = "CH"
+        self.client.user.profile.affiliation_canton = "GE"
+        self.client.user.profile.save()
+
+        url = reverse("user-update", kwargs={"pk": self.client.user.pk})
+        initial = self.getprofileinitial(self.client.user)
+        initial["work_permit"] = ""
+
+        response = self.client.post(url, initial)
+        self.assertEqual(response.status_code, 302, url)
+
+        self.client.user.profile.refresh_from_db()
+        self.assertEqual(self.client.user.profile.work_permit, 0)
+
+    def test_work_permit_is_saved_when_provided(self):
+        url = reverse("user-update", kwargs={"pk": self.client.user.pk})
+        self.client.user.profile.affiliation_canton = "GE"
+        self.client.user.profile.save()
+        initial = self.getprofileinitial(self.client.user)
+        initial["work_permit"] = "10"
+
+        response = self.client.post(url, initial)
+        self.assertEqual(response.status_code, 302, url)
+
+        self.client.user.profile.refresh_from_db()
+        self.assertEqual(self.client.user.profile.work_permit, 10)
+
+    def test_zipcode_validation_only_for_switzerland(self):
+        user = self.client.user
+        user.profile.address_country = "FR"
+        user.profile.save()
+
+        form = UserProfileForm(
+            data={
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "email": user.email,
+                "language": "fr",
+                "status": 0,
+                "affiliation_canton": "GE",
+                "bagstatus": 0,
+                "marital_status": 0,
+                "address_zip": "ABCDE",
+                "address_country": "FR",
+            },
+            instance=user,
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+
+        user.profile.address_country = "CH"
+        user.profile.save()
+        form = UserProfileForm(
+            data={
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "email": user.email,
+                "language": "fr",
+                "status": 0,
+                "affiliation_canton": "GE",
+                "bagstatus": 0,
+                "marital_status": 0,
+                "address_zip": "ABCDE",
+                "address_country": "CH",
+            },
+            instance=user,
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("address_zip", form.errors)
 
     def test_autocompletes(self):
         # All autocompletes are forbidden
