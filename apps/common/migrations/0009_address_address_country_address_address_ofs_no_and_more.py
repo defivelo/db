@@ -7,22 +7,22 @@ import django_countries.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('challenge', '0082_add_states_ow_nw'),
+        ('common', '0008_merge_WS_in_VS'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='historicalsession',
+            model_name='address',
             name='address_country',
             field=django_countries.fields.CountryField(default='CH', max_length=2, verbose_name='Pays'),
         ),
         migrations.AddField(
-            model_name='historicalsession',
+            model_name='address',
             name='address_ofs_no',
             field=models.CharField(blank=True, max_length=4, verbose_name='Commune OFS'),
         ),
         migrations.AlterField(
-            model_name='historicalsession',
+            model_name='address',
             name='address_zip',
             field=models.CharField(blank=True, max_length=10, verbose_name='NPA'),
         ),

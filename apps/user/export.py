@@ -61,7 +61,7 @@ ALL_PROFILE_FIELDS = tuple(
     + [
         "profile__%s" % field
         for field in STD_PROFILE_FIELDS
-        if field not in ["firstmed_course_comm"]
+        if field not in ["firstmed_course_comm", "work_permit_legacy"]
     ]
 )
 ALL_COLLABORATOR_FIELDS = tuple(
@@ -82,6 +82,9 @@ class UserResource(resources.ModelResource):
         widget=MultipleSelectWidget(),
     )
     email = fields.Field(column_name=_("Email"), attribute="email")
+    profile__phone = fields.Field(
+        column_name=_("Téléphone"), attribute="profile__phone"
+    )
     profile__natel = fields.Field(column_name=_("Natel"), attribute="profile__natel")
     profile__address_street = fields.Field(
         column_name=_("Rue"), attribute="profile__address_street"
@@ -97,6 +100,12 @@ class UserResource(resources.ModelResource):
     )
     profile__address_canton = fields.Field(
         column_name=_("Canton de domicile"), attribute="profile__address_canton"
+    )
+    profile__address_country = fields.Field(
+        column_name=_("Pays"), attribute="profile__address_country"
+    )
+    profile__address_ofs_no = fields.Field(
+        column_name=_("Adresse OFS"), attribute="profile__address_ofs_no"
     )
     profile__birthdate = fields.Field(
         column_name=_("Date de naissance"),
