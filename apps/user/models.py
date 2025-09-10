@@ -51,7 +51,13 @@ from apps.common.models import Address
 from defivelo.roles import has_permission, user_cantons
 
 from ..common.fields import ChoiceArrayField
-from . import FORMATION_CHOICES, formation_short, get_new_username
+from . import (
+    FORMATION_CHOICES,
+    MARITAL_STATUS_CHOICES,
+    WORK_PERMIT_CHOICES,
+    formation_short,
+    get_new_username,
+)
 
 USERSTATUS_UNDEF = 0
 USERSTATUS_ACTIVE = 10
@@ -190,7 +196,7 @@ class UserProfile(Address, models.Model):
         _("Permis de travail"), max_length=255, blank=True
     )
     work_permit = models.PositiveSmallIntegerField(
-        _("Permis de travail"), choices=settings.WORK_PERMIT_CHOICES, default=0
+        _("Permis de travail"), choices=WORK_PERMIT_CHOICES, default=0
     )
     tax_jurisdiction = models.CharField(
         _("Lieu d’imposition"), max_length=511, blank=True
@@ -238,7 +244,7 @@ class UserProfile(Address, models.Model):
         blank=True,
     )
     marital_status = models.PositiveSmallIntegerField(
-        _("État civil"), choices=settings.MARITAL_STATUS_CHOICES, default=0
+        _("État civil"), choices=MARITAL_STATUS_CHOICES, default=0
     )
     status = models.PositiveSmallIntegerField(
         _("Statut"), choices=USERSTATUS_CHOICES, default=USERSTATUS_ACTIVE
@@ -413,13 +419,13 @@ class UserProfile(Address, models.Model):
     @cached_property
     def marital_status_full(self):
         if self.marital_status:
-            return dict(settings.MARITAL_STATUS_CHOICES)[self.marital_status]
+            return dict(MARITAL_STATUS_CHOICES)[self.marital_status]
         return ""
 
     @cached_property
     def work_permit_full(self):
         if self.work_permit:
-            return dict(settings.WORK_PERMIT_CHOICES)[self.work_permit]
+            return dict(WORK_PERMIT_CHOICES)[self.work_permit]
         return ""
 
     @cached_property
