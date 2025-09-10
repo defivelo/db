@@ -97,6 +97,7 @@ class SessionForm(forms.ModelForm):
                     "address_no",
                     "address_zip",
                     "address_city",
+                    "address_country",
                     "address_city_autocomplete",
                     "address_ofs_no",
                     "address_canton",
@@ -112,7 +113,8 @@ class SessionForm(forms.ModelForm):
             if self.instance and self.instance.pk
             else "CH"
         )
-        self.fields["address_country"].initial = country
+        if "address_country" in self.fields:
+            self.fields["address_country"].initial = country
 
     day = SwissDateField(label=_("Date"))
     begin = SwissTimeField(label=_("Début"))
