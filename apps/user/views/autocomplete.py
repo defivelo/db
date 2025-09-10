@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import re
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
@@ -26,7 +27,6 @@ from dal_select2.views import Select2QuerySetView
 from six import get_unbound_function
 
 from apps.challenge import MAX_MONO1_PER_QUALI
-from django.conf import settings
 from defivelo.roles import has_permission
 
 from .. import FORMATION_KEYS, FORMATION_M2
