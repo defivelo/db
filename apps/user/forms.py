@@ -16,9 +16,7 @@
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core import validators
 from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator
 from django.db.models import Q
 from django.forms import modelform_factory
 from django.utils.translation import gettext_lazy as _
@@ -137,10 +135,13 @@ class SimpleUserProfileForm(forms.ModelForm):
                 ),
             )
 
-        # Validate zipcode only if Country is CH (like in CHZipCodeField)
-        if cleaned_data["address_country"] == "CH":
-            value = str(cleaned_data["address_zip"])
-            if not zip_re.search(value):
+        # Validate zipcode only if the field is present and Country is CH
+        if (
+            "address_zip" in self.fields
+            and cleaned_data.get("address_country", "CH") == "CH"
+        ):
+            value = str(cleaned_data.get("address_zip", "")).strip()
+            if value and not zip_re.search(value):
                 self.add_error(
                     "address_zip",
                     ValidationError(
