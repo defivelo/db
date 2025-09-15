@@ -18,6 +18,9 @@
     {% endif %}
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
+        {% if return_url %}
+            <input type="hidden" name="returnUrl" value="{{ return_url }}" />
+        {% endif %}
         <div>
 
         {% comment %}
@@ -144,7 +147,7 @@
             {% if userprofile == request.user %}
                 <a class="btn btn-default pull-right" href="{% url 'account_email' %}">{% blocktrans with email=request.user.email %}Changer d’email ({{ email }}){% endblocktrans %}</a>
             {% else %}
-                <a class="btn btn-default" href="{% url 'user-list' %}">{% trans "Annuler" %}</a>
+                <a class="btn btn-default" href="{% if return_url %}{{ return_url }}{% else %}{% url 'user-list' %}{% endif %}">{% trans "Annuler" %}</a>
             {% endif %}
         {% endbuttons %}
     </form>

@@ -20,6 +20,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
 from django.urls import reverse_lazy
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
@@ -53,6 +54,17 @@ from ..models import (
 from .mixins import ProfileMixin, UserSelfAccessMixin
 
 
+def get_return_url(request):
+    return_url = request.GET.get("returnUrl") or request.POST.get("returnUrl")
+    if return_url and url_has_allowed_host_and_scheme(
+        url=return_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        return return_url
+    return None
+
+
 class UserDetail(UserSelfAccessMixin, ProfileMixin, DetailView):
     required_permission = "user_detail_other"
 
@@ -75,6 +87,7 @@ class UserDetail(UserSelfAccessMixin, ProfileMixin, DetailView):
             self.request.user, "state_manager"
         )
         context["user_has_a_role"] = self.get_object().groups.exists()
+        context["return_url"] = get_return_url(self.request)
         return context
 
 
@@ -92,6 +105,17 @@ class UserUpdate(UserSelfAccessMixin, ProfileMixin, SuccessMessageMixin, UpdateV
                 struct[field] = getattr(user.profile, field)
             struct["actor_for"] = user.profile.actor_for.all()
             return struct
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["return_url"] = get_return_url(self.request)
+        return context
+
+    def get_success_url(self):
+        return_url = get_return_url(self.request)
+        if return_url:
+            return return_url
+        return super().get_success_url()
 
     def dispatch(self, request, *args, **kwargs):
         return super(UserUpdate, self).dispatch(request, *args, edit=True, **kwargs)
