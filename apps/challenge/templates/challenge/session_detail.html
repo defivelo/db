@@ -30,8 +30,9 @@
     </nav>
 
     {% if statemanager_can_access or coordinator_can_access %}
-        <div class="hidden-print">
-            <a class="btn btn-primary pull-right" href="{% url 'session-update' seasonpk=season.pk pk=session.pk %}">{% trans "Éditer" %}</a>
+        <div class="hidden-print pull-right">
+            <a class="btn btn-default" href="{% url 'session-clone' seasonpk=season.pk pk=session.pk %}">{% trans "Dupliquer" %}</a>
+            <a class="btn btn-primary" href="{% url 'session-update' seasonpk=season.pk pk=session.pk %}">{% trans "Éditer" %}</a>
         </div>
     {% endif %}
     <table class="table table-condensed">

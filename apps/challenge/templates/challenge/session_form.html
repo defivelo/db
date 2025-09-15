@@ -1,13 +1,38 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
-{% block head_title %}{% if session %}{% trans "Édition de la session" %}{% else %}{% trans "Nouvelle session" %}{% endif %}{% endblock %}
+{% block head_title %}{% if session and session.pk %}{% trans "Édition de la session" %}{% else %}{% trans "Nouvelle session" %}{% endif %}{% endblock %}
 
 {% block bootstrap3_extra_head %}{{ form.media.css }}{% endblock %}
 {% block bootstrap3_extra_script %}
 {{ form.media.js }}
 {% include 'snippets/datetimepicker_js.html' %}
 <script type="text/javascript">
+function trackFormChanges(formSelector) {
+    const $form = $(formSelector);
+    const initialData = $form.serialize();
+    let isDirty = false;
+
+    $form.on('change input', () => {
+        isDirty = $form.serialize() !== initialData;
+    });
+
+    $(window).on('beforeunload', (e) => {
+        if (isDirty) {
+            return e.originalEvent.returnValue = "You have unsaved changes!";
+        }
+    });
+
+    // Optional: reset tracking after successful save
+    $form.on('submit', () => {
+        isDirty = false;
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    trackFormChanges('#form-session');
+});
+
 function updateHelpersTime() {
   var begin_time = $( "#id_begin" ).val();
   var helpers_time = $( "#id_helpers_time" ).val();
@@ -37,9 +62,9 @@ $( "#id_place" ).change( updateHelpersPlace );
 {% endblock %}
 
 {% block content %}
-    <h1>{% if session %}{% trans "Édition de la session" %}{% else %}{% trans "Nouvelle session" %}{% endif %}</h1>
+    <h1>{% if session and session.pk %}{% trans "Édition de la session" %}{% else %}{% trans "Nouvelle session" %}{% endif %}</h1>
 
-    <form method="POST" action="" class="form-horizontal">
+    <form method="POST" class="form-horizontal" id="form-session" action="{{ action }}">
         {% csrf_token %}
         <h3>{% trans "Emplacement" %}</h3>
         {% bootstrap_field form.orga layout='horizontal' size='small' %}
@@ -72,9 +97,10 @@ $( "#id_place" ).change( updateHelpersPlace );
         {% endif %}
         {% buttons %}
             <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
-            {% if session %}
+            {% if session and session.pk %}
                 <a class="btn btn-default" href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">{% trans "Annuler" %}</a>
-            {% else %}
+                <a class="btn btn-warning" href="{% url 'session-clone' seasonpk=season.pk pk=session.pk %}">{% trans "Dupliquer" %}</a>
+            {% elif season.pk %}
                 <a class="btn btn-default" href="{% url 'season-detail' season.pk %}">{% trans "Annuler" %}</a>
             {% endif %}
         {% endbuttons %}

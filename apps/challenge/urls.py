@@ -59,6 +59,7 @@ from .views import (
 )
 from .views.invoice import InvoiceListExport
 from .views.registration import register, register_confirm, register_validate
+from .views.session import SessionCloneView
 
 urlpatterns = [
     # Settings
@@ -268,6 +269,11 @@ urlpatterns = [
         r"^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/update/$",
         SessionUpdateView.as_view(),
         name="session-update",
+    ),
+    re_path(
+        r"^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/clone/$",
+        SessionCloneView.as_view(),
+        name="session-clone",
     ),
     re_path(
         r"^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/delete/$",
