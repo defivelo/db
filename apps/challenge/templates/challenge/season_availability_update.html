@@ -10,6 +10,7 @@
 
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
+        <div class="table-avail-wrapper">
         <table class="table text-center table-avail">
         {% include "challenge/season_availability_thead.html" with sessions=sessions season=season user=request.user preamble_columns=1 wishfield=True user_can_see_season=user_can_see_season only %}
         <tbody>
@@ -28,6 +29,7 @@
             {% endfor %}
         </tbody>
         </table>
+        </div>
         {% buttons %}
             <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
             {% if request.user|can:'challenge_season_crud' and user|anyofusercantons:season.cantons %}

@@ -10,6 +10,7 @@
 {% block content %}
     {% include "challenge/season_header.html" with season=season only %}
     <h4>{% trans "Planning" %}</h4>
+        <div class="table-avail-wrapper">
         <table class="table text-center table-avail">
         {% include "challenge/season_availability_thead.html" with sessions=sessions season=season user=request.user preamble_columns=3 chosen_stats=True wishfield=True user_can_see_season=user_can_see_season only %}
         <tbody>
@@ -29,6 +30,7 @@
             {% endfor %}
         </tbody>
         </table>
+        </div>
 
 
 <div class="hidden-print">

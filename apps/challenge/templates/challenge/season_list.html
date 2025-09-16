@@ -66,6 +66,17 @@
         </td>
       </tr>
     {% endfor %}
+    {% if seasons %}
+      <tr>
+        <td colspan="2" class="text-right">
+          <strong>Planning général</strong>
+        </td>
+        <td>
+          <a class="btn btn-xs btn-default" href="{% url 'season-general-planning' year=year dv_season=dv_season helperpk=request.user.pk %}"
+             title="{% trans "Mon planning" %}"><span class="glyphicon glyphicon-calendar"></span></a>
+        </td>
+      </tr>
+    {% endif %}
   </table>
 
   {% if user|can:'challenge_season_crud' %}
