@@ -282,9 +282,6 @@ class SessionCloneView(SessionMixin, SuccessMessageMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        for name in ["object", "session"]:
-            if name in context:
-                self._clear_clone_fields(context[name])
 
         context["action"] = reverse_lazy(
             "session-create", kwargs={"seasonpk": self.kwargs.get("seasonpk")}
