@@ -72,8 +72,8 @@ class QualiMixin(SessionMixin):
         except Exception:
             pass
         context["season"] = self.season_object
-        context["qualification_user_errors"] = self.get_object().user_errors(
-            self.request.user
+        context["qualification_user_errors"] = (
+            self.object.user_errors(self.request.user) if self.object else []
         )
         return context
 
@@ -82,7 +82,7 @@ class QualiCreateView(QualiMixin, SuccessMessageMixin, CreateView):
     success_message = _("Qualif’ créée")
 
     def get_initial(self):
-        return {"session": self.get_session_pk()}
+        return {"session": self.get_session_pk(), "n_helpers": 3}
 
     def dispatch(self, *args, **kwargs):
         """

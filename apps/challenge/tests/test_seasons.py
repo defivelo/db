@@ -39,7 +39,6 @@ from defivelo.tests.utils import (
     StateManagerAuthClient,
 )
 
-from ..models import Qualification
 from .factories import QualificationFactory, SeasonFactory, SessionFactory
 
 freeforallurls = ["season-list"]
@@ -76,6 +75,7 @@ class SeasonTestCaseMixin(TestCase):
 
         self.sessions = []
         self.canton_orgas = []
+        self.qualifs = []
         for canton in self.season.cantons:
             s = SessionFactory()
             s.orga.address_canton = canton
@@ -84,7 +84,7 @@ class SeasonTestCaseMixin(TestCase):
             s.day = self.season.begin
             s.save()
             for i in range(0, 4):
-                QualificationFactory(session=s)
+                self.qualifs.append(QualificationFactory(session=s))
             self.sessions.append(s)
 
         self.foreigncantons = [c for c in DV_STATES if c not in self.mycantons]
@@ -620,16 +620,16 @@ class StateManagerUserTest(SeasonTestCaseMixin):
         # There is 4 qualifs:
         # - when n_helpers=1, m1=0 and m2=1 => We expect m1=0/0 and m2=0/4
         # - when n_helpers=3, m1=2 and m2=1 => We expect m1=0/8 and m2=0/4
+        nb_qualifs = len(self.qualifs)
         for n_helpers, expected_m1, expected_m2 in [
-            (1, "0/0", "0/4"),
-            (3, "0/8", "0/4"),
+            (1, f"0/{nb_qualifs * 0}", f"0/{nb_qualifs * 1}"),
+            (3, f"0/{nb_qualifs * 2}", f"0/{nb_qualifs * 1}"),
         ]:
-            Qualification.objects.filter(session=self.sessions[0]).update(
-                n_helpers=n_helpers
-            )
+            for q in self.qualifs:
+                q.n_helpers = n_helpers
+                q.save()
             response = self.client.get(url)
-            with open(f"test-{n_helpers}.html", "w") as f:
-                f.write(response.content.decode("utf-8"))
+
             parser = BeautifulSoup(response.content, "html.parser")
             m1count = parser.select_one('[data-test-m1="%d"]' % self.sessions[0].pk)
             self.assertIsNotNone(m1count)
@@ -761,6 +761,8 @@ class StateManagerUserTest(SeasonTestCaseMixin):
 
     def test_access_to_quali_views(self):
         session = self.sessions[0]
+        self.assertIsNotNone(session.season.pk)
+        self.assertIsNotNone(session.pk)
         # Test the Qualification creation for a session
         url = reverse(
             "quali-create",
@@ -773,6 +775,7 @@ class StateManagerUserTest(SeasonTestCaseMixin):
             "session": session.pk,
             "name": "Classe A",
             "class_teacher_natel": "",
+            "n_helpers": 3,
         }
         response = self.client.post(
             url,
@@ -795,7 +798,11 @@ class StateManagerUserTest(SeasonTestCaseMixin):
         self.assertEqual(response.status_code, 200, url)
 
         # Test Quali update now
-        initial = {"session": qualification.session.pk, "name": "Classe D"}
+        initial = {
+            "session": qualification.session.pk,
+            "name": "Classe D",
+            "n_helpers": 3,
+        }
         response = self.client.post(url, initial)
         self.assertEqual(response.status_code, 302, url)
 
