@@ -37,7 +37,7 @@
                     <dl class="small dl-horizontal">
                         {% with c=session.n_leaders %}
                             <dt>{% trans "M2" %}</dt>
-                            <dd>{% if c < session.helper_needs.2 %}
+                            <dd data-test-m2="{{ session.pk }}">{% if c < session.helper_needs.2 %}
                                     {{ c }}/{{ session.helper_needs.2 }}
                                 {% elif c == session.helper_needs.2 %}
                                     <span class="glyphicon glyphicon-ok" title="{{ c }}/{{ session.helper_needs.2 }}"></span>
@@ -49,7 +49,7 @@
                         {% endwith %}
                         {% with c=session.n_helpers %}
                             <dt>{% trans "M1" %}</dt>
-                            <dd>{% if c < session.helper_needs.1 %}
+                            <dd data-test-m1="{{ session.pk }}">{% if c < session.helper_needs.1 %}
                                     {{ c }}/{{ session.helper_needs.1 }}
                                 {% elif c == session.helper_needs.1 %}
                                     <span class="glyphicon glyphicon-ok" title="{{ c }}/{{ session.helper_needs.1 }}"></span>

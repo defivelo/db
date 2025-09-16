@@ -18,6 +18,8 @@ import datetime
 from django.test import TestCase
 from django.urls import reverse
 
+from bs4 import BeautifulSoup
+
 from apps.common import (
     DV_SEASON_STATE_ARCHIVED,
     DV_SEASON_STATE_OPEN,
@@ -37,6 +39,7 @@ from defivelo.tests.utils import (
     StateManagerAuthClient,
 )
 
+from ..models import Qualification
 from .factories import QualificationFactory, SeasonFactory, SessionFactory
 
 freeforallurls = ["season-list"]
@@ -602,6 +605,41 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                 # Final URL is forbidden
                 response = self.client.get(url, follow=True)
                 self.assertEqual(response.status_code, 403, url)
+
+    def test_m1_m2_updated(self):
+        """
+        Check that the m1/m2 counts are correctly updated when n_helpers is changed
+        """
+        url = reverse(
+            "season-availabilities",
+            kwargs={
+                "pk": self.season.pk,
+            },
+        )
+
+        # There is 4 qualifs:
+        # - when n_helpers=1, m1=0 and m2=1 => We expect m1=0/0 and m2=0/4
+        # - when n_helpers=3, m1=2 and m2=1 => We expect m1=0/8 and m2=0/4
+        for n_helpers, expected_m1, expected_m2 in [
+            (1, "0/0", "0/4"),
+            (3, "0/8", "0/4"),
+        ]:
+            Qualification.objects.filter(session=self.sessions[0]).update(
+                n_helpers=n_helpers
+            )
+            response = self.client.get(url)
+            with open(f"test-{n_helpers}.html", "w") as f:
+                f.write(response.content.decode("utf-8"))
+            parser = BeautifulSoup(response.content, "html.parser")
+            m1count = parser.select_one('[data-test-m1="%d"]' % self.sessions[0].pk)
+            self.assertIsNotNone(m1count)
+            if expected_m1 == "0/0":
+                expected_m1 = ""  # Empty m1 is not displayed.
+            self.assertEqual(str(m1count.text.strip()), expected_m1)
+
+            m2count = parser.select_one('[data-test-m2="%d"]' % self.sessions[0].pk)
+            self.assertIsNotNone(m2count)
+            self.assertEqual(str(m2count.text.strip()), expected_m2)
 
     def test_access_to_mysession(self):
         # The season is anything but archived
