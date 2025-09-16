@@ -31,6 +31,9 @@
         {% endif %}
     </td>
     <td>
+        {% if user|can:'challenge_session_crud' or session.visible or session.orga.coordinator == user %}
+            <a class="btn btn-default" href="{% url 'session-clone' seasonpk=season.pk pk=session.pk %}">{% trans "Dupliquer" %}</a>
+        {% endif %}
         {% if session.qualifications.count != 0 and session.visible %}
             <a href="{% url 'session-staff-choices' seasonpk=season.pk pk=session.pk %}">{% trans "Présences" %}</a>
         {% endif %}
