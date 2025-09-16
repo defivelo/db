@@ -38,7 +38,6 @@ from .. import (
     CHOSEN_AS_LEADER,
     CHOSEN_AS_NOT,
     CHOSEN_AS_REPLACEMENT,
-    MAX_MONO1_PER_QUALI,
     utils,
 )
 
@@ -218,9 +217,11 @@ class Session(Address, models.Model):
         return self.chosen_helpers().filter(helper__profile__formation=FORMATION_M2)
 
     def helper_needs(self):
-        # Struct with 0:0, 1:needs in helper_formation 1, same for 2
-        n_sessions = self.n_qualifications
-        return [0] + [n_sessions * (MAX_MONO1_PER_QUALI), n_sessions]
+        # Return the number of helpers needed for that session.
+        total_m1 = sum(q.n_helpers_enum.m1 for q in self.qualifications.all())
+        total_m2 = sum(q.n_helpers_enum.m2 for q in self.qualifications.all())
+        # Array index 1 is the number of M1 needed, index 2 the number of M2 needed.
+        return [0, total_m1, total_m2]
 
     def chosen_actors(self):
         return self.chosen_staff.filter(chosen_as=CHOSEN_AS_ACTOR).exclude(

@@ -30,10 +30,10 @@ from .. import (
     CHOSEN_AS_LEADER,
     CHOSEN_AS_LEGACY,
     CHOSEN_AS_REPLACEMENT,
-    MAX_MONO1_PER_QUALI,
 )
 from ..fields import ActorChoiceField, HelpersChoiceField, LeaderChoiceField
 from ..models import Qualification
+from ..models.qualification import MonitorNumberEnum, num2words
 
 
 class QualificationFormQuick(forms.ModelForm):
@@ -125,9 +125,10 @@ class QualificationForm(forms.ModelForm):
     def clean_helpers(self):
         # Check that we don't have too many moniteurs 1
         helpers = self.cleaned_data.get("helpers")
-        if helpers and helpers.count() > MAX_MONO1_PER_QUALI:
+        n_helpers = MonitorNumberEnum(self.cleaned_data.get("n_helpers"))
+        if helpers and helpers.count() > n_helpers.m1:
             raise ValidationError(
-                _("Pas plus de %s moniteurs 1 !") % MAX_MONO1_PER_QUALI
+                _("Pas plus de %s moniteurs 1 !") % num2words(n_helpers.m1)
             )
         # Check that all moniteurs are unique
         all_leaders_pk = []
@@ -217,6 +218,7 @@ class QualificationForm(forms.ModelForm):
             "n_participants",
             "n_bikes",
             "n_helmets",
+            "n_helpers",
             "leader",
             "helpers",
             "activity_A",
