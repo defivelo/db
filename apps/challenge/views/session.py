@@ -264,6 +264,18 @@ class SessionDetailView(SessionMixin, DetailView):
 
 
 class SessionCloneView(SessionMixin, SuccessMessageMixin, UpdateView):
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Check allowances for cloning
+        """
+        if (
+            has_permission(request.user, self.required_permission)
+            and self.season
+            and self.season.manager_can_crud
+        ):
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
     def get_form_kwargs(self):
         args = super().get_form_kwargs()
         if "instance" in args:

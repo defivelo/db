@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load bootstrap3 %}
 {% load static %}
+{% load dv_filters %}
 {% block head_title %}{% if session and session.pk %}{% trans "Édition de la session" %}{% else %}{% trans "Nouvelle session" %}{% endif %}{% endblock %}
 
 {% block bootstrap3_extra_head %}{{ form.media.css }}{% endblock %}
@@ -76,7 +77,9 @@ $( "#id_place" ).change( updateHelpersPlace );
             <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
             {% if session and session.pk %}
                 <a class="btn btn-default" href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">{% trans "Annuler" %}</a>
-                <a class="btn btn-warning" href="{% url 'session-clone' seasonpk=season.pk pk=session.pk %}">{% trans "Dupliquer" %}</a>
+                {% if user|can:'challenge_session_crud' %}
+                  <a class="btn btn-warning" href="{% url 'session-clone' seasonpk=season.pk pk=session.pk %}">{% trans "Dupliquer" %}</a>
+                {% endif %}
             {% elif season.pk %}
                 <a class="btn btn-default" href="{% url 'season-detail' season.pk %}">{% trans "Annuler" %}</a>
             {% endif %}

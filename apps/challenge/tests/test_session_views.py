@@ -19,7 +19,10 @@ import datetime
 from django.test import TestCase
 from django.urls import reverse
 
-from defivelo.tests.utils import StateManagerAuthClient
+from defivelo.tests.utils import (
+    CollaboratorAuthClient,
+    StateManagerAuthClient,
+)
 
 from .factories import SeasonFactory, SessionFactory
 
@@ -113,3 +116,12 @@ class SessionCloneViewTest(TestCase):
             response.headers.get("location"),
             "Invalid Redirect url",
         )
+
+    def test_clone_view_requires_challenge_session_crud_permission(self):
+        client_without_permission = CollaboratorAuthClient()
+        url = reverse(
+            "session-clone", kwargs={"seasonpk": self.season.pk, "pk": self.session.pk}
+        )
+
+        response = client_without_permission.get(url)
+        self.assertEqual(response.status_code, 403)
