@@ -78,7 +78,7 @@ $( "#id_place" ).change( updateHelpersPlace );
             {% if session and session.pk %}
                 <a class="btn btn-default" href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">{% trans "Annuler" %}</a>
                 {% if user|can:'challenge_session_crud' %}
-                  <a class="btn btn-warning" href="{% url 'session-clone' seasonpk=season.pk pk=session.pk %}">{% trans "Dupliquer" %}</a>
+                  <a class="btn btn-default" title="{% trans "Dupliquer" %}" href="{% url 'session-clone' seasonpk=season.pk pk=session.pk %}"><span class="glyphicon glyphicon-copy"></span></a>
                 {% endif %}
             {% elif season.pk %}
                 <a class="btn btn-default" href="{% url 'season-detail' season.pk %}">{% trans "Annuler" %}</a>
