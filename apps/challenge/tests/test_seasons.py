@@ -18,6 +18,8 @@ import datetime
 from django.test import TestCase
 from django.urls import reverse
 
+from bs4 import BeautifulSoup
+
 from apps.common import (
     DV_SEASON_STATE_ARCHIVED,
     DV_SEASON_STATE_OPEN,
@@ -73,6 +75,7 @@ class SeasonTestCaseMixin(TestCase):
 
         self.sessions = []
         self.canton_orgas = []
+        self.qualifs = []
         for canton in self.season.cantons:
             s = SessionFactory()
             s.orga.address_canton = canton
@@ -81,7 +84,7 @@ class SeasonTestCaseMixin(TestCase):
             s.day = self.season.begin
             s.save()
             for i in range(0, 4):
-                QualificationFactory(session=s)
+                self.qualifs.append(QualificationFactory(session=s))
             self.sessions.append(s)
 
         self.foreigncantons = [c for c in DV_STATES if c not in self.mycantons]
@@ -603,6 +606,59 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                 response = self.client.get(url, follow=True)
                 self.assertEqual(response.status_code, 403, url)
 
+    def test_create_qualif(self):
+        """
+        Test `Créer une Qualif’` button
+        """
+        session = self.sessions[0]
+
+        url = reverse(
+            "quali-create", kwargs={"seasonpk": self.season.pk, "sessionpk": session.pk}
+        )
+
+        payload = {
+            "session": session.pk,
+            "name": "Classe F",
+            "class_teacher_natel": "",
+        }
+        response = self.client.post(url, payload)
+        self.assertEqual(response.status_code, 302)
+
+    def test_m1_m2_updated(self):
+        """
+        Check that the m1/m2 counts are correctly updated when n_helpers is changed
+        """
+        url = reverse(
+            "season-availabilities",
+            kwargs={
+                "pk": self.season.pk,
+            },
+        )
+
+        # There is 4 qualifs:
+        # - when n_helpers=1, m1=0 and m2=1 => We expect m1=0/0 and m2=0/4
+        # - when n_helpers=3, m1=2 and m2=1 => We expect m1=0/8 and m2=0/4
+        nb_qualifs = len(self.qualifs)
+        for n_helpers, expected_m1, expected_m2 in [
+            (1, f"0/{nb_qualifs * 0}", f"0/{nb_qualifs * 1}"),
+            (3, f"0/{nb_qualifs * 2}", f"0/{nb_qualifs * 1}"),
+        ]:
+            for q in self.qualifs:
+                q.n_helpers = n_helpers
+                q.save()
+            response = self.client.get(url)
+
+            parser = BeautifulSoup(response.content, "html.parser")
+            m1count = parser.select_one('[data-test-m1="%d"]' % self.sessions[0].pk)
+            self.assertIsNotNone(m1count)
+            if expected_m1 == "0/0":
+                expected_m1 = ""  # Empty m1 is not displayed.
+            self.assertEqual(str(m1count.text.strip()), expected_m1)
+
+            m2count = parser.select_one('[data-test-m2="%d"]' % self.sessions[0].pk)
+            self.assertIsNotNone(m2count)
+            self.assertEqual(str(m2count.text.strip()), expected_m2)
+
     def test_access_to_mysession(self):
         # The season is anything but archived
         for state in DV_SEASON_STATES:
@@ -723,6 +779,8 @@ class StateManagerUserTest(SeasonTestCaseMixin):
 
     def test_access_to_quali_views(self):
         session = self.sessions[0]
+        self.assertIsNotNone(session.season.pk)
+        self.assertIsNotNone(session.pk)
         # Test the Qualification creation for a session
         url = reverse(
             "quali-create",
@@ -735,6 +793,7 @@ class StateManagerUserTest(SeasonTestCaseMixin):
             "session": session.pk,
             "name": "Classe A",
             "class_teacher_natel": "",
+            "n_helpers": 3,
         }
         response = self.client.post(
             url,
@@ -757,7 +816,11 @@ class StateManagerUserTest(SeasonTestCaseMixin):
         self.assertEqual(response.status_code, 200, url)
 
         # Test Quali update now
-        initial = {"session": qualification.session.pk, "name": "Classe D"}
+        initial = {
+            "session": qualification.session.pk,
+            "name": "Classe D",
+            "n_helpers": 3,
+        }
         response = self.client.post(url, initial)
         self.assertEqual(response.status_code, 302, url)
 

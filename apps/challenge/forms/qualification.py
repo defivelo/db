@@ -34,6 +34,7 @@ from .. import (
 )
 from ..fields import ActorChoiceField, HelpersChoiceField, LeaderChoiceField
 from ..models import Qualification
+from ..models.qualification import MonitorNumberEnum, num2words
 
 
 class QualificationFormQuick(forms.ModelForm):
@@ -108,6 +109,7 @@ class QualificationForm(forms.ModelForm):
             required=False,
             session=session,
         )
+        self.fields["n_helpers"].required = False
         if is_for_coordinator:
             # For non-stateManagers (coordinator), delete non-accessible fields
             for f in list(self.fields.keys()):
@@ -119,16 +121,20 @@ class QualificationForm(forms.ModelForm):
                     "n_participants",
                     "n_bikes",
                     "n_helmets",
+                    "n_helpers",
                 ]:
                     del self.fields[f]
 
     def clean_helpers(self):
         # Check that we don't have too many moniteurs 1
         helpers = self.cleaned_data.get("helpers")
-        if helpers and helpers.count() > MAX_MONO1_PER_QUALI:
-            raise ValidationError(
-                _("Pas plus de %s moniteurs 1 !") % MAX_MONO1_PER_QUALI
-            )
+        max_m1 = (
+            MonitorNumberEnum(self.cleaned_data.get("n_helpers")).m1
+            if self.cleaned_data.get("n_helpers")
+            else MAX_MONO1_PER_QUALI
+        )
+        if helpers and helpers.count() > max_m1:
+            raise ValidationError(_("Pas plus de %s moniteurs 1 !") % num2words(max_m1))
         # Check that all moniteurs are unique
         all_leaders_pk = []
         leader = self.cleaned_data.get("leader")
@@ -217,6 +223,7 @@ class QualificationForm(forms.ModelForm):
             "n_participants",
             "n_bikes",
             "n_helmets",
+            "n_helpers",
             "leader",
             "helpers",
             "activity_A",
