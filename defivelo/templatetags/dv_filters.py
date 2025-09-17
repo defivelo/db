@@ -254,7 +254,7 @@ def useravailsessions_readonly(
             )
 
             output += (
-                '<td class="{avail_class}"{avail_verbose}><div class="dvflex">'
+                '<td data-test="{key}" class="{avail_class}"{avail_verbose}><div class="dvflex">'
                 "<!-- {key} -->{avail_label}{superleader}{conflict_warning}"
                 "</div></td>"
             ).format(
