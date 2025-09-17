@@ -64,7 +64,7 @@
       {% for user, statuses in timesheets_status_matrix.items %}
       <tr>
         <td>
-          <a href="{% url 'user-detail' pk=user.pk %}">
+          <a href="{% url 'user-detail' pk=user.pk %}{% if canton %}?returnUrl={% url 'salary:timesheets-overview' year=year %}%3Fcanton%3D{{ canton }}{% endif %}">
             {{ user.get_full_name }}
           </a>
         </td>

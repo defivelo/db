@@ -66,8 +66,8 @@
     <tbody>
     {% for user in users %}
         <tr>
-            <td>{% if request.user|can:'user_detail_other' %}<a href="{% url 'user-detail' pk=user.pk %}">{{ user.first_name }}</a>{% else %}{{ user.first_name }}{% endif %}</td>
-            <td>{% if request.user|can:'user_detail_other' %}<a href="{% url 'user-detail' pk=user.pk %}">{{ user.last_name }}{% else %}{{ user.last_name }}{% endif %}</a></td>
+            <td>{% if request.user|can:'user_detail_other' %}<a target="_blank" href="{% url 'user-detail' pk=user.pk %}">{{ user.first_name }}</a>{% else %}{{ user.first_name }}{% endif %}</td>
+            <td>{% if request.user|can:'user_detail_other' %}<a target="_blank" href="{% url 'user-detail' pk=user.pk %}">{{ user.last_name }}{% else %}{{ user.last_name }}{% endif %}</a></td>
             <td><a href="mailto:{{ user.profile.mailtolink|urlencode }}">{{ user.email }}</a></td>
             <td>
               {% if user.profile.natel %}{{ user.profile.natel|tel_link }}{% elif user.profile.phone %}{{ user.profile.phone|tel_link }}{% endif %}
@@ -88,7 +88,7 @@
             <td>
                 {% if not user.profile.deleted %}
                     {% if request.user == user or request.user|can:"user_edit_other" and request.user|inusercantons:user.profile.affiliation_canton %}
-                    <a class="btn btn-primary btn-xs" href="{% url 'user-update' pk=user.pk %}">
+                    <a class="btn btn-primary btn-xs" href="{% url 'user-update' pk=user.pk %}?returnUrl={{ request.get_full_path|urlencode }}">
                         <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="{% trans "Éditer" %}"></span>
                     </a>
                     {% endif %}

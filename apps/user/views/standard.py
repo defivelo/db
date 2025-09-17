@@ -15,11 +15,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import operator
 from functools import reduce
+from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
 from django.urls import reverse_lazy
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
@@ -53,7 +55,58 @@ from ..models import (
 from .mixins import ProfileMixin, UserSelfAccessMixin
 
 
-class UserDetail(UserSelfAccessMixin, ProfileMixin, DetailView):
+class ReturnUrlMixin:
+    def get_return_url(self):
+        return_url = self.request.GET.get("returnUrl") or self.request.POST.get(
+            "returnUrl"
+        )
+        if return_url and url_has_allowed_host_and_scheme(
+            url=return_url,
+            allowed_hosts={self.request.get_host()},
+            require_https=self.request.is_secure(),
+        ):
+            return return_url
+        return None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["return_url"] = self.get_return_url()
+        return context
+
+    def get_success_url(self):
+        return_url = self.get_return_url()
+        if return_url:
+            return return_url
+        return super().get_success_url()
+
+    @staticmethod
+    def _add_return_url(url, return_url):
+        """
+        Add the returnUrl parameter to the given URL
+        """
+        parsed = urlparse(str(url))
+
+        # Parse existing query parameters
+        query_params = parse_qs(parsed.query)
+
+        # Add the returnUrl parameter
+        query_params["returnUrl"] = [return_url]
+
+        # Reconstruct the URL with the new parameter
+        new_query = urlencode(query_params, doseq=True)
+        return urlunparse(
+            (
+                parsed.scheme,
+                parsed.netloc,
+                parsed.path,
+                parsed.params,
+                new_query,
+                parsed.fragment,
+            )
+        )
+
+
+class UserDetail(UserSelfAccessMixin, ProfileMixin, ReturnUrlMixin, DetailView):
     required_permission = "user_detail_other"
 
     def get_context_data(self, **kwargs):
@@ -78,7 +131,9 @@ class UserDetail(UserSelfAccessMixin, ProfileMixin, DetailView):
         return context
 
 
-class UserUpdate(UserSelfAccessMixin, ProfileMixin, SuccessMessageMixin, UpdateView):
+class UserUpdate(
+    UserSelfAccessMixin, ProfileMixin, SuccessMessageMixin, ReturnUrlMixin, UpdateView
+):
     success_message = _("Profil mis à jour")
 
     def get_initial(self):
@@ -92,6 +147,14 @@ class UserUpdate(UserSelfAccessMixin, ProfileMixin, SuccessMessageMixin, UpdateV
                 struct[field] = getattr(user.profile, field)
             struct["actor_for"] = user.profile.actor_for.all()
             return struct
+
+    def get_success_url(self):
+        return_url = self.get_return_url()
+        success_url = super().get_success_url()
+        if return_url:
+            # Add the returnUrl parameter to the success_url
+            success_url = self._add_return_url(success_url, return_url)
+        return success_url
 
     def dispatch(self, request, *args, **kwargs):
         return super(UserUpdate, self).dispatch(request, *args, edit=True, **kwargs)
