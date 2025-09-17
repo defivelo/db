@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import operator
 from functools import reduce
+from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 from django.contrib.auth import get_user_model
 from django.contrib.messages.views import SuccessMessageMixin
@@ -67,11 +68,42 @@ class ReturnUrlMixin:
             return return_url
         return None
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["return_url"] = self.get_return_url()
+        return context
+
     def get_success_url(self):
         return_url = self.get_return_url()
         if return_url:
             return return_url
         return super().get_success_url()
+
+    @staticmethod
+    def _add_return_url(url, return_url):
+        """
+        Add the returnUrl parameter to the given URL
+        """
+        parsed = urlparse(str(url))
+
+        # Parse existing query parameters
+        query_params = parse_qs(parsed.query)
+
+        # Add the returnUrl parameter
+        query_params["returnUrl"] = [return_url]
+
+        # Reconstruct the URL with the new parameter
+        new_query = urlencode(query_params, doseq=True)
+        return urlunparse(
+            (
+                parsed.scheme,
+                parsed.netloc,
+                parsed.path,
+                parsed.params,
+                new_query,
+                parsed.fragment,
+            )
+        )
 
 
 class UserDetail(UserSelfAccessMixin, ProfileMixin, ReturnUrlMixin, DetailView):
@@ -96,7 +128,6 @@ class UserDetail(UserSelfAccessMixin, ProfileMixin, ReturnUrlMixin, DetailView):
             self.request.user, "state_manager"
         )
         context["user_has_a_role"] = self.get_object().groups.exists()
-        context["return_url"] = self.get_return_url()
         return context
 
 
@@ -117,16 +148,13 @@ class UserUpdate(
             struct["actor_for"] = user.profile.actor_for.all()
             return struct
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["return_url"] = self.get_return_url()
-        return context
-
     def get_success_url(self):
         return_url = self.get_return_url()
+        success_url = super().get_success_url()
         if return_url:
-            return return_url
-        return super().get_success_url()
+            # Add the returnUrl parameter to the success_url
+            success_url = self._add_return_url(success_url, return_url)
+        return success_url
 
     def dispatch(self, request, *args, **kwargs):
         return super(UserUpdate, self).dispatch(request, *args, edit=True, **kwargs)
