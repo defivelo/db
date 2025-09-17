@@ -54,18 +54,27 @@ from ..models import (
 from .mixins import ProfileMixin, UserSelfAccessMixin
 
 
-def get_return_url(request):
-    return_url = request.GET.get("returnUrl") or request.POST.get("returnUrl")
-    if return_url and url_has_allowed_host_and_scheme(
-        url=return_url,
-        allowed_hosts={request.get_host()},
-        require_https=request.is_secure(),
-    ):
-        return return_url
-    return None
+class ReturnUrlMixin:
+    def get_return_url(self):
+        return_url = self.request.GET.get("returnUrl") or self.request.POST.get(
+            "returnUrl"
+        )
+        if return_url and url_has_allowed_host_and_scheme(
+            url=return_url,
+            allowed_hosts={self.request.get_host()},
+            require_https=self.request.is_secure(),
+        ):
+            return return_url
+        return None
+
+    def get_success_url(self):
+        return_url = self.get_return_url()
+        if return_url:
+            return return_url
+        return super().get_success_url()
 
 
-class UserDetail(UserSelfAccessMixin, ProfileMixin, DetailView):
+class UserDetail(UserSelfAccessMixin, ProfileMixin, ReturnUrlMixin, DetailView):
     required_permission = "user_detail_other"
 
     def get_context_data(self, **kwargs):
@@ -87,11 +96,13 @@ class UserDetail(UserSelfAccessMixin, ProfileMixin, DetailView):
             self.request.user, "state_manager"
         )
         context["user_has_a_role"] = self.get_object().groups.exists()
-        context["return_url"] = get_return_url(self.request)
+        context["return_url"] = self.get_return_url()
         return context
 
 
-class UserUpdate(UserSelfAccessMixin, ProfileMixin, SuccessMessageMixin, UpdateView):
+class UserUpdate(
+    UserSelfAccessMixin, ProfileMixin, SuccessMessageMixin, ReturnUrlMixin, UpdateView
+):
     success_message = _("Profil mis à jour")
 
     def get_initial(self):
@@ -108,11 +119,11 @@ class UserUpdate(UserSelfAccessMixin, ProfileMixin, SuccessMessageMixin, UpdateV
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["return_url"] = get_return_url(self.request)
+        context["return_url"] = self.get_return_url()
         return context
 
     def get_success_url(self):
-        return_url = get_return_url(self.request)
+        return_url = self.get_return_url()
         if return_url:
             return return_url
         return super().get_success_url()
