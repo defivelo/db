@@ -109,6 +109,7 @@ class QualificationForm(forms.ModelForm):
             required=False,
             session=session,
         )
+        self.fields["n_helpers"].required = False
         if is_for_coordinator:
             # For non-stateManagers (coordinator), delete non-accessible fields
             for f in list(self.fields.keys()):

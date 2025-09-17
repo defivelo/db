@@ -82,7 +82,7 @@ class QualiCreateView(QualiMixin, SuccessMessageMixin, CreateView):
     success_message = _("Qualif’ créée")
 
     def get_initial(self):
-        return {"session": self.get_session_pk(), "n_helpers": 3}
+        return {"session": self.get_session_pk()}
 
     def dispatch(self, *args, **kwargs):
         """

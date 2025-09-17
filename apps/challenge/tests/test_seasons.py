@@ -606,6 +606,24 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                 response = self.client.get(url, follow=True)
                 self.assertEqual(response.status_code, 403, url)
 
+    def test_create_qualif(self):
+        """
+        Test `Créer une Qualif’` button
+        """
+        session = self.sessions[0]
+
+        url = reverse(
+            "quali-create", kwargs={"seasonpk": self.season.pk, "sessionpk": session.pk}
+        )
+
+        payload = {
+            "session": session.pk,
+            "name": "Classe F",
+            "class_teacher_natel": "",
+        }
+        response = self.client.post(url, payload)
+        self.assertEqual(response.status_code, 302)
+
     def test_m1_m2_updated(self):
         """
         Check that the m1/m2 counts are correctly updated when n_helpers is changed

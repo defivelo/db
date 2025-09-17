@@ -152,7 +152,7 @@
                     </td>
                 {% endfor %}
         </tr>
-        <tr><th>{% trans "Nombre de moniteur" %}</th>{% for quali in session.qualifications.all %}<td>{{ quali.n_helpers }}</td>{% endfor %}</tr>
+        <tr><th>{% trans "Nombre de moniteurs" %}</th>{% for quali in session.qualifications.all %}<td>{{ quali.n_helpers }}</td>{% endfor %}</tr>
         <tr><th>{% trans "Moniteur 2" %}</th>
                 {% for quali in session.qualifications.all %}<td>{{ quali.leader|profile_tag:user_is_coordinator }}</td>{% endfor %}</tr>
         <tr><th>{% trans "Moniteurs 1" %}</th>
