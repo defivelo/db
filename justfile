@@ -43,7 +43,7 @@ alias fix := format
 # Fix styling offenses and format code
 format *args:
   docker compose exec {{BACKEND_CONTAINER}} ruff format defivelo apps fabfile.py "$@"
-  docker compose exec {{BACKEND_CONTAINER}} ruff check --select I --fix defivelo apps fabfile.py
+  docker compose exec {{BACKEND_CONTAINER}} ruff check --fix defivelo apps fabfile.py
 
 alias c := compile
 # Compile the requirements files
