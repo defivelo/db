@@ -1237,6 +1237,8 @@ class SeasonGeneralPlanningView(SeasonAvailabilityMixin, DetailView):
         context["helperpk"] = helperpk
         context["potential_helpers"] = potential_helpers
         context["availabilities"] = self.get_initial(all_helpers=potential_helpers)
+        if not context["availabilities"]:
+            context["availabilities"] = OrderedDict()
 
         chosen_session_ids = set()
         choice_prefix = CHOICE_FIELDKEY.format(hpk=helperpk, spk="").replace("-s", "")
