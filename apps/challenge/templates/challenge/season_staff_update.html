@@ -1,4 +1,4 @@
-{% extends "base.html" %}{% load i18n bootstrap3 dv_filters %}
+{% extends "base.html" %}{% load i18n bootstrap3 dv_filters static %}
 {% block head_title %}{{ season.desc }}{% endblock %}
 
 {% block container-class %}container-fluid{% endblock %}
@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block bootstrap3_extra_script %}
+    <script type="text/javascript" src="{% static 'js/form-changes.js' %}"></script>
     {{ season_staff_filter_form.media.js }}
     <script>
       $(document).ready(function() {
@@ -55,7 +56,7 @@
     {% include "challenge/season_header.html" with season=season only %}
     <h4>{% trans "Attributions dans les sessions" %}</h4>
 
-    <form method="POST" action="" class="form-horizontal">
+    <form method="POST" action="" class="form-horizontal" data-prevent-page-exit>
         {% if season_staff_filter_form %}
             <div class="well">
               <h4><i class="glyphicon glyphicon-filter"></i> {% trans 'Filtres' %}</h4>
