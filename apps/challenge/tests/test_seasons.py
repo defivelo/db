@@ -17,6 +17,7 @@ import datetime
 
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 from bs4 import BeautifulSoup
 
@@ -1119,35 +1120,55 @@ class TestPlanning(SeasonTestCaseMixin):
             s.orga.save()
             s.save()
 
-            # Set the user availability for that session
-            wanted_availability = "i"
-            av, created = HelperSessionAvailability.objects.get_or_create(
-                session=s,
-                helper=self.user1,
-                defaults={"availability": wanted_availability},
-            )
+    def assertCell(
+        self, response, user, session, title, class_selector=".glyphicon-remove-sign"
+    ):
+        key = AVAILABILITY_FIELDKEY.format(hpk=user.pk, spk=session.pk)
 
-            # Choose someone else
-            HelperSessionAvailability.objects.create(
-                session=s,
-                helper=self.users[1],
-                availability=CHOSEN_AS_LEADER,
-            )
+        parser = BeautifulSoup(response.content, "html.parser")
+        cell = parser.select_one(f'[data-test="{key}"] {class_selector}')
+        self.assertIsNotNone(cell, "Cell not found in the planning")
+        self.assertEqual(cell.attrs.get("title"), title)
 
-            if not created:
-                av.availability = wanted_availability
-                av.save()
+    def test_individual_planning_view_not_chosen(self):
+        """
+        Test that when the user's availability is okayish for a session, but they are not selected, the planning cell is red.
+        """
 
-    def test_individual_planning_view(self):
+        # Set the user availability for that session to "if needed"
+        HelperSessionAvailability.objects.update_or_create(
+            session=self.sessions[0], helper=self.user1, defaults={"availability": "i"}
+        )
+
+        # Choose someone else
+        HelperSessionAvailability.objects.create(
+            session=self.sessions[0],
+            helper=self.users[1],
+            availability=CHOSEN_AS_LEADER,
+        )
+
         url = reverse(
             "season-planning", kwargs={"helperpk": self.user1.pk, "pk": self.season.pk}
         )
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
+        self.assertCell(response, self.user1, self.sessions[0], _("Pas choisi"))
 
-        key = AVAILABILITY_FIELDKEY.format(hpk=self.user1.pk, spk=self.sessions[0].pk)
+    def test_individual_planning_view_no(self):
+        """
+        Test that when the user's availability is "no" for a session the planning cell is red.
+        """
 
-        parser = BeautifulSoup(response.content, "html.parser")
-        cell = parser.select_one(f'[data-test="{key}"] .glyphicon-remove-sign')
-        self.assertIsNotNone(cell, "Cell should show that the user is not selected")
+        # Set the user availability for that session to No
+        HelperSessionAvailability.objects.update_or_create(
+            session=self.sessions[0], helper=self.user1, defaults={"availability": "n"}
+        )
+
+        url = reverse(
+            "season-planning", kwargs={"helperpk": self.user1.pk, "pk": self.season.pk}
+        )
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertCell(response, self.user1, self.sessions[0], _("Non"))
