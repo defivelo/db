@@ -53,6 +53,10 @@ class UserMonthlyTimesheets(MonthArchiveView, ReturnUrlMixin, FormView):
     allow_future = True
     template_name = "salary/month_timesheets.html"
 
+    @property
+    def success_url(self):
+        return reverse("salary:timesheets-overview", kwargs={"year": self.get_year()})
+
     def get_queryset(self):
         return (
             (
@@ -202,11 +206,6 @@ class UserMonthlyTimesheets(MonthArchiveView, ReturnUrlMixin, FormView):
             "selected_user": self.selected_user,
         }
         return kwargs
-
-    def get_success_url(self):
-        return super().get_success_url() or reverse(
-            "salary:timesheets-overview", kwargs={"year": self.get_year()}
-        )
 
     def form_valid(self, formset):
         """If the form is valid, save the associated model."""
