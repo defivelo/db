@@ -237,10 +237,13 @@ def useravailsessions_readonly(
                             else:
                                 avail_label = "remove-sign"
                                 avail_class = "danger"
-
-            elif onlyavail:
-                avail_content = " "
-
+            else:
+                if availability == "n" and planning:
+                    avail_label = "remove-sign"
+                    avail_class = "danger"
+                    avail_verb = _("Non")
+                if onlyavail:
+                    avail_content = " "
             final_avail_label = (
                 avail_content
                 if avail_content
