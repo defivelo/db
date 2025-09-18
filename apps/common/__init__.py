@@ -102,8 +102,8 @@ def format_with_abbr(label, code):
 
 format_with_abbr_lazy = lazy(format_with_abbr, str)
 
-DV_STATE_CHOICES_WITH_ABBR_AND_DEFAULT = [
-    (v, format_with_abbr_lazy(label, v)) for v, label in DV_STATE_CHOICES_WITH_DEFAULT
+DV_STATE_CHOICES_WITH_ABBR = [
+    (v, format_with_abbr_lazy(label, v)) for v, label in DV_STATE_CHOICES
 ]
 
 DV_LANGUAGES = LANGUAGES = (

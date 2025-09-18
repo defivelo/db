@@ -1194,7 +1194,9 @@ class SeasonStaffChoiceUpdateView(
     def get_context_data(self, **kwargs):
         context = super(SeasonStaffChoiceUpdateView, self).get_context_data(**kwargs)
         context["available_helpers"] = self.available_helpers
-        context["season_staff_filter_form"] = SeasonStaffFilterForm()
+        context["season_staff_filter_form"] = SeasonStaffFilterForm(
+            organisations=self._extract_orgas(context["sessions"])
+        )
         return context
 
     def form_valid(self, form):
@@ -1235,6 +1237,13 @@ class SeasonStaffChoiceUpdateView(
         return HttpResponseRedirect(
             reverse_lazy("season-availabilities", kwargs={"pk": self.object.pk})
         )
+
+    def _extract_orgas(self, sessions):
+        orgas = []
+        for session in sessions:
+            if session.orga and session.orga not in orgas:
+                orgas.append(session.orga)
+        return orgas
 
 
 class SeasonCreateView(

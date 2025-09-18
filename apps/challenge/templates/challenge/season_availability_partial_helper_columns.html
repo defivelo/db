@@ -1,5 +1,5 @@
 {% load dv_filters i18n %}
-<td class="text-left">
+<td data-filter-ignore class="text-left">
   {% if with_link %}
     <a title="{% trans "Éditer les disponibilités" %}" href="{% url 'season-availabilities-update' pk=season.pk helperpk=helper.pk %}">
   {% endif %}
@@ -10,11 +10,11 @@
     </a>
   {% endif %}
 </td>
-<td class="no-vert-border">
+<td data-filter-ignore class="no-vert-border">
     {% if helper.profile.status != 10 %}{{ helper.profile.status_icon }}{% endif %}
     {{ helper.profile.actor_icon }}
 </td>
-<td class="no-vert-border">
+<td data-filter-ignore class="no-vert-border">
     {% if helper.profile.affiliation_canton in season.cantons %}<em class="small">{% endif %}
         {{ helper.profile.affiliation_canton|canton_abbr }}
     {% if helper.profile.affiliation_canton in season.cantons %}</em>{% endif %}
