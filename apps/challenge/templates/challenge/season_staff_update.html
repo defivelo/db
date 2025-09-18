@@ -3,11 +3,33 @@
 
 {% block container-class %}container-fluid{% endblock %}
 
+{% block bootstrap3_extra_head %}
+    {{ season_staff_filter_form.media.css }}
+{% endblock %}
+
+{% block bootstrap3_extra_script %}
+    {{ season_staff_filter_form.media.js }}
+    <script>
+      $(document).ready(function() {
+        $('#id_cantons').change(function () {
+          let val = $(this).val();
+          $('tr[data-canton-filter]').each(function () {
+            $(this).toggle(!val || val.includes($(this).data('canton-filter')));
+          });
+        });
+      });
+    </script>
+{% endblock %}
+
 {% block content %}
     {% include "challenge/season_header.html" with season=season only %}
     <h4>{% trans "Attributions dans les sessions" %}</h4>
 
     <form method="POST" action="" class="form-horizontal">
+        <div class="well">
+          <h4><i class="glyphicon glyphicon-filter"></i> {% trans 'Filtres' %}</h4>
+          {{ season_staff_filter_form }}
+        </div>
         {% csrf_token %}
         <table class="table text-center table-avail">
         {% include "challenge/season_availability_thead.html" with sessions=sessions season=season only %}
@@ -16,7 +38,7 @@
                 {% if helpers %}
                 <tr><th colspan="{{ sessions.count|add:"3" }}">{{ helper_category }}</th></tr>
                     {% for helper in helpers %}
-                    <tr>
+                    <tr data-canton-filter="{{ helper.profile.affiliation_canton|default:"-" }}">
                         {% include "challenge/season_availability_partial_helper_columns.html" with helper=helper %}
                         {{ form|userstaffsessions:helper }}
                     </tr>
