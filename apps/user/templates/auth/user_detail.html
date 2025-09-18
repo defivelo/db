@@ -241,7 +241,7 @@
     {% buttons %}
     <div class="hidden-print">
         {% if request.user.pk == userprofile.pk or request.user|can:"cantons_all" or request.user|can:"user_edit_other" and request.user|inusercantons:userprofile.profile.affiliation_canton or request.user|can:"user_edit_other" and request.user|inusercantons:userprofilecanton %}
-            <a class="btn btn-primary pull-right" href="{% url 'user-update' pk=userprofile.pk %}{% if return_url %}?returnUrl={{ return_url|urlencode }}{% endif %}">
+            <a class="btn btn-primary pull-right" href="{% url 'user-update' pk=userprofile.pk %}{% if return_url %}?returnUrl={{ return_url|urlencode }}{% endif %}{% if return_url and return_label %}&returnLabel={{ return_label|urlencode }}{% elif return_label %}?returnLabel={{ return_label|urlencode }}{% endif %}">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="{% trans "Éditer" %}"></span>
                 {% trans "Éditer" %}
             </a>
@@ -254,7 +254,8 @@
             </a>
         {% endif %}
         {% if request.user|can:'user_view_list' %}
-            <a class="btn btn-default" href="{% if return_url %}{{ return_url }}{% else %}{% url 'user-list' %}{% endif %}">{% trans "Retour à la liste des utilisateurs" %}</a>
+            {% trans "Retour à la liste des utilisateurs" as default_return_label %}
+            <a class="btn btn-default" href="{% if return_url %}{{ return_url }}{% else %}{% url 'user-list' %}{% endif %}">{{ return_label|default:default_return_label }}</a>
         {% endif %}
     {% endbuttons %}
     {% buttons %}
