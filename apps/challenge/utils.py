@@ -2,7 +2,6 @@ import datetime
 from datetime import time
 from typing import Mapping
 
-from django.apps import apps as django_apps
 from django.contrib.auth import get_user_model
 from django.db.models import Count, Q, Sum
 from django.utils.translation import gettext
@@ -109,8 +108,9 @@ class GeneralSeason(object):
 
     @property
     def sessions_with_qualifs(self):
+        from .models import Session
+
         if self._sessions_with_q is None:
-            Session = django_apps.get_model("challenge", "Session")
             qs = (
                 Session.objects.filter(
                     orga__address_canton__in=self._base_cantons,
@@ -150,10 +150,9 @@ class GeneralSeason(object):
 
     @property
     def work_wishes(self):
+        from .models.availability import HelperSeasonWorkWish
+
         # Aggregate work wishes across all seasons by helper
-        HelperSeasonWorkWish = django_apps.get_model(
-            "challenge", "HelperSeasonWorkWish"
-        )
         return (
             HelperSeasonWorkWish.objects.filter(season__in=self._seasons)
             .values("helper_id")
