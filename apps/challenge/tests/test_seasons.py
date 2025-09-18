@@ -30,7 +30,7 @@ from apps.common import (
 )
 from apps.common.forms import SWISS_DATE_INPUT_FORMAT
 from apps.orga.tests.factories import OrganizationFactory
-from apps.user import FORMATION_M1
+from apps.user import FORMATION_M1, FORMATION_M2
 from apps.user.tests.factories import UserFactory
 from defivelo.tests.utils import (
     AuthClient,
@@ -39,6 +39,11 @@ from defivelo.tests.utils import (
     StateManagerAuthClient,
 )
 
+from .. import (
+    AVAILABILITY_FIELDKEY,
+    CHOSEN_AS_LEADER,
+)
+from ..models import HelperSessionAvailability
 from .factories import QualificationFactory, SeasonFactory, SessionFactory
 
 freeforallurls = ["season-list"]
@@ -77,9 +82,7 @@ class SeasonTestCaseMixin(TestCase):
         self.canton_orgas = []
         self.qualifs = []
         for canton in self.season.cantons:
-            s = SessionFactory()
-            s.orga.address_canton = canton
-            s.orga.save()
+            s = SessionFactory(orga__address_canton=canton)
             self.canton_orgas.append(s.orga)
             s.day = self.season.begin
             s.save()
@@ -1090,3 +1093,61 @@ class CoordinatorUserTest(SeasonTestCaseMixin):
                     # Final URL is forbidden; no creation nor deletion by coordinators
                     response = self.client.get(url, follow=True)
                     self.assertEqual(response.status_code, 403, url)
+
+
+class TestPlanning(SeasonTestCaseMixin):
+    def setUp(self):
+        self.client = StateManagerAuthClient()
+        canton = "VD"
+
+        # Make sure the current user is in VD
+        self.client.user.profile.affiliation_canton = canton
+        self.client.user.profile.save()
+
+        # User that we want to check the individual planning for
+        self.user1 = UserFactory(
+            profile__affiliation_canton=canton, profile__formation=FORMATION_M2
+        )
+
+        super().setUp()
+
+        for s in self.sessions:
+            # Put the sessions for our Coordinator's orga and canton
+            s.canton = canton
+            s.orga.address_canton = canton
+            s.orga.coordinator = self.client.user
+            s.orga.save()
+            s.save()
+
+            # Set the user availability for that session
+            wanted_availability = "i"
+            av, created = HelperSessionAvailability.objects.get_or_create(
+                session=s,
+                helper=self.user1,
+                defaults={"availability": wanted_availability},
+            )
+
+            # Choose someone else
+            HelperSessionAvailability.objects.create(
+                session=s,
+                helper=self.users[1],
+                availability=CHOSEN_AS_LEADER,
+            )
+
+            if not created:
+                av.availability = wanted_availability
+                av.save()
+
+    def test_individual_planning_view(self):
+        url = reverse(
+            "season-planning", kwargs={"helperpk": self.user1.pk, "pk": self.season.pk}
+        )
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        key = AVAILABILITY_FIELDKEY.format(hpk=self.user1.pk, spk=self.sessions[0].pk)
+
+        parser = BeautifulSoup(response.content, "html.parser")
+        cell = parser.select_one(f'[data-test="{key}"] .glyphicon-remove-sign')
+        self.assertIsNotNone(cell, "Cell should show that the user is not selected")
