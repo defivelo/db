@@ -451,7 +451,9 @@ SERVER_EMAIL = email_config.get(
 DEFAULT_FROM_EMAIL = email_config.get(
     "DEFAULT_FROM_EMAIL", get_env_variable("DEFAULT_FROM_EMAIL", "noreply@defi-velo.ch")
 )
-
+PROFILE_CHANGED_NOTIFY_EMAIL = get_env_variable(
+    "PROFILE_CHANGED_NOTIFY_EMAIL", "office@defi-velo.ch"
+)
 # Email backend settings
 EMAIL_FILE_PATH = email_config["EMAIL_FILE_PATH"]
 EMAIL_HOST_USER = email_config["EMAIL_HOST_USER"]
