@@ -93,8 +93,11 @@ def test_userprofile_field_change_signal_iban_change(mock_send_mail, db, setting
 
     mock_send_mail.assert_called_once()
     args = mock_send_mail.call_args[0]
-    assert f"Profil modifié - {user.get_full_name()}" in args[0]
-    assert f"Le profil de {user.get_full_name()} a été modifié." in args[1]
+    assert "Notification de modification de données utilisateur" in args[0]
+    assert (
+        f"Les informations suivantes pour l’utilisateur {user.get_full_name()} / {user.pk} ont été modifiées"
+        in args[1]
+    )
     assert "IBAN: CH93 0076 2011 6238 5295 7 → CH14 0483 5012 3456 7800 9" in args[1]
     assert args[2] == "system@example.com"
     assert args[3] == ["admin@example.com"]
@@ -124,8 +127,11 @@ def test_userprofile_field_change_signal_address_changes(mock_send_mail, db, set
 
     mock_send_mail.assert_called_once()
     args = mock_send_mail.call_args[0]
-    assert f"Profil modifié - {user.get_full_name()}" in args[0]
-    assert f"Le profil de {user.get_full_name()} a été modifié." in args[1]
+    assert "Notification de modification de données utilisateur" in args[0]
+    assert (
+        f"Les informations suivantes pour l’utilisateur {user.get_full_name()} / {user.pk} ont été modifiées"
+        in args[1]
+    )
 
     # Check that all three address changes are in the email body
     assert "address_street: Old Street → New Street" in args[1]
@@ -171,7 +177,9 @@ def test_userprofile_field_change_signal_no_changes_when_values_same(
 @patch("apps.user.models.send_mail")
 @override_settings(PROFILE_CHANGED_NOTIFY_EMAIL="admin@example.com")
 @override_settings(DEFAULT_FROM_EMAIL="system@example.com")
-def test_unified_post_save_notification_sends_email(mock_send_mail, db, settings):
+def test_userprofile_unified_post_save_notification_sends_email(
+    mock_send_mail, db, settings
+):
     """
     Test that when multiple models (user + profile) are changed in a single save, the mail is sent only once.
     """
@@ -194,8 +202,11 @@ def test_unified_post_save_notification_sends_email(mock_send_mail, db, settings
 
     mock_send_mail.assert_called_once()
     args = mock_send_mail.call_args[0]
-    assert f"Profil modifié - {user.get_full_name()}" in args[0]
-    assert f"Le profil de {user.get_full_name()} a été modifié." in args[1]
+    assert "Notification de modification de données utilisateur" in args[0]
+    assert (
+        f"Les informations suivantes pour l’utilisateur {user.get_full_name()} / {user.pk} ont été modifiées"
+        in args[1]
+    )
     assert "IBAN: CH93 0076 2011 6238 5295 7 → CH14 0483 5012 3456 7800 9" in args[1]
     assert "address_street: Same Street → Different Street" in args[1]
     assert "email: mytest@example.com → changed@example.com" in args[1]

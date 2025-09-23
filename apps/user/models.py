@@ -788,13 +788,16 @@ def _send_field_change_notification(user, changes):
         return
 
     # Prepare email content
-    subject = _("Profil modifié - {user}").format(user=user.get_full_name())
+    subject = _("Notification de modification de données utilisateur")
 
     # Build the email body
     body_lines = [
-        _("Le profil de {user} a été modifié.").format(user=user.get_full_name()),
+        _("Bonjour,"),
         "",
-        _("Champs modifiés:"),
+        _(
+            "Les informations suivantes pour l’utilisateur {user} / {user_id} ont été modifiées:"
+        ).format(user=user.get_full_name(), user_id=user.pk),
+        "",
         "",
     ]
 
@@ -804,7 +807,13 @@ def _send_field_change_notification(user, changes):
         new_val = change["new_value"] or _("(vide)")
         body_lines.append(f"• {field_name}: {old_val} → {new_val}")
 
-    body_lines.extend(["", _("Ceci est un message automatique.")])
+    body_lines.extend(
+        [
+            "",
+            _("Ceci est un message automatique."),
+            _("Merci de mette à jour la base de données des salaires en conséquences"),
+        ]
+    )
 
     body = "\n".join([str(b) for b in body_lines])
 
