@@ -28,7 +28,7 @@ from apps.common.views import ExportMixin
 from apps.salary import BONUS_LEADER, HOURLY_RATE_HELPER, RATE_ACTOR
 from apps.salary.forms import ControlTimesheetFormSet, TimesheetFormSet
 from apps.salary.models import Timesheet
-from defivelo.roles import has_permission, user_cantons
+from defivelo.roles import has_permission
 
 from ...user.models import UserProfile
 from ...user.views.standard import ReturnUrlMixin
@@ -522,10 +522,6 @@ class SendTimesheetsReminder(TemplateView):
             timesheets_overview.get_visible_users(self.request.user)
             .order_by("first_name", "last_name")
             .select_related("profile")
-        )
-        # Limit reminders to collaborators affiliated in the manager's cantons
-        users = users.filter(
-            profile__affiliation_canton__in=user_cantons(self.request.user)
         )
         self.recipients = timesheets_overview.get_users_with_missing_timesheets(
             self.year, self.month, users
