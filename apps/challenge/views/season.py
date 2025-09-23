@@ -32,6 +32,7 @@ from django.template.defaultfilters import date, time
 from django.template.loader import render_to_string
 from django.urls import Resolver404, reverse, reverse_lazy
 from django.utils.functional import cached_property
+from django.utils.text import slugify
 from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import pgettext_lazy as _p
@@ -333,9 +334,7 @@ class SeasonAvailabilityMixin(SeasonHelpersMixin):
 
     def dispatch(self, request, *args, **kwargs):
         if self._has_default_access(request) or self.custom_access_allowed(request):
-            return super(SeasonAvailabilityMixin, self).dispatch(
-                request, bypassperm=True, *args, **kwargs
-            )
+            return super().dispatch(request, bypassperm=True, *args, **kwargs)
         raise PermissionDenied
 
     def _has_default_access(self, request):
@@ -862,9 +861,12 @@ class SeasonPersonalPlanningExportView(
     def export_filename(self):
         # Support aggregated season (general planning)
         if hasattr(self.object, "dv_season"):
-            label = _("Planning_Général")
+            label = _(slugify("Planning général"))
             return label + "-" + str(self.object.year)
-        return _("Planning_Mois") + "-" + "-".join(self.object.cantons)
+        return _(slugify("Planning mois")) + "-" + "-".join(self.object.cantons)
+
+    def _is_general_planning(self):
+        return "year" in self.kwargs and "dv_season" in self.kwargs
 
     def _seasons_in_scope(self):
         try:
@@ -877,14 +879,14 @@ class SeasonPersonalPlanningExportView(
 
     def get_object(self, queryset=None):
         # If called with a season pk, return the Season; if called with year/dv_season, return aggregated general season
-        if "pk" in self.kwargs:
+        if not self._is_general_planning():
             return super().get_object(queryset)
         year, dv_season, seasons = self._seasons_in_scope()
         return GeneralSeason(year=year, dv_season=dv_season, seasons=seasons)
 
     def dispatch(self, request, *args, **kwargs):
         # For general planning export (year/dv_season present), align permissions with general planning
-        if "year" in kwargs and "dv_season" in kwargs:
+        if self._is_general_planning():
             # managers always
             if has_permission(request.user, self.required_permission):
                 return super(SeasonPersonalPlanningExportView, self).dispatch(
@@ -910,7 +912,7 @@ class SeasonPersonalPlanningExportView(
 
     def custom_access_allowed(self, request):
         # In aggregated (general) mode, allow helpers when any season is running; managers always
-        if "year" in self.kwargs and "dv_season" in self.kwargs:
+        if self._is_general_planning():
             if has_permission(request.user, self.required_permission):
                 return True
             _, _, seasons = self._seasons_in_scope()
@@ -1121,7 +1123,9 @@ class SeasonPlanningView(SeasonAvailabilityMixin, DetailView):
         potential_helpers = self.potential_helpers()
         context["submenu_category"] = "season-planning"
         context["potential_helpers"] = potential_helpers
-        context["availabilities"] = self.get_initial(all_helpers=potential_helpers)
+        context["availabilities"] = (
+            self.get_initial(all_helpers=potential_helpers) or {}
+        )
         return context
 
 
@@ -1170,9 +1174,7 @@ class SeasonGeneralPlanningView(SeasonAvailabilityMixin, DetailView):
 
         # Authorization logic similar to SeasonPlanningView, adapted for aggregated seasons
         if has_permission(request.user, self.required_permission):
-            return super(SeasonGeneralPlanningView, self).dispatch(
-                request, *args, **kwargs
-            )
+            return super().dispatch(request, *args, **kwargs)
 
         year, dv_season, seasons = self._seasons_in_scope()
         user_is_helper = request.user.profile.is_paid_staff and (
@@ -1181,9 +1183,7 @@ class SeasonGeneralPlanningView(SeasonAvailabilityMixin, DetailView):
         any_running = any(s.staff_can_see_planning for s in seasons)
         any_open = any(s.staff_can_update_availability for s in seasons)
         if user_is_helper and any_running:
-            return super(SeasonGeneralPlanningView, self).dispatch(
-                request, *args, **kwargs
-            )
+            return super().dispatch(request, *args, **kwargs)
         if user_is_helper and any_open:
             # Mirror the redirect used in SeasonPlanningView when planning isn't available
             target = next((s for s in seasons if s.staff_can_update_availability), None)
@@ -1191,7 +1191,7 @@ class SeasonGeneralPlanningView(SeasonAvailabilityMixin, DetailView):
                 warning_message(
                     request,
                     _(
-                        "Le planning n'est pas encore disponible; mets plutôt à jour tes disponibilités."
+                        "Le planning n'est pas encore disponible. En attendant, vous pouvez mettre à jour vos disponibilités."
                     ),
                 )
                 return HttpResponseRedirect(
@@ -1236,7 +1236,9 @@ class SeasonGeneralPlanningView(SeasonAvailabilityMixin, DetailView):
         context["submenu_category"] = "season-planning"
         context["helperpk"] = helperpk
         context["potential_helpers"] = potential_helpers
-        context["availabilities"] = self.get_initial(all_helpers=potential_helpers)
+        context["availabilities"] = (
+            self.get_initial(all_helpers=potential_helpers) or {}
+        )
         if not context["availabilities"]:
             context["availabilities"] = OrderedDict()
 
@@ -1296,7 +1298,7 @@ class SeasonGeneralPlanningView(SeasonAvailabilityMixin, DetailView):
                     spk = None
                 if spk in allowed_ids:
                     # For availability entries, keep only if corresponding choice is True
-                    if AVAILABILITY_FIELDKEY.format(hpk=helperpk, spk="")[:-1] in key:
+                    if AVAILABILITY_FIELDKEY.format(hpk=helperpk, spk="") in key:
                         choice_key = CHOICE_FIELDKEY.format(hpk=helperpk, spk=spk)
                         if context["availabilities"].get(choice_key):
                             pruned[key] = value

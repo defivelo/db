@@ -1196,7 +1196,7 @@ class TestPlanning(SeasonTestCaseMixin):
         session_in_scope.orga.address_canton = self.canton
         session_in_scope.orga.save()
         QualificationFactory(actor=self.user1, session=session_in_scope)
-        HelperSessionAvailability.objects.get_or_create(
+        HelperSessionAvailability.objects.update_or_create(
             session=session_in_scope, helper=self.user1, defaults={"availability": "i"}
         )
 

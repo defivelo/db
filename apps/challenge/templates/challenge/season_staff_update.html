@@ -10,23 +10,23 @@
     <form method="POST" action="" class="form-horizontal">
         {% csrf_token %}
         <table class="table text-center table-avail">
-        {% include "challenge/season_availability_thead.html" with sessions=sessions season=season only %}
-        <tbody>
-            {% for helper_category,helpers in available_helpers %}
-                {% if helpers %}
-                <tr><th colspan="{{ sessions.count|add:"3" }}">{{ helper_category }}</th></tr>
-                    {% for helper in helpers %}
-                    <tr>
-                        {% include "challenge/season_availability_partial_helper_columns.html" with helper=helper %}
-                        {{ form|userstaffsessions:helper }}
-                    </tr>
-                    {% endfor %}
-                    {% if helpers.count > 10 %}
-                        {% include "challenge/season_availability_partial_head.html" with sessions=sessions season=season user=request.user only %}
-                    {% endif %}
-                {% endif %}
-            {% endfor %}
-        </tbody>
+          {% include "challenge/season_availability_thead.html" with sessions=sessions season=season only %}
+          <tbody>
+              {% for helper_category,helpers in available_helpers %}
+                  {% if helpers %}
+                  <tr><th colspan="{{ sessions.count|add:"3" }}">{{ helper_category }}</th></tr>
+                      {% for helper in helpers %}
+                      <tr>
+                          {% include "challenge/season_availability_partial_helper_columns.html" with helper=helper %}
+                          {{ form|userstaffsessions:helper }}
+                      </tr>
+                      {% endfor %}
+                      {% if helpers.count > 10 %}
+                          {% include "challenge/season_availability_partial_head.html" with sessions=sessions season=season user=request.user only %}
+                      {% endif %}
+                  {% endif %}
+              {% endfor %}
+          </tbody>
         </table>
         {% buttons %}
             <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>

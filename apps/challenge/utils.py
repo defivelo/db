@@ -74,6 +74,11 @@ def is_morning(begin):
 
 
 class GeneralSeason(object):
+    """
+    Aggregated planning wrapper over multiple `Season` instances for a year and DV season.
+    Provides computed date range, cantons and session helpers; used by general planning views/exports.
+    """
+
     def __init__(self, *, year, dv_season, seasons, helper_id=None):
         from calendar import monthrange
 
@@ -85,19 +90,18 @@ class GeneralSeason(object):
 
         if dv_season == DV_SEASON_SPRING:
             self.begin = datetime.date(year, 1, 1)
-            last_day = monthrange(year, DV_SEASON_LAST_SPRING_MONTH)[1]
+            __, last_day = monthrange(year, DV_SEASON_LAST_SPRING_MONTH)
             self.end = datetime.date(year, DV_SEASON_LAST_SPRING_MONTH, last_day)
             self.season_full = _("Printemps {year}").format(year=year)
-        else:
+        elif DV_SEASON_AUTUMN:
             self.begin = datetime.date(year, DV_SEASON_LAST_SPRING_MONTH + 1, 1)
             self.end = datetime.date(year, 12, 31)
             self.season_full = _("Automne {year}").format(year=year)
+        else:
+            raise Exception(_("Pas de saison valide pour cette période"))
 
-        cantons = []
-        for s in seasons:
-            for c in s.cantons:
-                if c not in cantons:
-                    cantons.append(c)
+        cantons = get_cantons_for_seasons(seasons)
+
         self._base_cantons = cantons
         self.cantons = list(cantons)
 
@@ -185,3 +189,13 @@ def seasons_in_scope_for_user(user, year, dv_season):
     else:
         qs = qs.none()
     return qs
+
+
+def get_cantons_for_seasons(seasons):
+    """Return unique list of cantons across the given seasons."""
+    cantons = []
+    for s in seasons:
+        for c in s.cantons:
+            if c not in cantons:
+                cantons.append(c)
+    return cantons
