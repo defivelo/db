@@ -13,6 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import queue
+import threading
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
@@ -657,7 +660,8 @@ def User_pre_save(sender, **kwargs):
 
 # Global dictionary to store field changes temporarily during the save process
 _user_changes = {}
-_userprofile_to_notify = []
+_user_changes_lock = threading.Lock()
+_userprofile_to_notify = queue.Queue()
 
 
 @receiver(pre_save, sender=settings.AUTH_USER_MODEL)
@@ -672,15 +676,16 @@ def user_email_change_signal(sender, instance, **kwargs):
         if old_instance.email != instance.email:
             # Store email change in global dictionary
             user_id = instance.pk
-            if user_id not in _user_changes:
-                _user_changes[user_id] = []
-            _user_changes[user_id].append(
-                {
-                    "field": "email",
-                    "old_value": old_instance.email,
-                    "new_value": instance.email,
-                }
-            )
+            with _user_changes_lock:
+                if user_id not in _user_changes:
+                    _user_changes[user_id] = []
+                _user_changes[user_id].append(
+                    {
+                        "field": "email",
+                        "old_value": old_instance.email,
+                        "new_value": instance.email,
+                    }
+                )
     except sender.DoesNotExist:
         pass
 
@@ -738,9 +743,10 @@ def userprofile_field_change_signal(sender, instance, **kwargs):
             # Store changes in global dictionary
             if changes:
                 user_id = instance.user.pk
-                if user_id not in _user_changes:
-                    _user_changes[user_id] = []
-                _user_changes[user_id].extend(changes)
+                with _user_changes_lock:
+                    if user_id not in _user_changes:
+                        _user_changes[user_id] = []
+                    _user_changes[user_id].extend(changes)
 
     except sender.DoesNotExist:
         pass
@@ -754,16 +760,24 @@ def userprofile_mark_save_notification(sender, instance, **kwargs):
     """
     user = instance if sender == get_user_model() else instance.user
 
-    if user and user not in _userprofile_to_notify:
-        _userprofile_to_notify.append(user)
+    if user:
+        try:
+            _userprofile_to_notify.put_nowait(user)
+        except queue.Full:
+            pass
 
 
 @receiver(request_finished)
 def do_userprofile_notification(**kwargs):
-    while len(_userprofile_to_notify) > 0:
-        user = _userprofile_to_notify.pop(0)
-        # We use pop to ensure we only send one email per save operation between both models
-        _send_field_change_notification(user, _user_changes.pop(user.pk, {}))
+    while not _userprofile_to_notify.empty():
+        try:
+            user = _userprofile_to_notify.get_nowait()
+            # We use get to ensure we only send one email per save operation between both models
+            with _user_changes_lock:
+                changes = _user_changes.pop(user.pk, {})
+            _send_field_change_notification(user, changes)
+        except queue.Empty:
+            break
 
 
 def _send_field_change_notification(user, changes):
