@@ -8,6 +8,10 @@
         {% if helper.profile.status != 10 %}</em>{% endif %}
   {% if with_link %}
     </a>
+    {% trans 'Retour au planning' as return_label %}
+    <a href="{% url 'user-detail' pk=helper.pk %}?returnUrl={{ request.get_full_path|urlencode }}&returnLabel={{ return_label|urlencode }}" title="{% trans "Voir le profil" %}">
+        <span class="glyphicon glyphicon-user"></span>
+    </a>
   {% endif %}
 </td>
 <td class="no-vert-border">

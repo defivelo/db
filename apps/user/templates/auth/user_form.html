@@ -21,6 +21,9 @@
         {% if return_url %}
             <input type="hidden" name="returnUrl" value="{{ return_url }}" />
         {% endif %}
+        {% if return_label %}
+            <input type="hidden" name="returnLabel" value="{{ return_label }}" />
+        {% endif %}
         <div>
 
         {% comment %}
