@@ -121,6 +121,11 @@ urlpatterns = [
                     never_cache(SeasonPersonalPlanningExportView.as_view()),
                     name="season-personal-planning-export",
                 ),
+                re_path(
+                    r"(?P<dv_season>[0-4]{1})/general/(?P<helperpk>[0-9]+)/feed\.ics$",
+                    SeasonPersonalPlanningExportFeed(),
+                    name="season-personal-calendar",
+                ),
             ]
         ),
     ),

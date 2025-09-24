@@ -4,6 +4,7 @@ from typing import Mapping
 
 from django.contrib.auth import get_user_model
 from django.db.models import Count, Q, Sum
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext
 from django.utils.translation import gettext as _
 
@@ -167,8 +168,10 @@ class GeneralSeason(object):
         from defivelo.templatetags.dv_filters import cantons_abbr
 
         cantons_str = ", ".join(cantons_abbr(self.cantons, abbr))
-        return _("{cantons} - {season_full}").format(
-            cantons=cantons_str, season_full=self.season_full
+        return mark_safe(
+            _("{cantons} - {season_full}").format(
+                cantons=cantons_str, season_full=self.season_full
+            )
         )
 
     @property
