@@ -17,7 +17,7 @@ import re
 
 from django.contrib.auth import get_user_model
 from django.core import mail
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import NoReverseMatch, reverse
 
 from rolepermissions.roles import get_user_roles
@@ -265,6 +265,7 @@ class PowerUserTest(ProfileTestCase):
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, 200, url)
 
+    @override_settings(PROFILE_CHANGED_NOTIFY_EMAIL=None)
     def test_send_creds(self):
         nmails = 0
         for otheruser in self.users:
