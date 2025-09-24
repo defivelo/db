@@ -22,7 +22,11 @@
 
         function updateColumnsVisibility(columns_index_to_hide) {
           // show all columns
-          $('table[data-filters] thead th, table[data-filters] tbody td').show();
+          $([
+            'table[data-filters] thead th',
+            'table[data-filters] tbody td',
+            'table[data-filters] tbody th[data-filter-orga]'
+          ].join(",")).show();
 
           // hide the selected columns
           const offset_thead = 0
@@ -31,8 +35,12 @@
 
           columns_index_to_hide.forEach(function(v) {
             const value = parseInt(v, 10)
-            const selector = 'table[data-filters] thead th:nth-of-type(' + (value +  offset_thead + n_child_offset) + '), table[data-filters] tbody td:nth-of-type(' + (value + offset_body + n_child_offset) + ')'
-            $(selector).hide();
+            const selectors = [
+              'table[data-filters] thead th:nth-of-type(' + (value +  offset_thead + n_child_offset) + ')',
+              'table[data-filters] tbody td:nth-of-type(' + (value + offset_body + n_child_offset) + ')',
+              'table[data-filters] tbody th[data-filter-orga]:nth-of-type(' + (value + n_child_offset) + ')',
+            ]
+            $(selectors.join(",")).hide();
           });
         }
 
