@@ -1239,9 +1239,11 @@ class SeasonStaffChoiceUpdateView(
         )
 
     def _extract_orgas(self, sessions):
+        seen_ids = set()
         orgas = []
         for session in sessions:
-            if session.orga and session.orga not in orgas:
+            if session.orga and session.orga_id not in seen_ids:
+                seen_ids.add(session.orga_id)
                 orgas.append(session.orga)
         return orgas
 

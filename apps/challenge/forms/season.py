@@ -204,14 +204,16 @@ class SeasonStaffFilterForm(forms.Form):
     cantons = forms.MultipleChoiceField(
         label=_("Cantons"),
         choices=DV_STATE_CHOICES_WITH_ABBR,
-        widget=Select2Multiple,
+        widget=Select2Multiple(attrs={"data-placeholder": _("Tous les cantons")}),
         required=False,
     )
 
     organisations = forms.MultipleChoiceField(
-        label=_("Organisations"),
+        label=_("Établissements"),
         choices=[],
-        widget=Select2Multiple,
+        widget=Select2Multiple(
+            attrs={"data-placeholder": _("Tous les établissements")}
+        ),
         required=False,
     )
 
