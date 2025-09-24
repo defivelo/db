@@ -31,6 +31,7 @@ from django.http import HttpResponseRedirect
 from django.template.defaultfilters import date, time
 from django.template.loader import render_to_string
 from django.urls import Resolver404, reverse, reverse_lazy
+from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.text import slugify
 from django.utils.translation import gettext
@@ -78,6 +79,7 @@ from .. import (
 )
 from ..forms import (
     SeasonAvailabilityForm,
+    SeasonAvailabilityReminderForm,
     SeasonForm,
     SeasonNewHelperAvailabilityForm,
     SeasonStaffChoiceForm,
@@ -711,6 +713,79 @@ class SeasonToOpenView(SeasonToStateMixin):
                     ]
                 )
                 helper.profile.send_mail(email["subject"], body)
+        return form_result
+
+
+class SeasonAvailabilityReminderView(SeasonHelpersMixin, SeasonUpdateView):
+    template_name = "challenge/season_availability_reminder.html"
+    form_class = SeasonAvailabilityReminderForm
+
+    def get_email(self, profile=None):
+        if profile:
+            helperpk = profile.pk
+        else:
+            profile = {"get_full_name": _("{Prénom} {Nom}")}
+            helperpk = 0
+
+        planning_link = self.request.build_absolute_uri(
+            reverse(
+                "season-availabilities-update",
+                kwargs={"pk": self.season.pk, "helperpk": helperpk},
+            )
+        )
+
+        pre = render_to_string(
+            "challenge/season_email_availability_reminder.txt",
+            {
+                "profile": profile,
+                "season": self.season,
+                "planning_link": planning_link,
+                "current_site": Site.objects.get_current(),
+            },
+        )
+
+        return {
+            "subject": settings.EMAIL_SUBJECT_PREFIX
+            + gettext("Planning {season}").format(season=self.season.desc()),
+            "body": {"pre": pre},
+        }
+
+    def get_email_recipients(self):
+        base_qs = (
+            self.potential_helpers_qs()
+            .filter(profile__status__in=(USERSTATUS_ACTIVE, USERSTATUS_RESERVE))
+            .exclude(Q(profile__formation="") & Q(profile__actor_for__isnull=True))
+            .distinct()
+        )
+        # Exclude users who already have submitted any availability for this season
+        responded_user_ids = HelperSessionAvailability.objects.filter(
+            session__in=self.season.sessions_with_qualifs
+        ).values_list("helper_id", flat=True)
+        return base_qs.exclude(id__in=responded_user_ids)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        recipients = list(
+            self.get_email_recipients().order_by("first_name", "last_name", "id")
+        )
+        context["recipients"] = recipients
+        context["some_recipients_cant_login"] = any(
+            not user.profile.can_login for user in recipients
+        )
+        context["email"] = self.get_email()
+        return context
+
+    def form_valid(self, form):
+        form_result = super().form_valid(form)
+        if form.cleaned_data.get("sendemail"):
+            now = timezone.now()
+            for helper in self.get_email_recipients():
+                email = self.get_email(helper)
+                body = email["body"]["pre"]
+                helper.profile.send_mail(email["subject"], body)
+
+            self.object.availability_reminder_sent_at = now
+            self.object.save()
         return form_result
 
 

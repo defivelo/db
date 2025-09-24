@@ -31,6 +31,7 @@ from .views import (
     QualiDeleteView,
     QualiUpdateView,
     SeasonActorListView,
+    SeasonAvailabilityReminderView,
     SeasonAvailabilityUpdateView,
     SeasonAvailabilityView,
     SeasonCreateView,
@@ -179,6 +180,11 @@ urlpatterns = [
                     r"^availability/$",
                     never_cache(SeasonAvailabilityView.as_view()),
                     name="season-availabilities",
+                ),
+                re_path(
+                    r"^availability/reminder/$",
+                    never_cache(SeasonAvailabilityReminderView.as_view()),
+                    name="season-availability-reminder",
                 ),
                 re_path(
                     r"^planning/(?P<helperpk>[0-9]+)/",

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+{% block head_title %}{% blocktrans %}Envoyer un rappel{% endblocktrans %}{% endblock %}
+
+{% block body_class %}season_availability_reminder{% endblock %}
+{% block bootstrap3_extra_head %}{{ form.media.css }}{% endblock %}
+{% block bootstrap3_extra_script %}{{ form.media.js }}{% endblock %}
+
+{% block content %}
+    <h1>{% blocktrans %}Envoyer un rappel de disponibilités{% endblocktrans %}</h1>
+
+    <form method="POST" action="" class="form-horizontal">
+        {% csrf_token %}
+        {% buttons %}
+            <button type="submit" class="btn btn-primary pull-right">{% trans "Envoyer le courriel" %}</button>
+            <a class="btn btn-default" href="{% url 'season-availabilities' pk=season.pk %}">{% trans "Annuler" %}</a>
+        {% endbuttons %}
+        {% for field in form %}
+            {% bootstrap_field field size='small' %}
+        {% endfor %}
+    <blockquote>
+      <pre style="white-space: pre-wrap;">{% trans "Sujet:" %} {{ email.subject }}
+
+{{ email.body.pre }}</pre>
+    </blockquote>
+    </form>
+    <p>{% trans "Ce courriel sera envoyé à:" %}</p>
+    {% if recipients %}
+      <ul>
+      {% for recipient in recipients %}
+          <li>
+            {% if not recipient.profile.can_login %}
+                {% trans "Cet utilisateur ne peut pas se connecter à l’intranet (il n’a pas de mot de passe)." as label %}
+                <span class="glyphicon glyphicon-warning-sign" aria-label="{{ label }}" title="{{ label }}"></span>
+            {% endif %}
+            <a href="{% url 'user-detail' pk=recipient.pk %}">
+                {{ recipient.profile.mailtolink }}
+            </a>
+          </li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+    {{ form.errors }}
+    {% if some_recipients_cant_login %}
+      <div class="alert alert-warning">
+        {% trans "Certains destinataires ne peuvent pas se connecter à l’intranet (ils n’ont pas de mot de passe)." %}
+      </div>
+    {% endif %}
+{% endblock %}
+
+

@@ -22,6 +22,7 @@ from .qualification import (
 )
 from .season import (
     SeasonAvailabilityForm,
+    SeasonAvailabilityReminderForm,
     SeasonForm,
     SeasonNewHelperAvailabilityForm,
     SeasonStaffChoiceForm,
@@ -38,6 +39,7 @@ __all__ = [
     "QualificationForm",
     "QualificationFormQuick",
     "SeasonAvailabilityForm",
+    "SeasonAvailabilityReminderForm",
     "SeasonForm",
     "SeasonNewHelperAvailabilityForm",
     "SeasonStaffChoiceForm",

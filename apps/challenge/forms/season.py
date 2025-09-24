@@ -129,6 +129,25 @@ class SeasonToSpecificStateForm(forms.ModelForm):
         fields = ["state", "sendemail"]
 
 
+class SeasonAvailabilityReminderForm(forms.ModelForm):
+    """
+    A form to trigger availability reminder emails for a season.
+    """
+
+    sendemail = forms.BooleanField(
+        label=_("Envoyer le courriel suivant"), initial=True, required=False
+    )
+
+    def __init__(self, *args, **kwargs):
+        kwargs.pop("cantons", None)
+        kwargs.pop("season", None)
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = Season
+        fields: list[str] = []
+
+
 class SeasonNewHelperAvailabilityForm(forms.Form):
     def __init__(self, *args, **kwargs):
         cantons = kwargs.pop("cantons", [])

@@ -43,8 +43,16 @@
         <form method="POST" action="" class="form-inline"  style="display: inline;" novalidate>
             {% csrf_token %}
             {% bootstrap_form form %}
-            {% buttons %}
-                <button type="submit" class="btn btn-primary pull-right">{% trans "Disponibilités" %}</button>
+        {% buttons %}
+            {% if season.availability_reminder_sent_at %}
+                <small class="text-muted pull-right" style="margin-left: 8px; padding-top: 6px;">
+                    Rappel envoyé le {{ season.availability_reminder_sent_at|date }}
+                </small>
+            {% endif %}
+            <a class="btn btn-default pull-right" style="margin-right: 8px;" href="{% url 'season-availability-reminder' season.pk %}">
+                {% if season.availability_reminder_sent_at %}Renvoyer un  rappel{% else %}Envoyer un rappel{% endif %}
+            </a>
+            <button type="submit" class="btn btn-primary pull-right" style="margin-right: 8px;">{% trans "Disponibilités" %}</button>
             {% endbuttons %}
         </form>
 
