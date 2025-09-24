@@ -40,7 +40,11 @@
     {% else %}
       {% include 'export_buttons.html' with exporturl='season-personal-planning-export' seasonpk=season.pk exportargs=helperpk filter_querystring=filter_querystring only %}
     {% endif %}
-    <a class="btn btn-info btn-sm" title="{% blocktrans %}Calendrier{% endblocktrans %}" href="{% url "season-personal-calendar" season.pk helperpk %}">
+    {% if season.dv_season %}
+      <a class="btn btn-info btn-sm" title="{% blocktrans %}Calendrier{% endblocktrans %}" href="{% url "season-personal-calendar" season.year season.dv_season helperpk %}">
+    {% else %}
+      <a class="btn btn-info btn-sm" title="{% blocktrans %}Calendrier{% endblocktrans %}" href="{% url "season-personal-calendar" season.pk helperpk %}">
+    {% endif %}
       <span class=" glyphicon glyphicon-calendar" aria-hidden="true"></span>
       {% trans "ics" %}
     </a>

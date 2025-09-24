@@ -850,20 +850,11 @@ class SeasonExportView(
         return dataset
 
 
-class SeasonPersonalPlanningExportView(
-    ExportMixin, SeasonAvailabilityMixin, DetailView
-):
-    allow_season_fetch = True
-    raise_without_cantons = False
-    view_is_planning = True
-
-    @property
-    def export_filename(self):
-        # Support aggregated season (general planning)
-        if hasattr(self.object, "dv_season"):
-            label = slugify(_("Planning général"))
-            return label + "-" + str(self.object.year)
-        return _(slugify("Planning mois")) + "-" + "-".join(self.object.cantons)
+class GeneralPlanningSupportMixin(object):
+    """
+    Shared logic to support "general" planning (aggregated across months) for
+    export views and feeds.
+    """
 
     def _is_general_planning(self):
         return "year" in self.kwargs and "dv_season" in self.kwargs
@@ -877,53 +868,75 @@ class SeasonPersonalPlanningExportView(
         qs = seasons_in_scope_for_user(self.request.user, year, dv_season)
         return year, dv_season, list(qs)
 
-    def get_object(self, queryset=None):
-        # If called with a season pk, return the Season; if called with year/dv_season, return aggregated general season
-        if not self._is_general_planning():
-            return super().get_object(queryset)
+    def _helperpk_in_kwargs(self):
+        helperpk_raw = self.kwargs.get("helperpk")
+        try:
+            helperpk = int(helperpk_raw) if helperpk_raw is not None else None
+        except (TypeError, ValueError):
+            helperpk = None
+        return helperpk
+
+    def _general_object(self):
         year, dv_season, seasons = self._seasons_in_scope()
-        return GeneralSeason(year=year, dv_season=dv_season, seasons=seasons)
+        return GeneralSeason(
+            year=year,
+            dv_season=dv_season,
+            seasons=seasons,
+            helper_id=self._helperpk_in_kwargs(),
+        )
+
+    def _general_access_allowed(self, request):
+        # Managers always
+        permission_name = getattr(self, "required_permission", "challenge_season_crud")
+        if has_permission(request.user, permission_name):
+            return True
+        # Helpers if any season is running
+        _, _, seasons = self._seasons_in_scope()
+        user_is_helper = request.user.profile.is_paid_staff and (
+            request.user.profile.actor or request.user.profile.formation
+        )
+        any_running = any(s.staff_can_see_planning for s in seasons)
+        if user_is_helper and any_running:
+            return True
+        return False
+
+    def get_object(self, queryset=None):
+        if self._is_general_planning():
+            return self._general_object()
+        return super().get_object(queryset)
 
     def dispatch(self, request, *args, **kwargs):
-        # For general planning export (year/dv_season present), align permissions with general planning
         if self._is_general_planning():
-            # managers always
-            if has_permission(request.user, self.required_permission):
-                return super(SeasonPersonalPlanningExportView, self).dispatch(
-                    request, *args, **kwargs
-                )
-            # helpers if any season is running
-            _, _, seasons = self._seasons_in_scope()
-            user_is_helper = request.user.profile.is_paid_staff and (
-                request.user.profile.actor or request.user.profile.formation
-            )
-            any_running = any(s.staff_can_see_planning for s in seasons)
-            if user_is_helper and any_running:
-                return super(SeasonPersonalPlanningExportView, self).dispatch(
-                    request, *args, **kwargs
-                )
+            if self._general_access_allowed(request):
+                return super().dispatch(request, *args, **kwargs)
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
+
+    def custom_access_allowed(self, request):
+        if self._is_general_planning():
+            return self._general_access_allowed(request)
+        return False
+
+
+class SeasonPersonalPlanningExportView(
+    GeneralPlanningSupportMixin, ExportMixin, SeasonAvailabilityMixin, DetailView
+):
+    allow_season_fetch = True
+    raise_without_cantons = False
+    view_is_planning = True
+
+    @property
+    def export_filename(self):
+        # Support aggregated season (general planning)
+        if hasattr(self.object, "dv_season"):
+            label = _(slugify("Planning général"))
+            return label + "-" + str(self.object.year)
+        return _(slugify("Planning mois")) + "-" + "-".join(self.object.cantons)
 
     def get(self, request, *args, **kwargs):
         # Bypass SeasonAvailabilityMixin.get_context_data to avoid self.season usage in aggregated mode
         self.object = self.get_object()
         return self.render_to_response({})
-
-    def custom_access_allowed(self, request):
-        # In aggregated (general) mode, allow helpers when any season is running; managers always
-        if self._is_general_planning():
-            if has_permission(request.user, self.required_permission):
-                return True
-            _, _, seasons = self._seasons_in_scope()
-            user_is_helper = request.user.profile.is_paid_staff and (
-                request.user.profile.actor or request.user.profile.formation
-            )
-            any_running = any(s.staff_can_see_planning for s in seasons)
-            if user_is_helper and any_running:
-                return True
-            return False
-        return False
 
     def get_dataset(self):
         dataset = Dataset()
@@ -1592,21 +1605,29 @@ class SeasonErrorsListView(HasPermissionsMixin, SeasonMixin, ListView):
         )
 
 
-class SeasonPersonalPlanningExportFeed(ICalFeed):
+class SeasonPersonalPlanningExportFeed(GeneralPlanningSupportMixin, ICalFeed):
     timezone = datetime.timezone.utc
     file_name = "sessions.ics"
 
     def __call__(self, request, *args, **kwargs):
-        self.object = self.season = Season.objects.get(pk=kwargs.get("pk"))
         self.request = request
+        self.kwargs = kwargs
         resolvermatch = self.request.resolver_match
         self.user = get_user_model().objects.get(
             pk=int(resolvermatch.kwargs["helperpk"])
         )
+
+        # Support "general" planning scope via the shared mixin
+        if self._is_general_planning():
+            if not self._general_access_allowed(request):
+                raise PermissionDenied
+            self.object = self.season = self._general_object()
+        else:
+            self.object = self.season = Season.objects.get(pk=kwargs.get("pk"))
         return super().__call__(request)
 
     def items(self):
-        return self.season.sessions_with_qualifs.filter(
+        return self.object.sessions_with_qualifs.filter(
             Q(superleader=self.user)
             | Q(qualifications__actor=self.user)
             | Q(qualifications__helpers=self.user)
@@ -1643,6 +1664,16 @@ class SeasonPersonalPlanningExportFeed(ICalFeed):
         return session.end_datetime.astimezone(datetime.timezone.utc)
 
     def item_link(self, session):
+        # Link back to the appropriate planning page depending on mode
+        if hasattr(self.object, "dv_season"):
+            return reverse(
+                "season-general-planning",
+                kwargs={
+                    "year": self.object.year,
+                    "dv_season": self.object.dv_season,
+                    "helperpk": self.user.id,
+                },
+            )
         return reverse(
             "season-planning", kwargs={"pk": self.season.pk, "helperpk": self.user.id}
         )
