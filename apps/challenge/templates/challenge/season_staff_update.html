@@ -1,22 +1,97 @@
-{% extends "base.html" %}{% load i18n bootstrap3 dv_filters %}
+{% extends "base.html" %}{% load i18n bootstrap3 dv_filters static %}
 {% block head_title %}{{ season.desc }}{% endblock %}
 
 {% block container-class %}container-fluid{% endblock %}
+
+{% block bootstrap3_extra_head %}
+    {{ season_staff_filter_form.media.css }}
+{% endblock %}
+
+{% block bootstrap3_extra_script %}
+    <script type="text/javascript" src="{% static 'js/form-changes.js' %}"></script>
+    {{ season_staff_filter_form.media.js }}
+    <script>
+      $(document).ready(function() {
+
+        $('#id_cantons').change(function () {
+          let val = $(this).val();
+          $('tr[data-canton-filter]').each(function () {
+            $(this).toggle(!val || val.includes($(this).data('canton-filter')));
+          });
+        });
+
+        function updateColumnsVisibility(columns_index_to_hide) {
+          // show all columns
+          $([
+            'table[data-filters] thead th',
+            'table[data-filters] tbody td',
+            'table[data-filters] tbody th[data-filter-orga]'
+          ].join(",")).show();
+
+          // hide the selected columns
+          const offset_thead = 0
+          const offset_body = $("tbody tr:nth-child(2) td[data-filter-ignore]").length // offset due to the 3 firsts columns not being session columns (username, roles, canton)
+          const n_child_offset = 1 // we index from 0, but nth-of-type starts at 1
+
+          columns_index_to_hide.forEach(function(v) {
+            const value = parseInt(v, 10)
+            const selectors = [
+              'table[data-filters] thead th:nth-of-type(' + (value +  offset_thead + n_child_offset) + ')',
+              'table[data-filters] tbody td:nth-of-type(' + (value + offset_body + n_child_offset) + ')',
+              'table[data-filters] tbody th[data-filter-orga]:nth-of-type(' + (value + n_child_offset) + ')',
+            ]
+            $(selectors.join(",")).hide();
+          });
+        }
+
+        $("#id_organisations").change(function () {
+          const columns_index_to_hide = []
+          let val = $(this).val();
+          // compute the indexes to hide
+          $('table thead th[data-filter-orga]').each(function (index) {
+            let org = $(this).data('filter-orga');
+            if (org && val && !val.includes(String(org))) {
+              columns_index_to_hide.push(index);
+            }
+          });
+          updateColumnsVisibility(columns_index_to_hide);
+        })
+      });
+    </script>
+{% endblock %}
 
 {% block content %}
     {% include "challenge/season_header.html" with season=season only %}
     <h4>{% trans "Attributions dans les sessions" %}</h4>
 
-    <form method="POST" action="" class="form-horizontal">
+    <form method="POST" action="" class="form-horizontal" data-prevent-page-exit>
+        {% if season_staff_filter_form %}
+            <div class="well">
+              <h4><i class="glyphicon glyphicon-filter"></i> {% trans 'Filtres' %}</h4>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ season_staff_filter_form.cantons.label }}</label>
+                <div class="col-sm-10">
+                  {{ season_staff_filter_form.cantons }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ season_staff_filter_form.organisations.label }}</label>
+                <div class="col-sm-10">
+                  {{ season_staff_filter_form.organisations }}
+                </div>
+              </div>
+            </div>
+        {% endif %}
         {% csrf_token %}
-        <table class="table text-center table-avail">
+        <table data-filters class="table text-center table-avail">
         {% include "challenge/season_availability_thead.html" with sessions=sessions season=season only %}
         <tbody>
             {% for helper_category,helpers in available_helpers %}
                 {% if helpers %}
                 <tr><th colspan="{{ sessions.count|add:"3" }}">{{ helper_category }}</th></tr>
                     {% for helper in helpers %}
-                    <tr>
+                    <tr data-canton-filter="{{ helper.profile.affiliation_canton|default:"-" }}">
                         {% include "challenge/season_availability_partial_helper_columns.html" with helper=helper %}
                         {{ form|userstaffsessions:helper }}
                     </tr>

@@ -81,6 +81,7 @@ from ..forms import (
     SeasonStaffChoiceForm,
     SeasonToSpecificStateForm,
 )
+from ..forms.season import SeasonStaffFilterForm
 from ..models import HelperSessionAvailability, Qualification, Season
 from ..models.availability import HelperSeasonWorkWish
 from ..models.qualification import (
@@ -1176,6 +1177,7 @@ class SeasonStaffChoiceUpdateView(
     template_name = "challenge/season_staff_update.html"
     success_message = _("Choix du personnel mises à jour")
     form_class = SeasonStaffChoiceForm
+    form_filter_class = SeasonStaffFilterForm
     view_is_update = True
 
     def get_initial(self):
@@ -1192,6 +1194,9 @@ class SeasonStaffChoiceUpdateView(
     def get_context_data(self, **kwargs):
         context = super(SeasonStaffChoiceUpdateView, self).get_context_data(**kwargs)
         context["available_helpers"] = self.available_helpers
+        context["season_staff_filter_form"] = SeasonStaffFilterForm(
+            organisations=self._extract_orgas(context["sessions"])
+        )
         return context
 
     def form_valid(self, form):
@@ -1232,6 +1237,15 @@ class SeasonStaffChoiceUpdateView(
         return HttpResponseRedirect(
             reverse_lazy("season-availabilities", kwargs={"pk": self.object.pk})
         )
+
+    def _extract_orgas(self, sessions):
+        seen_ids = set()
+        orgas = []
+        for session in sessions:
+            if session.orga and session.orga_id not in seen_ids:
+                seen_ids.add(session.orga_id)
+                orgas.append(session.orga)
+        return orgas
 
 
 class SeasonCreateView(

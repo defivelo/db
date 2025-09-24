@@ -21,13 +21,19 @@ from django.utils.translation import gettext_lazy as _
 
 from bootstrap3_datetime.widgets import DateTimePicker
 from dal.forward import Const as dal_const
-from dal_select2.widgets import ModelSelect2
+from dal_select2.widgets import ModelSelect2, Select2Multiple
 
-from apps.common import DV_SEASON_STATE_OPEN, DV_SEASON_STATE_RUNNING, DV_SEASON_STATES
+from apps.common import (
+    DV_SEASON_STATE_OPEN,
+    DV_SEASON_STATE_RUNNING,
+    DV_SEASON_STATES,
+    DV_STATE_CHOICES_WITH_ABBR,
+)
 from apps.common.forms import SelectWithDisabledValues
 from apps.user import FORMATION_KEYS, FORMATION_M2
 from apps.user.models import USERSTATUS_DELETED
 
+from ...orga.models import Organization
 from .. import (
     AVAILABILITY_FIELDKEY,
     CHOICE_CHOICES,
@@ -192,6 +198,34 @@ class SeasonAvailabilityForm(forms.Form):
 
     def save(self):
         pass
+
+
+class SeasonStaffFilterForm(forms.Form):
+    cantons = forms.MultipleChoiceField(
+        label=_("Cantons"),
+        choices=DV_STATE_CHOICES_WITH_ABBR,
+        widget=Select2Multiple(attrs={"data-placeholder": _("Tous les cantons")}),
+        required=False,
+    )
+
+    organisations = forms.MultipleChoiceField(
+        label=_("Établissements"),
+        choices=[],
+        widget=Select2Multiple(
+            attrs={"data-placeholder": _("Tous les établissements")}
+        ),
+        required=False,
+    )
+
+    def __init__(self, organisations: list[Organization], *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if organisations:
+            self.fields["organisations"].choices = [
+                (orga.pk, str(orga))
+                for orga in sorted(organisations, key=lambda o: str(o))
+            ]
+        else:
+            del self.fields["organisations"]
 
 
 class SeasonStaffChoiceForm(forms.Form):
