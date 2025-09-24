@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+from django.utils.functional import lazy
 from django.utils.translation import gettext_lazy as _
 
 from localflavor.ch.ch_states import STATE_CHOICES
@@ -92,6 +92,19 @@ DV_STATE_CHOICES_WITH_DEFAULT = tuple(
     )
     + list(DV_STATE_CHOICES)
 )
+
+
+def format_with_abbr(label, code):
+    if code:
+        return f"{label} ({code.upper()})"
+    return label
+
+
+format_with_abbr_lazy = lazy(format_with_abbr, str)
+
+DV_STATE_CHOICES_WITH_ABBR = [
+    (v, format_with_abbr_lazy(label, v)) for v, label in DV_STATE_CHOICES
+]
 
 DV_LANGUAGES = LANGUAGES = (
     ("fr", _("French")),

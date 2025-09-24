@@ -60,17 +60,28 @@ class ReturnUrlMixin:
         return_url = self.request.GET.get("returnUrl") or self.request.POST.get(
             "returnUrl"
         )
-        if return_url and url_has_allowed_host_and_scheme(
+        if not return_url or not url_has_allowed_host_and_scheme(
             url=return_url,
             allowed_hosts={self.request.get_host()},
             require_https=self.request.is_secure(),
         ):
-            return return_url
-        return None
+            return None
+
+        return return_url
+
+    def get_return_label(self, default=None):
+        if not self.get_return_url():
+            return None
+
+        result = self.request.GET.get("returnLabel") or self.request.POST.get(
+            "returnLabel"
+        )
+        return result if result else default
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["return_url"] = self.get_return_url()
+        context["return_label"] = self.get_return_label()
         return context
 
     def get_success_url(self):
@@ -154,6 +165,16 @@ class UserUpdate(
         if return_url:
             # Add the returnUrl parameter to the success_url
             success_url = self._add_return_url(success_url, return_url)
+
+            # Add the returnLabel parameter if any
+            return_label = self.get_return_label()
+            if return_label:
+                success_url = (
+                    success_url
+                    + ("&" if "?" in success_url else "?")
+                    + urlencode({"returnLabel": return_label})
+                )
+
         return success_url
 
     def dispatch(self, request, *args, **kwargs):

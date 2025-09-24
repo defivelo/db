@@ -7,7 +7,7 @@
         {% if chosen_stats %}<td rowspan="6">{% trans "Sél." %}</td>{% endif %}
         {% if wishfield %}<td rowspan="6">{% trans "Qualifs max" %}</td>{% endif %}
         {% for session in sessions %}
-            <th data-test="orga-{{ session.pk }}" class="text-center" style="vertical-align: top;">
+            <th data-test="orga-{{ session.pk }}" data-filter-orga="{{ session.orga.pk }}" class="text-center" style="vertical-align: top;">
                 {% if session.orga.abbr %}{{ session.orga.abbr_verb }}{% else %}{{ session.orga.name }}{% endif %}
             </th>
         {% endfor %}</tr>
@@ -18,7 +18,7 @@
             <th class="text-center">{{ session.day|date:"D" }} {{ session.day|date_ch_short }}</th>
         {% endfor %}</tr>
     <tr>{% for session in sessions %}
-            <td class="text-center">{{ session.begin|date:"H\hi" }} {{ session.end|date:"H\hi" }}</td>
+            <th class="text-center" style="font-weight: normal">{{ session.begin|date:"H\hi" }} {{ session.end|date:"H\hi" }}</th>
         {% endfor %}</tr>
     <tr>{% for session in sessions %}
             <th class="text-center">
