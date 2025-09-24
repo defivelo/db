@@ -1593,7 +1593,7 @@ class SeasonErrorsListView(HasPermissionsMixin, SeasonMixin, ListView):
 
 
 class SeasonPersonalPlanningExportFeed(ICalFeed):
-    timezone = settings.TIME_ZONE
+    timezone = datetime.timezone.utc
     file_name = "sessions.ics"
 
     def __call__(self, request, *args, **kwargs):
@@ -1637,10 +1637,10 @@ class SeasonPersonalPlanningExportFeed(ICalFeed):
         )
 
     def item_start_datetime(self, session):
-        return session.start_datetime
+        return session.start_datetime.astimezone(datetime.timezone.utc)
 
     def item_end_datetime(self, session):
-        return session.end_datetime
+        return session.end_datetime.astimezone(datetime.timezone.utc)
 
     def item_link(self, session):
         return reverse(
