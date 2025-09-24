@@ -85,14 +85,14 @@
         {% endif %}
         {% csrf_token %}
         <table data-filters class="table text-center table-avail">
-          {% include "challenge/season_availability_thead.html" with sessions=sessions season=season only %}
+          {% include "challenge/season_availability_thead.html" with sessions=sessions season=season chosen_stats=True wishfield=True only %}
           <tbody>
               {% for helper_category,helpers in available_helpers %}
                   {% if helpers %}
                   <tr><th colspan="{{ sessions.count|add:"3" }}">{{ helper_category }}</th></tr>
                       {% for helper in helpers %}
                       <tr data-canton-filter="{{ helper.profile.affiliation_canton|default:"-" }}">
-                          {% include "challenge/season_availability_partial_helper_columns.html" with helper=helper %}
+                        {% include "challenge/season_availability_partial_helper_columns.html" with helper=helper availabilities=availabilities %}
                           {{ form|userstaffsessions:helper }}
                       </tr>
                       {% endfor %}
