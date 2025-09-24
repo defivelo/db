@@ -10,25 +10,27 @@
 {% block content %}
     {% include "challenge/season_header.html" with season=season only %}
     <h4>{% trans "Planning" %}</h4>
-        <table class="table text-center table-avail">
-        {% include "challenge/season_availability_thead.html" with sessions=sessions season=season user=request.user preamble_columns=3 chosen_stats=True wishfield=True user_can_see_season=user_can_see_season only %}
-        <tbody>
-            {% for helper_category,helpers in potential_helpers %}
-                {% if helpers %}
-                    <tr><th colspan="{{ sessions.count|add:"5" }}">{{ helper_category }}</th></tr>
-                    {% for helper in helpers %}
-                    <tr>
-                        {% include "challenge/season_availability_partial_helper_columns.html" with helper=helper availabilities=availabilities with_link=season.manager_can_crud %}
-                        {{ availabilities|useravailsessions_readonly:helper }}
-                    </tr>
-                    {% endfor %}
-                    {% if helpers.count > 10 %}
-                        {% include "challenge/season_availability_partial_head.html" with sessions=sessions season=season preamble_columns=5 user=request.user only %}
+        <div class="table-avail-wrapper">
+          <table class="table text-center table-avail">
+            {% include "challenge/season_availability_thead.html" with sessions=sessions season=season user=request.user preamble_columns=3 chosen_stats=True wishfield=True user_can_see_season=user_can_see_season only %}
+            <tbody>
+                {% for helper_category,helpers in potential_helpers %}
+                    {% if helpers %}
+                        <tr><th colspan="{{ sessions.count|add:"5" }}">{{ helper_category }}</th></tr>
+                        {% for helper in helpers %}
+                        <tr>
+                            {% include "challenge/season_availability_partial_helper_columns.html" with helper=helper availabilities=availabilities with_link=season.manager_can_crud %}
+                            {{ availabilities|useravailsessions_readonly:helper }}
+                        </tr>
+                        {% endfor %}
+                        {% if helpers.count > 10 %}
+                            {% include "challenge/season_availability_partial_head.html" with sessions=sessions season=season preamble_columns=5 user=request.user only %}
+                        {% endif %}
                     {% endif %}
-                {% endif %}
-            {% endfor %}
-        </tbody>
-        </table>
+                {% endfor %}
+            </tbody>
+          </table>
+        </div>
 
 
 <div class="hidden-print">

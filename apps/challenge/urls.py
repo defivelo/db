@@ -59,6 +59,7 @@ from .views import (
 )
 from .views.invoice import InvoiceListExport
 from .views.registration import register, register_confirm, register_validate
+from .views.season import SeasonGeneralPlanningView
 from .views.session import SessionCloneView
 
 urlpatterns = [
@@ -109,6 +110,21 @@ urlpatterns = [
                     r"(?P<dv_season>[0-4]{1})/$",
                     never_cache(SeasonListView.as_view()),
                     name="season-list",
+                ),
+                re_path(
+                    r"(?P<dv_season>[0-4]{1})/general/(?P<helperpk>[0-9]+)/$",
+                    never_cache(SeasonGeneralPlanningView.as_view()),
+                    name="season-general-planning",
+                ),
+                re_path(
+                    r"(?P<dv_season>[0-4]{1})/general/(?P<helperpk>[0-9]+)/(?P<format>[a-z]+)exportplanning$",
+                    never_cache(SeasonPersonalPlanningExportView.as_view()),
+                    name="season-personal-planning-export",
+                ),
+                re_path(
+                    r"(?P<dv_season>[0-4]{1})/general/(?P<helperpk>[0-9]+)/feed\.ics$",
+                    SeasonPersonalPlanningExportFeed(),
+                    name="season-personal-calendar",
                 ),
             ]
         ),
