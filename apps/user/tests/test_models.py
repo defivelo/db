@@ -77,7 +77,7 @@ def test_automatic_collaborator_role_assignment_both(db):
     assert not has_role(user, "collaborator")
 
 
-@patch("apps.user.models.send_mail")
+@patch("apps.user.signals.send_mail")
 @override_settings(PROFILE_CHANGED_NOTIFY_EMAIL="admin@example.com")
 @override_settings(DEFAULT_FROM_EMAIL="system@example.com")
 def test_userprofile_field_change_signal_iban_change(mock_send_mail, db, settings):
@@ -103,7 +103,7 @@ def test_userprofile_field_change_signal_iban_change(mock_send_mail, db, setting
     assert args[3] == ["admin@example.com"]
 
 
-@patch("apps.user.models.send_mail")
+@patch("apps.user.signals.send_mail")
 @override_settings(PROFILE_CHANGED_NOTIFY_EMAIL="admin@example.com")
 @override_settings(DEFAULT_FROM_EMAIL="system@example.com")
 def test_userprofile_field_change_signal_address_changes(mock_send_mail, db, settings):
@@ -142,7 +142,7 @@ def test_userprofile_field_change_signal_address_changes(mock_send_mail, db, set
     assert args[3] == ["admin@example.com"]
 
 
-@patch("apps.user.models.send_mail")
+@patch("apps.user.signals.send_mail")
 def test_userprofile_field_change_signal_no_changes_when_empty_old_values(
     mock_send_mail, db, settings
 ):
@@ -158,7 +158,7 @@ def test_userprofile_field_change_signal_no_changes_when_empty_old_values(
     mock_send_mail.assert_not_called()
 
 
-@patch("apps.user.models.send_mail")
+@patch("apps.user.signals.send_mail")
 def test_userprofile_field_change_signal_no_changes_when_values_same(
     mock_send_mail, db, settings
 ):
@@ -174,7 +174,7 @@ def test_userprofile_field_change_signal_no_changes_when_values_same(
     mock_send_mail.assert_not_called()
 
 
-@patch("apps.user.models.send_mail")
+@patch("apps.user.signals.send_mail")
 @override_settings(PROFILE_CHANGED_NOTIFY_EMAIL="admin@example.com")
 @override_settings(DEFAULT_FROM_EMAIL="system@example.com")
 def test_userprofile_unified_post_save_notification_sends_email(
