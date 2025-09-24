@@ -25,7 +25,7 @@
 </td>
 {% if availabilities %}
     {% with chosen_for=availabilities|chosen_staff_for_season:helper work_wish=availabilities|work_wish_for_season:helper %}
-        <td data-helper="{{ helper.pk }}" data-chosenfor>{{ chosen_for }}</td>
-        <td data-helper="{{ helper.pk }}" data-workwish="{{ work_wish }} }}"><span {% if not work_wish or chosen_for <= work_wish %}style="display:none"{% endif %} class="glyphicon glyphicon-alert" title="{{ chosen_for }}/{{ work_wish }}"></span>{{ work_wish }}</td>
+        <td data-filter-ignore data-chosenfor >{{ chosen_for }}</td>
+        <td data-filter-ignore data-workwish="{{ work_wish }}"><span {% if not work_wish or chosen_for <= work_wish %}style="display:none"{% endif %} class="glyphicon glyphicon-alert" title="{{ chosen_for }}/{{ work_wish }}"></span>&nbsp;{{ work_wish }}</td>
     {% endwith %}
 {% endif %}

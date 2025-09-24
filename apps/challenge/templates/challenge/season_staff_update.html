@@ -58,6 +58,48 @@
         })
       });
     </script>
+  <script>
+$(document).on("change", "input[type=radio]", function (event) {
+    // Update the first columns "chosen for" and "work wish" values when you click on a radio button
+    // if you work more than your wish, we show the alert icon
+    $("tr[data-canton-filter]").each(function (index, tr) {
+        const $row = $(tr);
+
+        // Count checked radios with non-zero values in this row
+        const selectedCount = $row.find("input[type=radio]:checked").filter(function() {
+            return String($(this).val()) !== "0";
+        }).length;
+
+        // Update the data-chosenfor cell content
+        const $chosenForCell = $row.find("td[data-chosenfor]");
+        if ($chosenForCell.length > 0) {
+            $chosenForCell.html(selectedCount);
+
+            // Get the work wish value from data-workwish attribute
+            const $workWishCell = $row.find("td[data-workwish]");
+            let workWishValue = 0;
+
+            if ($workWishCell.length < 1)
+              return;
+
+            // Try to get value from data-workwish attribute first
+            workWishValue = parseInt($workWishCell.attr("data-workwish")) || 0;
+
+            // Show/hide alert based on comparison
+            const $alert = $workWishCell.find(".glyphicon-alert");
+            if ($alert.length > 0) {
+                if (selectedCount > workWishValue && workWishValue !== 0) {
+                    $alert.show();
+                    $alert.attr("title", selectedCount + "/" + workWishValue);
+                } else {
+                    $alert.hide();
+                }
+            }
+            {# console.log("Work wish:", workWishValue, "Selected:", selectedCount, "Show alert:", workWishValue > selectedCount);  #}
+        }
+    });
+});
+  </script>
 {% endblock %}
 
 {% block content %}
