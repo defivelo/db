@@ -659,15 +659,16 @@ def User_pre_save(sender, **kwargs):
 
 
 # Global dictionary to store field changes temporarily during the save process
-_user_changes = {}
+_user_changes = {}  # Payload indexed by user.pk
 _user_changes_lock = threading.Lock()
-_userprofile_to_notify = queue.Queue()
+_userprofile_to_notify = queue.Queue()  # User model that are used in user_changes.
 
 
 @receiver(pre_save, sender=settings.AUTH_USER_MODEL)
 def user_email_change_signal(sender, instance, **kwargs):
     """
     Signal to detect email changes on the User model
+    Compute _user_changes if the email changes
     """
     if not instance.pk:
         return
@@ -694,6 +695,7 @@ def user_email_change_signal(sender, instance, **kwargs):
 def userprofile_field_change_signal(sender, instance, **kwargs):
     """
     Signal to detect changes on specific fields of the UserProfile model
+    Compute _user_changes if the fields changes.
     """
 
     def normalize_iban_value(value):
@@ -756,23 +758,28 @@ def userprofile_field_change_signal(sender, instance, **kwargs):
 @receiver(post_save, sender=UserProfile)
 def userprofile_mark_save_notification(sender, instance, **kwargs):
     """
-    Send email notification after User or UserProfile save if there were any tracked changes
+    On post save, mark the user to be processed with changes given there is a payload with change for this user.
     """
     user = instance if sender == get_user_model() else instance.user
 
     if user:
         try:
-            _userprofile_to_notify.put_nowait(user)
+            with _user_changes_lock:
+                if user.pk in _user_changes:
+                    _userprofile_to_notify.put_nowait(user)
         except queue.Full:
             pass
 
 
 @receiver(request_finished)
 def do_userprofile_notification(**kwargs):
+    """
+    On request finished, we regroup all changes by user and send an email.
+    We loop on _userprofile_to_notify to know the user and on _user_changes for the payload.
+    """
     while not _userprofile_to_notify.empty():
         try:
             user = _userprofile_to_notify.get_nowait()
-            # We use get to ensure we only send one email per save operation between both models
             with _user_changes_lock:
                 changes = _user_changes.pop(user.pk, {})
             _send_field_change_notification(user, changes)
