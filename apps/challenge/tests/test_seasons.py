@@ -22,6 +22,9 @@ from django.utils.translation import gettext_lazy as _
 from bs4 import BeautifulSoup
 
 from apps.common import (
+    DV_SEASON_AUTUMN,
+    DV_SEASON_LAST_SPRING_MONTH,
+    DV_SEASON_SPRING,
     DV_SEASON_STATE_ARCHIVED,
     DV_SEASON_STATE_OPEN,
     DV_SEASON_STATE_PLANNING,
@@ -1097,28 +1100,21 @@ class CoordinatorUserTest(SeasonTestCaseMixin):
 
 
 class TestPlanning(SeasonTestCaseMixin):
+    canton = "VD"
+
     def setUp(self):
         self.client = StateManagerAuthClient()
-        canton = "VD"
 
         # Make sure the current user is in VD
-        self.client.user.profile.affiliation_canton = canton
+        self.client.user.profile.affiliation_canton = self.canton
         self.client.user.profile.save()
 
         # User that we want to check the individual planning for
         self.user1 = UserFactory(
-            profile__affiliation_canton=canton, profile__formation=FORMATION_M2
+            profile__affiliation_canton=self.canton, profile__formation=FORMATION_M2
         )
 
         super().setUp()
-
-        for s in self.sessions:
-            # Put the sessions for our Coordinator's orga and canton
-            s.canton = canton
-            s.orga.address_canton = canton
-            s.orga.coordinator = self.client.user
-            s.orga.save()
-            s.save()
 
     def assertCell(
         self, response, user, session, title, class_selector=".glyphicon-remove-sign"
@@ -1134,6 +1130,14 @@ class TestPlanning(SeasonTestCaseMixin):
         """
         Test that when the user's availability is okayish for a session, but they are not selected, the planning cell is red.
         """
+
+        for s in self.sessions:
+            # Put the sessions for our Coordinator's orga and canton
+            s.canton = self.canton
+            s.orga.address_canton = self.canton
+            s.orga.coordinator = self.client.user
+            s.orga.save()
+            s.save()
 
         # Set the user availability for that session to "if needed"
         HelperSessionAvailability.objects.update_or_create(
@@ -1159,7 +1163,13 @@ class TestPlanning(SeasonTestCaseMixin):
         """
         Test that when the user's availability is "no" for a session the planning cell is red.
         """
-
+        for s in self.sessions:
+            # Put the sessions for our Coordinator's orga and canton
+            s.canton = self.canton
+            s.orga.address_canton = self.canton
+            s.orga.coordinator = self.client.user
+            s.orga.save()
+            s.save()
         # Set the user availability for that session to No
         HelperSessionAvailability.objects.update_or_create(
             session=self.sessions[0], helper=self.user1, defaults={"availability": "n"}
@@ -1172,3 +1182,94 @@ class TestPlanning(SeasonTestCaseMixin):
 
         self.assertEqual(response.status_code, 200)
         self.assertCell(response, self.user1, self.sessions[0], _("Non"))
+
+    def test_general_planning_view(self):
+        # Build URL for aggregated general planning
+        year = self.season.year
+        dv_season = (
+            DV_SEASON_SPRING
+            if self.season.month_start <= DV_SEASON_LAST_SPRING_MONTH
+            else DV_SEASON_AUTUMN
+        )
+        # Pick a session in current canton/year and ensure helper is assigned and has an availability
+        session_in_scope = self.sessions[0]
+        session_in_scope.orga.address_canton = self.canton
+        session_in_scope.orga.save()
+        QualificationFactory(actor=self.user1, session=session_in_scope)
+        HelperSessionAvailability.objects.update_or_create(
+            session=session_in_scope, helper=self.user1, defaults={"availability": "i"}
+        )
+
+        url = reverse(
+            "season-general-planning",
+            kwargs={
+                "year": year,
+                "dv_season": dv_season,
+                "helperpk": self.user1.pk,
+            },
+        )
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200, url)
+
+        parser = BeautifulSoup(response.content, "html.parser")
+        header_cell = parser.select_one(f'th[data-test="orga-{session_in_scope.pk}"]')
+        self.assertIsNotNone(
+            header_cell,
+            f"Expected header cell for orga-{session_in_scope.pk} to be present",
+        )
+
+    def test_general_planning_redirect_helperpk_zero(self):
+        # helperpk=0 should redirect to the same view with the current user's pk
+        year = self.season.year
+        dv_season = (
+            DV_SEASON_SPRING
+            if self.season.month_start <= DV_SEASON_LAST_SPRING_MONTH
+            else DV_SEASON_AUTUMN
+        )
+
+        url = reverse(
+            "season-general-planning",
+            kwargs={
+                "year": year,
+                "dv_season": dv_season,
+                "helperpk": 0,
+            },
+        )
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302, url)
+
+    def test_general_personal_planning_export(self):
+        # Export aggregated personal planning for the chosen helper
+        year = self.season.year
+        dv_season = (
+            DV_SEASON_SPRING
+            if self.season.month_start <= DV_SEASON_LAST_SPRING_MONTH
+            else DV_SEASON_AUTUMN
+        )
+        # Ensure helper is assigned to an in-scope session with correct canton
+        session_in_scope = self.sessions[0]
+        session_in_scope.orga.address_canton = self.canton
+        session_in_scope.orga.save()
+        QualificationFactory(actor=self.user1, session=session_in_scope)
+
+        for exportformat in ["csv", "ods", "xls"]:
+            url = reverse(
+                "season-personal-planning-export",
+                kwargs={
+                    "year": year,
+                    "dv_season": dv_season,
+                    "helperpk": self.user1.pk,
+                    "format": exportformat,
+                },
+            )
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, url)
+            if exportformat == "csv":
+                content = response.content.decode("utf-8")
+                self.assertIn(
+                    session_in_scope.orga.name,
+                    content,
+                    "Expected organiser name to be present in CSV export",
+                )

@@ -78,7 +78,10 @@ def test_reminder_is_not_sent_to_helper_of_other_canton(db):
     assert DV_STATES[1] not in client.user.profile.managed_cantons  # invariant
     QualificationFactory(
         actor=UserFactory(profile__affiliation_canton=DV_STATES[1]),
-        session=SessionFactory(day=datetime.date(2019, 2, 11)),
+        session=SessionFactory(
+            day=datetime.date(2019, 2, 11),
+            orga=OrganizationFactory(address_canton=DV_STATES[1]),
+        ),
     )
 
     mail.outbox = []
