@@ -861,7 +861,7 @@ class SeasonPersonalPlanningExportView(
     def export_filename(self):
         # Support aggregated season (general planning)
         if hasattr(self.object, "dv_season"):
-            label = _(slugify("Planning général"))
+            label = slugify(_("Planning général"))
             return label + "-" + str(self.object.year)
         return _(slugify("Planning mois")) + "-" + "-".join(self.object.cantons)
 
