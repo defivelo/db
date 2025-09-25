@@ -494,11 +494,11 @@ class PowerUserTest(InvoiceTestCaseMixin):
             )
             label = watermark.attrs.get("data-label")
             if status == Invoice.STATUS_DRAFT:
-                self.assertContains(response, "Imprimer le brouillon")
+                self.assertContains(response, "Imprimer le devis")
                 self.assertEqual(
                     label,
-                    "Brouillon",
-                    f"Watermark label should be 'Brouillon' for status {status_label}",
+                    "Devis",
+                    f"Watermark label should be 'Devis' for status {status_label}",
                 )
             else:
                 self.assertContains(response, "Imprimer")
