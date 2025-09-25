@@ -100,6 +100,69 @@ $(document).on("change", "input[type=radio]", function (event) {
     });
 });
   </script>
+  <script>
+  // Update the count of M1/M2/Int for a session column when a radio button is changed
+  $(document).on("change", "input[type=radio]", function (event) {
+    // Get the column index of the changed radio button
+    const columnIndex = $(this).closest('td').index() + 1 // +1 for nth-child (1-based)
+
+    // Update all three role types for this column
+    updateSessionColumn(columnIndex, "m2", 4);
+    updateSessionColumn(columnIndex, "m1", 3);
+    updateSessionColumn(columnIndex, "int", 2);
+});
+
+function updateSessionColumn(columnIndex, columnType, radioValue) {
+    // Find the dd element for this column and role type
+    const offset_body = $("tbody tr:nth-child(2) td[data-filter-ignore]").length
+    let $dd = $(`th:nth-child(${columnIndex-offset_body}) dd[data-test-${columnType}]`);
+    if ($dd.length === 0) {
+      console.log("No column " + columnType + "at index " + columnIndex)
+      return;
+    }
+
+    // Count checked radios with the specific value in this column
+    const currentCount = $(`td:nth-child(${columnIndex}) input[type=radio]:checked[value="${radioValue}"]`).length;
+    {# console.log("Updating column", columnIndex, "type", columnType, "for radio value", radioValue, ". Count", currentCount);  #}
+
+    // Get the target value from existing title attribute
+    const title = $dd.find(".glyphicon-ok").attr("title") || $dd.find(".glyphicon-alert").attr("title");
+    let targetValue = 0;
+    if (title) {
+        targetValue = parseInt(title.split("/")[1]) || 0;
+    }
+
+    // Update elements
+    const $countDisplay = $dd.find(".count-display");
+    const $okGlyph = $dd.find(".glyphicon-ok");
+    const $alertGlyph = $dd.find(".glyphicon-alert");
+
+    // Update count text and titles
+    const countText = `${currentCount}/${targetValue}`;
+    $countDisplay.text(countText);
+    $okGlyph.attr("title", countText);
+    $alertGlyph.attr("title", countText);
+
+    // Show/hide elements based on logic
+    if (currentCount < targetValue) {
+        // Show count, hide both glyphs
+        $countDisplay.removeClass("hidden");
+        $okGlyph.addClass("hidden");
+        $alertGlyph.addClass("hidden");
+    } else if (currentCount === targetValue) {
+        // Hide count, show OK glyph, hide alert
+        $countDisplay.addClass("hidden");
+        $okGlyph.removeClass("hidden");
+        $alertGlyph.addClass("hidden");
+    } else {
+        // Show count, hide OK glyph, show alert
+        $countDisplay.removeClass("hidden");
+        $okGlyph.addClass("hidden");
+        $alertGlyph.removeClass("hidden");
+    }
+}
+  </script>
+
 {% endblock %}
 
 {% block content %}
