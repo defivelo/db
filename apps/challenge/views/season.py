@@ -1581,6 +1581,7 @@ class SeasonStaffChoiceUpdateView(
         context["season_staff_filter_form"] = SeasonStaffFilterForm(
             organisations=self._extract_orgas(context["sessions"])
         )
+        context["availabilities"] = self.get_initial()
         return context
 
     def form_valid(self, form):
