@@ -658,8 +658,6 @@ class StateManagerUserTest(SeasonTestCaseMixin):
             parser = BeautifulSoup(response.content, "html.parser")
             m1count = parser.select_one('[data-test-m1="%d"]' % self.sessions[0].pk)
             self.assertIsNotNone(m1count)
-            if expected_m1 == "0/0":
-                expected_m1 = ""  # Empty m1 is not displayed.
             self.assertEqual(str(m1count.text.strip()), expected_m1)
 
             m2count = parser.select_one('[data-test-m2="%d"]' % self.sessions[0].pk)
