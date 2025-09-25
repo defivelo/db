@@ -50,7 +50,7 @@
                 </small>
             {% endif %}
             <a class="btn btn-default pull-right" style="margin-right: 8px;" href="{% url 'season-availability-reminder' season.pk %}">
-                {% if season.availability_reminder_sent_at %}Renvoyer un  rappel{% else %}Envoyer un rappel{% endif %}
+                {% if season.availability_reminder_sent_at %}{% trans "Renvoyer un  rappel" %}{% else %}{% trans "Envoyer un rappel" %}{% endif %}
             </a>
             <button type="submit" class="btn btn-primary pull-right" style="margin-right: 8px;">{% trans "Disponibilités" %}</button>
             {% endbuttons %}

@@ -788,16 +788,16 @@ class SeasonAvailabilityReminderView(SeasonHelpersMixin, SeasonUpdateView):
 
     def form_valid(self, form):
         form_result = super().form_valid(form)
-        if form.cleaned_data.get("sendemail"):
-            now = timezone.now()
-            for helper in self.get_email_recipients():
-                email = self.get_email(helper)
-                body = email["body"]["pre"]
-                helper.profile.send_mail(email["subject"], body)
+        if not form.cleaned_data.get("sendemail"):
+            return form_result
+        now = timezone.now()
+        for helper in self.get_email_recipients():
+            email = self.get_email(helper)
+            body = email["body"]["pre"]
+            helper.profile.send_mail(email["subject"], body)
 
-            self.object.availability_reminder_sent_at = now
-            self.object.save()
-        return form_result
+        self.object.availability_reminder_sent_at = now
+        self.object.save()
 
 
 class SeasonExportView(
