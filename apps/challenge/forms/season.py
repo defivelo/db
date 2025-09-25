@@ -221,8 +221,8 @@ class SeasonStaffFilterForm(forms.Form):
         super().__init__(*args, **kwargs)
         if organisations:
             self.fields["organisations"].choices = [
-                (orga.pk, str(orga))
-                for orga in sorted(organisations, key=lambda o: str(o))
+                (orga.pk, orga.abbr_or_name)
+                for orga in sorted(organisations, key=lambda o: o.abbr_or_name)
             ]
         else:
             del self.fields["organisations"]
