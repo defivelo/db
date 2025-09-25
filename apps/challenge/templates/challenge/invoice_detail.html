@@ -25,7 +25,12 @@
       <dt>{% trans "Statut" %}</dt>
       <dd>
         {{ invoice.get_status_display }}
-        {% include 'export_buttons.html' with printonly=True %}
+        {% if not invoice.is_locked %}
+          {% trans 'Imprimer le brouillon' as print_label %}
+          {% include 'export_buttons.html' with printonly=True print_label=print_label %}
+        {% else %}
+          {% include 'export_buttons.html' with printonly=True %}
+        {% endif %}
       </dd>
     </dl>
     {% if user_can_edit_invoice %}
