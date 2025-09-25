@@ -18,7 +18,7 @@ from django.conf import settings
 from django.conf.urls import include
 from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
-from django.urls import re_path
+from django.urls import include, re_path
 from django.utils.translation import gettext_lazy as _
 
 from .views.common import HomeView, LicenseView
@@ -26,6 +26,7 @@ from .views.common import HomeView, LicenseView
 admin.autodiscover()
 
 urlpatterns = [
+    re_path(r"^admin/", include("apps.email_outbox.urls")),
     re_path(r"^admin/", admin.site.urls),
     re_path(r"^i18n/", include("django.conf.urls.i18n")),
     re_path(r"^accounts/", include("allauth.urls")),
