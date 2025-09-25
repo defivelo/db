@@ -1,7 +1,7 @@
 {% load i18n %}
 <div class="btn-group hidden-print" role="group" aria-label="exports">
     {% if not noprint %}
-        <a class="btn btn-default btn-sm" title="{% blocktrans %}Imprimer{% endblocktrans %}"
+        <a class="btn btn-default btn-sm" title="{% if print_label %}{{ print_label }}{% else %}{% blocktrans %}Imprimer{% endblocktrans %}{% endif %}"
             href="javascript:window.print()">
             <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
         </a>
