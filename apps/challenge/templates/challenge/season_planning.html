@@ -16,7 +16,7 @@
                         <tr><th colspan="{{ sessions.count|add:"5" }}">{{ helper_category }}</th></tr>
                         {% for helper in helpers %}
                         <tr>
-                            {% include "challenge/season_availability_partial_helper_columns.html" with helper=helper only %}
+                            {% include "challenge/season_availability_partial_helper_columns.html" with helper=helper availabilities=availabilities only %}
                             {{ availabilities|userplanning_sessions_readonly:helper }}
                         </tr>
                         {% endfor %}
