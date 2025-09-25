@@ -798,6 +798,7 @@ class SeasonAvailabilityReminderView(SeasonHelpersMixin, SeasonUpdateView):
 
         self.object.availability_reminder_sent_at = now
         self.object.save()
+        return form_result
 
 
 class SeasonExportView(
