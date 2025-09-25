@@ -68,6 +68,12 @@ class Organization(Address, models.Model):
         )
 
     @cached_property
+    def abbr_or_name(self) -> str:
+        if self.abbr:
+            return self.abbr
+        return str(self.name).strip()
+
+    @cached_property
     def ifabbr(self):
         return self.abbr_verb if self.abbr else self.name
 
