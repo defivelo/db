@@ -50,7 +50,7 @@ ENVIRONMENTS = {
             "SITE_DOMAIN": "staging.intranet.defi-velo.ch",
             "SASSC_BIN_PATH": "/var/www/intranet.defi-velo.ch/staging/venv/bin/pysassc",
             "VIRTUAL_ENV": "/var/www/intranet.defi-velo.ch/staging/venv",
-            "EMAIL_URL": "console:",
+            "EMAIL_URL": "file:////tmp/dv_emails",
             "DJANGO_SETTINGS_MODULE": "defivelo.settings.staging",
         },
     },
