@@ -33,7 +33,7 @@
         {% endfor %}</tr>
     {% if chosen_stats %}
         <tr>{% for session in sessions %}
-                <td>
+                <th style="text-align: center">
                     <dl class="small dl-horizontal">
                         {% with c=session.n_leaders %}
                             <dt>{% trans "M2" %}</dt>
@@ -73,7 +73,7 @@
                             </dd>
                         {% endwith %}
                     </dl>
-                </td>
+                </th>
             {% endfor %}</tr>
     {% endif %}
   {% endwith %}
