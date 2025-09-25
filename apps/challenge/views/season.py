@@ -757,11 +757,22 @@ class SeasonAvailabilityReminderView(SeasonHelpersMixin, SeasonUpdateView):
             .exclude(Q(profile__formation="") & Q(profile__actor_for__isnull=True))
             .distinct()
         )
-        # Exclude users who already have submitted any availability for this season
-        responded_user_ids = HelperSessionAvailability.objects.filter(
-            session__in=self.season.sessions_with_qualifs
-        ).values_list("helper_id", flat=True)
-        return base_qs.exclude(id__in=responded_user_ids)
+        sessions_qs = self.season.sessions_with_qualifs
+        if not sessions_qs.exists():
+            return base_qs.none()
+
+        total_sessions = sessions_qs.count()
+
+        # Helpers who have availabilities for all sessions (fully filled)
+        fully_filled_helper_ids = (
+            HelperSessionAvailability.objects.filter(session__in=sessions_qs)
+            .values("helper_id")
+            .annotate(n=Count("session", distinct=True))
+            .filter(n=total_sessions)
+            .values_list("helper_id", flat=True)
+        )
+        # Send to helpers not fully filled (partial or none)
+        return base_qs.exclude(id__in=fully_filled_helper_ids)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

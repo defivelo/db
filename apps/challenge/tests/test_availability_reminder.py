@@ -21,13 +21,18 @@ class SeasonReminderTests(TestCase):
         self.season.cantons = mycantons or self.season.cantons
         self.season.save()
 
-        # Ensure there is at least one session with qualifications in-season
+        # Ensure there are at least two sessions with qualifications in-season
         self.session = SessionFactory(orga__address_canton=self.season.cantons[0])
         # Put the session within the season dates
         self.session.day = self.season.begin
         self.session.save()
         # Attach at least one qualification so it appears in sessions_with_qualifs
         QualificationFactory(session=self.session)
+
+        self.session2 = SessionFactory(orga__address_canton=self.season.cantons[0])
+        self.session2.day = self.season.begin
+        self.session2.save()
+        QualificationFactory(session=self.session2)
 
         # Two users in the season canton
         self.user_no_avail = UserFactory(
@@ -52,8 +57,9 @@ class SeasonReminderTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
         recipients = list(response.context["recipients"])  # queryset evaluated in view
+        # user_no_avail has none -> included; user_with_avail has only partial -> included too
         self.assertIn(self.user_no_avail, recipients)
-        self.assertNotIn(self.user_with_avail, recipients)
+        self.assertIn(self.user_with_avail, recipients)
 
     def test_post_sends_emails_and_sets_timestamp(self):
         url = reverse("season-availability-reminder", kwargs={"pk": self.season.pk})
@@ -65,9 +71,11 @@ class SeasonReminderTests(TestCase):
         response = self.client.post(url, {"sendemail": "on"}, follow=True)
         self.assertIn(response.status_code, [200, 302])
 
-        # Expect one email sent (only user without availability)
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertIn(self.user_no_avail.email, mail.outbox[0].to[0])
+        # Expect two emails sent (users without full availability across all sessions)
+        self.assertEqual(len(mail.outbox), 2)
+        to_addrs = {mail.outbox[0].to[0], mail.outbox[1].to[0]}
+        self.assertTrue(any(self.user_no_avail.email in r for r in to_addrs))
+        self.assertTrue(any(self.user_with_avail.email in r for r in to_addrs))
 
         # Timestamp should be set on season
         self.season.refresh_from_db()
