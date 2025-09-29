@@ -16,6 +16,9 @@
 
 import uuid
 
+# Ensure Django uses the AppConfig that loads signal handlers
+default_app_config = "apps.user.apps.UserConfig"
+
 from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 
