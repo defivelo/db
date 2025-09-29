@@ -1,3 +1,4 @@
+import hashlib
 import math
 import os
 import re
@@ -9,6 +10,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from django.conf import settings
 from django.contrib import admin
+from django.core.cache import cache
 from django.core.mail import EmailMessage
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import render
@@ -25,84 +27,289 @@ def _ensure_supported_backend() -> None:
         raise Http404()
 
 
-def _get_outbox() -> List[EmailMessage]:
-    if settings.EMAIL_BACKEND == "django.core.mail.backends.locmem.EmailBackend":
-        from django.core import mail  # Imported lazily to ensure correct backend
+def _is_locmem_backend() -> bool:
+    return settings.EMAIL_BACKEND == "django.core.mail.backends.locmem.EmailBackend"
 
-        outbox: List[EmailMessage] = getattr(mail, "outbox", None)
-        messages: List[EmailMessage] = []
-        for em in outbox or []:
-            _populate_metadata_from_locmem(em)
-            messages.append(em)
-        return messages
-    elif settings.EMAIL_BACKEND == "django.core.mail.backends.filebased.EmailBackend":
-        # Read .log/.eml files from EMAIL_FILE_PATH directory
-        basedir = getattr(settings, "EMAIL_FILE_PATH", None)
-        if not basedir or not os.path.isdir(basedir):
-            return []
-        # Collect latest files first
-        filepaths: List[str] = [
-            os.path.join(basedir, name)
-            for name in os.listdir(basedir)
-            if os.path.isfile(os.path.join(basedir, name))
-        ]
 
-        filepaths.sort(key=lambda p: os.path.getmtime(p))
-        messages: List[EmailMessage] = []
-        for path in filepaths:
-            try:
-                with open(path, "rb") as fh:
-                    msg = BytesParser(policy=policy.default).parse(fh)
-            except Exception:
+def _is_filebased_backend() -> bool:
+    return settings.EMAIL_BACKEND == "django.core.mail.backends.filebased.EmailBackend"
+
+
+def _get_email_file_basedir() -> Optional[str]:
+    basedir = getattr(settings, "EMAIL_FILE_PATH", None)
+    if not basedir or not os.path.isdir(basedir):
+        return None
+    return basedir
+
+
+def _fetch_outbox_locmem() -> List[EmailMessage]:
+    from django.core import mail  # Imported lazily to ensure correct backend
+
+    outbox: List[EmailMessage] = getattr(mail, "outbox", None)
+    messages: List[EmailMessage] = []
+    for em in outbox or []:
+        _populate_metadata_from_locmem(em)
+        messages.append(em)
+    return messages
+
+
+def _collect_file_paths_sorted(basedir: str) -> List[str]:
+    filepaths: List[str] = [
+        os.path.join(basedir, name)
+        for name in os.listdir(basedir)
+        if os.path.isfile(os.path.join(basedir, name))
+    ]
+    filepaths.sort(key=lambda p: os.path.getmtime(p))
+    return filepaths
+
+
+def _read_file_bytes(path: str) -> Optional[bytes]:
+    try:
+        with open(path, "rb") as fh:
+            return fh.read()
+    except Exception:
+        return None
+
+
+def _split_aggregated_messages(raw_bytes: bytes) -> List[bytes]:
+    try:
+        parts = re.split(rb"\r?\n-{50,}[ \t]*\r?\n", raw_bytes)
+        return parts if len(parts) > 1 else [raw_bytes]
+    except Exception:
+        return [raw_bytes]
+
+
+def _parse_raw_to_messages(raw_bytes: bytes) -> List[PyEmailMessage]:
+    parsed: List[PyEmailMessage] = []
+    try:
+        for chunk in _split_aggregated_messages(raw_bytes):
+            if not chunk or chunk.strip() == b"":
                 continue
-            # Build a Django-like EmailMessage-ish wrapper
-            subject = str(msg.get("Subject", ""))
-            from_email = str(msg.get("From", ""))
-            to = msg.get_all("To", []) or []
-            cc = msg.get_all("Cc", []) or []
-            bcc = msg.get_all("Bcc", []) or []
-            sent_at = _parse_date_header(msg.get("Date"))
-            if sent_at is None:
+            try:
+                msg = BytesParser(policy=policy.default).parsebytes(chunk)
+                parsed.append(msg)
+            except Exception:
+                # try whole file later
+                pass
+        if not parsed:
+            msg = BytesParser(policy=policy.default).parsebytes(raw_bytes)
+            parsed.append(msg)
+    except Exception:
+        try:
+            msg = BytesParser(policy=policy.default).parsebytes(raw_bytes)
+            parsed.append(msg)
+        except Exception:
+            return []
+    return parsed
+
+
+def _build_django_email_from_parsed(
+    msg: PyEmailMessage, path: Optional[str]
+) -> EmailMessage:
+    subject = str(msg.get("Subject", ""))
+    from_email = str(msg.get("From", ""))
+    to = msg.get_all("To", []) or []
+    cc = msg.get_all("Cc", []) or []
+    bcc = msg.get_all("Bcc", []) or []
+    sent_at = _parse_date_header(msg.get("Date"))
+    if sent_at is None and path:
+        try:
+            sent_at = _safe_dt(os.path.getmtime(path))
+        except Exception:
+            sent_at = None
+
+    em = EmailMessage(subject=subject, body="", from_email=from_email, to=to)
+    if cc:
+        em.cc = cc
+    if bcc:
+        em.bcc = bcc
+    em.sent_at = sent_at
+
+    if msg.is_multipart():
+        alts = []
+        for part in msg.walk():
+            ctype = part.get_content_type()
+            if ctype == "text/html":
                 try:
-                    sent_at = _safe_dt(os.path.getmtime(path))
+                    alts.append((part.get_content(), "text/html"))
                 except Exception:
-                    sent_at = None
-
-            # Convert to EmailMessage for re-use of rendering logic
-            em = EmailMessage(subject=subject, body="", from_email=from_email, to=to)
-            if cc:
-                em.cc = cc
-            if bcc:
-                em.bcc = bcc
-            em.sent_at = sent_at
-            # Extract text/plain and text/html parts
-            if msg.is_multipart():
-                alts = []
-                for part in msg.walk():
-                    ctype = part.get_content_type()
-                    if ctype == "text/html":
-                        alts.append((part.get_content(), "text/html"))
-                    elif ctype == "text/plain" and not em.body:
-                        em.body = part.get_content()
-                _populate_attachments_from_parsed(msg, em)
-                if alts:
-                    em.alternatives = alts
-            else:
-                ctype = msg.get_content_type()
-                if ctype == "text/html":
-                    em.body = ""
-                    em.alternatives = [(msg.get_content(), "text/html")]
-                else:
-                    em.body = msg.get_content()
-                _populate_attachments_from_parsed(msg, em)
-
-            messages.append(em)
-        return messages
+                    try:
+                        content = part.get_payload(decode=True) or b""
+                        alts.append((content.decode("utf-8", "replace"), "text/html"))
+                    except Exception:
+                        pass
+            elif ctype == "text/plain" and not em.body:
+                try:
+                    em.body = part.get_content()
+                except Exception:
+                    try:
+                        content = part.get_payload(decode=True) or b""
+                        em.body = content.decode("utf-8", "replace")
+                    except Exception:
+                        em.body = ""
+        _populate_attachments_from_parsed(msg, em)
+        if alts:
+            em.alternatives = alts
     else:
+        ctype = msg.get_content_type()
+        try:
+            content_value = msg.get_content()
+        except Exception:
+            try:
+                content_value = (msg.get_payload(decode=True) or b"").decode(
+                    "utf-8", "replace"
+                )
+            except Exception:
+                content_value = ""
+        if ctype == "text/html":
+            em.body = ""
+            em.alternatives = [(content_value, "text/html")]
+        else:
+            em.body = content_value
+        _populate_attachments_from_parsed(msg, em)
+
+    return em
+
+
+def _fetch_outbox_filebased() -> List[EmailMessage]:
+    basedir = _get_email_file_basedir()
+    if not basedir:
         return []
+    messages: List[EmailMessage] = []
+    for path in _collect_file_paths_sorted(basedir):
+        raw_bytes = _read_file_bytes(path)
+        if raw_bytes is None:
+            continue
+        for parsed in _parse_raw_to_messages(raw_bytes):
+            em = _build_django_email_from_parsed(parsed, path)
+            messages.append(em)
+    return messages
+
+
+def _filebased_cache_key(basedir: str) -> str:
+    return (
+        "email_outbox:filebased:index:"
+        + hashlib.sha256(basedir.encode("utf-8", "surrogatepass")).hexdigest()
+    )
+
+
+def _compute_filebased_fingerprint(basedir: str) -> str:
+    try:
+        entries: List[Tuple[str, float, int]] = []
+        for name in os.listdir(basedir):
+            path = os.path.join(basedir, name)
+            if os.path.isfile(path):
+                try:
+                    entries.append(
+                        (name, os.path.getmtime(path), os.path.getsize(path))
+                    )
+                except Exception:
+                    continue
+        entries.sort(key=lambda t: t[0])
+        data = repr(entries).encode("utf-8", "surrogatepass")
+        return hashlib.sha256(data).hexdigest()
+    except Exception:
+        return "0"
+
+
+def _get_filebased_index_cached() -> List[Tuple[str, int]]:
+    basedir = _get_email_file_basedir()
+    if not basedir:
+        return []
+    key = _filebased_cache_key(basedir)
+    current_fp = _compute_filebased_fingerprint(basedir)
+    cached = cache.get(key)
+    if isinstance(cached, dict) and cached.get("fingerprint") == current_fp:
+        index = cached.get("index") or []
+        if isinstance(index, list):
+            return index
+
+    # Rebuild index
+    index: List[Tuple[str, int]] = []
+    for path in _collect_file_paths_sorted(basedir):
+        raw = _read_file_bytes(path)
+        if raw is None:
+            continue
+        parts = _split_aggregated_messages(raw)
+        parts = [p for p in parts if p and p.strip() != b""]
+        if not parts:
+            parts = [raw]
+        for chunk_idx, unused_part in enumerate(parts):
+            index.append((path, chunk_idx))
+
+    cache.set(key, {"fingerprint": current_fp, "index": index}, 300)
+    return index
+
+
+def _refresh_filebased_index() -> List[Tuple[str, int]]:
+    basedir = _get_email_file_basedir()
+    if not basedir:
+        return []
+    key = _filebased_cache_key(basedir)
+    cache.delete(key)
+    return _get_filebased_index_cached()
+
+
+def _get_message_filebased_by_idx(idx: int) -> EmailMessage:
+    basedir = _get_email_file_basedir()
+    if not basedir:
+        raise Http404()
+
+    def _load_with_index() -> Tuple[str, int, bytes, List[bytes]]:
+        index = _get_filebased_index_cached()
+        try:
+            path, chunk_idx = index[idx]
+        except (IndexError, TypeError):
+            raise Http404()
+        raw = _read_file_bytes(path)
+        if raw is None:
+            raise FileNotFoundError()
+        parts = _split_aggregated_messages(raw)
+        parts = [p for p in parts if p and p.strip() != b""]
+        if not parts:
+            parts = [raw]
+        return path, chunk_idx, raw, parts
+
+    try:
+        path, chunk_idx, raw, parts = _load_with_index()
+        if chunk_idx >= len(parts):
+            raise IndexError()
+    except (FileNotFoundError, IndexError):
+        # Likely stale cache; refresh and retry once
+        _refresh_filebased_index()
+        path, chunk_idx, raw, parts = _load_with_index()
+        if chunk_idx >= len(parts):
+            raise Http404()
+
+    chunk = parts[chunk_idx]
+    try:
+        py_msg = BytesParser(policy=policy.default).parsebytes(chunk)
+    except Exception:
+        # Fallback to parsing the whole file if specific chunk fails
+        try:
+            py_msg = BytesParser(policy=policy.default).parsebytes(raw)
+        except Exception:
+            raise Http404()
+    return _build_django_email_from_parsed(py_msg, path)
+
+
+def _get_outbox() -> List[EmailMessage]:
+    if _is_locmem_backend():
+        return _fetch_outbox_locmem()
+    if _is_filebased_backend():
+        return _fetch_outbox_filebased()
+    return []
 
 
 def _get_message(idx: int) -> EmailMessage:
+    if _is_filebased_backend():
+        try:
+            return _get_message_filebased_by_idx(idx)
+        except Http404:
+            raise
+        except Exception:
+            # Fallback to full scan if optimized path fails
+            pass
     outbox = _get_outbox()
     try:
         return outbox[idx]
