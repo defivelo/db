@@ -9,7 +9,7 @@
     <h4>{% trans "Planning" %}</h4>
         <div class="table-avail-wrapper">
           <table class="table text-center table-avail">
-            {% include "challenge/season_availability_thead.html" with sessions=sessions season=season user=request.user preamble_columns=3 user_can_see_season=user_can_see_season only %}
+            {% include "challenge/season_availability_thead.html" with wishfield=True  sessions=sessions season=season user=request.user preamble_columns=3 user_can_see_season=user_can_see_season only %}
             <tbody>
                 {% for helper_category,helpers in potential_helpers %}
                     {% if helpers %}
