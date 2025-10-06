@@ -18,6 +18,9 @@ from django.utils.html import conditional_escape
 from django.utils.translation import gettext as _
 from django.views.decorators.clickjacking import xframe_options_exempt
 
+# Used to split aggregated messages stored in a single raw file (bytes)
+AGGREGATED_EMAIL_SPLIT_RE = re.compile(rb"\r?\n-{50,}[ \t]*\r?\n")
+
 
 def _ensure_supported_backend() -> None:
     if settings.EMAIL_BACKEND not in (
@@ -73,7 +76,7 @@ def _read_file_bytes(path: str) -> Optional[bytes]:
 
 def _split_aggregated_messages(raw_bytes: bytes) -> List[bytes]:
     try:
-        parts = re.split(rb"\r?\n-{50,}[ \t]*\r?\n", raw_bytes)
+        parts = AGGREGATED_EMAIL_SPLIT_RE.split(raw_bytes)
         return parts if len(parts) > 1 else [raw_bytes]
     except Exception:
         return [raw_bytes]
@@ -81,25 +84,14 @@ def _split_aggregated_messages(raw_bytes: bytes) -> List[bytes]:
 
 def _parse_raw_to_messages(raw_bytes: bytes) -> List[PyEmailMessage]:
     parsed: List[PyEmailMessage] = []
-    try:
-        for chunk in _split_aggregated_messages(raw_bytes):
-            if not chunk or chunk.strip() == b"":
-                continue
-            try:
-                msg = BytesParser(policy=policy.default).parsebytes(chunk)
-                parsed.append(msg)
-            except Exception:
-                # try whole file later
-                pass
-        if not parsed:
-            msg = BytesParser(policy=policy.default).parsebytes(raw_bytes)
-            parsed.append(msg)
-    except Exception:
+    for chunk in _split_aggregated_messages(raw_bytes):
+        if not chunk or chunk.strip() == b"":
+            continue
         try:
-            msg = BytesParser(policy=policy.default).parsebytes(raw_bytes)
-            parsed.append(msg)
+            parsed.append(BytesParser(policy=policy.default).parsebytes(chunk))
         except Exception:
-            return []
+            # Ignore chunks that fail to parse; we'll fall back to whole payload if needed
+            pass
     return parsed
 
 
@@ -412,7 +404,6 @@ def _extract_html_body(message: EmailMessage) -> Tuple[str, str]:
     # Fallback to plain text body
     text_body = message.body or ""
     # Some backends/log exports add a trailing separator line of many dashes
-    text_body = _strip_trailing_separator(text_body)
     escaped = conditional_escape(text_body).replace("\n", "<br>")
     html = (
         '<!DOCTYPE html><html><head><meta charset="utf-8"></head>'
@@ -450,20 +441,6 @@ def _ensure_light_styles(html: str) -> str:
         '<!DOCTYPE html><html><head><meta charset="utf-8">' + style + "</head>"
         "<body>" + html + "</body></html>"
     )
-
-
-def _strip_trailing_separator(text: str) -> str:
-    """Remove a trailing separator line (>=50 consecutive dashes) at end of body.
-
-    This safely keeps legitimate content that may contain small dash runs,
-    and only strips if such a line appears at the very end.
-    """
-    try:
-        import re as _re
-
-        return _re.sub(r"(?:\r?\n)?-{50,}\s*$", "", text)
-    except Exception:
-        return text
 
 
 @xframe_options_exempt
