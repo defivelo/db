@@ -4,7 +4,7 @@
   {% with can_crud=user|can:'challenge_season_crud' %}
     <tr>
         <td rowspan="{% if chosen_stats %}6{% else %}5{% endif %}" colspan="{{ preamble_columns|default:3 }}">&nbsp;</td>
-        {% if chosen_stats %}<td rowspan="6">{% trans "Sél." %}</td>{% endif %}
+        {% if chosen_stats or wishfield %}<td rowspan="6">{% trans "Sél." %}</td>{% endif %}
         {% if wishfield %}<td rowspan="6">{% trans "Qualifs max" %}</td>{% endif %}
         {% for session in sessions %}
             <th data-test="orga-{{ session.pk }}" data-filter-orga="{{ session.orga.pk }}" class="text-center" style="vertical-align: top;">
