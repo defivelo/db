@@ -17,7 +17,7 @@ _user_changes_lock = threading.Lock()
 _userprofile_to_notify = queue.Queue()  # User model that are used in user_changes.
 
 
-@receiver(pre_save, sender=settings.AUTH_USER_MODEL)
+@receiver(pre_save, sender=get_user_model())
 def user_email_change_signal(sender, instance, **kwargs):
     """
     Signal to detect email changes on the User model
@@ -103,7 +103,7 @@ def userprofile_field_change_signal(sender, instance, **kwargs):
         pass
 
 
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+@receiver(post_save, sender=get_user_model())
 @receiver(post_save, sender=UserProfile)
 def userprofile_mark_save_notification(sender, instance, **kwargs):
     """
@@ -167,7 +167,7 @@ def _send_field_change_notification(user, changes):
         [
             "",
             _("Ceci est un message automatique."),
-            _("Merci de mette à jour la base de données des salaires en conséquences"),
+            _("Merci de mettre à jour la base de données des salaires en conséquences"),
         ]
     )
 
