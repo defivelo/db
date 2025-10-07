@@ -1,0 +1,12 @@
+{% extends "admin/base_site.html" %}
+{% load i18n outbox %}
+
+{% block userlinks %}
+  {% is_supported_email_backend as show_outbox %}
+  {% if show_outbox %}
+    <a href="{% url 'email-outbox-list' %}">{% trans "Emails" %}</a> /
+  {% endif %}
+  {{ block.super }}
+{% endblock %}
+
+
