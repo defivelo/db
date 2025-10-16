@@ -1,32 +1,212 @@
-{% extends "base.html" %}{% load i18n bootstrap3 dv_filters %}
+{% extends "base.html" %}{% load i18n bootstrap3 dv_filters static %}
 {% block head_title %}{{ season.desc }}{% endblock %}
 
 {% block container-class %}container-fluid{% endblock %}
+
+{% block bootstrap3_extra_head %}
+    {{ season_staff_filter_form.media.css }}
+{% endblock %}
+
+{% block bootstrap3_extra_script %}
+    <script type="text/javascript" src="{% static 'js/form-changes.js' %}"></script>
+    {{ season_staff_filter_form.media.js }}
+    <script>
+      $(document).ready(function() {
+
+        $('#id_cantons').change(function () {
+          let val = $(this).val();
+          $('tr[data-canton-filter]').each(function () {
+            $(this).toggle(!val || val.includes($(this).data('canton-filter')));
+          });
+        });
+
+        function updateColumnsVisibility(columns_index_to_hide) {
+          // show all columns
+          $([
+            'table[data-filters] thead th',
+            'table[data-filters] tbody td',
+            'table[data-filters] tbody th[data-filter-orga]'
+          ].join(",")).show();
+
+          // hide the selected columns
+          const offset_thead = 0
+          const offset_body = $("tbody tr:nth-child(2) td[data-filter-ignore]").length // offset due to the 3 firsts columns not being session columns (username, roles, canton)
+          const n_child_offset = 1 // we index from 0, but nth-of-type starts at 1
+
+          columns_index_to_hide.forEach(function(v) {
+            const value = parseInt(v, 10)
+            const selectors = [
+              'table[data-filters] thead th:nth-of-type(' + (value +  offset_thead + n_child_offset) + ')',
+              'table[data-filters] tbody td:nth-of-type(' + (value + offset_body + n_child_offset) + ')',
+              'table[data-filters] tbody th[data-filter-orga]:nth-of-type(' + (value + n_child_offset) + ')',
+            ]
+            $(selectors.join(",")).hide();
+          });
+        }
+
+        $("#id_organisations").change(function () {
+          const columns_index_to_hide = []
+          let val = $(this).val();
+          // compute the indexes to hide
+          $('table thead th[data-filter-orga]').each(function (index) {
+            let org = $(this).data('filter-orga');
+            if (org && val && !val.includes(String(org))) {
+              columns_index_to_hide.push(index);
+            }
+          });
+          updateColumnsVisibility(columns_index_to_hide);
+        })
+      });
+    </script>
+  <script>
+$(document).on("change", "input[type=radio]", function (event) {
+    // Update the first columns "chosen for" and "work wish" values when you click on a radio button
+    // if you work more than your wish, we show the alert icon
+    $("tr[data-canton-filter]").each(function (index, tr) {
+        const $row = $(tr);
+
+        // Count checked radios with non-zero values in this row
+        const selectedCount = $row.find("input[type=radio]:checked").filter(function() {
+            return String($(this).val()) !== "0";
+        }).length;
+
+        // Update the data-chosenfor cell content
+        const $chosenForCell = $row.find("td[data-chosenfor]");
+        if ($chosenForCell.length > 0) {
+            $chosenForCell.html(selectedCount);
+
+            // Get the work wish value from data-workwish attribute
+            const $workWishCell = $row.find("td[data-workwish]");
+            let workWishValue = 0;
+
+            if ($workWishCell.length < 1)
+              return;
+
+            // Try to get value from data-workwish attribute first
+            workWishValue = parseInt($workWishCell.attr("data-workwish")) || 0;
+
+            // Show/hide alert based on comparison
+            const $alert = $workWishCell.find(".glyphicon-alert");
+            if ($alert.length > 0) {
+                if (selectedCount > workWishValue && workWishValue !== 0) {
+                    $alert.show();
+                    $alert.attr("title", selectedCount + "/" + workWishValue);
+                } else {
+                    $alert.hide();
+                }
+            }
+            {# console.log("Work wish:", workWishValue, "Selected:", selectedCount, "Show alert:", workWishValue > selectedCount);  #}
+        }
+    });
+});
+  </script>
+  <script>
+  // Update the count of M1/M2/Int for a session column when a radio button is changed
+  $(document).on("change", "input[type=radio]", function (event) {
+    // Get the column index of the changed radio button
+    const columnIndex = $(this).closest('td').index() + 1 // +1 for nth-child (1-based)
+
+    // Update all three role types for this column
+    updateSessionColumn(columnIndex, "m2", 4);
+    updateSessionColumn(columnIndex, "m1", 3);
+    updateSessionColumn(columnIndex, "int", 2);
+});
+
+function updateSessionColumn(columnIndex, columnType, radioValue) {
+    // Find the dd element for this column and role type
+    const offset_body = $("tbody tr:nth-child(2) td[data-filter-ignore]").length
+    let $dd = $(`th:nth-child(${columnIndex-offset_body}) dd[data-test-${columnType}]`);
+    if ($dd.length === 0) {
+      console.log("No column " + columnType + "at index " + columnIndex)
+      return;
+    }
+
+    // Count checked radios with the specific value in this column
+    const currentCount = $(`td:nth-child(${columnIndex}) input[type=radio]:checked[value="${radioValue}"]`).length;
+    {# console.log("Updating column", columnIndex, "type", columnType, "for radio value", radioValue, ". Count", currentCount);  #}
+
+    // Get the target value from existing title attribute
+    const title = $dd.find(".glyphicon-ok").attr("title") || $dd.find(".glyphicon-alert").attr("title");
+    let targetValue = 0;
+    if (title) {
+        targetValue = parseInt(title.split("/")[1]) || 0;
+    }
+
+    // Update elements
+    const $countDisplay = $dd.find(".count-display");
+    const $okGlyph = $dd.find(".glyphicon-ok");
+    const $alertGlyph = $dd.find(".glyphicon-alert");
+
+    // Update count text and titles
+    const countText = `${currentCount}/${targetValue}`;
+    $countDisplay.text(countText);
+    $okGlyph.attr("title", countText);
+    $alertGlyph.attr("title", countText);
+
+    // Show/hide elements based on logic
+    if (currentCount < targetValue) {
+        // Show count, hide both glyphs
+        $countDisplay.removeClass("hidden");
+        $okGlyph.addClass("hidden");
+        $alertGlyph.addClass("hidden");
+    } else if (currentCount === targetValue) {
+        // Hide count, show OK glyph, hide alert
+        $countDisplay.addClass("hidden");
+        $okGlyph.removeClass("hidden");
+        $alertGlyph.addClass("hidden");
+    } else {
+        // Show count, hide OK glyph, show alert
+        $countDisplay.removeClass("hidden");
+        $okGlyph.addClass("hidden");
+        $alertGlyph.removeClass("hidden");
+    }
+}
+  </script>
+
+{% endblock %}
 
 {% block content %}
     {% include "challenge/season_header.html" with season=season only %}
     <h4>{% trans "Attributions dans les sessions" %}</h4>
 
-    <form method="POST" action="" class="form-horizontal">
+    <form method="POST" action="" class="form-horizontal" data-prevent-page-exit>
+        {% if season_staff_filter_form %}
+            <div class="well">
+              <h4><i class="glyphicon glyphicon-filter"></i> {% trans 'Filtres' %}</h4>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ season_staff_filter_form.cantons.label }}</label>
+                <div class="col-sm-10">
+                  {{ season_staff_filter_form.cantons }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ season_staff_filter_form.organisations.label }}</label>
+                <div class="col-sm-10">
+                  {{ season_staff_filter_form.organisations }}
+                </div>
+              </div>
+            </div>
+        {% endif %}
         {% csrf_token %}
-        <table class="table text-center table-avail">
-        {% include "challenge/season_availability_thead.html" with sessions=sessions season=season only %}
-        <tbody>
-            {% for helper_category,helpers in available_helpers %}
-                {% if helpers %}
-                <tr><th colspan="{{ sessions.count|add:"3" }}">{{ helper_category }}</th></tr>
-                    {% for helper in helpers %}
-                    <tr>
-                        {% include "challenge/season_availability_partial_helper_columns.html" with helper=helper %}
-                        {{ form|userstaffsessions:helper }}
-                    </tr>
-                    {% endfor %}
-                    {% if helpers.count > 10 %}
-                        {% include "challenge/season_availability_partial_head.html" with sessions=sessions season=season user=request.user only %}
-                    {% endif %}
-                {% endif %}
-            {% endfor %}
-        </tbody>
+        <table data-filters class="table text-center table-avail">
+          {% include "challenge/season_availability_thead.html" with sessions=sessions season=season chosen_stats=True wishfield=True only %}
+          <tbody>
+              {% for helper_category,helpers in available_helpers %}
+                  {% if helpers %}
+                  <tr><th colspan="{{ sessions.count|add:"3" }}">{{ helper_category }}</th></tr>
+                      {% for helper in helpers %}
+                      <tr data-canton-filter="{{ helper.profile.affiliation_canton|default:"-" }}">
+                        {% include "challenge/season_availability_partial_helper_columns.html" with helper=helper availabilities=availabilities %}
+                          {{ form|userstaffsessions:helper }}
+                      </tr>
+                      {% endfor %}
+                      {% if helpers.count > 10 %}
+                          {% include "challenge/season_availability_partial_head.html" with sessions=sessions season=season user=request.user only %}
+                      {% endif %}
+                  {% endif %}
+              {% endfor %}
+          </tbody>
         </table>
         {% buttons %}
             <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>

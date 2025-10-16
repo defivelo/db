@@ -14,7 +14,7 @@
                 {% csrf_token %}
                 <input name="next" type="hidden" value="{{ request|setlang:language.code }}" />
                 <input name="language" type="hidden" value="{{ language.code }}" />
-                <button class="btn btn-link btn-block" type="submit" title="{{ language.name_local|title }}">{{ language.name_local|title }}</a>
+                <button class="btn btn-link btn-block" type="submit" title="{{ language.name_local|title }}">{{ language.name_local|title }}</button>
             </form></li>
           {% endif %}
         {% endfor %}

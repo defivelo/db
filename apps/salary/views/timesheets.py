@@ -31,6 +31,7 @@ from apps.salary.models import Timesheet
 from defivelo.roles import has_permission
 
 from ...user.models import UserProfile
+from ...user.views.standard import ReturnUrlMixin
 from .. import timesheets_overview
 
 
@@ -45,12 +46,16 @@ class RedirectUserMonthlyTimesheets(RedirectView):
         )
 
 
-class UserMonthlyTimesheets(MonthArchiveView, FormView):
+class UserMonthlyTimesheets(MonthArchiveView, ReturnUrlMixin, FormView):
     date_field = "day"
     month_format = "%m"
     allow_empty = True
     allow_future = True
     template_name = "salary/month_timesheets.html"
+
+    @property
+    def success_url(self):
+        return reverse("salary:timesheets-overview", kwargs={"year": self.get_year()})
 
     def get_queryset(self):
         return (
@@ -201,9 +206,6 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
             "selected_user": self.selected_user,
         }
         return kwargs
-
-    def get_success_url(self):
-        return reverse("salary:timesheets-overview", kwargs={"year": self.get_year()})
 
     def form_valid(self, formset):
         """If the form is valid, save the associated model."""

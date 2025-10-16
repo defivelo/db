@@ -64,7 +64,7 @@
       {% for user, statuses in timesheets_status_matrix.items %}
       <tr>
         <td>
-          <a href="{% url 'user-detail' pk=user.pk %}">
+          <a href="{% url 'user-detail' pk=user.pk %}{% if canton %}?returnUrl={% url 'salary:timesheets-overview' year=year %}%3Fcanton%3D{{ canton }}{% endif %}">
             {{ user.get_full_name }}
           </a>
         </td>
@@ -72,7 +72,7 @@
           <td
             {% if status %}data-status="{{ status }}"{% endif %}class="text-center status-cell{% if status %} {{ status|timesheet_status_css_class }}{% endif %}">
             {% if status %}
-              <a href="{% url 'salary:user-timesheets' year=year month=forloop.counter pk=user.pk %}">
+              <a href="{% url 'salary:user-timesheets' year=year month=forloop.counter pk=user.pk %}{% if canton %}?returnUrl={% url 'salary:timesheets-overview' year=year %}%3Fcanton%3D{{ canton }}{% endif %}">
                 <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
               </a>
             {% endif %}

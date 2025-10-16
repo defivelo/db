@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
-{% block head_title %}{% if session %}{% trans "Édition de la session" %}{% else %}{% trans "Nouvelle session" %}{% endif %}{% endblock %}
+{% load static %}
+{% load dv_filters %}
+{% block head_title %}{% if session and session.pk %}{% trans "Édition de la session" %}{% else %}{% trans "Nouvelle session" %}{% endif %}{% endblock %}
 
 {% block bootstrap3_extra_head %}{{ form.media.css }}{% endblock %}
 {% block bootstrap3_extra_script %}
+  <script type="text/javascript" src="{% static 'js/form-changes.js' %}"></script>
 {{ form.media.js }}
 {% include 'snippets/datetimepicker_js.html' %}
 <script type="text/javascript">
@@ -37,9 +40,9 @@ $( "#id_place" ).change( updateHelpersPlace );
 {% endblock %}
 
 {% block content %}
-    <h1>{% if session %}{% trans "Édition de la session" %}{% else %}{% trans "Nouvelle session" %}{% endif %}</h1>
+    <h1>{% if session and session.pk %}{% trans "Édition de la session" %}{% else %}{% trans "Nouvelle session" %}{% endif %}</h1>
 
-    <form method="POST" action="" class="form-horizontal">
+    <form method="POST" class="form-horizontal" id="form-session" data-prevent-page-exit="" action="{{ action }}">
         {% csrf_token %}
         <h3>{% trans "Emplacement" %}</h3>
         {% bootstrap_field form.orga layout='horizontal' size='small' %}
@@ -72,9 +75,12 @@ $( "#id_place" ).change( updateHelpersPlace );
         {% endif %}
         {% buttons %}
             <button type="submit" class="btn btn-primary pull-right">{% trans "Enregistrer" %}</button>
-            {% if session %}
+            {% if session and session.pk %}
                 <a class="btn btn-default" href="{% url 'session-detail' seasonpk=season.pk pk=session.pk %}">{% trans "Annuler" %}</a>
-            {% else %}
+                {% if user|can:'challenge_session_crud' %}
+                  <a class="btn btn-default" title="{% trans "Dupliquer" %}" href="{% url 'session-clone' seasonpk=season.pk pk=session.pk %}"><span class="glyphicon glyphicon-copy"></span></a>
+                {% endif %}
+            {% elif season.pk %}
                 <a class="btn btn-default" href="{% url 'season-detail' season.pk %}">{% trans "Annuler" %}</a>
             {% endif %}
         {% endbuttons %}

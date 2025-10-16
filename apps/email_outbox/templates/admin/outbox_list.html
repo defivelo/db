@@ -1,0 +1,69 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div id="content-main">
+    <div class="results">
+      <table id="result_list">
+        <thead>
+          <tr>
+            <th scope="col" class="action-checkbox-column">#</th>
+            <th scope="col">{% trans "Sent at" %}</th>
+            <th scope="col">{% trans "Subject" %}</th>
+            <th scope="col">{% trans "From" %}</th>
+            <th scope="col">{% trans "To" %}</th>
+            <th scope="col">CC</th>
+            <th scope="col">BCC</th>
+            <th scope="col">{% trans "Attachments" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in emails %}
+          <tr class="row1">
+            <th class="action-checkbox"><a href="{% url 'email-outbox-detail' e.idx %}">{{ e.idx }}</a></th>
+            <td>{{ e.sent_at }}</td>
+            <td><a href="{% url 'email-outbox-detail' e.idx %}">{{ e.subject }}</a></td>
+            <td>{{ e.from_email }}</td>
+            <td>{{ e.to|join:", " }}</td>
+            <td>{{ e.cc|join:", " }}</td>
+            <td>{{ e.bcc|join:", " }}</td>
+            <td>{% if e.attachments_count %}{{ e.attachments_count }}{% else %}-{% endif %}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7">{% trans "The outbox is empty." %}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="paginator">
+      <span class="step-links">
+        {% if has_prev %}
+          <a href="?p=1&per_page={{ per_page }}">{% trans "first" %}</a>
+          <a href="?p={{ prev_page }}&per_page={{ per_page }}">{% trans "previous" %}</a>
+        {% else %}
+          <span class="disabled">{% trans "first" %}</span>
+          <span class="disabled">{% trans "previous" %}</span>
+        {% endif %}
+
+        {% for p in page_range %}
+          {% if p == page %}
+            <span class="this-page">{{ p }}</span>
+          {% else %}
+            <a href="?p={{ p }}&per_page={{ per_page }}">{{ p }}</a>
+          {% endif %}
+        {% endfor %}
+
+        {% if has_next %}
+          <a href="?p={{ next_page }}&per_page={{ per_page }}">{% trans "next" %}</a>
+          <a href="?p={{ num_pages }}&per_page={{ per_page }}">{% trans "last" %}</a>
+        {% else %}
+          <span class="disabled">{% trans "next" %}</span>
+          <span class="disabled">{% trans "last" %}</span>
+        {% endif %}
+      </span>
+      <span class="page-info">{% blocktrans %}Page {{ page }} of {{ num_pages }} ({{ count }} emails){% endblocktrans %}</span>
+    </div>
+  </div>
+{% endblock %}
+
+

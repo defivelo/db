@@ -18,6 +18,8 @@ from datetime import date, time, timedelta
 
 from django.urls import reverse
 
+from bs4 import BeautifulSoup
+
 from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient
 
 from ..models import Invoice
@@ -466,3 +468,42 @@ class PowerUserTest(InvoiceTestCaseMixin):
             self.client.get(self.invoice_detail_url).status_code,
             200,
         )
+
+    def test_draft_invoice_can_print(self):
+        url = reverse(
+            "invoice-detail",
+            kwargs={
+                "seasonpk": self.season.pk,
+                "orgapk": self.canton_orgas[0].pk,
+                "invoiceref": self.invoice.ref,
+            },
+        )
+
+        for status, status_label in Invoice.STATUS_CHOICES:
+            self.invoice.status = status
+            self.invoice.save()
+
+            response = self.client.get(url, follow=True)
+            self.assertEqual(response.status_code, 200, url)
+
+            watermark = BeautifulSoup(response.content, "html.parser").select_one(
+                "#watermark-container"
+            )
+            self.assertIsNotNone(
+                watermark, f"Watermark should be present for status {status}"
+            )
+            label = watermark.attrs.get("data-label")
+            if status == Invoice.STATUS_DRAFT:
+                self.assertContains(response, "Imprimer le devis")
+                self.assertEqual(
+                    label,
+                    "Devis",
+                    f"Watermark label should be 'Devis' for status {status_label}",
+                )
+            else:
+                self.assertContains(response, "Imprimer")
+                self.assertEqual(
+                    label,
+                    "",
+                    f"Watermark label should be empty for status {status_label}",
+                )

@@ -25,6 +25,7 @@ from .invoice import (
 from .quali import QualiCreateView, QualiDeleteView, QualiUpdateView
 from .season import (
     SeasonActorListView,
+    SeasonAvailabilityReminderView,
     SeasonAvailabilityUpdateView,
     SeasonAvailabilityView,
     SeasonCreateView,
@@ -86,6 +87,7 @@ __all__ = [
     "SeasonPlanningView",
     "SeasonStaffChoiceUpdateView",
     "SeasonToOpenView",
+    "SeasonAvailabilityReminderView",
     "SeasonToRunningView",
     "SeasonUpdateView",
     "SessionCreateView",

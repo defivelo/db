@@ -5,7 +5,7 @@
 
 <ul class="nav navbar-nav">
   {% if request.user.is_authenticated %}
-    {% if season and user|can:'challenge_season_crud' %}
+    {% if season and user|can:'challenge_season_crud' and season.pk %}
       <li><a href="{% dv_season_url %}" title="{% trans "Tous les mois" %}"><span
               class="glyphicon glyphicon-th-list"></span>&nbsp;</a></li>
       <li class="active">
