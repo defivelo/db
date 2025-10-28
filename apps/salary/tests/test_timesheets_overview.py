@@ -4,7 +4,6 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 from apps.challenge.tests.factories import QualificationFactory, SessionFactory
-from apps.orga.tests.factories import OrganizationFactory
 from apps.salary import HOURLY_RATE_HELPER, timesheets_overview
 from apps.user.tests.factories import UserFactory
 from defivelo.roles import user_cantons
@@ -40,19 +39,13 @@ def test_state_manager_can_only_see_managed_users(db):
             last_name="Moss",
             profile__affiliation_canton=managed_cantons[0],
         ),
-        session=SessionFactory(
-            day=datetime.date(2019, 4, 11),
-            orga=OrganizationFactory(address_canton=managed_cantons[0]),
-        ),
+        session=SessionFactory(day=datetime.date(2019, 4, 11)),
     )
     QualificationFactory(
         actor=UserFactory(
             first_name="Jen", last_name="Barber", profile__affiliation_canton="GE"
         ),
-        session=SessionFactory(
-            day=datetime.date(2019, 4, 20),
-            orga=OrganizationFactory(address_canton="GE"),
-        ),
+        session=SessionFactory(day=datetime.date(2019, 4, 20)),
     )
 
     response = client.get(reverse("salary:timesheets-overview", kwargs={"year": 2019}))
@@ -241,10 +234,9 @@ def test_state_manager_sees_reminder_button_for_month_with_missing_timesheets(db
     )
 
     date_validated = datetime.date(2019, 2, 11)
-    orga = OrganizationFactory(address_canton=managed_cantons[0])
     QualificationFactory(
         actor=helper,
-        session=SessionFactory(day=date_validated, orga=orga),
+        session=SessionFactory(day=date_validated),
     )
     TimesheetFactory(
         date=date_validated,
@@ -254,7 +246,7 @@ def test_state_manager_sees_reminder_button_for_month_with_missing_timesheets(db
     date_missing = datetime.date(2019, 3, 11)
     QualificationFactory(
         actor=helper,
-        session=SessionFactory(day=date_missing, orga=orga),
+        session=SessionFactory(day=date_missing),
     )
 
     response = client.get(reverse("salary:timesheets-overview", kwargs={"year": 2019}))

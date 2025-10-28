@@ -5,11 +5,11 @@ from django.urls import reverse
 
 from apps.challenge.tests.factories import QualificationFactory, SessionFactory
 from apps.common import DV_STATES
-from apps.orga.tests.factories import OrganizationFactory
 from apps.user.tests.factories import UserFactory
 from defivelo.roles import user_cantons
 from defivelo.tests.utils import AuthClient, StateManagerAuthClient
 
+from ...orga.tests.factories import OrganizationFactory
 from .factories import TimesheetFactory, ValidatedTimesheetFactory
 
 
@@ -23,10 +23,7 @@ def test_reminder_preview_loads(db):
             last_name="Moss",
             profile__affiliation_canton=managed_cantons[0],
         ),
-        session=SessionFactory(
-            day=datetime.date(2019, 4, 11),
-            orga=OrganizationFactory(address_canton=managed_cantons[0]),
-        ),
+        session=SessionFactory(day=datetime.date(2019, 4, 11)),
     )
 
     response = client.get(
@@ -47,9 +44,8 @@ def test_reminder_is_sent_to_helpers_with_missing_timesheets(db):
 
     date1 = datetime.date(2019, 2, 11)
     date2 = datetime.date(2019, 2, 12)
-    orga = OrganizationFactory(address_canton=managed_cantons[0])
-    session1 = SessionFactory(day=date1, orga=orga)
-    session2 = SessionFactory(day=date2, orga=orga)
+    session1 = SessionFactory(day=date1)
+    session2 = SessionFactory(day=date2)
 
     QualificationFactory(actor=helper1, session=session1)
     QualificationFactory(actor=helper1, session=session2)
