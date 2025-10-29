@@ -18,6 +18,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.db import models, transaction
+from django.db.models import Q
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.forms import ValidationError
@@ -249,6 +250,52 @@ class UserProfile(Address, models.Model):
 
     objects = models.Manager()
     objects_existing = ExistingUserProfileManager()
+
+    @staticmethod
+    def get_users_that_worked_in_cantons(
+        cantons: list[str],
+        additional_or: list[Q] | None = None,
+        year: int | None = None,
+    ):
+        """
+        Get all the users that worked at least once in the given states
+
+        Users who participated in the qualifications
+        (which took place in the given cantons), as:
+        - leader (monitor 1)
+        - helpers (monitor 2)
+        - actor (meeting - Qualif C)
+        """
+
+        leader_filters = {
+            f"qualifs_mon2__{k}": v
+            for k, v in {"session__orga__address_canton__in": cantons}.items()
+        }
+        helper_filters = {
+            f"qualifs_mon1__{k}": v
+            for k, v in {"session__orga__address_canton__in": cantons}.items()
+        }
+        actor_filters = {
+            f"qualifs_actor__{k}": v
+            for k, v in {"session__orga__address_canton__in": cantons}.items()
+        }
+
+        if year is not None:
+            leader_filters["qualifs_mon2__session__day__year"] = year
+            helper_filters["qualifs_mon1__session__day__year"] = year
+            actor_filters["qualifs_actor__session__day__year"] = year
+
+        criteria = Q(**leader_filters) | Q(**helper_filters) | Q(**actor_filters)
+
+        for q in additional_or if additional_or else []:
+            criteria = criteria | q
+
+        return (
+            get_user_model()
+            .objects.filter(criteria)
+            .prefetch_related("profile")
+            .distinct()
+        )
 
     def save(self, *args, **kwargs):
         if self.activity_cantons:

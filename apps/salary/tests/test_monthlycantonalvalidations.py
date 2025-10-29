@@ -6,6 +6,7 @@ from django.urls import reverse
 
 from apps.challenge.tests.factories import QualificationFactory, SessionFactory
 from apps.common import DV_STATES
+from apps.orga.tests.factories import OrganizationFactory
 from apps.user.tests.factories import UserFactory
 from defivelo.tests.utils import AuthClient, PowerUserAuthClient, StateManagerAuthClient
 
@@ -133,6 +134,7 @@ class StateManagerUserTest(TestCase):
                     actor=actor,
                     session=SessionFactory(
                         day=today.replace(day=12),
+                        orga=OrganizationFactory(address_canton=canton),
                     ),
                 )
                 # For now there is no timesheet
