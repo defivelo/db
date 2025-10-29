@@ -30,6 +30,7 @@ from apps.salary.forms import ControlTimesheetFormSet, TimesheetFormSet
 from apps.salary.models import Timesheet
 from defivelo.roles import has_permission
 
+from ...user.models import UserProfile
 from ...user.views.standard import ReturnUrlMixin
 from .. import timesheets_overview
 
@@ -266,7 +267,10 @@ class YearlyTimesheets(TemplateView):
             timesheets_overview.get_timesheets_status_matrix(year=year, users=users)
         )
         if active_canton:
-            users = users.filter(profile__affiliation_canton=active_canton)
+            users = UserProfile.get_users_that_worked_in_cantons(
+                [active_canton], year=year
+            )
+
             timesheets_status_matrix = timesheets_overview.get_timesheets_status_matrix(
                 year=year, users=users
             )
