@@ -4,14 +4,15 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('challenge', '0063_invoiceline_historical_session_not_nullable'),
+        ("challenge", "0063_invoiceline_historical_session_not_nullable"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='invoiceline',
-            options={'ordering': ('historical_session__day', 'historical_session__begin')},
+            name="invoiceline",
+            options={
+                "ordering": ("historical_session__day", "historical_session__begin")
+            },
         ),
     ]

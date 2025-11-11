@@ -181,7 +181,6 @@ def useravailsessions_readonly(
             avail_content = avail_forced_content
             conflict = False
             locked = False
-            superleader = False
             if not planning:
                 if availability == "i":
                     # If needed
@@ -232,13 +231,19 @@ def useravailsessions_readonly(
                             avail_verb = _("Choisi")
                             avail_label = "check"
                         else:
+                            avail_verb = _("Pas choisi")
                             if not planning:
-                                avail_verb = _("Pas choisi")
                                 avail_label = "unchecked"
-
-            elif onlyavail:
-                avail_content = " "
-
+                            else:
+                                avail_label = "remove-sign"
+                                avail_class = "danger"
+            else:
+                if availability == "n" and planning:
+                    avail_label = "remove-sign"
+                    avail_class = "danger"
+                    avail_verb = _("Non")
+                if onlyavail:
+                    avail_content = " "
             final_avail_label = (
                 avail_content
                 if avail_content
@@ -252,7 +257,7 @@ def useravailsessions_readonly(
             )
 
             output += (
-                '<td class="{avail_class}"{avail_verbose}><div class="dvflex">'
+                '<td data-test="{key}" class="{avail_class}"{avail_verbose}><div class="dvflex">'
                 "<!-- {key} -->{avail_label}{superleader}{conflict_warning}"
                 "</div></td>"
             ).format(

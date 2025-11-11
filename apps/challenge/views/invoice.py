@@ -163,9 +163,9 @@ class InvoiceDetailView(InvoiceMixin, DetailView):
             if line.has_cost_bikes:
                 lines_per_day[date_of_current_line]["cost_bikes"] = line.cost_bikes
                 if line.cost_bikes_reduction_percent():
-                    lines_per_day[date_of_current_line][
-                        "cost_bikes_reduced"
-                    ] = line.cost_bikes_reduced
+                    lines_per_day[date_of_current_line]["cost_bikes_reduced"] = (
+                        line.cost_bikes_reduced
+                    )
                     lines_per_day[date_of_current_line][
                         "cost_bikes_reduction_percent"
                     ] = line.cost_bikes_reduction_percent

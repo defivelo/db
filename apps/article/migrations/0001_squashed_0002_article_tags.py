@@ -6,12 +6,10 @@ Replaces migrations from `simple-article==0.2.1`
 
 from __future__ import unicode_literals
 
-from django.db import migrations, models
-from django.utils import timezone
-
 import taggit.managers
 import tinymce.models
-
+from django.db import migrations, models
+from django.utils import timezone
 
 # fmt: off
 

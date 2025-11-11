@@ -5,32 +5,31 @@ from django.db import migrations, models
 
 
 def vsow_to_hw(apps, schema_editor):
-    Address = apps.get_model('common', 'Address')
+    Address = apps.get_model("common", "Address")
     for address in Address.objects.all():
-        if address.address_canton == 'VS-OW':
-            address.address_canton = 'WS'
+        if address.address_canton == "VS-OW":
+            address.address_canton = "WS"
             address.save()
 
+
 def hw_to_vsow(apps, schema_editor):
-    Address = apps.get_model('common', 'Address')
+    Address = apps.get_model("common", "Address")
     for address in Address.objects.all():
-        if address.address_canton == 'WS':
-            address.address_canton = 'VS-OW'
+        if address.address_canton == "WS":
+            address.address_canton = "VS-OW"
             address.save()
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('common', '0004_auto_20170201_0823'),
+        ("common", "0004_auto_20170201_0823"),
     ]
 
     operations = [
-        migrations.RunPython(vsow_to_hw,
-                             hw_to_vsow),
+        migrations.RunPython(vsow_to_hw, hw_to_vsow),
         migrations.AlterField(
-            model_name='address',
-            name='address_canton',
-            field=models.CharField(blank=True, max_length=2, verbose_name='Canton'),
+            model_name="address",
+            name="address_canton",
+            field=models.CharField(blank=True, max_length=2, verbose_name="Canton"),
         ),
     ]

@@ -16,6 +16,7 @@
 
 import datetime
 import operator
+import re
 from collections import OrderedDict
 from functools import reduce
 
@@ -30,7 +31,9 @@ from django.http import HttpResponseRedirect
 from django.template.defaultfilters import date, time
 from django.template.loader import render_to_string
 from django.urls import Resolver404, reverse, reverse_lazy
+from django.utils import timezone
 from django.utils.functional import cached_property
+from django.utils.text import slugify
 from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import pgettext_lazy as _p
@@ -76,11 +79,13 @@ from .. import (
 )
 from ..forms import (
     SeasonAvailabilityForm,
+    SeasonAvailabilityReminderForm,
     SeasonForm,
     SeasonNewHelperAvailabilityForm,
     SeasonStaffChoiceForm,
     SeasonToSpecificStateForm,
 )
+from ..forms.season import SeasonStaffFilterForm
 from ..models import HelperSessionAvailability, Qualification, Season
 from ..models.availability import HelperSeasonWorkWish
 from ..models.qualification import (
@@ -88,7 +93,11 @@ from ..models.qualification import (
     CATEGORY_CHOICE_B,
     CATEGORY_CHOICE_C,
 )
-from ..utils import get_users_roles_for_session
+from ..utils import (
+    GeneralSeason,
+    get_users_roles_for_session,
+    seasons_in_scope_for_user,
+)
 from .mixins import CantonSeasonFormMixin
 
 EXPORT_NAMETEL = gettext("{name} - {tel}")
@@ -327,7 +336,12 @@ class SeasonAvailabilityMixin(SeasonHelpersMixin):
     view_is_planning = False
 
     def dispatch(self, request, *args, **kwargs):
-        if (
+        if self._has_default_access(request) or self.custom_access_allowed(request):
+            return super().dispatch(request, bypassperm=True, *args, **kwargs)
+        raise PermissionDenied
+
+    def _has_default_access(self, request):
+        return (
             # Check that the request user is alone in the potential_helpers and we're in season_update
             (
                 self.potential_helpers_qs()
@@ -352,12 +366,11 @@ class SeasonAvailabilityMixin(SeasonHelpersMixin):
                 has_permission(request.user, self.required_permission)
                 and (not self.view_is_update or self.season.manager_can_crud)
             )
-        ):
-            return super(SeasonAvailabilityMixin, self).dispatch(
-                request, bypassperm=True, *args, **kwargs
-            )
-        else:
-            raise PermissionDenied
+        )
+
+    def custom_access_allowed(self, request):
+        # Overridden in aggregated/general-planning views
+        return False
 
     def get_initial(self, all_hsas=None, all_helpers=None):
         initials = OrderedDict()
@@ -378,9 +391,8 @@ class SeasonAvailabilityMixin(SeasonHelpersMixin):
                 # Seulement des sessions concernées
                 .filter(session__day__in=all_sessions.values_list("day", flat=True))
                 # Seulement dans les états qui nous intéressent
-                .filter(chosen_as__in=CHOSEN_KEYS).prefetch_related(
-                    "session", "session__orga"
-                )
+                .filter(chosen_as__in=CHOSEN_KEYS)
+                .prefetch_related("session", "session__orga")
             )
             for helper_category, helpers in all_helpers:
                 helpers_conflicts = list(potential_conflicts.filter(helper__in=helpers))
@@ -591,7 +603,7 @@ class SeasonToRunningView(SeasonToStateMixin):
         """
         # Save first
         form_result = super().form_valid(form)
-        if form.cleaned_data["sendemail"] == True:
+        if form.cleaned_data["sendemail"]:
             for helper in self.season_helpers:
                 email = self.get_email(helper)
                 body = "\n".join(
@@ -689,7 +701,7 @@ class SeasonToOpenView(SeasonToStateMixin):
         """
         # Save first
         form_result = super().form_valid(form)
-        if form.cleaned_data["sendemail"] == True:
+        if form.cleaned_data["sendemail"]:
             # Then send emails
             for helper in self.get_email_recipients():
                 email = self.get_email(helper)
@@ -701,6 +713,91 @@ class SeasonToOpenView(SeasonToStateMixin):
                     ]
                 )
                 helper.profile.send_mail(email["subject"], body)
+        return form_result
+
+
+class SeasonAvailabilityReminderView(SeasonHelpersMixin, SeasonUpdateView):
+    template_name = "challenge/season_availability_reminder.html"
+    form_class = SeasonAvailabilityReminderForm
+
+    def get_email(self, profile=None):
+        if profile:
+            helperpk = profile.pk
+        else:
+            profile = {"get_full_name": _("{Prénom} {Nom}")}
+            helperpk = 0
+
+        planning_link = self.request.build_absolute_uri(
+            reverse(
+                "season-availabilities-update",
+                kwargs={"pk": self.season.pk, "helperpk": helperpk},
+            )
+        )
+
+        pre = render_to_string(
+            "challenge/season_email_availability_reminder.txt",
+            {
+                "profile": profile,
+                "season": self.season,
+                "planning_link": planning_link,
+                "current_site": Site.objects.get_current(),
+            },
+        )
+
+        return {
+            "subject": settings.EMAIL_SUBJECT_PREFIX
+            + gettext("Planning {season}").format(season=self.season.desc()),
+            "body": {"pre": pre},
+        }
+
+    def get_email_recipients(self):
+        base_qs = (
+            self.potential_helpers_qs()
+            .filter(profile__status__in=(USERSTATUS_ACTIVE, USERSTATUS_RESERVE))
+            .exclude(Q(profile__formation="") & Q(profile__actor_for__isnull=True))
+            .distinct()
+        )
+        sessions_qs = self.season.sessions_with_qualifs
+        if not sessions_qs.exists():
+            return base_qs.none()
+
+        total_sessions = sessions_qs.count()
+
+        # Helpers who have availabilities for all sessions (fully filled)
+        fully_filled_helper_ids = (
+            HelperSessionAvailability.objects.filter(session__in=sessions_qs)
+            .values("helper_id")
+            .annotate(n=Count("session", distinct=True))
+            .filter(n=total_sessions)
+            .values_list("helper_id", flat=True)
+        )
+        # Send to helpers not fully filled (partial or none)
+        return base_qs.exclude(id__in=fully_filled_helper_ids)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        recipients = list(
+            self.get_email_recipients().order_by("first_name", "last_name", "id")
+        )
+        context["recipients"] = recipients
+        context["some_recipients_cant_login"] = any(
+            not user.profile.can_login for user in recipients
+        )
+        context["email"] = self.get_email()
+        return context
+
+    def form_valid(self, form):
+        form_result = super().form_valid(form)
+        if not form.cleaned_data.get("sendemail"):
+            return form_result
+        now = timezone.now()
+        for helper in self.get_email_recipients():
+            email = self.get_email(helper)
+            body = email["body"]["pre"]
+            helper.profile.send_mail(email["subject"], body)
+
+        self.object.availability_reminder_sent_at = now
+        self.object.save()
         return form_result
 
 
@@ -841,8 +938,76 @@ class SeasonExportView(
         return dataset
 
 
+class GeneralPlanningSupportMixin(object):
+    """
+    Shared logic to support "general" planning (aggregated across months) for
+    export views and feeds.
+    """
+
+    def _is_general_planning(self):
+        return "year" in self.kwargs and "dv_season" in self.kwargs
+
+    def _seasons_in_scope(self):
+        try:
+            year = int(self.kwargs.get("year"))
+            dv_season = int(self.kwargs.get("dv_season"))
+        except (TypeError, ValueError):
+            return None, None, []
+        qs = seasons_in_scope_for_user(self.request.user, year, dv_season)
+        return year, dv_season, list(qs)
+
+    def _helperpk_in_kwargs(self):
+        helperpk_raw = self.kwargs.get("helperpk")
+        try:
+            helperpk = int(helperpk_raw) if helperpk_raw is not None else None
+        except (TypeError, ValueError):
+            helperpk = None
+        return helperpk
+
+    def _general_object(self):
+        year, dv_season, seasons = self._seasons_in_scope()
+        return GeneralSeason(
+            year=year,
+            dv_season=dv_season,
+            seasons=seasons,
+            helper_id=self._helperpk_in_kwargs(),
+        )
+
+    def _general_access_allowed(self, request):
+        # Managers always
+        permission_name = getattr(self, "required_permission", "challenge_season_crud")
+        if has_permission(request.user, permission_name):
+            return True
+        # Helpers if any season is running
+        _, _, seasons = self._seasons_in_scope()
+        user_is_helper = request.user.profile.is_paid_staff and (
+            request.user.profile.actor or request.user.profile.formation
+        )
+        any_running = any(s.staff_can_see_planning for s in seasons)
+        if user_is_helper and any_running:
+            return True
+        return False
+
+    def get_object(self, queryset=None):
+        if self._is_general_planning():
+            return self._general_object()
+        return super().get_object(queryset)
+
+    def dispatch(self, request, *args, **kwargs):
+        if self._is_general_planning():
+            if self._general_access_allowed(request):
+                return super().dispatch(request, *args, **kwargs)
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def custom_access_allowed(self, request):
+        if self._is_general_planning():
+            return self._general_access_allowed(request)
+        return False
+
+
 class SeasonPersonalPlanningExportView(
-    ExportMixin, SeasonAvailabilityMixin, DetailView
+    GeneralPlanningSupportMixin, ExportMixin, SeasonAvailabilityMixin, DetailView
 ):
     allow_season_fetch = True
     raise_without_cantons = False
@@ -850,7 +1015,16 @@ class SeasonPersonalPlanningExportView(
 
     @property
     def export_filename(self):
-        return _("Planning_Mois") + "-" + "-".join(self.season.cantons)
+        # Support aggregated season (general planning)
+        if hasattr(self.object, "dv_season"):
+            label = _(slugify("Planning général"))
+            return label + "-" + str(self.object.year)
+        return _(slugify("Planning mois")) + "-" + "-".join(self.object.cantons)
+
+    def get(self, request, *args, **kwargs):
+        # Bypass SeasonAvailabilityMixin.get_context_data to avoid self.season usage in aggregated mode
+        self.object = self.get_object()
+        return self.render_to_response({})
 
     def get_dataset(self):
         dataset = Dataset()
@@ -862,19 +1036,19 @@ class SeasonPersonalPlanningExportView(
             gettext("Heures"),
             gettext("Nombre de qualifs"),
         ]
-        # Trouve toutes les personnes qui sont présentes dans ce mois
+        # Trouve toutes les personnes qui sont présentes dans ce mois / période
         qs = get_user_model().objects
         user_filters = [
             # Ceux qui ont répondu (quoi que ce soit)
-            Q(availabilities__session__in=self.season.sessions_with_qualifs),
+            Q(availabilities__session__in=self.object.sessions_with_qualifs),
             # Moniteurs +
-            Q(sess_monplus__in=self.season.sessions_with_qualifs),
+            Q(sess_monplus__in=self.object.sessions_with_qualifs),
             # Moniteurs 2
-            Q(qualifs_mon2__session__in=self.season.sessions_with_qualifs),
+            Q(qualifs_mon2__session__in=self.object.sessions_with_qualifs),
             # Moniteurs 1
-            Q(qualifs_mon1__session__in=self.season.sessions_with_qualifs),
+            Q(qualifs_mon1__session__in=self.object.sessions_with_qualifs),
             # Intervenants
-            Q(qualifs_actor__session__in=self.season.sessions_with_qualifs),
+            Q(qualifs_actor__session__in=self.object.sessions_with_qualifs),
         ]
         # Get users that match any filter in `user_filters`.
         # We used to do it in a single DB query with OR clauses,
@@ -898,7 +1072,29 @@ class SeasonPersonalPlanningExportView(
         # Ajoute le canton d’affiliation comme deuxième colonne
         user_cantons_col = [""] * 6 + [user.profile.affiliation_canton for user in qs]
         dataset.append_col(user_cantons_col)
-        for session in self.season.sessions_with_qualifs:
+        # Limit sessions to those with a staff choice/assignment for the requested helper in aggregated mode
+        sessions_qs = self.object.sessions_with_qualifs
+        if hasattr(self.object, "dv_season"):
+            resolvermatch = self.request.resolver_match
+            try:
+                helperpk = int(resolvermatch.kwargs["helperpk"])
+            except (KeyError, TypeError):
+                helperpk = None
+            if helperpk:
+                # Include sessions where the helper is assigned in any qualification
+                chosen_ids = set(
+                    sessions_qs.filter(
+                        Q(qualifications__leader_id=helperpk)
+                        | Q(qualifications__helpers__id=helperpk)
+                        | Q(qualifications__actor_id=helperpk)
+                    ).values_list("id", flat=True)
+                )
+                if chosen_ids:
+                    sessions_qs = sessions_qs.filter(pk__in=chosen_ids)
+                else:
+                    sessions_qs = sessions_qs.none()
+
+        for session in sessions_qs:
             session_place = session.place
             if not session_place:
                 session_place = (
@@ -1028,7 +1224,195 @@ class SeasonPlanningView(SeasonAvailabilityMixin, DetailView):
         potential_helpers = self.potential_helpers()
         context["submenu_category"] = "season-planning"
         context["potential_helpers"] = potential_helpers
-        context["availabilities"] = self.get_initial(all_helpers=potential_helpers)
+        context["availabilities"] = (
+            self.get_initial(all_helpers=potential_helpers) or {}
+        )
+        return context
+
+
+class SeasonGeneralPlanningView(SeasonAvailabilityMixin, DetailView):
+    template_name = "challenge/season_planning.html"
+    allow_season_fetch = True
+    raise_without_cantons = False
+    view_is_planning = True
+
+    def _seasons_in_scope(self):
+        year = int(self.kwargs.get("year"))
+        dv_season = int(self.kwargs.get("dv_season"))
+        qs = seasons_in_scope_for_user(self.request.user, year, dv_season)
+        return year, dv_season, list(qs)
+
+    def get_object(self, queryset=None):
+        year, dv_season, seasons = self._seasons_in_scope()
+        helperpk_raw = self.kwargs.get("helperpk")
+        try:
+            helperpk = int(helperpk_raw) if helperpk_raw is not None else None
+        except (TypeError, ValueError):
+            helperpk = None
+        return GeneralSeason(
+            year=year, dv_season=dv_season, seasons=seasons, helper_id=helperpk
+        )
+
+    def dispatch(self, request, *args, **kwargs):
+        helperpk_raw = self.kwargs.get("helperpk")
+        if self.request.user and helperpk_raw is not None:
+            try:
+                if int(helperpk_raw) == 0:
+                    year = int(self.kwargs.get("year"))
+                    dv_season = int(self.kwargs.get("dv_season"))
+                    return HttpResponseRedirect(
+                        reverse_lazy(
+                            "season-general-planning",
+                            kwargs={
+                                "year": year,
+                                "dv_season": dv_season,
+                                "helperpk": self.request.user.pk,
+                            },
+                        )
+                    )
+            except (TypeError, ValueError):
+                pass
+
+        # Authorization logic similar to SeasonPlanningView, adapted for aggregated seasons
+        if has_permission(request.user, self.required_permission):
+            return super().dispatch(request, *args, **kwargs)
+
+        year, dv_season, seasons = self._seasons_in_scope()
+        user_is_helper = request.user.profile.is_paid_staff and (
+            request.user.profile.actor or request.user.profile.formation
+        )
+        any_running = any(s.staff_can_see_planning for s in seasons)
+        any_open = any(s.staff_can_update_availability for s in seasons)
+        if user_is_helper and any_running:
+            return super().dispatch(request, *args, **kwargs)
+        if user_is_helper and any_open:
+            # Mirror the redirect used in SeasonPlanningView when planning isn't available
+            target = next((s for s in seasons if s.staff_can_update_availability), None)
+            if target:
+                warning_message(
+                    request,
+                    _(
+                        "Le planning n'est pas encore disponible. En attendant, vous pouvez mettre à jour vos disponibilités."
+                    ),
+                )
+                return HttpResponseRedirect(
+                    reverse_lazy(
+                        "season-availabilities-update",
+                        kwargs={"pk": target.pk, "helperpk": request.user.pk},
+                    )
+                )
+
+        raise PermissionDenied
+
+    def custom_access_allowed(self, request):
+        # Allow aggregated general planning when appropriate; default rules handled in dispatch for redirects
+        if has_permission(request.user, self.required_permission):
+            return True
+        year, dv_season, seasons = self._seasons_in_scope()
+        user_is_helper = request.user.profile.is_paid_staff and (
+            request.user.profile.actor or request.user.profile.formation
+        )
+        any_running = any(s.staff_can_see_planning for s in seasons)
+        if user_is_helper and any_running:
+            return True
+        return False
+
+    def get_context_data(self, **kwargs):
+        context = DetailView.get_context_data(self, **kwargs)
+        context["season"] = self.object
+
+        helperpk_raw = self.kwargs.get("helperpk")
+        try:
+            helperpk = (
+                int(helperpk_raw)
+                if helperpk_raw is not None
+                else int(self.request.user.pk)
+            )
+        except (TypeError, ValueError):
+            helperpk = int(self.request.user.pk)
+
+        potential_helpers = self.potential_helpers(
+            qs=get_user_model().objects.filter(pk=helperpk)
+        )
+        context["submenu_category"] = "season-planning"
+        context["helperpk"] = helperpk
+        context["potential_helpers"] = potential_helpers
+        context["availabilities"] = (
+            self.get_initial(all_helpers=potential_helpers) or {}
+        )
+        if not context["availabilities"]:
+            context["availabilities"] = OrderedDict()
+
+        chosen_session_ids = set()
+        choice_prefix = CHOICE_FIELDKEY.format(hpk=helperpk, spk="").replace("-s", "")
+        for key, val in context["availabilities"].items():
+            m = re.search(r"^" + re.escape(choice_prefix) + r"-s(\d+)$", key)
+            if m and val:
+                try:
+                    chosen_session_ids.add(int(m.group(1)))
+                except ValueError:
+                    pass
+        base_sessions = self.object.sessions_with_qualifs
+        filtered_sessions = base_sessions.filter(pk__in=chosen_session_ids).annotate(
+            n_qualifs=Count("qualifications", distinct=True),
+            n_leaders=Count(
+                Case(
+                    When(
+                        availability_statuses__chosen_as=CHOSEN_AS_LEADER,
+                        then=F("availability_statuses__id"),
+                    ),
+                    output_field=IntegerField(),
+                ),
+                distinct=True,
+            ),
+            n_helpers=Count(
+                Case(
+                    When(
+                        availability_statuses__chosen_as=CHOSEN_AS_HELPER,
+                        then=F("availability_statuses__id"),
+                    ),
+                    output_field=IntegerField(),
+                ),
+                distinct=True,
+            ),
+            n_actors=Count(
+                Case(
+                    When(
+                        availability_statuses__chosen_as=CHOSEN_AS_ACTOR,
+                        then=F("availability_statuses__id"),
+                    ),
+                    output_field=IntegerField(),
+                ),
+                distinct=True,
+            ),
+        )
+        context["sessions"] = filtered_sessions
+
+        allowed_ids = set(filtered_sessions.values_list("pk", flat=True))
+        pruned = OrderedDict()
+        for key, value in context["availabilities"].items():
+            m = re.search(r"-s(\d+)", key)
+            if m:
+                try:
+                    spk = int(m.group(1))
+                except ValueError:
+                    spk = None
+                if spk in allowed_ids:
+                    # For availability entries, keep only if corresponding choice is True
+                    if AVAILABILITY_FIELDKEY.format(hpk=helperpk, spk="") in key:
+                        choice_key = CHOICE_FIELDKEY.format(hpk=helperpk, spk=spk)
+                        if context["availabilities"].get(choice_key):
+                            pruned[key] = value
+                    else:
+                        pruned[key] = value
+            else:
+                pruned[key] = value
+        context["availabilities"] = pruned
+
+        _, _, seasons = self._seasons_in_scope()
+        context["user_can_see_season"] = any(
+            s.unprivileged_user_can_see(self.request.user) for s in seasons
+        )
         return context
 
 
@@ -1177,6 +1561,7 @@ class SeasonStaffChoiceUpdateView(
     template_name = "challenge/season_staff_update.html"
     success_message = _("Choix du personnel mises à jour")
     form_class = SeasonStaffChoiceForm
+    form_filter_class = SeasonStaffFilterForm
     view_is_update = True
 
     def get_initial(self):
@@ -1193,6 +1578,10 @@ class SeasonStaffChoiceUpdateView(
     def get_context_data(self, **kwargs):
         context = super(SeasonStaffChoiceUpdateView, self).get_context_data(**kwargs)
         context["available_helpers"] = self.available_helpers
+        context["season_staff_filter_form"] = SeasonStaffFilterForm(
+            organisations=self._extract_orgas(context["sessions"])
+        )
+        context["availabilities"] = self.get_initial()
         return context
 
     def form_valid(self, form):
@@ -1233,6 +1622,15 @@ class SeasonStaffChoiceUpdateView(
         return HttpResponseRedirect(
             reverse_lazy("season-availabilities", kwargs={"pk": self.object.pk})
         )
+
+    def _extract_orgas(self, sessions):
+        seen_ids = set()
+        orgas = []
+        for session in sessions:
+            if session.orga and session.orga_id not in seen_ids:
+                seen_ids.add(session.orga_id)
+                orgas.append(session.orga)
+        return orgas
 
 
 class SeasonCreateView(
@@ -1309,21 +1707,29 @@ class SeasonErrorsListView(HasPermissionsMixin, SeasonMixin, ListView):
         )
 
 
-class SeasonPersonalPlanningExportFeed(ICalFeed):
-    timezone = settings.TIME_ZONE
+class SeasonPersonalPlanningExportFeed(GeneralPlanningSupportMixin, ICalFeed):
+    timezone = datetime.timezone.utc
     file_name = "sessions.ics"
 
     def __call__(self, request, *args, **kwargs):
-        self.object = self.season = Season.objects.get(pk=kwargs.get("pk"))
         self.request = request
+        self.kwargs = kwargs
         resolvermatch = self.request.resolver_match
         self.user = get_user_model().objects.get(
             pk=int(resolvermatch.kwargs["helperpk"])
         )
+
+        # Support "general" planning scope via the shared mixin
+        if self._is_general_planning():
+            if not self._general_access_allowed(request):
+                raise PermissionDenied
+            self.object = self.season = self._general_object()
+        else:
+            self.object = self.season = Season.objects.get(pk=kwargs.get("pk"))
         return super().__call__(request)
 
     def items(self):
-        return self.season.sessions_with_qualifs.filter(
+        return self.object.sessions_with_qualifs.filter(
             Q(superleader=self.user)
             | Q(qualifications__actor=self.user)
             | Q(qualifications__helpers=self.user)
@@ -1354,12 +1760,22 @@ class SeasonPersonalPlanningExportFeed(ICalFeed):
         )
 
     def item_start_datetime(self, session):
-        return session.start_datetime
+        return session.start_datetime.astimezone(datetime.timezone.utc)
 
     def item_end_datetime(self, session):
-        return session.end_datetime
+        return session.end_datetime.astimezone(datetime.timezone.utc)
 
     def item_link(self, session):
+        # Link back to the appropriate planning page depending on mode
+        if hasattr(self.object, "dv_season"):
+            return reverse(
+                "season-general-planning",
+                kwargs={
+                    "year": self.object.year,
+                    "dv_season": self.object.dv_season,
+                    "helperpk": self.user.id,
+                },
+            )
         return reverse(
             "season-planning", kwargs={"pk": self.season.pk, "helperpk": self.user.id}
         )

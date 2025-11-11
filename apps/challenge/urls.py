@@ -31,6 +31,7 @@ from .views import (
     QualiDeleteView,
     QualiUpdateView,
     SeasonActorListView,
+    SeasonAvailabilityReminderView,
     SeasonAvailabilityUpdateView,
     SeasonAvailabilityView,
     SeasonCreateView,
@@ -59,6 +60,8 @@ from .views import (
 )
 from .views.invoice import InvoiceListExport
 from .views.registration import register, register_confirm, register_validate
+from .views.season import SeasonGeneralPlanningView
+from .views.session import SessionCloneView
 
 urlpatterns = [
     # Settings
@@ -108,6 +111,21 @@ urlpatterns = [
                     r"(?P<dv_season>[0-4]{1})/$",
                     never_cache(SeasonListView.as_view()),
                     name="season-list",
+                ),
+                re_path(
+                    r"(?P<dv_season>[0-4]{1})/general/(?P<helperpk>[0-9]+)/$",
+                    never_cache(SeasonGeneralPlanningView.as_view()),
+                    name="season-general-planning",
+                ),
+                re_path(
+                    r"(?P<dv_season>[0-4]{1})/general/(?P<helperpk>[0-9]+)/(?P<format>[a-z]+)exportplanning$",
+                    never_cache(SeasonPersonalPlanningExportView.as_view()),
+                    name="season-personal-planning-export",
+                ),
+                re_path(
+                    r"(?P<dv_season>[0-4]{1})/general/(?P<helperpk>[0-9]+)/feed\.ics$",
+                    SeasonPersonalPlanningExportFeed(),
+                    name="season-personal-calendar",
                 ),
             ]
         ),
@@ -162,6 +180,11 @@ urlpatterns = [
                     r"^availability/$",
                     never_cache(SeasonAvailabilityView.as_view()),
                     name="season-availabilities",
+                ),
+                re_path(
+                    r"^availability/reminder/$",
+                    never_cache(SeasonAvailabilityReminderView.as_view()),
+                    name="season-availability-reminder",
                 ),
                 re_path(
                     r"^planning/(?P<helperpk>[0-9]+)/",
@@ -268,6 +291,11 @@ urlpatterns = [
         r"^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/update/$",
         SessionUpdateView.as_view(),
         name="session-update",
+    ),
+    re_path(
+        r"^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/clone/$",
+        SessionCloneView.as_view(),
+        name="session-clone",
     ),
     re_path(
         r"^(?P<seasonpk>[0-9]+)/s(?P<pk>[0-9]+)/delete/$",

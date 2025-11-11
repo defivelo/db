@@ -30,6 +30,7 @@ from apps.salary.forms import ControlTimesheetFormSet, TimesheetFormSet
 from apps.salary.models import Timesheet
 from defivelo.roles import has_permission
 
+from ...user.views.standard import ReturnUrlMixin
 from .. import timesheets_overview
 
 
@@ -44,12 +45,16 @@ class RedirectUserMonthlyTimesheets(RedirectView):
         )
 
 
-class UserMonthlyTimesheets(MonthArchiveView, FormView):
+class UserMonthlyTimesheets(MonthArchiveView, ReturnUrlMixin, FormView):
     date_field = "day"
     month_format = "%m"
     allow_empty = True
     allow_future = True
     template_name = "salary/month_timesheets.html"
+
+    @property
+    def success_url(self):
+        return reverse("salary:timesheets-overview", kwargs={"year": self.get_year()})
 
     def get_queryset(self):
         return (
@@ -201,9 +206,6 @@ class UserMonthlyTimesheets(MonthArchiveView, FormView):
         }
         return kwargs
 
-    def get_success_url(self):
-        return reverse("salary:timesheets-overview", kwargs={"year": self.get_year()})
-
     def form_valid(self, formset):
         """If the form is valid, save the associated model."""
         for form in formset:
@@ -273,22 +275,22 @@ class YearlyTimesheets(TemplateView):
 
         context["months"] = MONTHS_3
         context["timesheets_status_matrix"] = timesheets_status_matrix
-        context[
-            "show_reminder_button_months"
-        ] = timesheets_overview.get_missing_timesheet_status_per_month(
-            global_timesheets_status_matrix
+        context["show_reminder_button_months"] = (
+            timesheets_overview.get_missing_timesheet_status_per_month(
+                global_timesheets_status_matrix
+            )
         )
-        context[
-            "timesheets_amount"
-        ] = timesheets_overview.get_timesheets_amount_by_month(year=year, users=users)
-        context[
-            "orphaned_timesheets"
-        ] = timesheets_overview.get_orphaned_timesheets_per_month(
-            year=year,
-            users=users,
-            cantons=[active_canton]
-            if active_canton in dict(DV_STATE_CHOICES)
-            else None,
+        context["timesheets_amount"] = (
+            timesheets_overview.get_timesheets_amount_by_month(year=year, users=users)
+        )
+        context["orphaned_timesheets"] = (
+            timesheets_overview.get_orphaned_timesheets_per_month(
+                year=year,
+                users=users,
+                cantons=[active_canton]
+                if active_canton in dict(DV_STATE_CHOICES)
+                else None,
+            )
         )
         context["cantons"] = DV_STATE_CHOICES
         context["active_canton"] = (
@@ -563,7 +565,11 @@ class SendTimesheetsReminder(TemplateView):
             message = render_to_string(
                 "salary/email_send_timesheets_reminder.txt",
                 {
-                    "profile": {"get_full_name": _("{Prénom} {Nom}")},
+                    "profile": {
+                        "get_full_name": f"{user.first_name} {user.last_name}"
+                        if user
+                        else _("{Prénom} {Nom}")
+                    },
                     "current_site": Site.objects.get_current(),
                     "timesheets_url": timesheets_url,
                 },

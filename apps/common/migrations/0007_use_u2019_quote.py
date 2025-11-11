@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('common', '0006_unaccented_psql'),
+        ("common", "0006_unaccented_psql"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='address',
-            name='address_additional',
-            field=models.CharField(blank=True, max_length=255, verbose_name='Complément d’adresse'),
+            model_name="address",
+            name="address_additional",
+            field=models.CharField(
+                blank=True, max_length=255, verbose_name="Complément d’adresse"
+            ),
         ),
     ]

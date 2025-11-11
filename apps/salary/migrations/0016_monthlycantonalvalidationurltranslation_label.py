@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('salary', '0015_add_zoug'),
+        ("salary", "0015_add_zoug"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='monthlycantonalvalidationurltranslation',
-            name='label',
-            field=models.CharField(blank=True, max_length=255, verbose_name='Label'),
+            model_name="monthlycantonalvalidationurltranslation",
+            name="label",
+            field=models.CharField(blank=True, max_length=255, verbose_name="Label"),
         ),
     ]

@@ -2,11 +2,10 @@
 
 from django.contrib.auth import get_user_model
 from django.db import migrations
-
-from defivelo.roles import DV_AVAILABLE_ROLES
-
 from rolepermissions.checkers import has_role
 from rolepermissions.roles import assign_role, clear_roles
+
+from defivelo.roles import DV_AVAILABLE_ROLES
 
 
 def user_set_collaborator_and_reset_roles(apps, schema_editor):
@@ -29,7 +28,6 @@ def user_set_collaborator_and_reset_roles(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("user", "0060_reset_all_roles"),
     ]

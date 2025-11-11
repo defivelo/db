@@ -171,10 +171,9 @@ class SessionDetailView(SessionMixin, DetailView):
                 "name": _("Classe %s") % lettercounter(mysession.n_qualifications + 1),
             }
         )
-        context[
-            "statemanager_can_access"
-        ] = self.season_object.manager_can_crud and has_permission(
-            self.request.user, "challenge_session_crud"
+        context["statemanager_can_access"] = (
+            self.season_object.manager_can_crud
+            and has_permission(self.request.user, "challenge_session_crud")
         )
         context["coordinator_can_access"] = (
             self.season_object.coordinator_can_update
@@ -262,6 +261,44 @@ class SessionDetailView(SessionMixin, DetailView):
         if allowed:
             return super().dispatch(request, *args, **kwargs)
         raise PermissionDenied
+
+
+class SessionCloneView(SessionMixin, SuccessMessageMixin, UpdateView):
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Check allowances for cloning
+        """
+        if (
+            has_permission(request.user, self.required_permission)
+            and self.season
+            and self.season.manager_can_crud
+        ):
+            return super().dispatch(request, *args, **kwargs)
+        raise PermissionDenied
+
+    def get_form_kwargs(self):
+        args = super().get_form_kwargs()
+        if "instance" in args:
+            self._clear_clone_fields(args.get("instance"))
+
+        return args
+
+    def post(self, request, *args, **kwargs):
+        raise PermissionDenied('POST not allowed, use "create" url instead')
+
+    def _clear_clone_fields(self, obj: Session):
+        obj.pk = None
+        if self.request.method.lower() == "get":
+            obj.day = None
+            obj.begin = None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["action"] = reverse_lazy(
+            "session-create", kwargs={"seasonpk": self.kwargs.get("seasonpk")}
+        )
+        return context
 
 
 class SessionUpdateView(SessionMixin, SuccessMessageMixin, UpdateView):

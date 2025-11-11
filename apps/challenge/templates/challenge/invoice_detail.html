@@ -5,6 +5,7 @@
 
 {% block content %}
 
+<div id="watermark-container" data-label="{% if not invoice.is_locked %}{% trans "Devis" %}{% endif %}">
   <div class="invoice-address-from">
     <strong>{% trans "Coordination DÉFI VÉLO" %}</strong><br/>
     {% trans "c/o IDEE 21" %}<br/>
@@ -24,7 +25,12 @@
       <dt>{% trans "Statut" %}</dt>
       <dd>
         {{ invoice.get_status_display }}
-        {% if invoice.is_locked %}<br/>{% include 'export_buttons.html' with printonly=True %}{% endif %}
+        {% if not invoice.is_locked %}
+          {% trans 'Imprimer le devis' as print_label %}
+          {% include 'export_buttons.html' with printonly=True print_label=print_label %}
+        {% else %}
+          {% include 'export_buttons.html' with printonly=True %}
+        {% endif %}
       </dd>
     </dl>
     {% if user_can_edit_invoice %}
@@ -139,4 +145,5 @@
     {% trans "Avec nos remerciements," %}<br/><br/>
     {% trans "DÉFI VÉLO" %}
   </div>
+</div>
 {% endblock %}

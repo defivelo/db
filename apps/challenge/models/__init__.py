@@ -19,3 +19,14 @@ from .qualification import Qualification, QualificationActivity
 from .season import Season
 from .session import Session
 from .settings import AnnualStateSetting
+
+__all__ = [
+    "AnnualStateSetting",
+    "HelperSessionAvailability",
+    "Invoice",
+    "InvoiceLine",
+    "Qualification",
+    "QualificationActivity",
+    "Season",
+    "Session",
+]

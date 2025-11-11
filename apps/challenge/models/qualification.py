@@ -17,7 +17,7 @@
 from django.conf import settings
 from django.core.validators import MaxValueValidator
 from django.db import models
-from django.db.models import Q
+from django.db.models import IntegerChoices, Q
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext
@@ -31,7 +31,7 @@ from simple_history.models import HistoricalRecords
 from apps.salary.models import Timesheet
 from apps.user import FORMATION_KEYS, FORMATION_M2
 
-from .. import CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER, MAX_MONO1_PER_QUALI
+from .. import CHOSEN_AS_ACTOR, CHOSEN_AS_HELPER, CHOSEN_AS_LEADER
 from .session import Session
 
 # Using non-lazy translation to be exportable in XSL
@@ -62,6 +62,37 @@ class QualificationActivity(TranslatableModel):
         return self.name
 
 
+def num2words(number: int) -> str:
+    num_map = {
+        0: _("zéro"),
+        1: _("un"),
+        2: _("deux"),
+        3: _("trois"),
+    }
+    return str(num_map.get(number, str(number)))
+
+
+class MonitorNumberEnum(IntegerChoices):
+    """
+    Represente le nombre de moniteurs 1 et 2 pour une qualif.
+    - Si nombre de moniteurs = 1 alors M1 = 0, M2 = 1
+    - Si nombre de moniteurs = 2 alors M1 = 1, M2 = 1
+    - Si nombre de moniteurs = 3 alors M1 = 2, M2 = 1
+    """
+
+    ONE = 1, "1"
+    TWO = 2, "2"
+    THREE = 3, "3"
+
+    @property
+    def m1(self) -> int:
+        return max(0, self.value - 1)
+
+    @property
+    def m2(self) -> int:
+        return 1
+
+
 class Qualification(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     # TODO: Replace with automated or classes objects
@@ -83,6 +114,12 @@ class Qualification(models.Model):
             MaxValueValidator(30),
         ],
     )
+    n_helpers = models.IntegerField(
+        _("Nombre de moniteurs"),
+        choices=MonitorNumberEnum.choices,
+        default=MonitorNumberEnum.THREE,
+    )
+
     n_bikes = models.PositiveSmallIntegerField(
         _("Nombre de vélos"),
         blank=True,
@@ -154,6 +191,10 @@ class Qualification(models.Model):
     comments = models.TextField(_("Remarques"), blank=True)
     history = HistoricalRecords()
 
+    @property
+    def n_helpers_enum(self) -> MonitorNumberEnum:
+        return MonitorNumberEnum(self.n_helpers)
+
     @cached_property
     def has_availability_incoherences(self):
         # Check les intervenants
@@ -215,7 +256,7 @@ class Qualification(models.Model):
         if not self.n_participants:
             errors.append(gettext("Nombre de participants"))
         if self.session.orga.coordinator != user:
-            if not self.leader or self.helpers.count() != MAX_MONO1_PER_QUALI:
+            if not self.leader or self.helpers.count() != self.n_helpers_enum.m1:
                 errors.append(gettext("Moniteurs"))
             if not self.actor:
                 errors.append(gettext("Intervenant"))

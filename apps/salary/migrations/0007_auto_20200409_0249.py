@@ -4,19 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('salary', '0006_data_update_timesheets'),
+        ("salary", "0006_data_update_timesheets"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='timesheet',
-            name='time_actor',
+            model_name="timesheet",
+            name="time_actor",
         ),
         migrations.AddField(
-            model_name='timesheet',
-            name='actor_count',
-            field=models.IntegerField(default=0, verbose_name='Intervention(s)'),
+            model_name="timesheet",
+            name="actor_count",
+            field=models.IntegerField(default=0, verbose_name="Intervention(s)"),
         ),
     ]

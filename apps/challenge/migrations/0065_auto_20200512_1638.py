@@ -4,20 +4,23 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('challenge', '0064_alter_invoiceline_ordering_again'),
+        ("challenge", "0064_alter_invoiceline_ordering_again"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='historicalsession',
-            name='visible',
-            field=models.BooleanField(default=False, verbose_name='Visible pour les moniteurs'),
+            model_name="historicalsession",
+            name="visible",
+            field=models.BooleanField(
+                default=False, verbose_name="Visible pour les moniteurs"
+            ),
         ),
         migrations.AddField(
-            model_name='session',
-            name='visible',
-            field=models.BooleanField(default=False, verbose_name='Visible pour les moniteurs'),
+            model_name="session",
+            name="visible",
+            field=models.BooleanField(
+                default=False, verbose_name="Visible pour les moniteurs"
+            ),
         ),
     ]

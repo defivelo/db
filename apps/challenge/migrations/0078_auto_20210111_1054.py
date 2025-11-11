@@ -5,40 +5,69 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('challenge', '0077_auto_20201214_1704'),
+        ("challenge", "0077_auto_20201214_1704"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='historicalqualification',
-            name='n_bikes',
-            field=models.PositiveSmallIntegerField(blank=True, null=True, validators=[django.core.validators.MaxValueValidator(30)], verbose_name='Nombre de vélos'),
+            model_name="historicalqualification",
+            name="n_bikes",
+            field=models.PositiveSmallIntegerField(
+                blank=True,
+                null=True,
+                validators=[django.core.validators.MaxValueValidator(30)],
+                verbose_name="Nombre de vélos",
+            ),
         ),
         migrations.AlterField(
-            model_name='historicalqualification',
-            name='n_helmets',
-            field=models.PositiveSmallIntegerField(blank=True, null=True, validators=[django.core.validators.MaxValueValidator(30)], verbose_name='Nombre de casques'),
+            model_name="historicalqualification",
+            name="n_helmets",
+            field=models.PositiveSmallIntegerField(
+                blank=True,
+                null=True,
+                validators=[django.core.validators.MaxValueValidator(30)],
+                verbose_name="Nombre de casques",
+            ),
         ),
         migrations.AlterField(
-            model_name='historicalqualification',
-            name='n_participants',
-            field=models.PositiveSmallIntegerField(blank=True, null=True, validators=[django.core.validators.MaxValueValidator(30)], verbose_name='Nombre de participants'),
+            model_name="historicalqualification",
+            name="n_participants",
+            field=models.PositiveSmallIntegerField(
+                blank=True,
+                null=True,
+                validators=[django.core.validators.MaxValueValidator(30)],
+                verbose_name="Nombre de participants",
+            ),
         ),
         migrations.AlterField(
-            model_name='qualification',
-            name='n_bikes',
-            field=models.PositiveSmallIntegerField(blank=True, null=True, validators=[django.core.validators.MaxValueValidator(30)], verbose_name='Nombre de vélos'),
+            model_name="qualification",
+            name="n_bikes",
+            field=models.PositiveSmallIntegerField(
+                blank=True,
+                null=True,
+                validators=[django.core.validators.MaxValueValidator(30)],
+                verbose_name="Nombre de vélos",
+            ),
         ),
         migrations.AlterField(
-            model_name='qualification',
-            name='n_helmets',
-            field=models.PositiveSmallIntegerField(blank=True, null=True, validators=[django.core.validators.MaxValueValidator(30)], verbose_name='Nombre de casques'),
+            model_name="qualification",
+            name="n_helmets",
+            field=models.PositiveSmallIntegerField(
+                blank=True,
+                null=True,
+                validators=[django.core.validators.MaxValueValidator(30)],
+                verbose_name="Nombre de casques",
+            ),
         ),
         migrations.AlterField(
-            model_name='qualification',
-            name='n_participants',
-            field=models.PositiveSmallIntegerField(blank=True, null=True, validators=[django.core.validators.MaxValueValidator(30)], verbose_name='Nombre de participants'),
+            model_name="qualification",
+            name="n_participants",
+            field=models.PositiveSmallIntegerField(
+                blank=True,
+                null=True,
+                validators=[django.core.validators.MaxValueValidator(30)],
+                verbose_name="Nombre de participants",
+            ),
         ),
     ]

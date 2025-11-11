@@ -30,10 +30,13 @@
     </nav>
 
     {% if statemanager_can_access or coordinator_can_access %}
-        <div class="hidden-print">
-            <a class="btn btn-primary pull-right" href="{% url 'session-update' seasonpk=season.pk pk=session.pk %}">{% trans "Éditer" %}</a>
+        <div class="hidden-print pull-right">
+            <a class="btn btn-default" title="{% trans "Dupliquer" %}" href="{% url 'session-clone' seasonpk=season.pk pk=session.pk %}"><span class="glyphicon glyphicon-copy"></span></a>
+            <a class="btn btn-primary" href="{% url 'session-update' seasonpk=season.pk pk=session.pk %}">{% trans "Éditer" %}</a>
         </div>
     {% endif %}
+    <h2 class="hidden-print">{% trans "Session" %}</h2>
+
     <table class="table table-condensed">
     <tr><th>{% trans "Établissement" %}</th>
         <td>{% if user|can:'orga_crud' %}
@@ -152,6 +155,7 @@
                     </td>
                 {% endfor %}
         </tr>
+        <tr><th>{% trans "Nombre de moniteurs" %}</th>{% for quali in session.qualifications.all %}<td>{{ quali.n_helpers }}</td>{% endfor %}</tr>
         <tr><th>{% trans "Moniteur 2" %}</th>
                 {% for quali in session.qualifications.all %}<td>{{ quali.leader|profile_tag:user_is_coordinator }}</td>{% endfor %}</tr>
         <tr><th>{% trans "Moniteurs 1" %}</th>

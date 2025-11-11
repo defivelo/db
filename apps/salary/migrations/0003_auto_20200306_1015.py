@@ -4,13 +4,15 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("salary", "0002_timesheet_validated_by"),
     ]
 
     operations = [
-        migrations.RemoveField(model_name="timesheet", name="time_monitor",),
+        migrations.RemoveField(
+            model_name="timesheet",
+            name="time_monitor",
+        ),
         migrations.AddField(
             model_name="timesheet",
             name="time_helper",

@@ -5,15 +5,23 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('user', '0045_allow_power_user_to_mark_inactive'),
+        ("user", "0045_allow_power_user_to_mark_inactive"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='userprofile',
-            name='bagstatus',
-            field=models.PositiveSmallIntegerField(choices=[(0, '---'), (10, 'En pr\xeat'), (20, 'Pay\xe9'), (30, 'Offert')], default=0, verbose_name='Sac D\xe9fi V\xe9lo'),
+            model_name="userprofile",
+            name="bagstatus",
+            field=models.PositiveSmallIntegerField(
+                choices=[
+                    (0, "---"),
+                    (10, "En pr\xeat"),
+                    (20, "Pay\xe9"),
+                    (30, "Offert"),
+                ],
+                default=0,
+                verbose_name="Sac D\xe9fi V\xe9lo",
+            ),
         ),
     ]

@@ -31,6 +31,17 @@
 #  # USER_ID: 1001  # Set if your dev user  is non-1000
 #  # GROUP_ID: 1001 # Set if your dev group is non-1000
 # services:
+#  mailpit:
+#   networks:
+#     - default
+#     - pontsun
+#   labels:
+#     - 'traefik.enable=true'
+#     - 'traefik.docker.network=pontsun'
+#     - 'traefik.http.routers.defivelo-mail.entrypoints=http,https'
+#     - 'traefik.http.routers.defivelo-mail.middlewares=https_redirect@file'
+#     - 'traefik.http.routers.defivelo-mail.rule=Host(`defivelo-mail.docker.test`)'
+#     - 'traefik.http.services.defivelo-mail.loadbalancer.server.port=8025'
 #  backend:
 #    environment:
 #      <<: *x-environment
@@ -44,7 +55,6 @@
 #      - default
 #      - pontsun
 #    labels:
-#      # With traefik 2.8~
 #      - 'traefik.enable=true'
 #      - 'traefik.http.routers.defivelo.entrypoints=http,https'
 #      - 'traefik.http.routers.defivelo.middlewares=https_redirect@file'

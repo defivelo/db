@@ -5,15 +5,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('orga', '0005_auto_20170829_0959'),
+        ("orga", "0005_auto_20170829_0959"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='organization',
-            name='abbr',
-            field=models.CharField(blank=True, max_length=16, verbose_name='Abréviation'),
+            model_name="organization",
+            name="abbr",
+            field=models.CharField(
+                blank=True, max_length=16, verbose_name="Abréviation"
+            ),
         ),
     ]

@@ -192,8 +192,8 @@ class UserProfile(Address, models.Model):
         blank=True,
     )
     social_security = models.CharField(_("N° AVS"), max_length=16, blank=True)
-    natel = models.CharField(max_length=13, blank=True)
-    phone = models.CharField(_("Téléphone"), max_length=13, blank=True)
+    natel = models.CharField(max_length=17, blank=True)
+    phone = models.CharField(_("Téléphone"), max_length=17, blank=True)
     affiliation_canton = models.CharField(
         _("Canton d’affiliation"),
         choices=DV_STATE_CHOICES_WITH_DEFAULT,
@@ -621,7 +621,7 @@ class UserManagedState(models.Model):
         return [c[1] for c in DV_STATE_CHOICES if c[0] == self.address_canton][0]
 
     def __str__(self):
-        return _("{name} est chargé·e de projet pour le canton " "{canton}").format(
+        return _("{name} est chargé·e de projet pour le canton {canton}").format(
             name=self.user.get_full_name(), canton=self.canton
         )
 

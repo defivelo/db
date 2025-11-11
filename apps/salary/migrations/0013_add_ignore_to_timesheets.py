@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('salary', '0012_add_schwyz'),
+        ("salary", "0012_add_schwyz"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='timesheet',
-            name='ignore',
-            field=models.BooleanField(default=False, verbose_name='Ignorer'),
+            model_name="timesheet",
+            name="ignore",
+            field=models.BooleanField(default=False, verbose_name="Ignorer"),
         ),
     ]

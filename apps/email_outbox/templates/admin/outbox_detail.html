@@ -1,0 +1,53 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div id="content-main">
+    <h1>{{ subject }}</h1>
+    <div class="module">
+      <table>
+        <tbody>
+          <tr>
+            <th>{% trans "Sent at" %}</th>
+            <td>{{ sent_at }}</td>
+          </tr>
+          <tr>
+            <th>{% trans "From" %}</th>
+            <td>{{ from_email }}</td>
+          </tr>
+          <tr>
+            <th>{% trans "To" %}</th>
+            <td>{{ to|join:", " }}</td>
+          </tr>
+          <tr>
+            <th>CC</th>
+            <td>{{ cc|join:", " }}</td>
+          </tr>
+          <tr>
+            <th>BCC</th>
+            <td>{{ bcc|join:", " }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    {% if attachments %}
+      <h2>{% trans "Attachments" %}</h2>
+      <ul>
+        {% for a in attachments %}
+          <li>
+            <a href="{% url 'email-outbox-attachment' idx a.aidx %}">{{ a.name }}</a>
+            <small>({{ a.content_type }}, {{ a.size }} bytes)</small>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <h2>{% trans "Body" %}</h2>
+    <iframe src="{% url 'email-outbox-body' idx %}" width="100%" height="600" style="border:1px solid #ddd"></iframe>
+
+    <p><a href="{% url 'email-outbox-list' %}">‹ {% trans "Back to list" %}</a></p>
+  </div>
+{% endblock %}
+
+

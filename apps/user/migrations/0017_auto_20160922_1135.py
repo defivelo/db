@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 
+
 def takefirstcanton(apps, schema_editor):
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
@@ -17,16 +18,30 @@ def takefirstcanton(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('user', '0016_auto_20160913_1155'),
+        ("user", "0016_auto_20160913_1155"),
     ]
 
     operations = [
         migrations.RunPython(takefirstcanton),
         migrations.AlterField(
-            model_name='userprofile',
-            name='activity_cantons',
-            field=models.CharField(choices=[('BS', 'Basel-Stadt'), ('BE', 'Berne'), ('FR', 'Fribourg'), ('GE', 'Geneva'), ('LU', 'Lucerne'), ('NE', 'Neuchatel'), ('SG', 'St. Gallen'), ('VS', 'Valais'), ('VD', 'Vaud'), ('ZH', 'Zurich')], verbose_name="Canton d'affiliation", max_length=2),
+            model_name="userprofile",
+            name="activity_cantons",
+            field=models.CharField(
+                choices=[
+                    ("BS", "Basel-Stadt"),
+                    ("BE", "Berne"),
+                    ("FR", "Fribourg"),
+                    ("GE", "Geneva"),
+                    ("LU", "Lucerne"),
+                    ("NE", "Neuchatel"),
+                    ("SG", "St. Gallen"),
+                    ("VS", "Valais"),
+                    ("VD", "Vaud"),
+                    ("ZH", "Zurich"),
+                ],
+                verbose_name="Canton d'affiliation",
+                max_length=2,
+            ),
         ),
     ]

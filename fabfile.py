@@ -50,7 +50,7 @@ ENVIRONMENTS = {
             "SITE_DOMAIN": "staging.intranet.defi-velo.ch",
             "SASSC_BIN_PATH": "/var/www/intranet.defi-velo.ch/staging/venv/bin/pysassc",
             "VIRTUAL_ENV": "/var/www/intranet.defi-velo.ch/staging/venv",
-            "USE_DB_EMAIL_BACKEND": "1",
+            "EMAIL_URL": "file:////tmp/dv_emails",
             "DJANGO_SETTINGS_MODULE": "defivelo.settings.staging",
         },
     },
@@ -462,7 +462,6 @@ def reset_db_from_prod(c):
 
 
 @task
-@remote
 def import_db(c, dump_file=None):
     """
     Restore the given database dump.
@@ -470,6 +469,10 @@ def import_db(c, dump_file=None):
     The dump must be a gzipped SQL dump. If the dump_file parameter is not set,
     the database will be dumped and retrieved from the remote host.
     """
+
+    if not dump_file and not hasattr(c, "conn"):
+        raise RuntimeError("Must either specify a dump_file or an environment")
+
     db_credentials = os.environ.get("DATABASE_URL")
     if not db_credentials:
         with open("envdir/DATABASE_URL", "r") as db_credentials_file:
@@ -498,16 +501,14 @@ def import_db(c, dump_file=None):
             SELECT pg_terminate_backend(pid)
             FROM pg_stat_activity
             WHERE pid != pg_backend_pid()'
-        """.format(
-            **db_info
-        ),
+        """.format(**db_info),
         env=env,
     )
 
     c.run("dropdb -h '{host}' -U '{user}' '{db}'".format(**db_info), env=env)
     c.run("createdb -h '{host}' -U '{user}' '{db}'".format(**db_info), env=env)
     c.run(
-        "gunzip -c {db_dump}|psql -h '{host}' -U '{user}' '{db}'".format(**db_info),
+        "gunzip -c {db_dump}| psql -h '{host}' -U '{user}' '{db}'".format(**db_info),
         env=env,
     )
 

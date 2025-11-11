@@ -40,9 +40,7 @@ class EmailAddressAdminForm(forms.ModelForm):
             EmailAddress.objects.filter(
                 user=self.instance.user,
                 primary=True,
-            ).exclude(
-                id=self.instance.id
-            ).update(primary=False)
+            ).exclude(id=self.instance.id).update(primary=False)
 
         return super().save(commit)
 

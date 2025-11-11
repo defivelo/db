@@ -2,172 +2,613 @@
 from __future__ import unicode_literals
 
 import datetime
-from django.conf import settings
-from django.db import migrations, models
+
 import django.db.models.deletion
 import simple_history.models
+from django.conf import settings
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('orga', '0006_auto_20170831_1201'),
-        ('common', '0006_unaccented_psql'),
-        ('challenge', '0049_helperseasonworkwish'),
+        ("orga", "0006_auto_20170831_1201"),
+        ("common", "0006_unaccented_psql"),
+        ("challenge", "0049_helperseasonworkwish"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='HistoricalHelperSeasonWorkWish',
+            name="HistoricalHelperSeasonWorkWish",
             fields=[
-                ('id', models.IntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('created_on', models.DateTimeField(blank=True, editable=False)),
-                ('amount', models.PositiveSmallIntegerField(default=0, verbose_name="Quantit\xe9 d'engagements souhait\xe9s")),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_date', models.DateTimeField()),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('helper', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('season', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='challenge.Season')),
+                (
+                    "id",
+                    models.IntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                ("created_on", models.DateTimeField(blank=True, editable=False)),
+                (
+                    "amount",
+                    models.PositiveSmallIntegerField(
+                        default=0, verbose_name="Quantit\xe9 d'engagements souhait\xe9s"
+                    ),
+                ),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                ("history_date", models.DateTimeField()),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "helper",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "season",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="challenge.Season",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': 'history_date',
-                'verbose_name': 'historical helper season work wish',
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": "history_date",
+                "verbose_name": "historical helper season work wish",
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalHelperSessionAvailability',
+            name="HistoricalHelperSessionAvailability",
             fields=[
-                ('id', models.IntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('created_on', models.DateTimeField(blank=True, editable=False)),
-                ('availability', models.CharField(choices=[('y', 'Oui'), ('i', 'Si n\xe9cessaire'), ('n', 'Non')], max_length=1, verbose_name='Disponible')),
-                ('chosen_as', models.PositiveSmallIntegerField(choices=[(0, 'Pas choisi'), (1, 'Choisi'), (2, 'Comme intervenant'), (5, 'Moniteur de Secours'), (3, 'Moniteur 1'), (4, 'Moniteur 2')], default=0, verbose_name='S\xe9lectionn\xe9 pour la session comme')),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_date', models.DateTimeField()),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('helper', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('session', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='challenge.Session')),
+                (
+                    "id",
+                    models.IntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                ("created_on", models.DateTimeField(blank=True, editable=False)),
+                (
+                    "availability",
+                    models.CharField(
+                        choices=[("y", "Oui"), ("i", "Si n\xe9cessaire"), ("n", "Non")],
+                        max_length=1,
+                        verbose_name="Disponible",
+                    ),
+                ),
+                (
+                    "chosen_as",
+                    models.PositiveSmallIntegerField(
+                        choices=[
+                            (0, "Pas choisi"),
+                            (1, "Choisi"),
+                            (2, "Comme intervenant"),
+                            (5, "Moniteur de Secours"),
+                            (3, "Moniteur 1"),
+                            (4, "Moniteur 2"),
+                        ],
+                        default=0,
+                        verbose_name="S\xe9lectionn\xe9 pour la session comme",
+                    ),
+                ),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                ("history_date", models.DateTimeField()),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "helper",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "session",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="challenge.Session",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': 'history_date',
-                'verbose_name': 'historical Disponibilit\xe9 par session',
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": "history_date",
+                "verbose_name": "historical Disponibilit\xe9 par session",
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalQualification',
+            name="HistoricalQualification",
             fields=[
-                ('id', models.IntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('created_on', models.DateTimeField(blank=True, editable=False)),
-                ('name', models.CharField(max_length=255, verbose_name='Nom de la classe')),
-                ('class_teacher_fullname', models.CharField(blank=True, max_length=512, verbose_name='Enseignant')),
-                ('class_teacher_natel', models.CharField(blank=True, max_length=13, verbose_name='Natel enseignant')),
-                ('n_participants', models.PositiveSmallIntegerField(blank=True, null=True, verbose_name='Nombre de participants')),
-                ('n_bikes', models.PositiveSmallIntegerField(blank=True, null=True, verbose_name='Nombre de v\xe9los')),
-                ('n_helmets', models.PositiveSmallIntegerField(blank=True, null=True, verbose_name='Nombre de casques')),
-                ('comments', models.TextField(blank=True, verbose_name='Remarques')),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_date', models.DateTimeField()),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('activity_A', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='challenge.QualificationActivity')),
-                ('activity_B', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='challenge.QualificationActivity')),
-                ('activity_C', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='challenge.QualificationActivity')),
-                ('actor', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('leader', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('session', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='challenge.Session')),
+                (
+                    "id",
+                    models.IntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                ("created_on", models.DateTimeField(blank=True, editable=False)),
+                (
+                    "name",
+                    models.CharField(max_length=255, verbose_name="Nom de la classe"),
+                ),
+                (
+                    "class_teacher_fullname",
+                    models.CharField(
+                        blank=True, max_length=512, verbose_name="Enseignant"
+                    ),
+                ),
+                (
+                    "class_teacher_natel",
+                    models.CharField(
+                        blank=True, max_length=13, verbose_name="Natel enseignant"
+                    ),
+                ),
+                (
+                    "n_participants",
+                    models.PositiveSmallIntegerField(
+                        blank=True, null=True, verbose_name="Nombre de participants"
+                    ),
+                ),
+                (
+                    "n_bikes",
+                    models.PositiveSmallIntegerField(
+                        blank=True, null=True, verbose_name="Nombre de v\xe9los"
+                    ),
+                ),
+                (
+                    "n_helmets",
+                    models.PositiveSmallIntegerField(
+                        blank=True, null=True, verbose_name="Nombre de casques"
+                    ),
+                ),
+                ("comments", models.TextField(blank=True, verbose_name="Remarques")),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                ("history_date", models.DateTimeField()),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "activity_A",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="challenge.QualificationActivity",
+                    ),
+                ),
+                (
+                    "activity_B",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="challenge.QualificationActivity",
+                    ),
+                ),
+                (
+                    "activity_C",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="challenge.QualificationActivity",
+                    ),
+                ),
+                (
+                    "actor",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "leader",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "session",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="challenge.Session",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': 'history_date',
-                'verbose_name': "historical Qualif'",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": "history_date",
+                "verbose_name": "historical Qualif'",
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalQualificationActivity',
+            name="HistoricalQualificationActivity",
             fields=[
-                ('id', models.IntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('category', models.CharField(blank=True, choices=[('A', 'Agilit\xe9'), ('B', 'M\xe9canique'), ('C', 'Rencontre')], max_length=1, verbose_name='Cat\xe9gorie')),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_date', models.DateTimeField()),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.IntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "category",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("A", "Agilit\xe9"),
+                            ("B", "M\xe9canique"),
+                            ("C", "Rencontre"),
+                        ],
+                        max_length=1,
+                        verbose_name="Cat\xe9gorie",
+                    ),
+                ),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                ("history_date", models.DateTimeField()),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': 'history_date',
-                'verbose_name': 'historical Poste',
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": "history_date",
+                "verbose_name": "historical Poste",
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalSeason',
+            name="HistoricalSeason",
             fields=[
-                ('id', models.IntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('created_on', models.DateTimeField(blank=True, editable=False)),
-                ('year', models.PositiveSmallIntegerField(verbose_name='Ann\xe9e')),
-                ('season', models.PositiveSmallIntegerField(choices=[(1, 'Printemps'), (3, 'Automne')], default=1, verbose_name='Saison')),
-                ('cantons', models.CharField(choices=[(b'AR', 'Appenzell Ausserrhoden'), (b'BE', 'Berne'), (b'BS', 'Basel-Stadt'), (b'FR', 'Fribourg'), (b'GE', 'Geneva'), (b'JU', 'Jura'), (b'LU', 'Lucerne'), (b'NE', 'Neuchatel'), (b'SG', 'St. Gallen'), (b'VD', 'Vaud'), (b'VS', 'Valais'), ('WS', 'Haut-Valais'), (b'ZH', 'Zurich')], max_length=38, verbose_name='Cantons')),
-                ('state', models.PositiveSmallIntegerField(choices=[(1, 'Planification (invisible)'), (2, 'Annonc\xe9e (rentr\xe9e des disponibilit\xe9s)'), (3, 'En cours (corrections que par charg\xe9\xb7e\xb7s de projet)'), (4, 'Termin\xe9e'), (5, 'Archiv\xe9e')], default=1, verbose_name='\xc9tat')),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_date', models.DateTimeField()),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('leader', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.IntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                ("created_on", models.DateTimeField(blank=True, editable=False)),
+                ("year", models.PositiveSmallIntegerField(verbose_name="Ann\xe9e")),
+                (
+                    "season",
+                    models.PositiveSmallIntegerField(
+                        choices=[(1, "Printemps"), (3, "Automne")],
+                        default=1,
+                        verbose_name="Saison",
+                    ),
+                ),
+                (
+                    "cantons",
+                    models.CharField(
+                        choices=[
+                            (b"AR", "Appenzell Ausserrhoden"),
+                            (b"BE", "Berne"),
+                            (b"BS", "Basel-Stadt"),
+                            (b"FR", "Fribourg"),
+                            (b"GE", "Geneva"),
+                            (b"JU", "Jura"),
+                            (b"LU", "Lucerne"),
+                            (b"NE", "Neuchatel"),
+                            (b"SG", "St. Gallen"),
+                            (b"VD", "Vaud"),
+                            (b"VS", "Valais"),
+                            ("WS", "Haut-Valais"),
+                            (b"ZH", "Zurich"),
+                        ],
+                        max_length=38,
+                        verbose_name="Cantons",
+                    ),
+                ),
+                (
+                    "state",
+                    models.PositiveSmallIntegerField(
+                        choices=[
+                            (1, "Planification (invisible)"),
+                            (2, "Annonc\xe9e (rentr\xe9e des disponibilit\xe9s)"),
+                            (
+                                3,
+                                "En cours (corrections que par charg\xe9\xb7e\xb7s de projet)",
+                            ),
+                            (4, "Termin\xe9e"),
+                            (5, "Archiv\xe9e"),
+                        ],
+                        default=1,
+                        verbose_name="\xc9tat",
+                    ),
+                ),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                ("history_date", models.DateTimeField()),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "leader",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': 'history_date',
-                'verbose_name': 'historical Saison',
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": "history_date",
+                "verbose_name": "historical Saison",
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalSession',
+            name="HistoricalSession",
             fields=[
-                ('id', models.IntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('address_street', models.CharField(blank=True, max_length=255, verbose_name='Rue')),
-                ('address_no', models.CharField(blank=True, max_length=8, verbose_name='N\xb0')),
-                ('address_additional', models.CharField(blank=True, max_length=255, verbose_name="Compl\xe9ment d'adresse")),
-                ('address_zip', models.CharField(blank=True, max_length=4, verbose_name='NPA')),
-                ('address_city', models.CharField(blank=True, max_length=64, verbose_name='Ville')),
-                ('address_canton', models.CharField(blank=True, max_length=2, verbose_name='Canton')),
-                ('created_on', models.DateTimeField(blank=True, editable=False)),
-                ('day', models.DateField(blank=True, verbose_name='Date')),
-                ('begin', models.TimeField(blank=True, null=True, verbose_name='D\xe9but')),
-                ('duration', models.DurationField(default=datetime.timedelta(0, 10800), verbose_name='Dur\xe9e')),
-                ('place', models.CharField(blank=True, max_length=512, verbose_name="Lieu de la Qualif'")),
-                ('fallback_plan', models.CharField(blank=True, choices=[('A', 'Programme d\xe9luge'), ('B', 'Annulation'), ('C', 'Report \u2026'), ('D', 'Autre \u2026')], max_length=1, verbose_name='Mauvais temps')),
-                ('helpers_time', models.TimeField(blank=True, null=True, verbose_name='Heure rendez-vous moniteurs')),
-                ('helpers_place', models.CharField(blank=True, max_length=512, verbose_name='Lieu rendez-vous moniteurs')),
-                ('apples', models.CharField(blank=True, max_length=512, verbose_name='Pommes')),
-                ('bikes_concept', models.CharField(blank=True, max_length=512, verbose_name='Logistique v\xe9los')),
-                ('bikes_phone', models.CharField(blank=True, max_length=13, verbose_name='N\xb0 de contact v\xe9los')),
-                ('comments', models.TextField(blank=True, verbose_name='Remarques')),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_date', models.DateTimeField()),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('address_ptr', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='common.Address')),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('orga', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='orga.Organization')),
-                ('superleader', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.IntegerField(
+                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "address_street",
+                    models.CharField(blank=True, max_length=255, verbose_name="Rue"),
+                ),
+                (
+                    "address_no",
+                    models.CharField(blank=True, max_length=8, verbose_name="N\xb0"),
+                ),
+                (
+                    "address_additional",
+                    models.CharField(
+                        blank=True,
+                        max_length=255,
+                        verbose_name="Compl\xe9ment d'adresse",
+                    ),
+                ),
+                (
+                    "address_zip",
+                    models.CharField(blank=True, max_length=4, verbose_name="NPA"),
+                ),
+                (
+                    "address_city",
+                    models.CharField(blank=True, max_length=64, verbose_name="Ville"),
+                ),
+                (
+                    "address_canton",
+                    models.CharField(blank=True, max_length=2, verbose_name="Canton"),
+                ),
+                ("created_on", models.DateTimeField(blank=True, editable=False)),
+                ("day", models.DateField(blank=True, verbose_name="Date")),
+                (
+                    "begin",
+                    models.TimeField(blank=True, null=True, verbose_name="D\xe9but"),
+                ),
+                (
+                    "duration",
+                    models.DurationField(
+                        default=datetime.timedelta(0, 10800), verbose_name="Dur\xe9e"
+                    ),
+                ),
+                (
+                    "place",
+                    models.CharField(
+                        blank=True, max_length=512, verbose_name="Lieu de la Qualif'"
+                    ),
+                ),
+                (
+                    "fallback_plan",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("A", "Programme d\xe9luge"),
+                            ("B", "Annulation"),
+                            ("C", "Report \u2026"),
+                            ("D", "Autre \u2026"),
+                        ],
+                        max_length=1,
+                        verbose_name="Mauvais temps",
+                    ),
+                ),
+                (
+                    "helpers_time",
+                    models.TimeField(
+                        blank=True,
+                        null=True,
+                        verbose_name="Heure rendez-vous moniteurs",
+                    ),
+                ),
+                (
+                    "helpers_place",
+                    models.CharField(
+                        blank=True,
+                        max_length=512,
+                        verbose_name="Lieu rendez-vous moniteurs",
+                    ),
+                ),
+                (
+                    "apples",
+                    models.CharField(blank=True, max_length=512, verbose_name="Pommes"),
+                ),
+                (
+                    "bikes_concept",
+                    models.CharField(
+                        blank=True, max_length=512, verbose_name="Logistique v\xe9los"
+                    ),
+                ),
+                (
+                    "bikes_phone",
+                    models.CharField(
+                        blank=True,
+                        max_length=13,
+                        verbose_name="N\xb0 de contact v\xe9los",
+                    ),
+                ),
+                ("comments", models.TextField(blank=True, verbose_name="Remarques")),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                ("history_date", models.DateTimeField()),
+                (
+                    "history_type",
+                    models.CharField(
+                        choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")],
+                        max_length=1,
+                    ),
+                ),
+                (
+                    "address_ptr",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="common.Address",
+                    ),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "orga",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="orga.Organization",
+                    ),
+                ),
+                (
+                    "superleader",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': 'history_date',
-                'verbose_name': 'historical Session',
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": "history_date",
+                "verbose_name": "historical Session",
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),

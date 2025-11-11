@@ -1,38 +1,37 @@
 from __future__ import unicode_literals
 
-from django.db import models, migrations
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('common', '0001_initial'),
+        ("common", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='address',
-            name='address_canton',
-            field=models.CharField(max_length=2, blank=True, verbose_name='Canton'),
+            model_name="address",
+            name="address_canton",
+            field=models.CharField(max_length=2, blank=True, verbose_name="Canton"),
         ),
         migrations.AlterField(
-            model_name='address',
-            name='address_city',
-            field=models.CharField(max_length=64, blank=True, verbose_name='Ville'),
+            model_name="address",
+            name="address_city",
+            field=models.CharField(max_length=64, blank=True, verbose_name="Ville"),
         ),
         migrations.AlterField(
-            model_name='address',
-            name='address_no',
-            field=models.CharField(max_length=8, blank=True, verbose_name='N°'),
+            model_name="address",
+            name="address_no",
+            field=models.CharField(max_length=8, blank=True, verbose_name="N°"),
         ),
         migrations.AlterField(
-            model_name='address',
-            name='address_street',
-            field=models.CharField(max_length=255, blank=True, verbose_name='Rue'),
+            model_name="address",
+            name="address_street",
+            field=models.CharField(max_length=255, blank=True, verbose_name="Rue"),
         ),
         migrations.AlterField(
-            model_name='address',
-            name='address_zip',
-            field=models.CharField(max_length=4, blank=True, verbose_name='NPA'),
+            model_name="address",
+            name="address_zip",
+            field=models.CharField(max_length=4, blank=True, verbose_name="NPA"),
         ),
     ]

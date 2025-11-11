@@ -1,7 +1,7 @@
 {% load i18n %}
 <div class="btn-group hidden-print" role="group" aria-label="exports">
     {% if not noprint %}
-        <a class="btn btn-default btn-sm" title="{% blocktrans %}Imprimer{% endblocktrans %}"
+        <a class="btn btn-default btn-sm" title="{% if print_label %}{{ print_label }}{% else %}{% blocktrans %}Imprimer{% endblocktrans %}{% endif %}"
             href="javascript:window.print()">
             <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
         </a>
@@ -12,7 +12,7 @@
                 <a
                     class="btn btn-info btn-sm"
                     title="{% blocktrans %}Télécharger au format {{ format }}{% endblocktrans %}"
-                    href="{% if seasonpk %}{% url exporturl seasonpk exportargs format %}{% elif year and season %}{% url exporturl year season format %}{% elif year and month %}{% url exporturl year month format %}{% else %}{% url exporturl exportargs format %}{% endif %}{% if filter_querystring %}?{{ filter_querystring }}{% endif %}"
+                    href="{% if seasonpk %}{% url exporturl seasonpk exportargs format %}{% elif year and season and exportargs %}{% url exporturl year season exportargs format %}{% elif year and season %}{% url exporturl year season format %}{% elif year and month %}{% url exporturl year month format %}{% else %}{% url exporturl exportargs format %}{% endif %}{% if filter_querystring %}?{{ filter_querystring }}{% endif %}"
                 >
                     {% ifchanged %}
                         <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>

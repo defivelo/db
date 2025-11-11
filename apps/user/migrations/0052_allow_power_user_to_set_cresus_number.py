@@ -2,7 +2,6 @@
 
 from django.contrib.auth import get_user_model
 from django.db import migrations
-
 from rolepermissions.checkers import has_role
 from rolepermissions.permissions import revoke_permission
 from rolepermissions.roles import assign_role
@@ -25,7 +24,6 @@ def revoke_user_edit_cresus_employee_number_from_power_users(apps, schema_editor
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("user", "0051_userprofile_cresus_employee_number"),
     ]

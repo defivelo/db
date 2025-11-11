@@ -4,20 +4,32 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('user', '0055_data_remove_email_from_deleted_users'),
+        ("user", "0055_data_remove_email_from_deleted_users"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='userprofile',
-            name='birthdate',
-            field=models.DateField(blank=True, null=True, verbose_name='Date de naissance'),
+            model_name="userprofile",
+            name="birthdate",
+            field=models.DateField(
+                blank=True, null=True, verbose_name="Date de naissance"
+            ),
         ),
         migrations.AlterField(
-            model_name='userprofile',
-            name='status',
-            field=models.PositiveSmallIntegerField(choices=[(0, '---------'), (10, 'Actif'), (20, 'Réserve'), (30, 'Inactif'), (40, 'Archive'), (99, 'Supprimé')], default=10, verbose_name='Statut'),
+            model_name="userprofile",
+            name="status",
+            field=models.PositiveSmallIntegerField(
+                choices=[
+                    (0, "---------"),
+                    (10, "Actif"),
+                    (20, "Réserve"),
+                    (30, "Inactif"),
+                    (40, "Archive"),
+                    (99, "Supprimé"),
+                ],
+                default=10,
+                verbose_name="Statut",
+            ),
         ),
     ]

@@ -5,15 +5,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('user', '0034_auto_20170821_1702'),
+        ("user", "0034_auto_20170821_1702"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userprofile',
-            name='formation_firstdate',
-            field=models.DateField(blank=True, null=True, verbose_name='Date de la première formation'),
+            model_name="userprofile",
+            name="formation_firstdate",
+            field=models.DateField(
+                blank=True, null=True, verbose_name="Date de la première formation"
+            ),
         ),
     ]

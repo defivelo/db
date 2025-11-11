@@ -105,7 +105,7 @@
     {% endif %}
     <button type="submit" class="btn btn-primary">{% trans "Enregistrer" %}</button>
   </div>
-  <a class="btn btn-default hidden-print" href="{% url 'salary:timesheets-overview' year %}">{% trans "Annuler" %}</a>
+  <a class="btn btn-default hidden-print" href="{% if return_url %}{{ return_url }}{% else %}{% url 'salary:timesheets-overview' year %}{% endif %}">{% trans "Annuler" %}</a>
   {% endbuttons %}
 </form>
 {% else %}

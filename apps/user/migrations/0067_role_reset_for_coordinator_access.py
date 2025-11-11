@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.db import migrations
-
 from rolepermissions.checkers import has_role
 from rolepermissions.roles import assign_role, clear_roles
 
@@ -16,7 +15,6 @@ def reset_all_roles(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("user", "0066_role_reset_for_timesheet"),
     ]

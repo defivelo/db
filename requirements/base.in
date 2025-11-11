@@ -33,10 +33,7 @@ django-countries
 django-simple-history
 sentry-sdk
 six
-
-# TODO: Get rid of this unmaintained dependency by using mailhog (DEFIVELO-260)
--e git+https://github.com/liip-forks/django-db-email-backend#egg=kn-django-db-email-backend
-
+dj-email-url
 django-ical
 cryptography
 pyyaml

@@ -1,42 +1,61 @@
 from __future__ import unicode_literals
 
-from django.db import models, migrations
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Session',
+            name="Session",
             fields=[
-                ('id', models.AutoField(serialize=False, verbose_name='ID', auto_created=True, primary_key=True)),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('day', models.DateField(blank=True, verbose_name='Date')),
+                (
+                    "id",
+                    models.AutoField(
+                        serialize=False,
+                        verbose_name="ID",
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                ("day", models.DateField(blank=True, verbose_name="Date")),
             ],
             options={
-                'verbose_name_plural': 'Sessions',
-                'verbose_name': 'Session',
+                "verbose_name_plural": "Sessions",
+                "verbose_name": "Session",
             },
         ),
         migrations.CreateModel(
-            name='SessionTimeSlot',
+            name="SessionTimeSlot",
             fields=[
-                ('id', models.AutoField(serialize=False, verbose_name='ID', auto_created=True, primary_key=True)),
-                ('begin', models.TimeField(verbose_name='Début')),
-                ('end', models.TimeField(verbose_name='Fin')),
+                (
+                    "id",
+                    models.AutoField(
+                        serialize=False,
+                        verbose_name="ID",
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                ("begin", models.TimeField(verbose_name="Début")),
+                ("end", models.TimeField(verbose_name="Fin")),
             ],
             options={
-                'verbose_name_plural': 'Horaires pour sessions',
-                'ordering': ['begin', 'end'],
-                'verbose_name': 'Horaire pour sessions',
+                "verbose_name_plural": "Horaires pour sessions",
+                "ordering": ["begin", "end"],
+                "verbose_name": "Horaire pour sessions",
             },
         ),
         migrations.AddField(
-            model_name='session',
-            name='timeslot',
-            field=models.ForeignKey(blank=True, related_name='sessions', to='challenge.SessionTimeSlot', on_delete=models.CASCADE),
+            model_name="session",
+            name="timeslot",
+            field=models.ForeignKey(
+                blank=True,
+                related_name="sessions",
+                to="challenge.SessionTimeSlot",
+                on_delete=models.CASCADE,
+            ),
         ),
     ]

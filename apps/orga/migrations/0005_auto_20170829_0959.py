@@ -5,20 +5,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('orga', '0004_auto_20170817_1424'),
+        ("orga", "0004_auto_20170817_1424"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='organization',
-            name='abbr',
-            field=models.CharField(blank=True, max_length=16, verbose_name='Abbréviation'),
+            model_name="organization",
+            name="abbr",
+            field=models.CharField(
+                blank=True, max_length=16, verbose_name="Abbréviation"
+            ),
         ),
         migrations.AddField(
-            model_name='organization',
-            name='status',
-            field=models.PositiveSmallIntegerField(choices=[(0, '---------'), (10, 'Actif'), (30, 'Inactif')], default=10, verbose_name='Statut'),
+            model_name="organization",
+            name="status",
+            field=models.PositiveSmallIntegerField(
+                choices=[(0, "---------"), (10, "Actif"), (30, "Inactif")],
+                default=10,
+                verbose_name="Statut",
+            ),
         ),
     ]

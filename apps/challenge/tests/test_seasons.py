@@ -17,8 +17,14 @@ import datetime
 
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
+
+from bs4 import BeautifulSoup
 
 from apps.common import (
+    DV_SEASON_AUTUMN,
+    DV_SEASON_LAST_SPRING_MONTH,
+    DV_SEASON_SPRING,
     DV_SEASON_STATE_ARCHIVED,
     DV_SEASON_STATE_OPEN,
     DV_SEASON_STATE_PLANNING,
@@ -28,7 +34,7 @@ from apps.common import (
 )
 from apps.common.forms import SWISS_DATE_INPUT_FORMAT
 from apps.orga.tests.factories import OrganizationFactory
-from apps.user import FORMATION_M1
+from apps.user import FORMATION_M1, FORMATION_M2
 from apps.user.tests.factories import UserFactory
 from defivelo.tests.utils import (
     AuthClient,
@@ -37,6 +43,11 @@ from defivelo.tests.utils import (
     StateManagerAuthClient,
 )
 
+from .. import (
+    AVAILABILITY_FIELDKEY,
+    CHOSEN_AS_LEADER,
+)
+from ..models import HelperSessionAvailability
 from .factories import QualificationFactory, SeasonFactory, SessionFactory
 
 freeforallurls = ["season-list"]
@@ -73,15 +84,14 @@ class SeasonTestCaseMixin(TestCase):
 
         self.sessions = []
         self.canton_orgas = []
+        self.qualifs = []
         for canton in self.season.cantons:
-            s = SessionFactory()
-            s.orga.address_canton = canton
-            s.orga.save()
+            s = SessionFactory(orga__address_canton=canton)
             self.canton_orgas.append(s.orga)
             s.day = self.season.begin
             s.save()
             for i in range(0, 4):
-                QualificationFactory(session=s)
+                self.qualifs.append(QualificationFactory(session=s))
             self.sessions.append(s)
 
         self.foreigncantons = [c for c in DV_STATES if c not in self.mycantons]
@@ -603,6 +613,57 @@ class StateManagerUserTest(SeasonTestCaseMixin):
                 response = self.client.get(url, follow=True)
                 self.assertEqual(response.status_code, 403, url)
 
+    def test_create_qualif(self):
+        """
+        Test `Créer une Qualif’` button
+        """
+        session = self.sessions[0]
+
+        url = reverse(
+            "quali-create", kwargs={"seasonpk": self.season.pk, "sessionpk": session.pk}
+        )
+
+        payload = {
+            "session": session.pk,
+            "name": "Classe F",
+            "class_teacher_natel": "",
+        }
+        response = self.client.post(url, payload)
+        self.assertEqual(response.status_code, 302)
+
+    def test_m1_m2_updated(self):
+        """
+        Check that the m1/m2 counts are correctly updated when n_helpers is changed
+        """
+        url = reverse(
+            "season-availabilities",
+            kwargs={
+                "pk": self.season.pk,
+            },
+        )
+
+        # There is 4 qualifs:
+        # - when n_helpers=1, m1=0 and m2=1 => We expect m1=0/0 and m2=0/4
+        # - when n_helpers=3, m1=2 and m2=1 => We expect m1=0/8 and m2=0/4
+        nb_qualifs = len(self.qualifs)
+        for n_helpers, expected_m1, expected_m2 in [
+            (1, f"0/{nb_qualifs * 0}", f"0/{nb_qualifs * 1}"),
+            (3, f"0/{nb_qualifs * 2}", f"0/{nb_qualifs * 1}"),
+        ]:
+            for q in self.qualifs:
+                q.n_helpers = n_helpers
+                q.save()
+            response = self.client.get(url)
+
+            parser = BeautifulSoup(response.content, "html.parser")
+            m1count = parser.select_one('[data-test-m1="%d"]' % self.sessions[0].pk)
+            self.assertIsNotNone(m1count)
+            self.assertEqual(str(m1count.text.strip()), expected_m1)
+
+            m2count = parser.select_one('[data-test-m2="%d"]' % self.sessions[0].pk)
+            self.assertIsNotNone(m2count)
+            self.assertEqual(str(m2count.text.strip()), expected_m2)
+
     def test_access_to_mysession(self):
         # The season is anything but archived
         for state in DV_SEASON_STATES:
@@ -723,6 +784,8 @@ class StateManagerUserTest(SeasonTestCaseMixin):
 
     def test_access_to_quali_views(self):
         session = self.sessions[0]
+        self.assertIsNotNone(session.season.pk)
+        self.assertIsNotNone(session.pk)
         # Test the Qualification creation for a session
         url = reverse(
             "quali-create",
@@ -735,6 +798,7 @@ class StateManagerUserTest(SeasonTestCaseMixin):
             "session": session.pk,
             "name": "Classe A",
             "class_teacher_natel": "",
+            "n_helpers": 3,
         }
         response = self.client.post(
             url,
@@ -757,7 +821,11 @@ class StateManagerUserTest(SeasonTestCaseMixin):
         self.assertEqual(response.status_code, 200, url)
 
         # Test Quali update now
-        initial = {"session": qualification.session.pk, "name": "Classe D"}
+        initial = {
+            "session": qualification.session.pk,
+            "name": "Classe D",
+            "n_helpers": 3,
+        }
         response = self.client.post(url, initial)
         self.assertEqual(response.status_code, 302, url)
 
@@ -1027,3 +1095,179 @@ class CoordinatorUserTest(SeasonTestCaseMixin):
                     # Final URL is forbidden; no creation nor deletion by coordinators
                     response = self.client.get(url, follow=True)
                     self.assertEqual(response.status_code, 403, url)
+
+
+class TestPlanning(SeasonTestCaseMixin):
+    canton = "VD"
+
+    def setUp(self):
+        self.client = StateManagerAuthClient()
+
+        # Make sure the current user is in VD
+        self.client.user.profile.affiliation_canton = self.canton
+        self.client.user.profile.save()
+
+        # User that we want to check the individual planning for
+        self.user1 = UserFactory(
+            profile__affiliation_canton=self.canton, profile__formation=FORMATION_M2
+        )
+
+        super().setUp()
+
+    def assertCell(
+        self, response, user, session, title, class_selector=".glyphicon-remove-sign"
+    ):
+        key = AVAILABILITY_FIELDKEY.format(hpk=user.pk, spk=session.pk)
+
+        parser = BeautifulSoup(response.content, "html.parser")
+        cell = parser.select_one(f'[data-test="{key}"] {class_selector}')
+        self.assertIsNotNone(cell, "Cell not found in the planning")
+        self.assertEqual(cell.attrs.get("title"), title)
+
+    def test_individual_planning_view_not_chosen(self):
+        """
+        Test that when the user's availability is okayish for a session, but they are not selected, the planning cell is red.
+        """
+
+        for s in self.sessions:
+            # Put the sessions for our Coordinator's orga and canton
+            s.canton = self.canton
+            s.orga.address_canton = self.canton
+            s.orga.coordinator = self.client.user
+            s.orga.save()
+            s.save()
+
+        # Set the user availability for that session to "if needed"
+        HelperSessionAvailability.objects.update_or_create(
+            session=self.sessions[0], helper=self.user1, defaults={"availability": "i"}
+        )
+
+        # Choose someone else
+        HelperSessionAvailability.objects.create(
+            session=self.sessions[0],
+            helper=self.users[1],
+            availability=CHOSEN_AS_LEADER,
+        )
+
+        url = reverse(
+            "season-planning", kwargs={"helperpk": self.user1.pk, "pk": self.season.pk}
+        )
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertCell(response, self.user1, self.sessions[0], _("Pas choisi"))
+
+    def test_individual_planning_view_no(self):
+        """
+        Test that when the user's availability is "no" for a session the planning cell is red.
+        """
+        for s in self.sessions:
+            # Put the sessions for our Coordinator's orga and canton
+            s.canton = self.canton
+            s.orga.address_canton = self.canton
+            s.orga.coordinator = self.client.user
+            s.orga.save()
+            s.save()
+        # Set the user availability for that session to No
+        HelperSessionAvailability.objects.update_or_create(
+            session=self.sessions[0], helper=self.user1, defaults={"availability": "n"}
+        )
+
+        url = reverse(
+            "season-planning", kwargs={"helperpk": self.user1.pk, "pk": self.season.pk}
+        )
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertCell(response, self.user1, self.sessions[0], _("Non"))
+
+    def test_general_planning_view(self):
+        # Build URL for aggregated general planning
+        year = self.season.year
+        dv_season = (
+            DV_SEASON_SPRING
+            if self.season.month_start <= DV_SEASON_LAST_SPRING_MONTH
+            else DV_SEASON_AUTUMN
+        )
+        # Pick a session in current canton/year and ensure helper is assigned and has an availability
+        session_in_scope = self.sessions[0]
+        session_in_scope.orga.address_canton = self.canton
+        session_in_scope.orga.save()
+        QualificationFactory(actor=self.user1, session=session_in_scope)
+        HelperSessionAvailability.objects.update_or_create(
+            session=session_in_scope, helper=self.user1, defaults={"availability": "i"}
+        )
+
+        url = reverse(
+            "season-general-planning",
+            kwargs={
+                "year": year,
+                "dv_season": dv_season,
+                "helperpk": self.user1.pk,
+            },
+        )
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200, url)
+
+        parser = BeautifulSoup(response.content, "html.parser")
+        header_cell = parser.select_one(f'th[data-test="orga-{session_in_scope.pk}"]')
+        self.assertIsNotNone(
+            header_cell,
+            f"Expected header cell for orga-{session_in_scope.pk} to be present",
+        )
+
+    def test_general_planning_redirect_helperpk_zero(self):
+        # helperpk=0 should redirect to the same view with the current user's pk
+        year = self.season.year
+        dv_season = (
+            DV_SEASON_SPRING
+            if self.season.month_start <= DV_SEASON_LAST_SPRING_MONTH
+            else DV_SEASON_AUTUMN
+        )
+
+        url = reverse(
+            "season-general-planning",
+            kwargs={
+                "year": year,
+                "dv_season": dv_season,
+                "helperpk": 0,
+            },
+        )
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302, url)
+
+    def test_general_personal_planning_export(self):
+        # Export aggregated personal planning for the chosen helper
+        year = self.season.year
+        dv_season = (
+            DV_SEASON_SPRING
+            if self.season.month_start <= DV_SEASON_LAST_SPRING_MONTH
+            else DV_SEASON_AUTUMN
+        )
+        # Ensure helper is assigned to an in-scope session with correct canton
+        session_in_scope = self.sessions[0]
+        session_in_scope.orga.address_canton = self.canton
+        session_in_scope.orga.save()
+        QualificationFactory(actor=self.user1, session=session_in_scope)
+
+        for exportformat in ["csv", "ods", "xls"]:
+            url = reverse(
+                "season-personal-planning-export",
+                kwargs={
+                    "year": year,
+                    "dv_season": dv_season,
+                    "helperpk": self.user1.pk,
+                    "format": exportformat,
+                },
+            )
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200, url)
+            if exportformat == "csv":
+                content = response.content.decode("utf-8")
+                self.assertIn(
+                    session_in_scope.orga.name,
+                    content,
+                    "Expected organiser name to be present in CSV export",
+                )

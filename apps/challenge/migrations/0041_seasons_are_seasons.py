@@ -5,10 +5,11 @@ from django.db import migrations, models
 
 from apps.common import DV_SEASON_LAST_SPRING_MONTH
 
+
 def fill_in_seasons(apps, schema_editor):
     # We can't import the Person model directly as it may be a newer
     # version than this migration expects. We use the historical version.
-    Season = apps.get_model('challenge', 'Season')
+    Season = apps.get_model("challenge", "Season")
     for season in Season.objects.all():
         season.year = season.begin.year
         season.season = 1 if season.begin.month <= DV_SEASON_LAST_SPRING_MONTH else 3
@@ -16,21 +17,24 @@ def fill_in_seasons(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('challenge', '0040_auto_20170825_1349'),
+        ("challenge", "0040_auto_20170825_1349"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='season',
-            name='season',
-            field=models.PositiveSmallIntegerField(choices=[(1, 'Printemps'), (3, 'Automne')], default=1, verbose_name='Saison'),
+            model_name="season",
+            name="season",
+            field=models.PositiveSmallIntegerField(
+                choices=[(1, "Printemps"), (3, "Automne")],
+                default=1,
+                verbose_name="Saison",
+            ),
         ),
         migrations.AddField(
-            model_name='season',
-            name='year',
-            field=models.PositiveSmallIntegerField(default=2000, verbose_name='Année'),
+            model_name="season",
+            name="year",
+            field=models.PositiveSmallIntegerField(default=2000, verbose_name="Année"),
             preserve_default=False,
         ),
         migrations.RunPython(fill_in_seasons, migrations.RunPython.noop),

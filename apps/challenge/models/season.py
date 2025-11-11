@@ -77,6 +77,9 @@ class Season(models.Model):
     state = models.PositiveSmallIntegerField(
         _("État"), choices=DV_SEASON_STATES, default=DV_SEASON_STATE_PLANNING
     )
+    availability_reminder_sent_at = models.DateTimeField(
+        _("Date d’envoi du rappel de disponibilités"), null=True, blank=True
+    )
     history = HistoricalRecords()
 
     class Meta:

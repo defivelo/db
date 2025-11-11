@@ -5,15 +5,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('user', '0046_auto_20180316_1657'),
+        ("user", "0046_auto_20180316_1657"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userprofile',
-            name='marital_status',
-            field=models.PositiveSmallIntegerField(choices=[(0, '---------'), (10, 'C\xe9libataire'), (20, 'Mari\xe9\xb7e'), (30, 'Divorc\xe9\xb7e'), (40, 'Veu\xb7f\xb7ve'), (50, 'En partenariat enregistr\xe9')], default=0, verbose_name='\xc9tat civil'),
+            model_name="userprofile",
+            name="marital_status",
+            field=models.PositiveSmallIntegerField(
+                choices=[
+                    (0, "---------"),
+                    (10, "C\xe9libataire"),
+                    (20, "Mari\xe9\xb7e"),
+                    (30, "Divorc\xe9\xb7e"),
+                    (40, "Veu\xb7f\xb7ve"),
+                    (50, "En partenariat enregistr\xe9"),
+                ],
+                default=0,
+                verbose_name="\xc9tat civil",
+            ),
         ),
     ]

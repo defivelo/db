@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('challenge', '0057_invoice_invoiceline'),
+        ("challenge", "0057_invoice_invoiceline"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='invoice',
-            name='status',
-            field=models.IntegerField(choices=[(0, 'Brouillon'), (1, 'Validée')], default=0, verbose_name='Statut'),
+            model_name="invoice",
+            name="status",
+            field=models.IntegerField(
+                choices=[(0, "Brouillon"), (1, "Validée")],
+                default=0,
+                verbose_name="Statut",
+            ),
         ),
     ]

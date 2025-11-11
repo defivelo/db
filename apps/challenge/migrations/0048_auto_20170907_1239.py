@@ -5,15 +5,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('challenge', '0047_remove_helpersessionavailability_chosen'),
+        ("challenge", "0047_remove_helpersessionavailability_chosen"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='helpersessionavailability',
-            name='chosen_as',
-            field=models.PositiveSmallIntegerField(choices=[(0, 'Pas choisi'), (1, 'Choisi'), (2, 'Comme intervenant'), (5, 'Moniteur de Secours'), (3, 'Moniteur 1'), (4, 'Moniteur 2')], default=0, verbose_name='S\xe9lectionn\xe9 pour la session comme'),
+            model_name="helpersessionavailability",
+            name="chosen_as",
+            field=models.PositiveSmallIntegerField(
+                choices=[
+                    (0, "Pas choisi"),
+                    (1, "Choisi"),
+                    (2, "Comme intervenant"),
+                    (5, "Moniteur de Secours"),
+                    (3, "Moniteur 1"),
+                    (4, "Moniteur 2"),
+                ],
+                default=0,
+                verbose_name="S\xe9lectionn\xe9 pour la session comme",
+            ),
         ),
     ]

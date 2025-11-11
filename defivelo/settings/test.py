@@ -13,8 +13,6 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-from . import get_env_variable
 from .base import *
 
 COMPRESS_ENABLED = True
@@ -22,3 +20,5 @@ COMPRESS_OFFLINE = False
 
 SECRET_KEY = "notsosecret"
 NEVERCACHE_KEY = "notsosecret"
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
