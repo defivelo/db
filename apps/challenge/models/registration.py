@@ -45,7 +45,7 @@ class Registration(models.Model):
             raise ValidationError(
                 {
                     "organization": _(
-                        "L'établissement choisi n'est pas géré par cet utilisateur."
+                        "L'établissement choisi n'est pas géré par cet utilisateur·rice."
                     )
                 }
             )

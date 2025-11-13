@@ -93,9 +93,9 @@ def test_userprofile_field_change_signal_iban_change(mock_send_mail, db, setting
 
     mock_send_mail.assert_called_once()
     args = mock_send_mail.call_args[0]
-    assert "Notification de modification de données utilisateur" in args[0]
+    assert "Notification de modification de données utilisateur·trice" in args[0]
     assert (
-        f"Les informations suivantes pour l’utilisateur {user.get_full_name()} / {user.pk} ont été modifiées"
+        f"Les informations suivantes pour l’utilisateur·trice {user.get_full_name()} / {user.pk} ont été modifiées"
         in args[1]
     )
     assert "IBAN: CH93 0076 2011 6238 5295 7 → CH14 0483 5012 3456 7800 9" in args[1]
@@ -127,9 +127,9 @@ def test_userprofile_field_change_signal_address_changes(mock_send_mail, db, set
 
     mock_send_mail.assert_called_once()
     args = mock_send_mail.call_args[0]
-    assert "Notification de modification de données utilisateur" in args[0]
+    assert "Notification de modification de données utilisateur·trice" in args[0]
     assert (
-        f"Les informations suivantes pour l’utilisateur {user.get_full_name()} / {user.pk} ont été modifiées"
+        f"Les informations suivantes pour l’utilisateur·trice {user.get_full_name()} / {user.pk} ont été modifiées"
         in args[1]
     )
 
@@ -202,9 +202,9 @@ def test_userprofile_unified_post_save_notification_sends_email(
 
     mock_send_mail.assert_called_once()
     args = mock_send_mail.call_args[0]
-    assert "Notification de modification de données utilisateur" in args[0]
+    assert "Notification de modification de données utilisateur·trice" in args[0]
     assert (
-        f"Les informations suivantes pour l’utilisateur {user.get_full_name()} / {user.pk} ont été modifiées"
+        f"Les informations suivantes pour l’utilisateur·trice {user.get_full_name()} / {user.pk} ont été modifiées"
         in args[1]
     )
     assert "IBAN: CH93 0076 2011 6238 5295 7 → CH14 0483 5012 3456 7800 9" in args[1]

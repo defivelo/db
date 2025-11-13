@@ -40,10 +40,10 @@ CHOSEN_AS_REPLACEMENT = 5
 CHOICE_CHOICES = (
     (CHOSEN_AS_NOT, _("Pas choisi")),
     (CHOSEN_AS_LEGACY, _("Choisi")),  # À ne pas réutiliser
-    (CHOSEN_AS_ACTOR, _("Comme intervenant")),
-    (CHOSEN_AS_REPLACEMENT, _("Moniteur de Secours")),
-    (CHOSEN_AS_HELPER, _("Moniteur 1")),
-    (CHOSEN_AS_LEADER, _("Moniteur 2")),
+    (CHOSEN_AS_ACTOR, _("Comme intervenant·e")),
+    (CHOSEN_AS_REPLACEMENT, _("Moniteur·trice de secours")),
+    (CHOSEN_AS_HELPER, _("Moniteur·trice 1")),
+    (CHOSEN_AS_LEADER, _("Moniteur·trice 2")),
 )
 
 CHOSEN_KEYS = [c[0] for c in CHOICE_CHOICES if c[0] != CHOSEN_AS_NOT]

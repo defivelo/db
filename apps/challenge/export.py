@@ -17,14 +17,14 @@ class InvoiceResource(resources.ModelResource):
         column_name=_("Nom de l'établissement"), attribute="organization__name"
     )
     total_participants = fields.Field(
-        column_name=_("Total participants"), attribute="sum_nb_participants"
+        column_name=_("Total participant·e·s"), attribute="sum_nb_participants"
     )
     cost_per_participant = fields.Field(
-        column_name=_("Coût par participant"),
+        column_name=_("Coût par participant·e·s"),
         attribute="settings__cost_per_participant",
     )
     total_cost_participants = fields.Field(
-        column_name=_("Total coût participants"), attribute="sum_cost_participants"
+        column_name=_("Total coût participant·e·s"), attribute="sum_cost_participants"
     )
     total_nb_bikes = fields.Field(
         column_name=_("Total vélos"), attribute="adjusted_sum_of_bikes"

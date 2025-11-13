@@ -70,7 +70,7 @@ class Season(models.Model):
 
     leader = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        verbose_name=_("Chargé de projet"),
+        verbose_name=_("Chargé·e de projet"),
         limit_choices_to={"managedstates__isnull": False},
         on_delete=models.CASCADE,
     )

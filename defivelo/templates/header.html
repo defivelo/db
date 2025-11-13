@@ -32,9 +32,9 @@
           {% endif %}
           <li role="separator" class="divider"></li>
           <li{% if 'season-helperlist' in submenu_category|default:"" %} class="active"{% endif %}><a
-                  href="{% url 'season-helperlist' season.pk %}">{% trans "Liste des moniteurs" %}</a></li>
+                  href="{% url 'season-helperlist' season.pk %}">{% trans "Liste des moniteur·rice·s" %}</a></li>
           <li{% if 'season-actorlist' in submenu_category|default:"" %} class="active"{% endif %}><a
-                  href="{% url 'season-actorlist' season.pk %}">{% trans "Liste des intervenants" %}</a></li>
+                  href="{% url 'season-actorlist' season.pk %}">{% trans "Liste des intervenant·e·s" %}</a></li>
         </ul>
       </li>
     {% else %}

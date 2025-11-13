@@ -338,7 +338,7 @@ class ExportMonthlyTimesheets(ExportMixin, MonthArchiveView):
         # See DEFIVELO-218
         category_codes_list = {
             "actor_count": 1106,  # Interventions
-            "leader_count": 1105,  # Prime moniteur 2
+            "leader_count": 1105,  # Prime Moniteur·trice 2
             "time_helper": 1101,  # Salaire heures moniteur
             "traveltime": 1102,  # Salaire heures de trajet
             "overtime": 1103,  # Salaire heures supplémentaires

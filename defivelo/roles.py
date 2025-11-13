@@ -44,7 +44,7 @@ def user_cantons(user):
 
 class Collaborator(AbstractUserRole):
     """
-    Moniteur 1, 2 ou Intervenant
+    Moniteur·trice 1, 2 ou Intervenant
     """
 
     available_permissions = {

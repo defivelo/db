@@ -38,8 +38,8 @@ ORGASTATUS_INACTIVE = 30
 
 ORGASTATUS_CHOICES = (
     (ORGASTATUS_UNDEF, "---------"),
-    (ORGASTATUS_ACTIVE, _("Actif")),
-    (ORGASTATUS_INACTIVE, _("Inactif")),
+    (ORGASTATUS_ACTIVE, _("Actif·ve")),
+    (ORGASTATUS_INACTIVE, _("Inactif·ve")),
 )
 
 

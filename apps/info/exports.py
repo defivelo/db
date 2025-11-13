@@ -146,9 +146,9 @@ class SeasonStatsExport(SeasonSessionsMixin):
             gettext("Prêts de vélos"),
             gettext("Prêts de casques"),
             gettext("Nombre de personnes ayant exercé"),
-            gettext("… comme moniteurs 2"),
-            gettext("… comme moniteurs 1"),
-            gettext("… comme intervenants"),
+            gettext("… comme moniteur·rice·s 2"),
+            gettext("… comme moniteur·rice·s 1"),
+            gettext("… comme intervenant·e·s"),
         ]
         volunteers = get_user_model().objects
         orgas = Organization.objects
@@ -224,7 +224,7 @@ class LogisticsExport(SeasonSessionsMixin):
             gettext("Date"),
             gettext("Heure"),
             gettext("Classes"),
-            gettext("Participants"),
+            gettext("Participant·e·s"),
             gettext("Vélos loués"),
             gettext("Casques loués"),
             gettext("Logistique vélos"),

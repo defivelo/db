@@ -102,30 +102,30 @@ class HelperSessionAvailability(models.Model):
     @cached_property
     def chosen_as_icon(self):
         if self.chosen_as == CHOSEN_AS_HELPER:
-            # Translators: FORMATION_M1 - Moniteur 1
+            # Translators: FORMATION_M1 - Moniteur·trice 1
             return formation_short(FORMATION_M1)
         if self.chosen_as == CHOSEN_AS_LEADER:
-            # Translators: FORMATION_M2 - Moniteur 2
+            # Translators: FORMATION_M2 - Moniteur·trice 2
             return formation_short(FORMATION_M2)
         if self.chosen_as == CHOSEN_AS_REPLACEMENT:
-            # Translators: Moniteur de secours
+            # Translators: Moniteur·trice de secours
             return _("S")
         if self.chosen_as == CHOSEN_AS_ACTOR:
             return mark_safe(
-                STDGLYPHICON.format(icon="sunglasses", title=_("Intervenant"))
+                STDGLYPHICON.format(icon="sunglasses", title=_("Intervenant·e"))
             )
         return ""
 
     @cached_property
     def chosen_as_verb(self):
         if self.chosen_as == CHOSEN_AS_HELPER:
-            return _("Moniteur 1")
+            return _("Moniteur·trice 1")
         if self.chosen_as == CHOSEN_AS_LEADER:
-            return _("Moniteur 2")
+            return _("Moniteur·trice 2")
         if self.chosen_as == CHOSEN_AS_REPLACEMENT:
-            return _("Moniteur de secours")
+            return _("Moniteur·trice de secours")
         if self.chosen_as == CHOSEN_AS_ACTOR:
-            return _("Intervenant")
+            return _("Intervenant·e")
         if self.chosen_as == CHOSEN_AS_LEGACY:
             return _("Choisi")
         return ""
