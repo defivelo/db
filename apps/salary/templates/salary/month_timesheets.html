@@ -113,6 +113,8 @@
   <p>{% trans "Vous ne pouvez pas entrer des heures dans le futur." %}</p>
 {% elif is_current_month %}
   <p>{% trans "Vous n’avez pas encore d’heures à rentrer ce mois." %}</p>
+{% elif is_timesheet_editor%}
+  <p>{% trans "Il n'y a pas d'heures pour les cantons dont vous avez la gestion." %}</p>
 {% else %}
   <p>{% trans "Vous n’avez pas travaillé ce mois." %}</p>
 {% endif %}

@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.sites.models import Site
 from django.core import mail
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count, Q, F
+from django.db.models import Count, F, Q
 from django.db.models.functions import Upper
 from django.shortcuts import get_object_or_404, redirect
 from django.template.defaultfilters import date as datefilter
@@ -58,9 +58,9 @@ class UserMonthlyTimesheets(MonthArchiveView, ReturnUrlMixin, FormView):
     def success_url(self):
         return reverse("salary:timesheets-overview", kwargs={"year": self.get_year()})
 
-    def get_queryset(self):
+    def get_queryset(self, filter_by_user_cantons=True):
         user_cantons_list = [str(c).upper() for c in user_cantons(self.request.user)]
-        return (
+        q = (
             (
                 Session.objects.values("day")
                 .filter(
@@ -92,8 +92,10 @@ class UserMonthlyTimesheets(MonthArchiveView, ReturnUrlMixin, FormView):
             )
             .exclude(actor_count=0, helper_count=0)
             .order_by("day")
-            .filter(orga_canton__in=user_cantons_list)
         )
+        if filter_by_user_cantons:
+            return q.filter(orga_canton__in=user_cantons_list)
+        return q
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -162,8 +164,15 @@ class UserMonthlyTimesheets(MonthArchiveView, ReturnUrlMixin, FormView):
                 date__year=context["year"],
                 date__month=context["month"].month,
             )
-            .exclude(date__in=[o["day"] for o in self.object_list])
+            .exclude(
+                date__in=[
+                    o["day"] for o in self.get_queryset(filter_by_user_cantons=False)
+                ]
+            )
             .order_by("date")
+        )
+        context["is_timesheet_editor"] = has_permission(
+            self.request.user, "timesheet_editor"
         )
         return context
 
