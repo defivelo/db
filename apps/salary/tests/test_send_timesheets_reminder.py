@@ -66,6 +66,7 @@ def test_reminder_is_sent_to_helpers_with_missing_timesheets(db):
     assert response.status_code == 302
     assert len(mail.outbox) == 1
     assert mail.outbox[0].recipients() == [helper3.email]
+    assert "{Prénom} {Nom}" not in mail.outbox[0].body
 
 
 def test_reminder_is_not_sent_to_helper_of_other_canton(db):
