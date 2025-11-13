@@ -54,7 +54,7 @@
         {% for day, sessions in all_sessions_by_day.items %}
         <td align="left" class="text-left small">
           {% for session in sessions %}
-              <a href="{% url 'session-detail' session.season.pk session.pk %}" target="_blank">{{ session.begin }} {{ session.orga.ifabbr }}</a><br />
+              <a href="{% url 'session-detail' session.season.pk session.pk %}" target="_blank">{{ session.begin }} {{ session.orga.ifabbr }} ({{ session.orga.address_canton }})</a><br />
           {% endfor %}
         </td>
         {% endfor %}

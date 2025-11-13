@@ -5,7 +5,8 @@ from django.contrib import messages
 from django.contrib.sites.models import Site
 from django.core import mail
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count, Q
+from django.db.models import Count, Q, F
+from django.db.models.functions import Upper
 from django.shortcuts import get_object_or_404, redirect
 from django.template.defaultfilters import date as datefilter
 from django.template.loader import render_to_string
@@ -28,7 +29,7 @@ from apps.common.views import ExportMixin
 from apps.salary import BONUS_LEADER, HOURLY_RATE_HELPER, RATE_ACTOR
 from apps.salary.forms import ControlTimesheetFormSet, TimesheetFormSet
 from apps.salary.models import Timesheet
-from defivelo.roles import has_permission
+from defivelo.roles import has_permission, user_cantons
 
 from ...user.models import UserProfile
 from ...user.views.standard import ReturnUrlMixin
@@ -58,6 +59,7 @@ class UserMonthlyTimesheets(MonthArchiveView, ReturnUrlMixin, FormView):
         return reverse("salary:timesheets-overview", kwargs={"year": self.get_year()})
 
     def get_queryset(self):
+        user_cantons_list = [str(c).upper() for c in user_cantons(self.request.user)]
         return (
             (
                 Session.objects.values("day")
@@ -69,6 +71,7 @@ class UserMonthlyTimesheets(MonthArchiveView, ReturnUrlMixin, FormView):
                 .filter(day__lte=timezone.now())
                 .annotate(
                     orga_count=Count("orga_id", distinct=True),
+                    orga_canton=Upper(F("orga__address_canton")),
                     helper_count=Count(
                         "qualifications__pk",
                         filter=Q(qualifications__helpers=self.selected_user)
@@ -89,6 +92,7 @@ class UserMonthlyTimesheets(MonthArchiveView, ReturnUrlMixin, FormView):
             )
             .exclude(actor_count=0, helper_count=0)
             .order_by("day")
+            .filter(orga_canton__in=user_cantons_list)
         )
 
     def get_context_data(self, **kwargs):
