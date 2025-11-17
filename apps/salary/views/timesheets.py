@@ -1,5 +1,5 @@
 from datetime import date
-
+from localflavor.ch.ch_states import STATE_CHOICES
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.sites.models import Site
@@ -58,9 +58,8 @@ class UserMonthlyTimesheets(MonthArchiveView, ReturnUrlMixin, FormView):
     def success_url(self):
         return reverse("salary:timesheets-overview", kwargs={"year": self.get_year()})
 
-    def get_queryset(self, filter_by_user_cantons=True):
-        user_cantons_list = [str(c).upper() for c in user_cantons(self.request.user)]
-        q = (
+    def get_queryset(self):
+        return (
             (
                 Session.objects.values("day")
                 .filter(
@@ -93,9 +92,36 @@ class UserMonthlyTimesheets(MonthArchiveView, ReturnUrlMixin, FormView):
             .exclude(actor_count=0, helper_count=0)
             .order_by("day")
         )
-        if filter_by_user_cantons:
-            return q.filter(orga_canton__in=user_cantons_list)
-        return q
+
+    def get_form(self, form_class=None):
+        """Return an instance of the form to be used in this view."""
+        form = super().get_form(form_class=form_class)
+
+        # Return the form as-is if the user is not validating timesheets
+        if not has_permission(self.request.user, "timesheet_editor"):
+            return form
+
+        # We disable forms where the session is not in the managed canton.
+        def disable_form(form, reason=None):
+            for key in form.fields:
+                form.fields[key].disabled = True
+            form.disabled = True
+            setattr(form, "disabled_reason", reason)
+
+        user_cantons_list = [str(c).upper() for c in user_cantons(self.request.user)]
+        for i, session in enumerate(self.object_list):
+            session_canton = session.get("orga_canton",None)
+            session_canton_label = dict(STATE_CHOICES).get(session_canton, session_canton)
+
+            if session_canton not in user_cantons_list:
+                disable_form(
+                    form.forms[i],
+                    _("La session a lieu dans le canton \"%s\" que vous n'administrez pas.") % session_canton_label
+                )
+                setattr(form, "has_disabled_forms", True)
+
+        return form
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -164,15 +190,8 @@ class UserMonthlyTimesheets(MonthArchiveView, ReturnUrlMixin, FormView):
                 date__year=context["year"],
                 date__month=context["month"].month,
             )
-            .exclude(
-                date__in=[
-                    o["day"] for o in self.get_queryset(filter_by_user_cantons=False)
-                ]
-            )
+            .exclude(date__in=[o["day"] for o in self.object_list])
             .order_by("date")
-        )
-        context["is_timesheet_editor"] = has_permission(
-            self.request.user, "timesheet_editor"
         )
         return context
 

@@ -47,12 +47,12 @@
           {% endfor %}
         </th>
         {% endfor %}
-        <th rowspan="2" align="center" class="text-center">{% trans "Total" %}</th>
+        <th rowspan="1" align="center" class="text-center">{% trans "Total" %}</th>
       </tr>
       <tr>
         <th>{% trans "Sessions" %}</th>
         {% for day, sessions in all_sessions_by_day.items %}
-        <td align="left" class="text-left small">
+        <td align="center" class="text-center small">
           {% for session in sessions %}
               <a href="{% url 'session-detail' session.season.pk session.pk %}" target="_blank">{{ session.begin }} {{ session.orga.ifabbr }} ({{ session.orga.address_canton }})</a><br />
           {% endfor %}
@@ -94,6 +94,19 @@
         {% endfor %}
         <td class="text-center"></td>
       </tr>
+      {% if form.has_disabled_forms %}
+      <tr>
+          <th><!-- Infos --></th>
+          {% for form in formset.forms %}
+              <td class="text-center text-muted">
+                {% if form.disabled_reason %}
+                  {{ form.disabled_reason }}
+                {% endif %}
+              </td>
+          {% endfor %}
+          <td class="text-center"></td>
+      </tr>
+      {% endif %}
     </tfoot>
   </table>
   {% buttons %}
@@ -113,8 +126,6 @@
   <p>{% trans "Vous ne pouvez pas entrer des heures dans le futur." %}</p>
 {% elif is_current_month %}
   <p>{% trans "Vous n’avez pas encore d’heures à rentrer ce mois." %}</p>
-{% elif is_timesheet_editor%}
-  <p>{% trans "Il n'y a pas d'heures pour les cantons dont vous avez la gestion." %}</p>
 {% else %}
   <p>{% trans "Vous n’avez pas travaillé ce mois." %}</p>
 {% endif %}
@@ -171,6 +182,7 @@
         return (value < 0 ? "-" : "" ) + Math.abs(hours) + ":" + ("0" + minutes).slice(-2);
     };
     $("tr.checkboxinput:not(.readonly)").each(function () {
+      let hasCheckableInputs = $(this).closest('tr').find('input[type=checkbox]:not([disabled])').length > 0;
       let link = $('<a href="#" class="btn btn-primary">{% trans "Tout sélectionner" %}</a>').click(function(e){
         e.preventDefault();
         $(this).closest('tr').find('input[type=checkbox]').each(function(){
@@ -181,7 +193,8 @@
         $("table#table-with-sum").change();
         return false;
       });
-      $(this).find(' > td:last').append(link);
+      if(hasCheckableInputs)
+        $(this).find(' > td:last').append(link);
     });
     $("table#table-with-sum input").change(function(e){ $("table#table-with-sum").change()})
     $("table#table-with-sum").change(function (e) {
