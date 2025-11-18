@@ -1,5 +1,5 @@
 from datetime import date
-from localflavor.ch.ch_states import STATE_CHOICES
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.sites.models import Site
@@ -21,6 +21,7 @@ from django.views.generic import RedirectView, TemplateView
 from django.views.generic.dates import MonthArchiveView
 from django.views.generic.edit import FormView
 
+from localflavor.ch.ch_states import STATE_CHOICES
 from tablib import Dataset
 
 from apps.challenge.models.session import Session
@@ -110,18 +111,22 @@ class UserMonthlyTimesheets(MonthArchiveView, ReturnUrlMixin, FormView):
 
         user_cantons_list = [str(c).upper() for c in user_cantons(self.request.user)]
         for i, session in enumerate(self.object_list):
-            session_canton = session.get("orga_canton",None)
-            session_canton_label = dict(STATE_CHOICES).get(session_canton, session_canton)
+            session_canton = session.get("orga_canton", None)
+            session_canton_label = dict(STATE_CHOICES).get(
+                session_canton, session_canton
+            )
 
-            if session_canton not in user_cantons_list:
+            if session_canton and session_canton not in user_cantons_list:
                 disable_form(
                     form.forms[i],
-                    _("La session a lieu dans le canton \"%s\" que vous n'administrez pas.") % session_canton_label
+                    _(
+                        'La session a lieu dans le canton "%s" que vous n\'administrez pas.'
+                    )
+                    % session_canton_label,
                 )
                 setattr(form, "has_disabled_forms", True)
 
         return form
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -302,9 +307,8 @@ class YearlyTimesheets(TemplateView):
             users = UserProfile.get_users_that_worked_in_cantons(
                 [active_canton], year=year
             )
-
             timesheets_status_matrix = timesheets_overview.get_timesheets_status_matrix(
-                year=year, users=users
+                year=year, users=users, cantons=[active_canton]
             )
         else:
             timesheets_status_matrix = global_timesheets_status_matrix

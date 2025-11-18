@@ -2,7 +2,7 @@ import enum
 
 from django.contrib.auth import get_user_model
 from django.db.models import F, FloatField, IntegerField, Q, Sum
-from django.db.models.functions import Cast
+from django.db.models.functions import Cast, Upper
 from django.db.models.query import QuerySet
 
 from rolepermissions.checkers import has_permission
@@ -143,17 +143,23 @@ def get_orphaned_timesheets_per_month(year, users, month=None, cantons=DV_STATES
     return orphaned_timesheets_year
 
 
-def get_timesheets_status_matrix(year, users):
+def get_timesheets_status_matrix(year, users, cantons: list | None = None):
     """
     Return a dict of `{user: [TimesheetStatus]}` for all users who worked during the
     given `year`. Only users who `user` has access to (either because the user can see
     all cantons, or because they're affiliated in the canton the user manages) are
     returned.
+    The cantons filter will apply on the Sessions & timesheets, not on the users.
     """
-    sessions = Session.objects.filter(day__year=year).prefetch_related(
-        "qualifications", "qualifications__helpers"
-    )
+    sessions = (
+        Session.objects.filter(day__year=year).annotate(
+            orga_canton=Upper(F("orga__address_canton"))
+        )
+    ).prefetch_related("qualifications", "qualifications__helpers")
     timesheets = get_timesheets(year=year, users=users)
+    if cantons is not None:
+        sessions = sessions.filter(orga_canton__in=[c.upper() for c in cantons])
+        timesheets = timesheets.filter(date__in=sessions.values_list("day"))
 
     sessions_by_user = regroup_sessions_by_user(sessions, users)
     timesheets_by_user = regroup_timesheets_by_user(timesheets)
