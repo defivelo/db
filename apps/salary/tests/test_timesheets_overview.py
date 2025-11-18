@@ -3,7 +3,11 @@ import datetime
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
-from apps.challenge.tests.factories import QualificationFactory, SessionFactory
+from apps.challenge.tests.factories import (
+    QualificationFactory,
+    SeasonFactory,
+    SessionFactory,
+)
 from apps.orga.tests.factories import OrganizationFactory
 from apps.salary import HOURLY_RATE_HELPER, timesheets_overview
 from apps.user.tests.factories import UserFactory
@@ -166,6 +170,50 @@ def test_matrix_shows_months_with_validated_timesheets(db):
     assert (
         matrix[user]
         == [0] * 3 + [timesheets_overview.TimesheetStatus.TIMESHEET_VALIDATED] + [0] * 8
+    )
+
+
+def test_matrix_filters_on_selected_canton(db):
+    user = UserFactory(first_name="Jen", last_name="Barber")
+    vd_date = datetime.date(2019, 4, 11)
+    ge_date = datetime.date(2019, 5, 11)
+
+    SeasonFactory(cantons=["VD"], year=2019, month_start=1, n_months=5)
+    SeasonFactory(cantons=["GE"], year=2019, month_start=1, n_months=5)
+    QualificationFactory(
+        actor=user,
+        session=SessionFactory(
+            day=vd_date, orga=OrganizationFactory(address_canton="VD")
+        ),
+    )
+    QualificationFactory(
+        actor=user,
+        session=SessionFactory(
+            day=ge_date, orga=OrganizationFactory(address_canton="GE")
+        ),
+    )
+    TimesheetFactory(date=vd_date, user=user)
+    TimesheetFactory(date=ge_date, user=user)
+
+    # Filter for VD
+    matrix = timesheets_overview.get_timesheets_status_matrix(
+        2019, [user], cantons=["VD"]
+    )
+
+    assert (
+        matrix[user][3] == timesheets_overview.TimesheetStatus.TIMESHEET_NOT_VALIDATED
+    )
+    assert matrix[user][4] == 0
+
+    # No fitler
+    matrix = timesheets_overview.get_timesheets_status_matrix(
+        2019, [user], cantons=None
+    )
+    assert (
+        matrix[user][3] == timesheets_overview.TimesheetStatus.TIMESHEET_NOT_VALIDATED
+    )
+    assert (
+        matrix[user][4] == timesheets_overview.TimesheetStatus.TIMESHEET_NOT_VALIDATED
     )
 
 
