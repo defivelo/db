@@ -278,6 +278,53 @@ def test_matrix_shows_timesheets_total(db):
     assert amounts == [0] * 3 + [5 * HOURLY_RATE_HELPER] + [0] * 8
 
 
+def test_timesheets_total_filters_on_selected_canton(db):
+    user = UserFactory(first_name="Jen", last_name="Barber")
+    vd_date = datetime.date(2019, 4, 11)
+    ge_date = datetime.date(2019, 5, 11)
+
+    # Create sessions in different cantons
+    vd_orga = OrganizationFactory(address_canton="VD")
+    ge_orga = OrganizationFactory(address_canton="GE")
+
+    QualificationFactory(
+        actor=user,
+        session=SessionFactory(day=vd_date, orga=vd_orga),
+    )
+    QualificationFactory(
+        actor=user,
+        session=SessionFactory(day=ge_date, orga=ge_orga),
+    )
+
+    # Create timesheets for both dates
+    TimesheetFactory(date=vd_date, user=user, overtime=5)
+    TimesheetFactory(date=ge_date, user=user, overtime=3)
+
+    # Filter for VD canton only
+    amounts = timesheets_overview.get_timesheets_amount_by_month(
+        2019, [user], cantons=["VD"]
+    )
+    # Only the VD timesheet (5 hours in April) should be counted
+    assert amounts == [0] * 3 + [5 * HOURLY_RATE_HELPER] + [0] * 8
+
+    # Filter for GE canton only
+    amounts = timesheets_overview.get_timesheets_amount_by_month(
+        2019, [user], cantons=["GE"]
+    )
+    # Only the GE timesheet (3 hours in May) should be counted
+    assert amounts == [0] * 4 + [3 * HOURLY_RATE_HELPER] + [0] * 7
+
+    # No filter - should include both
+    amounts = timesheets_overview.get_timesheets_amount_by_month(
+        2019, [user], cantons=None
+    )
+    # Both timesheets should be counted
+    assert (
+        amounts
+        == [0] * 3 + [5 * HOURLY_RATE_HELPER] + [3 * HOURLY_RATE_HELPER] + [0] * 7
+    )
+
+
 def test_state_manager_sees_reminder_button_for_month_with_missing_timesheets(db):
     client = StateManagerAuthClient()
     managed_cantons = user_cantons(client.user)

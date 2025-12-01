@@ -283,14 +283,22 @@ def get_timesheets(year, users, month=None):
     return Timesheet.objects.filter(**kwargs)
 
 
-def get_timesheets_amount_by_month(year, users):
+def get_timesheets_amount_by_month(year, users, cantons: list | None = None):
     """
     Return the total amount of timesheets for the given year and the given users, as a
     list of 12 elements, 0 being January and 11 being December.
     """
-    timesheets_by_month = regroup_timesheets_by_month(
-        get_timesheets(year=year, users=users)
-    )
+    timesheets = get_timesheets(year=year, users=users)
+
+    if cantons is not None:
+        sessions = (
+            Session.objects.filter(day__year=year)
+            .annotate(orga_canton=Upper(F("orga__address_canton")))
+            .filter(orga_canton__in=[c.upper() for c in cantons])
+        )
+        timesheets = timesheets.filter(date__in=sessions.values_list("day"))
+
+    timesheets_by_month = regroup_timesheets_by_month(timesheets)
 
     total_by_month = [
         sum(

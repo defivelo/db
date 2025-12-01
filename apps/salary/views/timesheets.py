@@ -321,7 +321,11 @@ class YearlyTimesheets(TemplateView):
             )
         )
         context["timesheets_amount"] = (
-            timesheets_overview.get_timesheets_amount_by_month(year=year, users=users)
+            timesheets_overview.get_timesheets_amount_by_month(
+                year=year,
+                users=users,
+                cantons=[active_canton] if active_canton else None,
+            )
         )
         context["orphaned_timesheets"] = (
             timesheets_overview.get_orphaned_timesheets_per_month(
