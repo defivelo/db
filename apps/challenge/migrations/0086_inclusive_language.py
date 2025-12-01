@@ -77,7 +77,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='historicalsession',
             name='helpers_time',
-            field=models.TimeField(blank=True, null=True, verbose_name='Heure de rendez-vous des moniteur·rice·s'),
+            field=models.TimeField(blank=True, null=True, verbose_name='Heure de rendez-vous des moniteur·trice·s'),
         ),
         migrations.AlterField(
             model_name='historicalsession',
@@ -107,7 +107,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='qualification',
             name='helpers',
-            field=models.ManyToManyField(blank=True, limit_choices_to=models.Q(('profile__formation__in', ['M1', 'M2'])), related_name='qualifs_mon1', to=settings.AUTH_USER_MODEL, verbose_name='Moniteur·rice·s 1'),
+            field=models.ManyToManyField(blank=True, limit_choices_to=models.Q(('profile__formation__in', ['M1', 'M2'])), related_name='qualifs_mon1', to=settings.AUTH_USER_MODEL, verbose_name='Moniteur·trice·s 1'),
         ),
         migrations.AlterField(
             model_name='qualification',
@@ -137,7 +137,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='session',
             name='helpers_time',
-            field=models.TimeField(blank=True, null=True, verbose_name='Heure de rendez-vous des moniteur·rice·s'),
+            field=models.TimeField(blank=True, null=True, verbose_name='Heure de rendez-vous des moniteur·trice·s'),
         ),
         migrations.AlterField(
             model_name='session',
@@ -168,5 +168,15 @@ class Migration(migrations.Migration):
                          (3, 'En cours (corrections que par les chargé·e·s de projet)'),
                          (4, 'Terminé·e'), (5, 'Archivé·e')], default=1,
                 verbose_name='État'),
+        ),
+        migrations.AlterField(
+            model_name='historicalseason',
+            name='state',
+            field=models.PositiveSmallIntegerField(choices=[(1, 'Planification (invisible)'), (2, 'Annoncé (rentrée des disponibilités)'), (3, 'En cours (corrections que par chargé·e·s de projet)'), (4, 'Terminé'), (5, 'Archivé')], default=1, verbose_name='État'),
+        ),
+        migrations.AlterField(
+            model_name='season',
+            name='state',
+            field=models.PositiveSmallIntegerField(choices=[(1, 'Planification (invisible)'), (2, 'Annoncé (rentrée des disponibilités)'), (3, 'En cours (corrections que par chargé·e·s de projet)'), (4, 'Terminé'), (5, 'Archivé')], default=1, verbose_name='État'),
         ),
     ]

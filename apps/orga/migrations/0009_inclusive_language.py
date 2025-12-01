@@ -15,4 +15,11 @@ class Migration(migrations.Migration):
             name='status',
             field=models.PositiveSmallIntegerField(choices=[(0, '---------'), (10, 'Actif·ve'), (30, 'Inactif·ve')], default=10, verbose_name='Statut'),
         ),
+        migrations.AlterField(
+            model_name='organization',
+            name='status',
+            field=models.PositiveSmallIntegerField(
+                choices=[(0, '---------'), (10, 'Actif'), (30, 'Inactif')], default=10,
+                verbose_name='Statut'),
+        ),
     ]

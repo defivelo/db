@@ -147,11 +147,8 @@ DV_SEASON_STATE_ARCHIVED = 5  # R- for SM, R-- for helpers
 
 DV_SEASON_STATES = (
     (DV_SEASON_STATE_PLANNING, _("Planification (invisible)")),
-    (DV_SEASON_STATE_OPEN, _("Annoncé·e (rentrée des disponibilités)")),
-    (
-        DV_SEASON_STATE_RUNNING,
-        _("En cours (corrections que par les chargé·e·s de projet)"),
-    ),
-    (DV_SEASON_STATE_FINISHED, _("Terminé·e")),
-    (DV_SEASON_STATE_ARCHIVED, _("Archivé·e")),
+    (DV_SEASON_STATE_OPEN, _("Annoncé (rentrée des disponibilités)")),
+    (DV_SEASON_STATE_RUNNING, _("En cours (corrections que par chargé·e·s de projet)")),
+    (DV_SEASON_STATE_FINISHED, _("Terminé")),
+    (DV_SEASON_STATE_ARCHIVED, _("Archivé")),
 )

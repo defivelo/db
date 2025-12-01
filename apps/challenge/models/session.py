@@ -84,7 +84,7 @@ class Session(Address, models.Model):
         _("Mauvais temps"), max_length=1, choices=FALLBACK_CHOICES, blank=True
     )
     helpers_time = models.TimeField(
-        _("Heure de rendez-vous des moniteur·rice·s"), null=True, blank=True
+        _("Heure de rendez-vous des moniteur·trice·s"), null=True, blank=True
     )
     helpers_place = models.CharField(
         _("Lieu rendez-vous moniteur·trice·s"), max_length=512, blank=True

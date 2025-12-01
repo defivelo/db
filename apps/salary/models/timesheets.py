@@ -16,7 +16,7 @@ class Timesheet(models.Model):
     time_helper = models.FloatField(_("Heures moni·teur·trice"), default=0)
     actor_count = models.IntegerField(_("Intervention(s)"), default=0)
     leader_count = models.IntegerField(
-        _("Participation(s) comme Moniteur·trice 2"), default=0
+        _("Participation(s) comme moniteur·trice 2"), default=0
     )
 
     overtime = models.FloatField(_("Heures supplémentaires"), default=0)

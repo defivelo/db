@@ -94,7 +94,7 @@ class QualificationForm(forms.ModelForm):
             session=session,
         )
         self.fields["helpers"] = HelpersChoiceField(
-            label=_("Moniteur·rice·s 1"),
+            label=_("Moniteur·trice·s 1"),
             queryset=available_staff.filter(
                 pk__in=helpers, profile__formation__in=FORMATION_KEYS
             ),

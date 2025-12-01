@@ -290,11 +290,11 @@ class SeasonHelpersMixin(SeasonMixin):
         all_helpers = qs.order_by("first_name", "last_name")
         return (
             (
-                _("Moniteur·rice·s 2"),
+                _("Moniteur·trice·s 2"),
                 all_helpers.filter(profile__formation=FORMATION_M2),
             ),
             (
-                _("Moniteur·rice·s 1"),
+                _("Moniteur·trice·s 1"),
                 all_helpers.filter(profile__formation=FORMATION_M1),
             ),
             (
@@ -1647,7 +1647,7 @@ class SeasonCreateView(
 
 class SeasonHelperListView(HelpersList, HasPermissionsMixin, SeasonMixin):
     model = get_user_model()
-    page_title = _("Moniteur·rice·s du mois")
+    page_title = _("Moniteur·trice·s du mois")
 
     def get_context_data(self, **kwargs):
         context = super(SeasonHelperListView, self).get_context_data(**kwargs)

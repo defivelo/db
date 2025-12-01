@@ -174,7 +174,7 @@ class Qualification(models.Model):
     )
     helpers = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
-        verbose_name=_("Moniteur·rice·s 1"),
+        verbose_name=_("Moniteur·trice·s 1"),
         related_name="qualifs_mon1",
         limit_choices_to=Q(profile__formation__in=FORMATION_KEYS),
         blank=True,
@@ -257,7 +257,7 @@ class Qualification(models.Model):
             errors.append(gettext("Nombre de participants"))
         if self.session.orga.coordinator != user:
             if not self.leader or self.helpers.count() != self.n_helpers_enum.m1:
-                errors.append(gettext("Moniteur·rice·s"))
+                errors.append(gettext("Moniteur·trice·s"))
             if not self.actor:
                 errors.append(gettext("Intervenant·e"))
             if not self.activity_A or not self.activity_B or not self.activity_C:

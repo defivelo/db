@@ -372,7 +372,7 @@ class UserDetailedList(UserList):
 
 
 class HelpersList(UserDetailedList):
-    page_title = _("Liste des moniteur·rice·s")
+    page_title = _("Liste des moniteur·trice·s")
 
     def get_queryset(self):
         return (

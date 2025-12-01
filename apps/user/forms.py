@@ -130,7 +130,7 @@ class SimpleUserProfileForm(forms.ModelForm):
                 "affiliation_canton",
                 ValidationError(
                     _(
-                        "Les moniteur·rice·s / intervenant·e·s ont besoin d’un canton d’affiliation."
+                        "Les moniteur·trice·s / intervenant·e·s ont besoin d’un canton d’affiliation."
                     )
                 ),
             )

@@ -109,7 +109,7 @@ class SessionForm(forms.ModelForm):
         ),
     )
     helpers_time = SwissTimeField(
-        label=_("Heure de rendez-vous des moniteur·rice·s"), required=False
+        label=_("Heure de rendez-vous des moniteur·trice·s"), required=False
     )
     superleader = UserAutoComplete(
         label=_("Moniteur·trice + / Photographe"),
