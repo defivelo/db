@@ -2,7 +2,7 @@ import enum
 
 from django.contrib.auth import get_user_model
 from django.db.models import F, FloatField, IntegerField, Q, Sum
-from django.db.models.functions import Cast
+from django.db.models.functions import Cast, Upper
 from django.db.models.query import QuerySet
 
 from rolepermissions.checkers import has_permission
@@ -10,6 +10,7 @@ from rolepermissions.checkers import has_permission
 from apps.challenge.models.session import Session
 from apps.common import DV_STATES
 from apps.salary.models import Timesheet
+from apps.user.models import UserProfile
 from defivelo.roles import user_cantons
 
 
@@ -38,12 +39,12 @@ def timesheets_validation_status(year, month=None, cantons=DV_STATES):
     if month:
         months = [month]
 
-    user_cache_key = "-".join(cantons)
+    user_cache_key = f"{'-'.join(cantons)}-{year}"
     if user_cache_key not in timesheets_validation_status.all_users:
         timesheets_validation_status.all_users[user_cache_key] = (
-            get_user_model()
-            .objects.filter(profile__affiliation_canton__in=cantons)
-            .prefetch_related("profile")
+            UserProfile.get_users_that_worked_in_cantons(
+                cantons, year=year
+            ).prefetch_related("profile")
         )
 
     users = timesheets_validation_status.all_users[user_cache_key]
@@ -142,17 +143,23 @@ def get_orphaned_timesheets_per_month(year, users, month=None, cantons=DV_STATES
     return orphaned_timesheets_year
 
 
-def get_timesheets_status_matrix(year, users):
+def get_timesheets_status_matrix(year, users, cantons: list | None = None):
     """
     Return a dict of `{user: [TimesheetStatus]}` for all users who worked during the
     given `year`. Only users who `user` has access to (either because the user can see
     all cantons, or because they're affiliated in the canton the user manages) are
     returned.
+    The cantons filter will apply on the Sessions & timesheets, not on the users.
     """
-    sessions = Session.objects.filter(day__year=year).prefetch_related(
-        "qualifications", "qualifications__helpers"
-    )
+    sessions = (
+        Session.objects.filter(day__year=year).annotate(
+            orga_canton=Upper(F("orga__address_canton"))
+        )
+    ).prefetch_related("qualifications", "qualifications__helpers")
     timesheets = get_timesheets(year=year, users=users)
+    if cantons is not None:
+        sessions = sessions.filter(orga_canton__in=[c.upper() for c in cantons])
+        timesheets = timesheets.filter(date__in=sessions.values_list("day"))
 
     sessions_by_user = regroup_sessions_by_user(sessions, users)
     timesheets_by_user = regroup_timesheets_by_user(timesheets)
@@ -276,14 +283,22 @@ def get_timesheets(year, users, month=None):
     return Timesheet.objects.filter(**kwargs)
 
 
-def get_timesheets_amount_by_month(year, users):
+def get_timesheets_amount_by_month(year, users, cantons: list | None = None):
     """
     Return the total amount of timesheets for the given year and the given users, as a
     list of 12 elements, 0 being January and 11 being December.
     """
-    timesheets_by_month = regroup_timesheets_by_month(
-        get_timesheets(year=year, users=users)
-    )
+    timesheets = get_timesheets(year=year, users=users)
+
+    if cantons is not None:
+        sessions = (
+            Session.objects.filter(day__year=year)
+            .annotate(orga_canton=Upper(F("orga__address_canton")))
+            .filter(orga_canton__in=[c.upper() for c in cantons])
+        )
+        timesheets = timesheets.filter(date__in=sessions.values_list("day"))
+
+    timesheets_by_month = regroup_timesheets_by_month(timesheets)
 
     total_by_month = [
         sum(
@@ -303,9 +318,8 @@ def get_visible_users(user):
     if has_permission(user, "cantons_all"):
         qs = User.objects.all()
     elif has_permission(user, "cantons_mine"):
-        cantons = user_cantons(user)
-        qs = User.objects.filter(
-            Q(profile__affiliation_canton__in=cantons) | Q(pk=user.pk)
+        qs = UserProfile.get_users_that_worked_in_cantons(
+            user_cantons(user), [Q(pk=user.pk)]
         )
     else:
         qs = User.objects.filter(pk=user.pk)
