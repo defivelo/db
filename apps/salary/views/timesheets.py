@@ -5,7 +5,8 @@ from django.contrib import messages
 from django.contrib.sites.models import Site
 from django.core import mail
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count, Q
+from django.db.models import Count, F, Q
+from django.db.models.functions import Upper
 from django.shortcuts import get_object_or_404, redirect
 from django.template.defaultfilters import date as datefilter
 from django.template.loader import render_to_string
@@ -20,6 +21,7 @@ from django.views.generic import RedirectView, TemplateView
 from django.views.generic.dates import MonthArchiveView
 from django.views.generic.edit import FormView
 
+from localflavor.ch.ch_states import STATE_CHOICES
 from tablib import Dataset
 
 from apps.challenge.models.session import Session
@@ -28,8 +30,9 @@ from apps.common.views import ExportMixin
 from apps.salary import BONUS_LEADER, HOURLY_RATE_HELPER, RATE_ACTOR
 from apps.salary.forms import ControlTimesheetFormSet, TimesheetFormSet
 from apps.salary.models import Timesheet
-from defivelo.roles import has_permission
+from defivelo.roles import has_permission, user_cantons
 
+from ...user.models import UserProfile
 from ...user.views.standard import ReturnUrlMixin
 from .. import timesheets_overview
 
@@ -68,6 +71,7 @@ class UserMonthlyTimesheets(MonthArchiveView, ReturnUrlMixin, FormView):
                 .filter(day__lte=timezone.now())
                 .annotate(
                     orga_count=Count("orga_id", distinct=True),
+                    orga_canton=Upper(F("orga__address_canton")),
                     helper_count=Count(
                         "qualifications__pk",
                         filter=Q(qualifications__helpers=self.selected_user)
@@ -89,6 +93,40 @@ class UserMonthlyTimesheets(MonthArchiveView, ReturnUrlMixin, FormView):
             .exclude(actor_count=0, helper_count=0)
             .order_by("day")
         )
+
+    def get_form(self, form_class=None):
+        """Return an instance of the form to be used in this view."""
+        form = super().get_form(form_class=form_class)
+
+        # Return the form as-is if the user is not validating timesheets
+        if not has_permission(self.request.user, "timesheet_editor"):
+            return form
+
+        # We disable forms where the session is not in the managed canton.
+        def disable_form(form, reason=None):
+            for key in form.fields:
+                form.fields[key].disabled = True
+            form.disabled = True
+            setattr(form, "disabled_reason", reason)
+
+        user_cantons_list = [str(c).upper() for c in user_cantons(self.request.user)]
+        for i, session in enumerate(self.object_list):
+            session_canton = session.get("orga_canton", None)
+            session_canton_label = dict(STATE_CHOICES).get(
+                session_canton, session_canton
+            )
+
+            if session_canton and session_canton not in user_cantons_list:
+                disable_form(
+                    form.forms[i],
+                    _(
+                        'La session a lieu dans le canton "%s" que vous n\'administrez pas.'
+                    )
+                    % session_canton_label,
+                )
+                setattr(form, "has_disabled_forms", True)
+
+        return form
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -266,9 +304,11 @@ class YearlyTimesheets(TemplateView):
             timesheets_overview.get_timesheets_status_matrix(year=year, users=users)
         )
         if active_canton:
-            users = users.filter(profile__affiliation_canton=active_canton)
+            users = UserProfile.get_users_that_worked_in_cantons(
+                [active_canton], year=year
+            )
             timesheets_status_matrix = timesheets_overview.get_timesheets_status_matrix(
-                year=year, users=users
+                year=year, users=users, cantons=[active_canton]
             )
         else:
             timesheets_status_matrix = global_timesheets_status_matrix
@@ -281,7 +321,11 @@ class YearlyTimesheets(TemplateView):
             )
         )
         context["timesheets_amount"] = (
-            timesheets_overview.get_timesheets_amount_by_month(year=year, users=users)
+            timesheets_overview.get_timesheets_amount_by_month(
+                year=year,
+                users=users,
+                cantons=[active_canton] if active_canton else None,
+            )
         )
         context["orphaned_timesheets"] = (
             timesheets_overview.get_orphaned_timesheets_per_month(

@@ -1,6 +1,6 @@
   <table class="table-responsive">
     <tr>
-      {% if not widget.attrs.readonly %}
+      {% if not widget.attrs.readonly and not widget.attrs.disabled %}
       <td width=1 class="hidden-print">
         <a href="#" class="btn btn-success btn-xs" data-decrement="{{ widget.attrs.step }}">
           <span class="glyphicon glyphicon-minus"></span>
@@ -10,7 +10,7 @@
       <td align="center" width="50">
         <span class="result">&nbsp;</span>
       </td>
-      {% if not widget.attrs.readonly %}
+      {% if not widget.attrs.readonly and not widget.attrs.disabled %}
       <td width=1 class="hidden-print">
         <a href="#" class="btn btn-success btn-xs" data-increment="{{ widget.attrs.step }}">
           <span class="glyphicon glyphicon-plus"></span>

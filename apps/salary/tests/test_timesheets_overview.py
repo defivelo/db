@@ -3,7 +3,12 @@ import datetime
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
-from apps.challenge.tests.factories import QualificationFactory, SessionFactory
+from apps.challenge.tests.factories import (
+    QualificationFactory,
+    SeasonFactory,
+    SessionFactory,
+)
+from apps.orga.tests.factories import OrganizationFactory
 from apps.salary import HOURLY_RATE_HELPER, timesheets_overview
 from apps.user.tests.factories import UserFactory
 from defivelo.roles import user_cantons
@@ -39,13 +44,19 @@ def test_state_manager_can_only_see_managed_users(db):
             last_name="Moss",
             profile__affiliation_canton=managed_cantons[0],
         ),
-        session=SessionFactory(day=datetime.date(2019, 4, 11)),
+        session=SessionFactory(
+            day=datetime.date(2019, 4, 11),
+            orga=OrganizationFactory(address_canton=managed_cantons[0]),
+        ),
     )
     QualificationFactory(
         actor=UserFactory(
             first_name="Jen", last_name="Barber", profile__affiliation_canton="GE"
         ),
-        session=SessionFactory(day=datetime.date(2019, 4, 20)),
+        session=SessionFactory(
+            day=datetime.date(2019, 4, 20),
+            orga=OrganizationFactory(address_canton="GE"),
+        ),
     )
 
     response = client.get(reverse("salary:timesheets-overview", kwargs={"year": 2019}))
@@ -162,6 +173,50 @@ def test_matrix_shows_months_with_validated_timesheets(db):
     )
 
 
+def test_matrix_filters_on_selected_canton(db):
+    user = UserFactory(first_name="Jen", last_name="Barber")
+    vd_date = datetime.date(2019, 4, 11)
+    ge_date = datetime.date(2019, 5, 11)
+
+    SeasonFactory(cantons=["VD"], year=2019, month_start=1, n_months=5)
+    SeasonFactory(cantons=["GE"], year=2019, month_start=1, n_months=5)
+    QualificationFactory(
+        actor=user,
+        session=SessionFactory(
+            day=vd_date, orga=OrganizationFactory(address_canton="VD")
+        ),
+    )
+    QualificationFactory(
+        actor=user,
+        session=SessionFactory(
+            day=ge_date, orga=OrganizationFactory(address_canton="GE")
+        ),
+    )
+    TimesheetFactory(date=vd_date, user=user)
+    TimesheetFactory(date=ge_date, user=user)
+
+    # Filter for VD
+    matrix = timesheets_overview.get_timesheets_status_matrix(
+        2019, [user], cantons=["VD"]
+    )
+
+    assert (
+        matrix[user][3] == timesheets_overview.TimesheetStatus.TIMESHEET_NOT_VALIDATED
+    )
+    assert matrix[user][4] == 0
+
+    # No fitler
+    matrix = timesheets_overview.get_timesheets_status_matrix(
+        2019, [user], cantons=None
+    )
+    assert (
+        matrix[user][3] == timesheets_overview.TimesheetStatus.TIMESHEET_NOT_VALIDATED
+    )
+    assert (
+        matrix[user][4] == timesheets_overview.TimesheetStatus.TIMESHEET_NOT_VALIDATED
+    )
+
+
 def test_orphaned_timesheets_in_a_month(db):
     user = UserFactory(
         first_name="Jen", last_name="Barber", profile__affiliation_canton="VD"
@@ -223,6 +278,53 @@ def test_matrix_shows_timesheets_total(db):
     assert amounts == [0] * 3 + [5 * HOURLY_RATE_HELPER] + [0] * 8
 
 
+def test_timesheets_total_filters_on_selected_canton(db):
+    user = UserFactory(first_name="Jen", last_name="Barber")
+    vd_date = datetime.date(2019, 4, 11)
+    ge_date = datetime.date(2019, 5, 11)
+
+    # Create sessions in different cantons
+    vd_orga = OrganizationFactory(address_canton="VD")
+    ge_orga = OrganizationFactory(address_canton="GE")
+
+    QualificationFactory(
+        actor=user,
+        session=SessionFactory(day=vd_date, orga=vd_orga),
+    )
+    QualificationFactory(
+        actor=user,
+        session=SessionFactory(day=ge_date, orga=ge_orga),
+    )
+
+    # Create timesheets for both dates
+    TimesheetFactory(date=vd_date, user=user, overtime=5)
+    TimesheetFactory(date=ge_date, user=user, overtime=3)
+
+    # Filter for VD canton only
+    amounts = timesheets_overview.get_timesheets_amount_by_month(
+        2019, [user], cantons=["VD"]
+    )
+    # Only the VD timesheet (5 hours in April) should be counted
+    assert amounts == [0] * 3 + [5 * HOURLY_RATE_HELPER] + [0] * 8
+
+    # Filter for GE canton only
+    amounts = timesheets_overview.get_timesheets_amount_by_month(
+        2019, [user], cantons=["GE"]
+    )
+    # Only the GE timesheet (3 hours in May) should be counted
+    assert amounts == [0] * 4 + [3 * HOURLY_RATE_HELPER] + [0] * 7
+
+    # No filter - should include both
+    amounts = timesheets_overview.get_timesheets_amount_by_month(
+        2019, [user], cantons=None
+    )
+    # Both timesheets should be counted
+    assert (
+        amounts
+        == [0] * 3 + [5 * HOURLY_RATE_HELPER] + [3 * HOURLY_RATE_HELPER] + [0] * 7
+    )
+
+
 def test_state_manager_sees_reminder_button_for_month_with_missing_timesheets(db):
     client = StateManagerAuthClient()
     managed_cantons = user_cantons(client.user)
@@ -234,9 +336,10 @@ def test_state_manager_sees_reminder_button_for_month_with_missing_timesheets(db
     )
 
     date_validated = datetime.date(2019, 2, 11)
+    orga = OrganizationFactory(address_canton=managed_cantons[0])
     QualificationFactory(
         actor=helper,
-        session=SessionFactory(day=date_validated),
+        session=SessionFactory(day=date_validated, orga=orga),
     )
     TimesheetFactory(
         date=date_validated,
@@ -246,7 +349,7 @@ def test_state_manager_sees_reminder_button_for_month_with_missing_timesheets(db
     date_missing = datetime.date(2019, 3, 11)
     QualificationFactory(
         actor=helper,
-        session=SessionFactory(day=date_missing),
+        session=SessionFactory(day=date_missing, orga=orga),
     )
 
     response = client.get(reverse("salary:timesheets-overview", kwargs={"year": 2019}))
