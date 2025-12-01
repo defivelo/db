@@ -61,11 +61,11 @@ USERSTATUS_DELETED = 99
 
 USERSTATUS_CHOICES = (
     (USERSTATUS_UNDEF, "---------"),
-    (USERSTATUS_ACTIVE, _("Actif")),
+    (USERSTATUS_ACTIVE, _("Actif·ve")),
     (USERSTATUS_RESERVE, _("Réserve")),
-    (USERSTATUS_INACTIVE, _("Inactif")),
-    (USERSTATUS_ARCHIVE, _("Archive")),
-    (USERSTATUS_DELETED, _("Supprimé")),
+    (USERSTATUS_INACTIVE, _("Inactif·ve")),
+    (USERSTATUS_ARCHIVE, _("Archivé·e")),
+    (USERSTATUS_DELETED, _("Supprimé·e")),
 )
 
 USERSTATUS_CHOICES_NORMAL = tuple([us for us in USERSTATUS_CHOICES if us[0] < 90])
@@ -222,7 +222,7 @@ class UserProfile(Address, models.Model):
     )
     actor_for = models.ManyToManyField(
         QualificationActivity,
-        verbose_name=_("Intervenant"),
+        verbose_name=_("Intervenant·e"),
         related_name="actor_for",
         limit_choices_to={"category": "C"},
         blank=True,

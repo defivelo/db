@@ -42,8 +42,8 @@ FORMATION_M2 = "M2"
 
 FORMATION_CHOICES = (
     ("", "----------"),
-    (FORMATION_M1, _("Moniteur 1")),
-    (FORMATION_M2, _("Moniteur 2")),
+    (FORMATION_M1, _("Moniteur·trice 1")),
+    (FORMATION_M2, _("Moniteur·trice 2")),
 )
 FORMATION_KEYS = [k[0] for k in FORMATION_CHOICES if k[0] != ""]
 
@@ -52,12 +52,12 @@ FORMATION_KEYS = [k[0] for k in FORMATION_CHOICES if k[0] != ""]
 def formation_short(formation, real_gettext=False):
     if formation == FORMATION_M1:
         return (
-            # Translators: FORMATION_M1 - Moniteur 1
+            # Translators: FORMATION_M1 - Moniteur·trice 1
             gettext("M1") if real_gettext else _("M1")
         )
     elif formation == FORMATION_M2:
         return (
-            # Translators: FORMATION_M2 - Moniteur 2
+            # Translators: FORMATION_M2 - Moniteur·trice 2
             gettext("M2") if real_gettext else _("M2")
         )
     return ""

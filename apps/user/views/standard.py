@@ -183,7 +183,7 @@ class UserUpdate(
 
 class UserCreate(HasPermissionsMixin, ProfileMixin, SuccessMessageMixin, CreateView):
     required_permission = "user_create"
-    success_message = _("Utilisateur créé")
+    success_message = _("Utilisateur·rice créé·e")
 
     def get_form_kwargs(self):
         kwargs = super(UserCreate, self).get_form_kwargs()
@@ -307,7 +307,7 @@ class UserProfileFilterSet(FilterSet):
         label=_("Formation"), choices=FORMATION_CHOICES, method=filter_multi_nonempty
     )
     profile__actor_for = ModelMultipleChoiceFilter(
-        label=_("Intervenant"),
+        label=_("Intervenant·e"),
         queryset=(
             QualificationActivity.objects.filter(category="C").prefetch_related(
                 "translations"
@@ -346,7 +346,7 @@ class UserList(HasPermissionsMixin, ProfileMixin, PaginatorMixin, FilterView):
 
 class UserListExport(ExportMixin, UserList):
     export_class = UserResource()
-    export_filename = _("Utilisateurs")
+    export_filename = _("Utilisateur·rice·s")
 
     def get_export_class(self, request):
         """
@@ -362,7 +362,7 @@ class UserDetailedList(UserList):
     paginate_by = None
     context_object_name = "users"
     template_name = "auth/user_detailed_list.html"
-    page_title = _("Liste des utilisateurs")
+    page_title = _("Liste des utilisateur·rice·s")
 
     def get_context_data(self, **kwargs):
         context = super(UserDetailedList, self).get_context_data(**kwargs)
@@ -372,7 +372,7 @@ class UserDetailedList(UserList):
 
 
 class HelpersList(UserDetailedList):
-    page_title = _("Liste des moniteurs")
+    page_title = _("Liste des moniteur·trice·s")
 
     def get_queryset(self):
         return (
@@ -383,7 +383,7 @@ class HelpersList(UserDetailedList):
 
 
 class ActorsList(UserDetailedList):
-    page_title = _("Liste des intervenants")
+    page_title = _("Liste des intervenant·e·s")
 
     def get_queryset(self):
         return (

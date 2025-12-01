@@ -56,7 +56,7 @@ class QualificationDeleteForm(forms.Form):
 
 class QualificationForm(forms.ModelForm):
     class_teacher_natel = CHPhoneNumberField(
-        label=_("Natel enseignant"), required=False
+        label=_("Natel enseignant·e"), required=False
     )
 
     def __init__(self, *args, **kwargs):
@@ -85,7 +85,7 @@ class QualificationForm(forms.ModelForm):
             | Q(qualifs_actor__in=other_qualifs)
         )
         self.fields["leader"] = LeaderChoiceField(
-            label=_("Moniteur 2"),
+            label=_("Moniteur·trice 2"),
             queryset=available_staff.filter(
                 pk__in=leaders,
                 profile__formation=FORMATION_M2,
@@ -94,7 +94,7 @@ class QualificationForm(forms.ModelForm):
             session=session,
         )
         self.fields["helpers"] = HelpersChoiceField(
-            label=_("Moniteurs 1"),
+            label=_("Moniteur·trice·s 1"),
             queryset=available_staff.filter(
                 pk__in=helpers, profile__formation__in=FORMATION_KEYS
             ),
@@ -102,7 +102,7 @@ class QualificationForm(forms.ModelForm):
             session=session,
         )
         self.fields["actor"] = ActorChoiceField(
-            label=_("Intervenant"),
+            label=_("Intervenant·e"),
             queryset=available_staff.filter(
                 pk__in=actors, profile__actor_for__isnull=False
             ).distinct(),
@@ -149,7 +149,7 @@ class QualificationForm(forms.ModelForm):
             [x for x in all_leaders_pk if x not in seen_pk and not seen_pk.add(x)]
         ) < len(all_leaders_pk):
             raise ValidationError(
-                _("Il y a des moniteurs à double !"), code="double-helpers"
+                _("Il y a des moniteur·trice·s à double !"), code="double-helpers"
             )
         return helpers
 
@@ -162,7 +162,7 @@ class QualificationForm(forms.ModelForm):
                 if not actor.profile.actor_for.filter(id=activity_C.id).exists():
                     raise ValidationError(
                         _(
-                            "L’intervenant n’est pas qualifié pour la rencontre "
+                            "L’intervenant·e n’est pas qualifié·e pour la rencontre "
                             "prévue !"
                         ),
                         code="unqualified-actor",
@@ -170,7 +170,7 @@ class QualificationForm(forms.ModelForm):
             helpers = self.cleaned_data.get("helpers")
             if helpers and helpers.filter(id=actor.id).exists():
                 raise ValidationError(
-                    _("L’intervenant ne peut pas aussi être moniteur !"),
+                    _("L’intervenant·e ne peut pas aussi être moniteur·trice !"),
                     code="helper-actor",
                 )
         return actor
