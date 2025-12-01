@@ -70,7 +70,7 @@
         <tr><th>{% trans "Horaire" %}</th><td>{{ session.begin|time }} - {{ session.end|time }}</td></tr>
     {% endif %}
     {% if session.superleader %}
-        <tr><th>{% trans "Moniteur + / Photographe" %}</th><td>{{ session.superleader|profile_tag:user_is_coordinator }}</td></tr>
+        <tr><th>{% trans "Moniteur·trice + / Photographe" %}</th><td>{{ session.superleader|profile_tag:user_is_coordinator }}</td></tr>
     {% endif %}
     {% if session.fallback %}
         <tr><th>{% trans "Mauvais temps" %}</th><td>{{ session.fallback }}</td></tr>
@@ -109,7 +109,7 @@
                 <dt>{% trans "Rendez-vous" %}</dt>
                     <dd>{{ session.helpers_time_with_default }}{% if session.helpers_place %}<br />{{ session.helpers_place }}{% endif %}</dd>
                 {% if session.replacement_staff.count > 0 %}
-                    <dt>{% trans "Moniteur de Secours" %}</dt>
+                    <dt>{% trans "Moniteur·trice de secours" %}</dt>
                         <dd>{% for avail in session.replacement_staff %}{% if not forloop.first %}<br />{% endif %}{{ avail.helper|profile_tag:user_is_coordinator }}{% endfor %}</dd>
                 {% endif %}
             </dl>
@@ -155,8 +155,8 @@
                     </td>
                 {% endfor %}
         </tr>
-        <tr><th>{% trans "Nombre de moniteurs" %}</th>{% for quali in session.qualifications.all %}<td>{{ quali.n_helpers }}</td>{% endfor %}</tr>
-        <tr><th>{% trans "Moniteur 2" %}</th>
+        <tr><th>{% trans "Nombre de moniteur·trice·s" %}</th>{% for quali in session.qualifications.all %}<td>{{ quali.n_helpers }}</td>{% endfor %}</tr>
+        <tr><th>{% trans "Moniteur·trice 2" %}</th>
                 {% for quali in session.qualifications.all %}<td>{{ quali.leader|profile_tag:user_is_coordinator }}</td>{% endfor %}</tr>
         <tr><th>{% trans "Moniteurs 1" %}</th>
                 {% for quali in session.qualifications.all %}<td>{% for helper in quali.helpers.all %}{{ helper|profile_tag:user_is_coordinator }}<br />{% endfor %}</td>{% endfor %}</tr>

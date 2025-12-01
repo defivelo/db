@@ -128,7 +128,7 @@ class UserResource(resources.ModelResource):
         column_name=_("Cours samaritains"), attribute="profile", widget=FirstMedWidget()
     )
     profile__actor_for = fields.Field(
-        column_name=_("Intervenant"),
+        column_name=_("Intervenant·e"),
         attribute="profile",
         widget=ObjectMethodWidget(method="actor_inline"),
     )

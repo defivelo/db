@@ -101,10 +101,10 @@ class Qualification(models.Model):
         Session, related_name="qualifications", on_delete=models.CASCADE
     )
     class_teacher_fullname = models.CharField(
-        _("Enseignant"), max_length=512, blank=True
+        _("Enseignant·e"), max_length=512, blank=True
     )
     class_teacher_natel = models.CharField(
-        _("Natel enseignant"), max_length=13, blank=True
+        _("Natel enseignant·e"), max_length=13, blank=True
     )
     n_participants = models.PositiveSmallIntegerField(
         _("Nombre de participants"),
@@ -115,7 +115,7 @@ class Qualification(models.Model):
         ],
     )
     n_helpers = models.IntegerField(
-        _("Nombre de moniteurs"),
+        _("Nombre de moniteur·trice·s"),
         choices=MonitorNumberEnum.choices,
         default=MonitorNumberEnum.THREE,
     )
@@ -165,7 +165,7 @@ class Qualification(models.Model):
     )
     leader = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        verbose_name=_("Moniteur 2"),
+        verbose_name=_("Moniteur·trice 2"),
         related_name="qualifs_mon2",
         limit_choices_to=Q(profile__formation=FORMATION_M2),
         blank=True,
@@ -174,14 +174,14 @@ class Qualification(models.Model):
     )
     helpers = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
-        verbose_name=_("Moniteurs 1"),
+        verbose_name=_("Moniteur·trice·s 1"),
         related_name="qualifs_mon1",
         limit_choices_to=Q(profile__formation__in=FORMATION_KEYS),
         blank=True,
     )
     actor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        verbose_name=_("Intervenant"),
+        verbose_name=_("Intervenant·e"),
         related_name="qualifs_actor",
         limit_choices_to={"profile__actor_for__isnull": False},
         blank=True,
@@ -252,14 +252,14 @@ class Qualification(models.Model):
     def user_errors(self, user=None):
         errors = []
         if not self.class_teacher_fullname or not self.class_teacher_natel:
-            errors.append(gettext("Enseignant"))
+            errors.append(gettext("Enseignant·e"))
         if not self.n_participants:
             errors.append(gettext("Nombre de participants"))
         if self.session.orga.coordinator != user:
             if not self.leader or self.helpers.count() != self.n_helpers_enum.m1:
-                errors.append(gettext("Moniteurs"))
+                errors.append(gettext("Moniteur·trice·s"))
             if not self.actor:
-                errors.append(gettext("Intervenant"))
+                errors.append(gettext("Intervenant·e"))
             if not self.activity_A or not self.activity_B or not self.activity_C:
                 errors.append(gettext("Postes"))
             if self.has_availability_incoherences:

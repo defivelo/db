@@ -3,7 +3,7 @@
 {% load account %}
 {% load bootstrap3 %}
 {% load dv_filters %}
-{% block head_title %}{% trans "Utilisateurs" %}{% endblock %}
+{% block head_title %}{% trans "Utilisateur·rice·s" %}{% endblock %}
 
 {% block bootstrap3_extra_script %}
   {% include 'snippets/datetimepicker_js.html' %}
@@ -16,7 +16,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="{% trans "Fermer" %}"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">{% trans "Filtrer la liste des utilisateurs" %}</h4>
+                        <h4 class="modal-title">{% trans "Filtrer la liste des utilisateur·rice·s" %}</h4>
                     </div>
                     <div class="modal-body">
                     <form method="GET" action="." class="form-inline">
@@ -114,7 +114,7 @@
     <div class="hidden-print">
         <a class="btn btn-primary pull-right" href="{% url 'user-create' %}">
             <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-            {% trans "Nouvel utilisateur" %}
+            {% trans "Nouvel utilisateur·trice" %}
         </a>
     </div>
     {% endif %}

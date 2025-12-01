@@ -153,7 +153,7 @@
                             {% endif %}</dd>
                         {% endif %}
                         {% if userprofile.profile.actor %}
-                            <dt>{% trans "Intervenant" %}</dt><dd>{{ userprofile.profile.actor_for.all|join:'<br />' }}</dd>
+                            <dt>{% trans "Intervenant·e" %}</dt><dd>{{ userprofile.profile.actor_for.all|join:'<br />' }}</dd>
                         {% endif %}
                       {% endif %}
                         {% if userprofile.profile.status > 0 %}
@@ -254,7 +254,7 @@
             </a>
         {% endif %}
         {% if request.user|can:'user_view_list' %}
-            {% trans "Retour à la liste des utilisateurs" as default_return_label %}
+            {% trans "Retour à la liste des utilisateur·rice·s" as default_return_label %}
             <a class="btn btn-default" href="{% if return_url %}{{ return_url }}{% else %}{% url 'user-list' %}{% endif %}">{{ return_label|default:default_return_label }}</a>
         {% endif %}
     {% endbuttons %}
@@ -263,7 +263,7 @@
             <br />
             <a class="btn btn-primary pull-right" href="{% url 'user-create' %}">
                 <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-                {% trans "Nouvel utilisateur" %}
+                {% trans "Nouvel utilisateur·trice" %}
             </a>
         {% endif %}
     </div>

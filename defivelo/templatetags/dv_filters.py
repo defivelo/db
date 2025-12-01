@@ -238,16 +238,16 @@ def useravailsessions_readonly(
                     staffkey = STAFF_FIELDKEY.format(hpk=user.pk, spk=thissesskey)
                     if staffkey in struct:
                         if struct[staffkey] == CHOSEN_AS_LEADER:
-                            avail_verb = _("Moniteur 2")
+                            avail_verb = _("Moniteur·trice 2")
                             avail_content = formation_short(FORMATION_M2)
                         elif struct[staffkey] == CHOSEN_AS_HELPER:
-                            avail_verb = _("Moniteur 1")
+                            avail_verb = _("Moniteur·trice 1")
                             avail_content = formation_short(FORMATION_M1)
                         elif struct[staffkey] == CHOSEN_AS_ACTOR:
-                            avail_verb = _("Intervenant")
+                            avail_verb = _("Intervenant·e")
                             avail_label = "sunglasses"
                         elif struct[staffkey] == CHOSEN_AS_REPLACEMENT:
-                            avail_verb = _("Moniteur de secours")
+                            avail_verb = _("Moniteur·trice de secours")
                             avail_content = _("S")
                         elif struct[staffkey] == CHOSEN_AS_LEGACY:
                             avail_verb = _("Choisi")
@@ -289,7 +289,7 @@ def useravailsessions_readonly(
                 superleader=(
                     ("&nbsp;/&nbsp;" if final_avail_label else "")
                     + '<span title="{mplus}">{mplus_short}</span>'.format(
-                        mplus=_("Moniteur + / Photographe"), mplus_short=_("M+")
+                        mplus=_("Moniteur·trice + / Photographe"), mplus_short=_("M+")
                     )
                 )
                 if superleader and planning
