@@ -107,7 +107,7 @@ class Qualification(models.Model):
         _("Natel enseignant·e"), max_length=13, blank=True
     )
     n_participants = models.PositiveSmallIntegerField(
-        _("Nombre de participants"),
+        _("Nombre de participant·es"),
         blank=True,
         null=True,
         validators=[
@@ -254,7 +254,7 @@ class Qualification(models.Model):
         if not self.class_teacher_fullname or not self.class_teacher_natel:
             errors.append(gettext("Enseignant·e"))
         if not self.n_participants:
-            errors.append(gettext("Nombre de participants"))
+            errors.append(gettext("Nombre de participant·es"))
         if self.session.orga.coordinator != user:
             if not self.leader or self.helpers.count() != self.n_helpers_enum.m1:
                 errors.append(gettext("Moniteur·trice·s"))

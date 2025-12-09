@@ -134,7 +134,7 @@ class QualificationForm(forms.ModelForm):
             else MAX_MONO1_PER_QUALI
         )
         if helpers and helpers.count() > max_m1:
-            raise ValidationError(_("Pas plus de %s moniteurs 1 !") % num2words(max_m1))
+            raise ValidationError(_("Pas plus de %s moniteur·trices 1 !") % num2words(max_m1))
         # Check that all moniteurs are unique
         all_leaders_pk = []
         leader = self.cleaned_data.get("leader")

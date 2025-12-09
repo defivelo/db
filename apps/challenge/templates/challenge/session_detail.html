@@ -104,7 +104,7 @@
             </td>
         </tr>
     {% endif %}
-    <tr><th><a href="{% url 'session-staff-choices' season.pk session.pk %}" title="{% trans "Disponibilités" %}">{% trans "Moniteurs" %}</a></th>
+    <tr><th><a href="{% url 'session-staff-choices' season.pk session.pk %}" title="{% trans "Disponibilités" %}">{% trans "Moniteur·trices" %}</a></th>
         <td><dl class="dl-horizontal small">
                 <dt>{% trans "Rendez-vous" %}</dt>
                     <dd>{{ session.helpers_time_with_default }}{% if session.helpers_place %}<br />{{ session.helpers_place }}{% endif %}</dd>
@@ -150,7 +150,7 @@
                     <td>{{ quali.class_teacher_fullname }}<br />
                         <small>{{ quali.class_teacher_natel|tel_link }}</small>
                         {% if quali.n_participants %}<br />
-                            {% blocktrans with n=quali.n_participants %}{{ n }} participants{% endblocktrans %}
+                            {% blocktrans with n=quali.n_participants %}{{ n }} participant·es{% endblocktrans %}
                         {% endif %}
                     </td>
                 {% endfor %}
@@ -158,7 +158,7 @@
         <tr><th>{% trans "Nombre de moniteur·trice·s" %}</th>{% for quali in session.qualifications.all %}<td>{{ quali.n_helpers }}</td>{% endfor %}</tr>
         <tr><th>{% trans "Moniteur·trice 2" %}</th>
                 {% for quali in session.qualifications.all %}<td>{{ quali.leader|profile_tag:user_is_coordinator }}</td>{% endfor %}</tr>
-        <tr><th>{% trans "Moniteurs 1" %}</th>
+        <tr><th>{% trans "Moniteur·trices 1" %}</th>
                 {% for quali in session.qualifications.all %}<td>{% for helper in quali.helpers.all %}{{ helper|profile_tag:user_is_coordinator }}<br />{% endfor %}</td>{% endfor %}</tr>
         <tr><th>{% trans "Agilité" %}</th>
                 {% for quali in session.qualifications.all %}<td><em>{{ quali.activity_A|default:"" }}</em></td>{% endfor %}</tr>
