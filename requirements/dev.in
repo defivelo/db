@@ -7,4 +7,4 @@ Werkzeug
 # Deployment requirements
 fabric
 # Fixed version
-dulwich==0.19.15
+dulwich==0.25.0
