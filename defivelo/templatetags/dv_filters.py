@@ -25,11 +25,14 @@ from django.template.defaultfilters import date as datefilter
 from django.urls import reverse
 from django.utils.dates import MONTHS
 from django.utils.encoding import force_str
+from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 
+import phonenumbers
 from memoize import memoize
+from phonenumbers import NumberParseException, PhoneNumberFormat
 from rolepermissions.templatetags.permission_tags import can_template_tag
 
 from apps.challenge import (
@@ -90,12 +93,29 @@ def setlang(request, newlang):
     return sub("^/(%s)/" % request.LANGUAGE_CODE, "/%s/" % newlang, request.path)
 
 
+def _format_phone_numer(
+    tel: str | None, phone_format: int = PhoneNumberFormat.E164, region="CH"
+) -> str:
+    if not tel:
+        return ""
+
+    try:
+        phone = phonenumbers.parse(tel, region)
+        return phonenumbers.format_number(phone, phone_format)
+    except NumberParseException:
+        return tel
+
+
 @register.filter
 def tel_int(tel):
     if not tel:
         return ""
-    # Delete spaces, drop initial 0, add +41
-    return "+41" + tel.replace(" ", "")[1:]
+
+    # Already well formated
+    if tel[0:3] == "+41" and len(tel) == 12:
+        return tel
+
+    return _format_phone_numer(tel)
 
 
 @register.filter
@@ -106,9 +126,11 @@ def tel_link(tel):
         # Convert to swiss local number
         tel_str = "0{} {} {} {}".format(tel[3:5], tel[5:8], tel[8:10], tel[10:12])
     else:
-        tel_str = tel
+        tel_str = _format_phone_numer(tel, PhoneNumberFormat.NATIONAL)
     return mark_safe(
-        '<a href="tel:{tel_int}">{tel}</a>'.format(tel_int=tel_int(tel), tel=tel_str)
+        '<a href="tel:{tel_int}">{tel}</a>'.format(
+            tel_int=escape(tel_int(tel)), tel=escape(tel_str)
+        )
     )
 
 
@@ -216,16 +238,16 @@ def useravailsessions_readonly(
                     staffkey = STAFF_FIELDKEY.format(hpk=user.pk, spk=thissesskey)
                     if staffkey in struct:
                         if struct[staffkey] == CHOSEN_AS_LEADER:
-                            avail_verb = _("Moniteur 2")
+                            avail_verb = _("Moniteur·trice 2")
                             avail_content = formation_short(FORMATION_M2)
                         elif struct[staffkey] == CHOSEN_AS_HELPER:
-                            avail_verb = _("Moniteur 1")
+                            avail_verb = _("Moniteur·trice 1")
                             avail_content = formation_short(FORMATION_M1)
                         elif struct[staffkey] == CHOSEN_AS_ACTOR:
-                            avail_verb = _("Intervenant")
+                            avail_verb = _("Intervenant·e")
                             avail_label = "sunglasses"
                         elif struct[staffkey] == CHOSEN_AS_REPLACEMENT:
-                            avail_verb = _("Moniteur de secours")
+                            avail_verb = _("Moniteur·trice de secours")
                             avail_content = _("S")
                         elif struct[staffkey] == CHOSEN_AS_LEGACY:
                             avail_verb = _("Choisi")
@@ -267,7 +289,7 @@ def useravailsessions_readonly(
                 superleader=(
                     ("&nbsp;/&nbsp;" if final_avail_label else "")
                     + '<span title="{mplus}">{mplus_short}</span>'.format(
-                        mplus=_("Moniteur + / Photographe"), mplus_short=_("M+")
+                        mplus=_("Moniteur·trice + / Photographe"), mplus_short=_("M+")
                     )
                 )
                 if superleader and planning

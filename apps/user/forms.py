@@ -101,7 +101,7 @@ class SimpleUserProfileForm(forms.ModelForm):
             existing_users = existing_users.exclude(pk=self.instance.pk)
         if existing_users.exists():
             raise ValidationError(
-                _("Un utilisateur avec cette adresse e-mail existe déjà.")
+                _("Un·e utilisateur·rice avec cette adresse e-mail existe déjà.")
             )
         return email
 
@@ -129,7 +129,9 @@ class SimpleUserProfileForm(forms.ModelForm):
             self.add_error(
                 "affiliation_canton",
                 ValidationError(
-                    _("Moniteurs/intervenants ont besoin d’un canton d’affiliation.")
+                    _(
+                        "Les moniteur·trice·s / intervenant·e·s ont besoin d’un canton d’affiliation."
+                    )
                 ),
             )
         return cleaned_data

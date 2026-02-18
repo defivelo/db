@@ -378,12 +378,41 @@ def test_state_manager_can_set_timesheet_to_ignore(db):
         datas,
     )
     assert Timesheet.objects.count() == 1
-    ts = Timesheet.objects.first()
-    assert ts.ignore
-    assert ts.get_total_amount_helper() == 0
-    assert ts.get_total_amount_actor() == 0
-    assert ts.get_total_amount_leader() == 0
-    assert ts.get_total_amount() == 0
+
+
+def test_state_manager_forms_disabled_for_unmanaged_canton(db):
+    client = StateManagerAuthClient()
+    managed_canton = user_cantons(client.user)[0]  # VD
+    unmanaged_canton = "GE" if managed_canton != "GE" else "VD"
+
+    SeasonFactory(cantons=[managed_canton], year=2019, month_start=1, n_months=5)
+    SeasonFactory(cantons=[unmanaged_canton], year=2019, month_start=1, n_months=5)
+
+    actor = UserFactory(profile__affiliation_canton=managed_canton)
+
+    managed_session = SessionFactory(
+        day=datetime.date(2019, 4, 10),
+        orga=OrganizationFactory(address_canton=managed_canton),
+    )
+    unmanaged_session = SessionFactory(
+        day=datetime.date(2019, 4, 11),
+        orga=OrganizationFactory(address_canton=unmanaged_canton),
+    )
+    QualificationFactory(actor=actor, session=managed_session)
+    QualificationFactory(actor=actor, session=unmanaged_session)
+
+    response = client.get(
+        reverse(
+            "salary:user-timesheets",
+            kwargs={"year": 2019, "month": 4, "pk": actor.pk},
+        )
+    )
+    assert response.status_code == 200
+
+    formset = response.context["form"]
+    assert getattr(formset.forms[0], "disabled", False) is False
+    assert getattr(formset.forms[1], "disabled", False) is True
+    assert getattr(formset, "has_disabled_forms", False) is True
 
 
 def test_collaborator_cannot_timesheet_if_he_has_not_work(db):

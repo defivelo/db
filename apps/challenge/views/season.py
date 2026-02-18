@@ -289,10 +289,16 @@ class SeasonHelpersMixin(SeasonMixin):
         qs = self.potential_helpers_qs(qs)
         all_helpers = qs.order_by("first_name", "last_name")
         return (
-            (_("Moniteurs 2"), all_helpers.filter(profile__formation=FORMATION_M2)),
-            (_("Moniteurs 1"), all_helpers.filter(profile__formation=FORMATION_M1)),
             (
-                _("Intervenants"),
+                _("Moniteur·trice·s 2"),
+                all_helpers.filter(profile__formation=FORMATION_M2),
+            ),
+            (
+                _("Moniteur·trice·s 1"),
+                all_helpers.filter(profile__formation=FORMATION_M1),
+            ),
+            (
+                _("Intervenant·e·s"),
                 all_helpers.filter(profile__formation="").exclude(
                     profile__actor_for__isnull=True,
                 ),
@@ -812,7 +818,7 @@ class SeasonExportView(
         return [
             # Translators: Intervenant
             _("Int."),
-            # Translators: Moniteur + / Photographe
+            # Translators: Moniteur·trice + / Photographe
             _("M+"),
         ]
 
@@ -828,7 +834,7 @@ class SeasonExportView(
                 gettext("Heures"),
                 gettext("Nombre de qualifs"),
                 # Logistique
-                gettext("Moniteur + / Photographe"),
+                gettext("Moniteur·trice + / Photographe"),
                 gettext("Mauvais temps"),
                 gettext("Logistique vélos"),
                 gettext("N° de contact vélos"),
@@ -838,17 +844,17 @@ class SeasonExportView(
                 gettext("Remarques"),
                 # Qualif
                 gettext("Classe"),
-                gettext("Enseignant"),
-                gettext("Moniteur 2"),
-                gettext("Moniteur 1"),
-                gettext("Moniteur 1"),
+                gettext("Enseignant·e"),
+                gettext("Moniteur·trice 2"),
+                gettext("Moniteur·trice 1"),
+                gettext("Moniteur·trice 1"),
                 gettext("Nombre d’élèves"),
                 gettext("Nombre de vélos"),
                 gettext("Nombre de casques"),
                 str(CATEGORY_CHOICE_A),
                 str(CATEGORY_CHOICE_B),
                 str(CATEGORY_CHOICE_C),
-                gettext("Intervenant"),
+                gettext("Intervenant·e"),
                 gettext("Remarques"),
             ]
         )
@@ -1641,7 +1647,7 @@ class SeasonCreateView(
 
 class SeasonHelperListView(HelpersList, HasPermissionsMixin, SeasonMixin):
     model = get_user_model()
-    page_title = _("Moniteurs du mois")
+    page_title = _("Moniteur·trice·s du mois")
 
     def get_context_data(self, **kwargs):
         context = super(SeasonHelperListView, self).get_context_data(**kwargs)
@@ -1663,7 +1669,7 @@ class SeasonHelperListView(HelpersList, HasPermissionsMixin, SeasonMixin):
 
 class SeasonActorListView(ActorsList, HasPermissionsMixin, SeasonMixin):
     model = get_user_model()
-    page_title = _("Intervenants du mois")
+    page_title = _("Intervenant·e·s du mois")
 
     def get_context_data(self, **kwargs):
         context = super(SeasonActorListView, self).get_context_data(**kwargs)

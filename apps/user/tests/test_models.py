@@ -14,15 +14,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 from unittest.mock import patch
 
 from django.core.signals import request_finished
+from django.db.models import Q
 from django.test import override_settings
 
 from rolepermissions.checkers import has_role
 
-from apps.challenge.tests.factories import QualificationActivityFactory
+from apps.challenge.tests.factories import (
+    QualificationActivityFactory,
+    QualificationFactory,
+    SessionFactory,
+)
+from apps.orga.tests.factories import OrganizationFactory
 from apps.user import FORMATION_M1, FORMATION_M2
+from apps.user.models import UserProfile
 from apps.user.tests.factories import UserFactory
 
 
@@ -31,6 +39,45 @@ def test_str_representations(db):
 
     assert str(user) == user.username
     assert str(user.profile) == user.get_full_name()
+
+
+def test_get_users_that_worked_in_cantons_filters_by_year_and_role(db):
+    canton = "VD"
+    other_canton = "GE"
+    year = 2019
+    session = SessionFactory(
+        day=datetime.date(year, 4, 10),
+        orga=OrganizationFactory(address_canton=canton),
+    )
+    actor = UserFactory()
+    helper = UserFactory()
+    leader = UserFactory()
+    QualificationFactory(session=session, actor=actor, helpers=[helper], leader=leader)
+
+    # Users working in a different canton or year should not be returned
+    QualificationFactory(
+        session=SessionFactory(
+            day=datetime.date(year + 1, 5, 10),
+            orga=OrganizationFactory(address_canton=canton),
+        ),
+        actor=UserFactory(),
+    )
+    QualificationFactory(
+        session=SessionFactory(
+            day=datetime.date(year, 6, 10),
+            orga=OrganizationFactory(address_canton=other_canton),
+        ),
+        actor=UserFactory(),
+    )
+
+    users = UserProfile.get_users_that_worked_in_cantons([canton], year=year)
+    assert set(users) == {actor, helper, leader}
+
+    extra_user = UserFactory()
+    users_with_extra = UserProfile.get_users_that_worked_in_cantons(
+        [canton], year=year, additional_or=[Q(pk=extra_user.pk)]
+    )
+    assert extra_user in users_with_extra
 
 
 def test_automatic_collaborator_role_assignment_formation(db):
@@ -93,9 +140,9 @@ def test_userprofile_field_change_signal_iban_change(mock_send_mail, db, setting
 
     mock_send_mail.assert_called_once()
     args = mock_send_mail.call_args[0]
-    assert "Notification de modification de données utilisateur" in args[0]
+    assert "Notification de modification de données utilisateur·trice" in args[0]
     assert (
-        f"Les informations suivantes pour l’utilisateur {user.get_full_name()} / {user.pk} ont été modifiées"
+        f"Les informations suivantes pour l’utilisateur·trice {user.get_full_name()} / {user.pk} ont été modifiées"
         in args[1]
     )
     assert "IBAN: CH93 0076 2011 6238 5295 7 → CH14 0483 5012 3456 7800 9" in args[1]
@@ -127,9 +174,9 @@ def test_userprofile_field_change_signal_address_changes(mock_send_mail, db, set
 
     mock_send_mail.assert_called_once()
     args = mock_send_mail.call_args[0]
-    assert "Notification de modification de données utilisateur" in args[0]
+    assert "Notification de modification de données utilisateur·trice" in args[0]
     assert (
-        f"Les informations suivantes pour l’utilisateur {user.get_full_name()} / {user.pk} ont été modifiées"
+        f"Les informations suivantes pour l’utilisateur·trice {user.get_full_name()} / {user.pk} ont été modifiées"
         in args[1]
     )
 
@@ -202,9 +249,9 @@ def test_userprofile_unified_post_save_notification_sends_email(
 
     mock_send_mail.assert_called_once()
     args = mock_send_mail.call_args[0]
-    assert "Notification de modification de données utilisateur" in args[0]
+    assert "Notification de modification de données utilisateur·trice" in args[0]
     assert (
-        f"Les informations suivantes pour l’utilisateur {user.get_full_name()} / {user.pk} ont été modifiées"
+        f"Les informations suivantes pour l’utilisateur·trice {user.get_full_name()} / {user.pk} ont été modifiées"
         in args[1]
     )
     assert "IBAN: CH93 0076 2011 6238 5295 7 → CH14 0483 5012 3456 7800 9" in args[1]

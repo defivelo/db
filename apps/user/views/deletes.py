@@ -27,7 +27,7 @@ from .mixins import ProfileMixin
 
 class UserDelete(ProfileMixin, HasPermissionsMixin, FormView):
     template_name = "delete/user_delete.html"
-    success_message = _("Utilisateur supprimé")
+    success_message = _("Utilisateur·rice supprimé·e")
     form_class = DjangoEmptyForm
     required_permission = "user_deletions"
     cantons = False

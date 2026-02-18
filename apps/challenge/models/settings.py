@@ -35,7 +35,7 @@ class AnnualStateSetting(models.Model):
         validators=[MinValueValidator(0)],
     )
     cost_per_participant = models.DecimalField(
-        _("Coût par participant"),
+        _("Coût par participant·e·s"),
         decimal_places=2,
         max_digits=8,
         default=0,

@@ -46,7 +46,7 @@
         {% buttons %}
             {% if season.availability_reminder_sent_at %}
                 <small class="text-muted pull-right" style="margin-left: 8px; padding-top: 6px;">
-                    Rappel envoyé le {{ season.availability_reminder_sent_at|date }}
+                  {% blocktrans %}Rappel envoyé le {% endblocktrans %}{{ season.availability_reminder_sent_at|date }}
                 </small>
             {% endif %}
             <a class="btn btn-default pull-right" style="margin-right: 8px;" href="{% url 'season-availability-reminder' season.pk %}">
@@ -56,7 +56,7 @@
             {% endbuttons %}
         </form>
 
-        <a class="pull-right btn btn-primary" href="{% url 'season-staff-update' season.pk %}">{% trans "Attribuer les moniteurs" %}</a>
+        <a class="pull-right btn btn-primary" href="{% url 'season-staff-update' season.pk %}">{% trans "Attribuer les moniteur·trice·s" %}</a>
     {% endif %}
 </div>
 {% endblock %}

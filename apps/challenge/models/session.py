@@ -54,7 +54,7 @@ class Session(Address, models.Model):
     duration = models.DurationField(
         _("Durée"), default=timedelta(hours=DEFAULT_SESSION_DURATION_HOURS)
     )
-    visible = models.BooleanField(_("Visible pour les moniteurs"), default=False)
+    visible = models.BooleanField(_("Visible pour les moniteur·trice·s"), default=False)
     orga = models.ForeignKey(
         Organization,
         verbose_name=_("Établissement"),
@@ -68,7 +68,7 @@ class Session(Address, models.Model):
     place = models.CharField(_("Lieu de la Qualif’"), max_length=512, blank=True)
     superleader = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        verbose_name=_("Moniteur + / Photographe"),
+        verbose_name=_("Moniteur·trice + / Photographe"),
         related_name="sess_monplus",
         blank=True,
         null=True,
@@ -84,10 +84,10 @@ class Session(Address, models.Model):
         _("Mauvais temps"), max_length=1, choices=FALLBACK_CHOICES, blank=True
     )
     helpers_time = models.TimeField(
-        _("Heure rendez-vous moniteurs"), null=True, blank=True
+        _("Heure de rendez-vous des moniteur·trice·s"), null=True, blank=True
     )
     helpers_place = models.CharField(
-        _("Lieu rendez-vous moniteurs"), max_length=512, blank=True
+        _("Lieu rendez-vous moniteur·trice·s"), max_length=512, blank=True
     )
     apples = models.CharField(_("Pommes"), max_length=512, blank=True)
     bikes_concept = models.CharField(_("Logistique vélos"), max_length=512, blank=True)

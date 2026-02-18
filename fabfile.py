@@ -288,10 +288,12 @@ class CustomConnection(Connection):
         Restore a gz DB dump to our database.
         """
         db_creds = self.db_creds()
-        self.run(
-            f"gunzip -c {db_dump_gz} | psql -h '{db_creds['HOST']}' -U '{db_creds['USER']}' '{db_creds['NAME']}'",
-            env={"PGPASSWORD": db_creds["PASSWORD"].replace("$", "\$")},
+        cmd = (
+            f"gunzip -c {db_dump_gz} "
+            f"| sed -E '/\\\\unrestrict/d' "
+            f"| psql -h '{db_creds['HOST']}' -U '{db_creds['USER']}' '{db_creds['NAME']}'",
         )
+        self.run(cmd, env={"PGPASSWORD": db_creds["PASSWORD"].replace("$", r"\$")})
 
     def create_structure(self):
         """
@@ -508,7 +510,9 @@ def import_db(c, dump_file=None):
     c.run("dropdb -h '{host}' -U '{user}' '{db}'".format(**db_info), env=env)
     c.run("createdb -h '{host}' -U '{user}' '{db}'".format(**db_info), env=env)
     c.run(
-        "gunzip -c {db_dump}| psql -h '{host}' -U '{user}' '{db}'".format(**db_info),
+        "gunzip -c {db_dump}| sed -E '/\\\\unrestrict/d' | psql -h '{host}' -U '{user}' '{db}'".format(
+            **db_info
+        ),
         env=env,
     )
 

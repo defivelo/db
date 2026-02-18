@@ -144,14 +144,14 @@ def _send_field_change_notification(user, changes):
         return
 
     # Prepare email content
-    subject = _("Notification de modification de données utilisateur")
+    subject = _("Notification de modification de données utilisateur·trice")
 
     # Build the email body
     body_lines = [
         _("Bonjour,"),
         "",
         _(
-            "Les informations suivantes pour l’utilisateur {user} / {user_id} ont été modifiées:"
+            "Les informations suivantes pour l’utilisateur·trice {user} / {user_id} ont été modifiées:"
         ).format(user=user.get_full_name(), user_id=user.pk),
         "",
         "",

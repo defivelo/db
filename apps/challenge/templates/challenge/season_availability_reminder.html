@@ -31,7 +31,7 @@
       {% for recipient in recipients %}
           <li>
             {% if not recipient.profile.can_login %}
-                {% trans "Cet utilisateur ne peut pas se connecter à l’intranet (il n’a pas de mot de passe)." as label %}
+                {% trans "Cet utilisateur·rice·s ne peut pas se connecter à l’intranet (pas de mot de passe)." as label %}
                 <span class="glyphicon glyphicon-warning-sign" aria-label="{{ label }}" title="{{ label }}"></span>
             {% endif %}
             <a href="{% url 'user-detail' pk=recipient.pk %}">
@@ -44,7 +44,7 @@
     {{ form.errors }}
     {% if some_recipients_cant_login %}
       <div class="alert alert-warning">
-        {% trans "Certains destinataires ne peuvent pas se connecter à l’intranet (ils n’ont pas de mot de passe)." %}
+        {% trans "Certain·e·s destinataires ne peuvent pas se connecter à l’intranet (pas de mot de passe)." %}
       </div>
     {% endif %}
 {% endblock %}

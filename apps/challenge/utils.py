@@ -57,7 +57,7 @@ def get_users_roles_for_session(users, session) -> Mapping[User, str]:
                 # Translators: Nom court pour 'Intervenant'
                 label = gettext("Int.")
             elif user_session_chosen_as[user.id] == CHOSEN_AS_REPLACEMENT:
-                # Translators: Nom court pour 'Moniteur de secours'
+                # Translators: Nom court pour 'Moniteur·trice de secours'
                 label = gettext("S")
             else:
                 label = gettext("×")

@@ -402,7 +402,7 @@ class SessionExportView(ExportMixin, SessionMixin, DetailView):
                 gettext("Heures"),
                 gettext("Nombre de qualifs"),
                 # Logistique
-                gettext("Moniteur + / Photographe"),
+                gettext("Moniteur·trice + / Photographe"),
                 gettext("Mauvais temps"),
                 gettext("Logistique vélos"),
                 gettext("N° de contact vélos"),
@@ -412,17 +412,17 @@ class SessionExportView(ExportMixin, SessionMixin, DetailView):
                 gettext("Remarques"),
                 # Qualif
                 gettext("Classe"),
-                gettext("Enseignant"),
-                gettext("Moniteur 2"),
-                gettext("Moniteur 1"),
-                gettext("Moniteur 1"),
+                gettext("Enseignant·e"),
+                gettext("Moniteur·trice 2"),
+                gettext("Moniteur·trice 1"),
+                gettext("Moniteur·trice 1"),
                 gettext("Nombre d’élèves"),
                 gettext("Nombre de vélos"),
                 gettext("Nombre de casques"),
                 CATEGORY_CHOICE_A,
                 CATEGORY_CHOICE_B,
                 CATEGORY_CHOICE_C,
-                gettext("Intervenant"),
+                gettext("Intervenant·e"),
                 gettext("Remarques"),
             ]
         )

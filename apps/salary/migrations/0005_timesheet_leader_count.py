@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
             model_name="timesheet",
             name="leader_count",
             field=models.IntegerField(
-                default=0, verbose_name="Participation(s) comme moniteur 2"
+                default=0, verbose_name="Participation(s) comme Moniteur·trice 2"
             ),
         ),
     ]
