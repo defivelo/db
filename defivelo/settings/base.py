@@ -455,11 +455,11 @@ PROFILE_CHANGED_NOTIFY_EMAIL = get_env_variable(
     "PROFILE_CHANGED_NOTIFY_EMAIL", "office@defi-velo.ch"
 )
 # Email backend settings
+EMAIL_HOST = email_config["EMAIL_HOST"] or "localhost"
+EMAIL_PORT = email_config["EMAIL_PORT"] or 25
 EMAIL_FILE_PATH = email_config["EMAIL_FILE_PATH"]
 EMAIL_HOST_USER = email_config["EMAIL_HOST_USER"]
 EMAIL_HOST_PASSWORD = email_config["EMAIL_HOST_PASSWORD"]
-EMAIL_HOST = email_config["EMAIL_HOST"] or "localhost"
-EMAIL_PORT = email_config["EMAIL_PORT"] or 25
 EMAIL_BACKEND = email_config["EMAIL_BACKEND"]
 EMAIL_USE_TLS = email_config["EMAIL_USE_TLS"]
 EMAIL_USE_SSL = email_config["EMAIL_USE_SSL"]
