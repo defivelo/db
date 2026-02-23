@@ -85,7 +85,7 @@ class QualifsTestCase(SeasonTestCaseMixin):
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Pas plus de zéro moniteurs 1")
+        self.assertContains(response, "Pas plus de zéro moniteur·trices 1")
 
         response = self.client.post(
             reverse(
