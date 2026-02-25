@@ -202,7 +202,7 @@ function updateSessionColumn(columnIndex, columnType, radioValue) {
                       </tr>
                       {% endfor %}
                       {% if helpers.count > 10 %}
-                          {% include "challenge/season_availability_partial_head.html" with sessions=sessions season=season user=request.user only %}
+                          {% include "challenge/season_availability_partial_head.html" with sessions=sessions season=season user=request.user preamble_columns=5 only %}
                       {% endif %}
                   {% endif %}
               {% endfor %}
