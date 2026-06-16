@@ -5,7 +5,7 @@
     "group:allNonMajor",
     "schedule:weekly"
   ],
-  "baseBranches": [
+  "baseBranchPatterns": [
     "staging"
   ],
   "ignorePaths": [
@@ -17,10 +17,11 @@
     "enabled": false
   },
   "pip-compile": {
-    "managerFilePatterns": ["/(^|/)[\\w-]*requirements((-|/)\\w+)?\\.txt$/"]
+    "enabled": false
   },
   "pip_requirements": {
-    "enabled": false
+    "enabled": true,
+    "managerFilePatterns": ["/(^|/)[\\w-]*requirements/([-.\\w]+)\\.(txt|pip)$/"]
   },
   "pip_setup": {
     "enabled": true
@@ -50,18 +51,15 @@
         "docker"
       ],
       "matchPackageNames": [
-        "python"
+        "python",
+        "postgres",
+        "postgresql"
       ],
-      "allowedVersions": "^3.11"
+      "enabled": false
     },
     {
-      "matchDatasources": [
-        "docker"
-      ],
-      "matchPackageNames": [
-        "postgres"
-      ],
-      "allowedVersions": "^15.0"
+      "matchManagers": ["html"],
+      "enabled": false
     }
   ]
 }

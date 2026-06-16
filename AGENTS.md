@@ -45,6 +45,7 @@ just format                 # ruff format + ruff check --fix  (alias: fix)
 just translate              # makemessages (django + djangojs) + compilemessages
 just compile                # pip-compile all requirements/*.in
 just install                # pip install -r requirements/dev.txt
+just renovate-validate      # validate renovate.json via the official Renovate image (--strict)
 ```
 
 The full CI test sequence is `scripts/run_tests.sh` — it runs `scripts/check_migrations.sh` (fails on missing migrations), then `pytest defivelo apps`, then `ruff format --check` and `ruff check`. To run a single test: `just test path/to/test_file.py::TestClass::test_name --reuse-db` (`--reuse-db` avoids recreating the DB).

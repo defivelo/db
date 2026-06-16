@@ -80,6 +80,10 @@ make *args:
 fab *args:
   docker compose exec {{BACKEND_CONTAINER}} fab "$@"
 
+# Validate the Renovate config
+renovate-validate:
+  docker run --rm -v "$PWD/renovate.json:/usr/src/app/renovate.json:ro" renovate/renovate:latest renovate-config-validator --strict
+
 alias messages := translate
 # Make messages and compile them
 translate:
