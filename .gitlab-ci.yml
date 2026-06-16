@@ -1,15 +1,18 @@
 include:
-  - project: 'liipops/django-hoster'
-    file: django-hosting.yml
-    ref: main
-
-variables:
-  LIIPOPS_HOSTS: swing-defivelo-intranet.k8s.liip.ch
-  DJANGO_SETTINGS_MODULE: defivelo.settings.base
-  GUNICORN_APP_NAME: defivelo.wsgi
-  LIIP_DOCKER_PYTHON_VERSION: "3.11"
-  BASE_ADDITIONAL_APKS: sassc
-  HTTPD_RUN_COMPRESS: "true"
+  - component: $CI_SERVER_FQDN/components/containers-builder/build@0.8.0
+    inputs:
+      as: "Build image"
+      allow_failure: false
+  - component: $CI_SERVER_FQDN/components/containers-builder/tags-delete@0.8.0
+    inputs:
+      as: "Unpush built image"
+      stage: build
+      image-tags: $CI_COMMIT_REF_SLUG
+      needs:
+        - job: "Build image"
+          artifacts: false
+      rules:
+        - when: always
 
 stages:
   - test
@@ -18,9 +21,7 @@ stages:
 test:
   stage: test
   rules:
-    # Always run on default branch
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    # Always run on MRs
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   tags:
     - docker-nonswiss-ok
@@ -52,4 +53,3 @@ test:
         echo ' Ready!'
       "
     - ./scripts/run_tests.sh
-
