@@ -74,9 +74,18 @@ class SettingsViewsTestCase(SeasonTestCaseMixin):
             "annualstatesettings-list",
             kwargs={"year": fuzzy.FuzzyInteger(1999, 2050).fuzz()},
         )
+
+        self.setting = AnnualStateSettingFactory()
+        self.setting.save()
+
+        # Pick a canton distinct from self.setting.canton so the create + update
+        # flow in test_settings_list_access_power can share a year without
+        # triggering the (year, canton) unique constraint.
         self.create_initial = {
             "year": fuzzy.FuzzyInteger(1999, 2050).fuzz(),
-            "canton": fuzzy.FuzzyChoice(DV_STATES).fuzz(),
+            "canton": fuzzy.FuzzyChoice(
+                [c for c in DV_STATES if c != self.setting.canton]
+            ).fuzz(),
             "cost_per_bike": fuzzy.FuzzyInteger(0, 100).fuzz(),
             "cost_per_participant": fuzzy.FuzzyInteger(0, 100).fuzz(),
         }
@@ -84,9 +93,6 @@ class SettingsViewsTestCase(SeasonTestCaseMixin):
             "annualstatesetting-create",
             kwargs={"year": self.create_initial["year"]},
         )
-
-        self.setting = AnnualStateSettingFactory()
-        self.setting.save()
 
         self.url_update = reverse(
             "annualstatesetting-update",
