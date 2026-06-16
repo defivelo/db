@@ -17,14 +17,14 @@
     "enabled": false
   },
   "pip-compile": {
-    "enabled": false
-  },
-  "pip_requirements": {
     "enabled": true,
     "managerFilePatterns": ["/(^|/)[\\w-]*requirements/([-.\\w]+)\\.(txt|pip)$/"]
   },
+  "pip_requirements": {
+    "enabled": false
+  },
   "pip_setup": {
-    "enabled": true
+    "enabled": false
   },
   "constraints": {
     "python": "==3.11"
