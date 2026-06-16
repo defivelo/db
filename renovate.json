@@ -51,18 +51,11 @@
         "docker"
       ],
       "matchPackageNames": [
-        "python"
+        "python",
+        "postgres",
+        "postgresql"
       ],
-      "allowedVersions": "^3.11"
-    },
-    {
-      "matchDatasources": [
-        "docker"
-      ],
-      "matchPackageNames": [
-        "postgres"
-      ],
-      "allowedVersions": "^15.0"
+      "enabled": false
     },
     {
       "managers": ["html"],
