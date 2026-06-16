@@ -5,7 +5,7 @@
     "group:allNonMajor",
     "schedule:weekly"
   ],
-  "baseBranches": [
+  "baseBranchPatterns": [
     "staging"
   ],
   "ignorePaths": [
@@ -58,7 +58,7 @@
       "enabled": false
     },
     {
-      "managers": ["html"],
+      "matchManagers": ["html"],
       "enabled": false
     }
   ]
