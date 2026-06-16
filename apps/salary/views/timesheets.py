@@ -109,6 +109,11 @@ class UserMonthlyTimesheets(MonthArchiveView, ReturnUrlMixin, FormView):
             form.disabled = True
             setattr(form, "disabled_reason", reason)
 
+        # A validator editing their own hours is treated like any monitor:
+        # the canton restriction only applies when validating other people's hours.
+        if self.request.user.pk == self.selected_user.pk:
+            return form
+
         user_cantons_list = [str(c).upper() for c in user_cantons(self.request.user)]
         for i, session in enumerate(self.object_list):
             session_canton = session.get("orga_canton", None)
