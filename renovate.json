@@ -26,9 +26,6 @@
   "pip_setup": {
     "enabled": true
   },
-  "constraints": {
-    "python": "==3.11"
-  },
   "docker-compose": {
     "major": {
       "enabled": false
