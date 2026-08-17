@@ -7,7 +7,7 @@ import django_countries.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('challenge', '0082_add_states_ow_nw'),
+        ('challenge', '0088_alter_historicalqualification_n_participants_and_more'),
     ]
 
     operations = [

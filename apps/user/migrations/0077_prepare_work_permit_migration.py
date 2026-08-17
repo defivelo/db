@@ -5,7 +5,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("user", "0075_phone_length_fix"),
+        ("user", "0076_inclusive_language"),
     ]
 
     operations = [
