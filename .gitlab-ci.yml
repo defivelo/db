@@ -26,7 +26,7 @@ renovate-config:
         - renovate.json
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   tags:
-    - docker-nonswiss-ok
+    - docker
   image: renovate/renovate:latest
   allow_failure: true
   script:
@@ -38,7 +38,7 @@ test:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   tags:
-    - docker-nonswiss-ok
+    - docker
   image: &test_image 'python:3.11-bullseye'
   services:
     - name: postgres:15
