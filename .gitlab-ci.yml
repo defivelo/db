@@ -39,7 +39,7 @@ test:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   tags:
     - docker
-  image: &test_image 'python:3.11-bullseye'
+  image: &test_image 'python:3.11-bookworm'
   services:
     - name: postgres:15
       alias: db
