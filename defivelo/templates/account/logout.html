@@ -2,12 +2,12 @@
 
 {% load i18n %}
 {% load bootstrap3 %}
-{% block head_title %}{% trans "Sign Out" %}{% endblock %}
+{% block head_title %}{% trans "Se Déconnecter" %}{% endblock %}
 
 {% block content %}
-<h1>{% trans "Sign Out" %}</h1>
+<h1>{% trans "Se Déconnecter" %}</h1>
 
-<p>{% trans 'Are you sure you want to sign out?' %}</p>
+<p>{% trans 'Êtes-vous sûr de vouloir vous déconnecter ?' %}</p>
 
 <form method="post" action="{% url 'account_logout' %}">
     {% csrf_token %}
@@ -15,7 +15,7 @@
         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
     {% endif %}
     {% buttons %}
-        <button type="submit" class="btn btn-primary">{% trans "Sign Out" %}</button>
+        <button type="submit" class="btn btn-primary">{% trans "Se Déconnecter" %}</button>
     {% endbuttons %}
 </form>
 {% endblock %}

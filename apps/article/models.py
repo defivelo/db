@@ -38,13 +38,13 @@ class Article(models.Model):
     Simple article model with basic fields
     """
 
-    title = models.CharField(_("Title"), max_length=255)
+    title = models.CharField(_("Titre"), max_length=255)
     slug = models.SlugField(_("Slug"), max_length=255, unique=True, blank=True)
     summary = models.TextField(_("Summary"), null=True, blank=True)
     image = models.ImageField(
         _("Image"), blank=True, null=True, upload_to="articles/%Y/%m/%d"
     )
-    modified = models.DateTimeField(_("Modified"), default=timezone.now)
+    modified = models.DateTimeField(_("Modifié"), default=timezone.now)
     published = models.BooleanField(default=False)
     body = HTMLField(_("Body"))
     tags = TaggableManager()

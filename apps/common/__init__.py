@@ -107,8 +107,8 @@ DV_STATE_CHOICES_WITH_ABBR = [
 ]
 
 DV_LANGUAGES = LANGUAGES = (
-    ("fr", _("French")),
-    ("de", _("German")),
+    ("fr", _("Français")),
+    ("de", _("Allemand")),
     ("it", _("Italian")),
     ("en", _("English")),
 )

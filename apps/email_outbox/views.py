@@ -355,7 +355,7 @@ def outbox_list_view(request: HttpRequest) -> HttpResponse:
     page_range = list(range(pr_start, pr_end + 1))
 
     context = {
-        "title": _("Emails"),
+        "title": _("E-mails"),
         "emails": vm,
         "page": page,
         "num_pages": num_pages,
