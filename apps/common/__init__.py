@@ -107,10 +107,10 @@ DV_STATE_CHOICES_WITH_ABBR = [
 ]
 
 DV_LANGUAGES = LANGUAGES = (
-    ("fr", _("French")),
-    ("de", _("German")),
-    ("it", _("Italian")),
-    ("en", _("English")),
+    ("fr", _("Français")),
+    ("de", _("Allemand")),
+    ("it", _("Italien")),
+    ("en", _("Anglais")),
 )
 
 DV_LANGUAGES_WITH_DEFAULT = tuple(
