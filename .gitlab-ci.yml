@@ -1,9 +1,9 @@
 include:
-  - component: $CI_SERVER_FQDN/components/containers-builder/build@0.8.0
+  - component: $CI_SERVER_FQDN/components/containers-builder/build@0.9.3
     inputs:
       as: "Build image"
       allow_failure: false
-  - component: $CI_SERVER_FQDN/components/containers-builder/tags-delete@0.8.0
+  - component: $CI_SERVER_FQDN/components/containers-builder/tags-delete@0.9.3
     inputs:
       as: "Unpush built image"
       stage: build
