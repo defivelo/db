@@ -22,7 +22,7 @@ from apps.article.models import Article
 
 
 class ArticleForm(forms.ModelForm):
-    published = forms.BooleanField(label=_("Publié"), initial=True, required=False)
+    published = forms.BooleanField(label=_("Ouvert"), initial=True, required=False)
 
     def save(self, commit=True):
         instance = super(ArticleForm, self).save(commit=False)
