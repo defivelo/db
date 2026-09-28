@@ -20,6 +20,27 @@ repo only records the submodule pointer.
 - Parent feature branch: `feature/DEFIVELO-292`
 - Submodule feature branch: `DEFIVELO-292`
 
+### Submodule CI auto-updates the parent pointer
+
+A push to the submodule's **`master`** branch triggers the submodule's own
+pipeline (`locale/.gitlab-ci.yml`), which has two jobs:
+
+1. **`test po files`** — runs `msgfmt --check` on every `*.po` file.
+2. **`Update parent repository`** — runs **only on `master`**. Via the GitLab
+   API (`PUT /projects/:id/repository/submodules/:path`) it moves the `locale`
+   submodule pointer in this parent repo to the just-pushed commit, committing
+   directly with message `i18n: Auto update of ./locale`.
+
+   - Target parent repo: project `2131`
+     (`https://gitlab.liip.ch/swing/defivelo/intranet/`).
+   - Target parent branch: **`main`** (hardcoded as `PARENT_REPOSITORY_BRANCH`).
+   - Auth: `WEBLATE_PRIVATE_TOKEN`, set in the submodule repo's CI/CD variables.
+
+So whenever Weblate (or anyone) pushes translations to `intranet-i18n`'s
+`master`, a submodule-bump commit lands **automatically on this repo's `main`** —
+no manual pointer bump is needed for that flow. The manual steps below are only
+for feature branches, where the automation does not apply.
+
 ## What we did (3 logical steps, one commit each per repo)
 
 The 47 real overrides in the old `locale/fr/` catalogue (`msgstr != msgid`, all with
