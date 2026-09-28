@@ -205,8 +205,8 @@ TIME_FORMAT = r"G\hi"
 TIME_FORMAT_SHORT = "G:i"
 
 LANGUAGES = (
-    ("fr", gettext("French")),
-    ("de", gettext("German")),
+    ("fr", gettext("Français")),
+    ("de", gettext("Allemand")),
 )
 
 COUNTRIES_FIRST = [
