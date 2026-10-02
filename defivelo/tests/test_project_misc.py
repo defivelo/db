@@ -1,5 +1,7 @@
 import importlib
 import os
+import sys
+import types
 from datetime import date
 from unittest.mock import patch
 
@@ -32,8 +34,12 @@ def test_get_project_root_path():
     assert os.path.isfile(os.path.join(get_project_root_path(), "manage.py"))
 
 
-def test_urls_include_debug_toolbar_when_debug():
+def test_urls_include_debug_toolbar_when_debug(monkeypatch):
     import defivelo.urls as urls
+
+    fake_toolbar = types.ModuleType("debug_toolbar")
+    fake_toolbar.urls = []
+    monkeypatch.setitem(sys.modules, "debug_toolbar", fake_toolbar)
 
     try:
         with override_settings(DEBUG=True):
