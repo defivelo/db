@@ -38,6 +38,8 @@ from ..models.qualification import MonitorNumberEnum, num2words
 
 
 class QualificationFormQuick(forms.ModelForm):
+    template_name = "django/forms/table.html"
+
     class Meta:
         model = Qualification
         widgets = {

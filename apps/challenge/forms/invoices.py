@@ -126,6 +126,8 @@ class InvoiceForm(InvoiceFormMixin):
 
 
 class InvoiceFormQuick(InvoiceFormMixin):
+    template_name = "django/forms/table.html"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields:
