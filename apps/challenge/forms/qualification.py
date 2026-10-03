@@ -180,6 +180,17 @@ class QualificationForm(forms.ModelForm):
         return actor
 
     def clean(self):
+        # Timesheets of removed staff are only deleted on save()
+        self.removed_staff = set()
+        if self.instance.pk:
+            self.removed_staff = {user.pk for user in self.instance.helpers.all()} - {
+                user.pk for user in self.cleaned_data.get("helpers", [])
+            }
+            for field in ("leader", "actor"):
+                previous = getattr(self.instance, field)
+                if previous and previous != self.cleaned_data.get(field):
+                    self.removed_staff.add(previous.pk)
+
         # Check that there are <= helmets or bikes than participants
         n_participants = self.cleaned_data.get("n_participants")
         if not n_participants:
@@ -195,26 +206,15 @@ class QualificationForm(forms.ModelForm):
                 _("Il y a trop de casques prévus !"), code="too-many-helmets"
             )
 
-        if self.instance.pk:
-            removed_helpers = {user.pk for user in self.instance.helpers.all()} - {
-                user.pk for user in self.cleaned_data.get("helpers", [])
-            }
-            if removed_helpers:
-                Timesheet.objects.filter(
-                    user__in=removed_helpers, date=self.instance.session.day
-                ).delete()
-
-            if self.instance.leader != self.cleaned_data.get("leader"):
-                Timesheet.objects.filter(
-                    user=self.instance.leader, date=self.instance.session.day
-                ).delete()
-
-            if self.instance.actor != self.cleaned_data.get("actor"):
-                Timesheet.objects.filter(
-                    user=self.instance.actor, date=self.instance.session.day
-                ).delete()
-
         return self.cleaned_data
+
+    def save(self, commit=True):
+        qualification = super().save(commit=commit)
+        if commit and self.removed_staff:
+            Timesheet.objects.filter(
+                user__in=self.removed_staff, date=qualification.session.day
+            ).delete()
+        return qualification
 
     class Meta:
         model = Qualification

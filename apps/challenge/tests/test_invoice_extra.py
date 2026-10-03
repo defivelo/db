@@ -208,10 +208,5 @@ def test_yearly_export_contains_only_validated_invoices_of_year(season, orga):
     assert "OLD" not in refs
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="InvoiceListExport declares required_permission but lacks "
-    "HasPermissionsMixin, so any logged-in user can export",
-)
 def test_yearly_export_forbidden_for_collaborator(db):
     assert CollaboratorAuthClient().get(export_url()).status_code == 403

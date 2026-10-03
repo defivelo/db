@@ -144,11 +144,6 @@ def test_qualification_form_deletes_timesheets_of_removed_staff(session):
     }
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="Bug: QualificationForm.clean() deletes timesheets of removed staff "
-    "during validation, even when the form is invalid and never saved",
-)
 def test_qualification_form_keeps_timesheets_if_form_is_invalid(session):
     helper = UserFactory()
     quali = QualificationFactory(session=session, helpers=[helper])
