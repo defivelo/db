@@ -272,7 +272,7 @@ class UserProfileFilterSet(FilterSet):
         return queryset.filter(reduce(operator.or_, [Q(groups__name=r) for r in value]))
 
     def filter_updated_at(queryset, name, value):
-        return queryset.filter(profile__updated_at__gte=value)
+        return queryset.filter(profile__updated_at__date__gte=value)
 
     profile__language = MultipleChoiceFilter(
         label=_("Langue"),
