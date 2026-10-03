@@ -117,6 +117,8 @@ django-tinymce==3.6.1
     # via -r /code/requirements/base.in
 et-xmlfile==1.1.0
     # via openpyxl
+execnet==2.1.2
+    # via pytest-xdist
 executing==2.0.0
     # via stack-data
 factory-boy==3.3.0
@@ -182,9 +184,12 @@ pytest==7.4.2
     #   -r test.in
     #   pytest-cov
     #   pytest-django
+    #   pytest-xdist
 pytest-cov==4.1.0
     # via -r test.in
 pytest-django==4.5.2
+    # via -r test.in
+pytest-xdist==3.8.0
     # via -r test.in
 python-dateutil==2.8.2
     # via
