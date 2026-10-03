@@ -56,15 +56,21 @@ def test_cleanup_without_orphans_redirects_with_message(db):
     assert [m.level_tag for m in get_messages(response.wsgi_request)] == ["success"]
 
 
-@pytest.fixture
-def orphan(db):
-    user = UserFactory(first_name="Orphan", profile__affiliation_canton="VS")
+def make_orphan(canton):
+    user = UserFactory(first_name="Orphan", profile__affiliation_canton=canton)
     QualificationFactory(
         actor=user,
-        session=SessionFactory(day=DAY, orga=OrganizationFactory(address_canton="VS")),
+        session=SessionFactory(
+            day=DAY, orga=OrganizationFactory(address_canton=canton)
+        ),
     )
     TimesheetFactory(user=user, date=DAY)
     return TimesheetFactory(user=user, date=DAY + datetime.timedelta(days=1))
+
+
+@pytest.fixture
+def orphan(db):
+    return make_orphan("VS")
 
 
 def test_cleanup_lists_orphaned_timesheets(orphan):
@@ -101,9 +107,11 @@ def test_cleanup_state_manager_ignores_other_cantons(orphan):
     ),
 )
 def test_cleanup_honours_canton_filter(orphan):
+    vd_orphan = make_orphan("VD")
     client = PowerUserAuthClient()
     response = client.get(cleanup_url() + "?canton=VD")
-    assert response.status_code == 302
+    assert response.status_code == 200
+    assert response.context["orphaned_timesheets"] == {vd_orphan}
 
 
 def test_yearly_overview_canton_filter(db):

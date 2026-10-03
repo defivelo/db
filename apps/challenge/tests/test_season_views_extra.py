@@ -150,6 +150,8 @@ class TestSeasonDetail:
         QualificationFactory(session=session, helpers=[client.user])
         response = client.get(reverse("season-detail", kwargs={"pk": season.pk}))
         assert response.status_code == 200
+        assert response.context["season"] == season
+        assert list(response.context["sessions_by_orga"]) == [session]
 
     def test_coordinator_only_sees_own_organization_sessions(self, season):
         client = CoordinatorAuthClient()

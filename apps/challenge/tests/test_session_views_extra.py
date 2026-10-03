@@ -42,6 +42,9 @@ def detail_url(season, session):
     return reverse("session-detail", kwargs={"seasonpk": season.pk, "pk": session.pk})
 
 
+WEEK_10_DAY = datetime.date(2030, 3, 12)
+
+
 def list_url(season):
     return reverse(
         "session-list", kwargs={"seasonpk": season.pk, "year": 2030, "week": 10}
@@ -106,20 +109,29 @@ def test_detail_for_mobile_state_manager(client, foreign_season):
     response = client.get(detail_url(foreign_season, session))
 
     assert response.status_code == 200
+    assert response.context["object"] == session
 
 
 def test_list_for_season_leader_outside_managed_cantons(client, foreign_season):
     foreign_season.leader = client.user
     foreign_season.save()
+    session = SessionFactory(orga__address_canton="GE", day=WEEK_10_DAY)
 
-    assert client.get(list_url(foreign_season)).status_code == 200
+    response = client.get(list_url(foreign_season))
+
+    assert response.status_code == 200
+    assert list(response.context["sessions"]) == [session]
 
 
 def test_list_for_mobile_state_manager(client, foreign_season):
     client.user.profile.affiliation_canton = "GE"
     client.user.profile.save()
+    session = SessionFactory(orga__address_canton="GE", day=WEEK_10_DAY)
 
-    assert client.get(list_url(foreign_season)).status_code == 200
+    response = client.get(list_url(foreign_season))
+
+    assert response.status_code == 200
+    assert list(response.context["sessions"]) == [session]
 
 
 def test_list_forbidden_for_unrelated_state_manager(client, foreign_season):
