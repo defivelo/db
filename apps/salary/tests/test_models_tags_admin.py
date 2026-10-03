@@ -55,11 +55,13 @@ def test_validated_requires_validated_by(db):
         canton="VD",
         validated_at=datetime.datetime(2019, 4, 1, tzinfo=datetime.timezone.utc),
     )
+    mcv.validated_urls.set(MonthlyCantonalValidationUrl.objects.all())
     assert mcv.validated is False
 
 
 def test_validated_requires_validated_at(db):
     mcv = MonthlyCantonalValidationFactory(canton="VD", validated_by=UserFactory())
+    mcv.validated_urls.set(MonthlyCantonalValidationUrl.objects.all())
     assert mcv.validated is False
 
 
