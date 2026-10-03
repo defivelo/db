@@ -19,16 +19,10 @@ from .factories import (
     QualificationActivityFactory,
     QualificationFactory,
     RegistrationFactory,
-    SeasonFactory,
     SessionFactory,
 )
 
 DAY = datetime.date(2030, 3, 4)
-
-
-@pytest.fixture
-def season(db):
-    return SeasonFactory(year=2030, month_start=1, n_months=6, cantons=["VD"])
 
 
 @pytest.fixture
