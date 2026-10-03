@@ -1,6 +1,7 @@
 import csv
 import datetime
 import io
+from unittest.mock import patch
 
 from django.test import RequestFactory
 from django.urls import reverse
@@ -71,15 +72,21 @@ def timesheets(db):
     return alice, bob
 
 
+class FrozenDate(datetime.date):
+    @classmethod
+    def today(cls):
+        return cls(2019, 5, 2)
+
+
 def test_winbiz_export_lines_per_category(timesheets):
     client = PowerUserAuthClient()
-    response = client.get(export_url("accounting-export"))
+    with patch("apps.salary.views.timesheets.date", FrozenDate):
+        response = client.get(export_url("accounting-export"))
 
     assert response.status_code == 200
     assert "export-winbiz-2019-4" in response["Content-Disposition"]
     rows = parse_csv(response, delimiter=";")
-    today = datetime.date.today().strftime("%d.%m.%Y")
-    assert all(row[:3] == [today, "4", "E1"] for row in rows)
+    assert all(row[:3] == ["02.05.2019", "4", "E1"] for row in rows)
     assert {row[3]: row[4] for row in rows} == {
         "1106": "1",
         "1105": "1",
