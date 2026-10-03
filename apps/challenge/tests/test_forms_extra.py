@@ -142,6 +142,7 @@ def test_qualification_form_deletes_timesheets_of_removed_staff(session):
         data=quali_data(session, helpers=[kept.pk]), session=session, instance=quali
     )
     assert form.is_valid(), form.errors
+    form.save()
 
     assert set(Timesheet.objects.values_list("user", "date")) == {
         (kept.pk, DAY),
@@ -149,7 +150,12 @@ def test_qualification_form_deletes_timesheets_of_removed_staff(session):
     }
 
 
-def test_qualification_form_deletes_timesheets_even_if_form_is_invalid(session):
+@pytest.mark.xfail(
+    strict=True,
+    reason="Bug: QualificationForm.clean() deletes timesheets of removed staff "
+    "during validation, even when the form is invalid and never saved",
+)
+def test_qualification_form_keeps_timesheets_if_form_is_invalid(session):
     helper = UserFactory()
     quali = QualificationFactory(session=session, helpers=[helper])
     Timesheet.objects.create(user=helper, date=DAY)
@@ -159,7 +165,7 @@ def test_qualification_form_deletes_timesheets_even_if_form_is_invalid(session):
     )
 
     assert not form.is_valid()
-    assert not Timesheet.objects.filter(user=helper).exists()
+    assert Timesheet.objects.filter(user=helper).exists()
 
 
 def session_form(season, session, day):
