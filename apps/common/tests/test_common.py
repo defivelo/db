@@ -111,9 +111,9 @@ class _DatasetExport(ExportMixin):
 
 
 class _Resource:
-    def export(self, object_list):
+    def export(self, queryset=None):
         dataset = Dataset(headers=["x"])
-        for obj in object_list:
+        for obj in queryset:
             dataset.append([obj])
         return dataset
 

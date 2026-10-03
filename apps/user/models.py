@@ -24,6 +24,7 @@ from django.dispatch import receiver
 from django.forms import ValidationError
 from django.template.loader import render_to_string
 from django.utils import timezone
+from django.utils.crypto import get_random_string
 from django.utils.encoding import smart_str
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
@@ -357,7 +358,9 @@ class UserProfile(Address, models.Model):
                 _("A déjà des données de connexion"), code="has_login"
             )
 
-        newpassword = get_user_model().objects.make_random_password()
+        newpassword = get_random_string(
+            10, "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+        )
         self.user.set_password(newpassword)
         self.user.is_active = True
 

@@ -36,7 +36,9 @@ class ExportMixin(object):
             format = base_formats.CSV()
 
         try:
-            dataset = (self.get_export_class(self.request)).export(self.object_list)
+            dataset = (self.get_export_class(self.request)).export(
+                queryset=self.object_list
+            )
         except AttributeError:
             dataset = self.get_dataset()
 
