@@ -28,6 +28,7 @@ from django.contrib.sites.models import Site
 from django.core.exceptions import PermissionDenied
 from django.db.models import Case, Count, F, IntegerField, Q, When
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import date, time
 from django.template.loader import render_to_string
 from django.urls import Resolver404, reverse, reverse_lazy
@@ -1621,7 +1622,7 @@ class SeasonStaffChoiceUpdateView(
                     if non_helper == quali.leader:
                         quali.leader = None
                     if non_helper in quali.helpers.all():
-                        quali.helpers.remove(helper)
+                        quali.helpers.remove(non_helper)
                     if non_helper == quali.actor:
                         quali.actor = None
                 quali.save()
@@ -1721,8 +1722,8 @@ class SeasonPersonalPlanningExportFeed(GeneralPlanningSupportMixin, ICalFeed):
         self.request = request
         self.kwargs = kwargs
         resolvermatch = self.request.resolver_match
-        self.user = get_user_model().objects.get(
-            pk=int(resolvermatch.kwargs["helperpk"])
+        self.user = get_object_or_404(
+            get_user_model(), pk=int(resolvermatch.kwargs["helperpk"])
         )
 
         # Support "general" planning scope via the shared mixin
@@ -1731,8 +1732,26 @@ class SeasonPersonalPlanningExportFeed(GeneralPlanningSupportMixin, ICalFeed):
                 raise PermissionDenied
             self.object = self.season = self._general_object()
         else:
-            self.object = self.season = Season.objects.get(pk=kwargs.get("pk"))
+            self.object = self.season = get_object_or_404(Season, pk=kwargs.get("pk"))
+            if not self._season_access_allowed(request):
+                raise PermissionDenied
         return super().__call__(request)
+
+    def _season_access_allowed(self, request):
+        """
+        Same rules as SeasonPlanningView: managers of the season's cantons, or
+        the helper themself once the planning is visible to staff.
+        """
+        user = request.user
+        if not user.profile.get_seasons().filter(pk=self.season.pk).exists():
+            return False
+        if has_permission(user, "challenge_season_crud"):
+            return True
+        return (
+            user == self.user
+            and self.season.staff_can_see_planning
+            and bool(user.profile.formation or user.profile.actor)
+        )
 
     def items(self):
         return self.object.sessions_with_qualifs.filter(

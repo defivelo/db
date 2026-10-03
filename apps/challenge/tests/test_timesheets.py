@@ -154,7 +154,9 @@ class TimesheetsTestCase(SeasonTestCaseMixin):
 
     def test_specific_timesheets_are_deleted_on_quali_edition(self):
         user1 = self.client.user
-        user1_activity = QualificationActivityFactory()
+        activity_a = QualificationActivityFactory(category="A")
+        activity_b = QualificationActivityFactory(category="B")
+        user1_activity = QualificationActivityFactory(category="C")
         user1.profile.actor_for.add(user1_activity)
         user2 = UserFactory()
         session = self.sessions[0]
@@ -187,8 +189,8 @@ class TimesheetsTestCase(SeasonTestCaseMixin):
                 "n_helmets": "0",
                 "leader": "",
                 "helpers[]": "",
-                "activity_A": "2",
-                "activity_B": "4",
+                "activity_A": activity_a.pk,
+                "activity_B": activity_b.pk,
                 "activity_C": user1_activity.pk,
                 "actor": user1.pk,
                 "comments": "The leader has been removed",

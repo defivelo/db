@@ -622,11 +622,6 @@ class TestSeasonStaffChoiceUpdate:
         quali.refresh_from_db()
         assert quali.actor is None
 
-    @pytest.mark.xfail(
-        reason="SeasonStaffChoiceUpdateView.form_valid removes the loop's last "
-        "`helper` instead of `non_helper` from quali.helpers",
-        strict=True,
-    )
     def test_post_removes_the_unchosen_m1_only(
         self, state_manager_client, season, session
     ):
@@ -744,11 +739,6 @@ class TestPersonalCalendarFeed:
         url = reverse("season-personal-calendar", kwargs=general_kwargs(client.user.pk))
         assert client.get(url).status_code == 403
 
-    @pytest.mark.xfail(
-        strict=True,
-        reason="Bug: the per-season feed has no access control, anyone logged in "
-        "can read any helper's sessions",
-    )
     def test_month_feed_forbidden_for_outsider(self, season):
         helper = make_helper()
         session = make_session(season)
@@ -760,3 +750,51 @@ class TestPersonalCalendarFeed:
         )
         response = outsider.get(url)
         assert response.status_code == 403
+
+    def test_month_feed_allowed_for_own_helper_when_running(self, db):
+        season = make_season(state=DV_SEASON_STATE_RUNNING)
+        session = make_session(season)
+        client = helper_client()
+        QualificationFactory(session=session, helpers=[client.user])
+        url = reverse(
+            "season-personal-calendar",
+            kwargs={"pk": season.pk, "helperpk": client.user.pk},
+        )
+        response = client.get(url)
+        assert response.status_code == 200
+        assert f"UID:{session.pk}-session" in response.content.decode()
+
+    def test_month_feed_forbidden_for_own_helper_before_running(self, season):
+        client = helper_client()
+        url = reverse(
+            "season-personal-calendar",
+            kwargs={"pk": season.pk, "helperpk": client.user.pk},
+        )
+        assert client.get(url).status_code == 403
+
+    def test_month_feed_forbidden_for_other_helper_of_same_canton(self, db):
+        season = make_season(state=DV_SEASON_STATE_RUNNING)
+        helper = make_helper()
+        QualificationFactory(session=make_session(season), helpers=[helper])
+        url = reverse(
+            "season-personal-calendar",
+            kwargs={"pk": season.pk, "helperpk": helper.pk},
+        )
+        assert helper_client().get(url).status_code == 403
+
+    def test_month_feed_forbidden_for_state_manager_of_other_canton(self, db):
+        season = make_season(cantons=[OTHER_CANTON])
+        helper = make_helper(canton=OTHER_CANTON)
+        url = reverse(
+            "season-personal-calendar",
+            kwargs={"pk": season.pk, "helperpk": helper.pk},
+        )
+        assert StateManagerAuthClient().get(url).status_code == 403
+
+    def test_month_feed_unknown_season_is_404(self, state_manager_client):
+        helper = make_helper()
+        url = reverse(
+            "season-personal-calendar",
+            kwargs={"pk": 0, "helperpk": helper.pk},
+        )
+        assert state_manager_client.get(url).status_code == 404
