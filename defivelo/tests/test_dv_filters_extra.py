@@ -22,7 +22,13 @@ from apps.challenge import (
     STAFF_FIELDKEY,
     SUPERLEADER_FIELDKEY,
 )
+from apps.challenge.tests.factories import (
+    QualificationFactory,
+    SeasonFactory,
+    SessionFactory,
+)
 from apps.common import DV_SEASON_AUTUMN, DV_SEASON_SPRING, DV_STATES
+from apps.orga.tests.factories import OrganizationFactory
 from apps.user.tests.factories import UserFactory
 from defivelo.templatetags import dv_filters
 
@@ -324,10 +330,17 @@ def test_inusercantons():
         assert dv_filters.inusercantons(USER, "") is True
 
 
+@pytest.mark.django_db
 def test_unprivileged_user_can_see():
-    season = SimpleNamespace(unprivileged_user_can_see=lambda user: user is USER)
+    coordinator = UserFactory()
+    orga = OrganizationFactory(address_canton="VD", coordinator=coordinator)
+    season = SeasonFactory(year=2030, month_start=1, n_months=6, cantons=["VD"])
+    QualificationFactory(
+        session=SessionFactory(orga=orga, day=datetime.date(2030, 3, 4))
+    )
 
-    assert dv_filters.unprivileged_user_can_see(USER, season) is True
+    assert dv_filters.unprivileged_user_can_see(coordinator, season) is True
+    assert dv_filters.unprivileged_user_can_see(UserFactory(), season) is False
 
 
 def test_lettercounter():
@@ -340,9 +353,8 @@ def test_canton_colors():
     assert set(dv_filters.canton_colors()) >= set(DV_STATES)
 
 
-def test_remove_and_add_qs():
+def test_add_qs():
     assert dv_filters.add_qs("/fr/user/", page=2) == "/fr/user/?page=2"
-    assert dv_filters.remove_qs("/fr/user/?page=2", "page") == "/fr/user/"
 
 
 @pytest.mark.xfail(
@@ -352,6 +364,15 @@ def test_remove_and_add_qs():
 )
 def test_add_qs_keeps_existing_querystring():
     assert dv_filters.add_qs("/fr/user/?a=1", page=2) == "/fr/user/?a=1&page=2"
+
+
+@pytest.mark.xfail(
+    reason="remove_qs/add_qs parse `parsed_url.params` instead of `.query`, so "
+    "existing querystrings are dropped (defivelo/templatetags/dv_filters.py:561,576)",
+    strict=True,
+)
+def test_remove_qs_keeps_other_params():
+    assert dv_filters.remove_qs("/fr/user/?a=1&page=2", "page") == "/fr/user/?a=1"
 
 
 def test_get_timesheet_status_for_canton():
