@@ -164,17 +164,13 @@ def test_status_class(status, css_class):
 
 
 def test_age_before_and_after_birthday():
-    today = datetime.date.today()
-    user = UserFactory(profile__birthdate=datetime.date(today.year - 30, 1, 1))
+    birthday_passed = UserFactory(profile__birthdate=datetime.date(1998, 1, 1))
+    birthday_tomorrow = UserFactory(profile__birthdate=datetime.date(1998, 2, 28))
+    now = datetime.datetime(2028, 2, 27, 12, tzinfo=datetime.timezone.utc)
 
-    assert user.profile.age == 30
-
-    future = today + datetime.timedelta(days=1)
-    if future.year == today.year:
-        other = UserFactory(
-            profile__birthdate=datetime.date(today.year - 30, future.month, future.day)
-        )
-        assert other.profile.age == 29
+    with patch("apps.user.models.timezone.now", return_value=now):
+        assert birthday_passed.profile.age == 30
+        assert birthday_tomorrow.profile.age == 29
 
 
 def test_iban_nice_groups_by_four():
