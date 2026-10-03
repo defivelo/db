@@ -68,20 +68,27 @@ def test_mark_save_notification_ignores_full_queue():
         {"field": "email", "old_value": "a", "new_value": "b"}
     ]
 
-    with patch.object(
-        user_signals._userprofile_to_notify, "put_nowait", side_effect=queue.Full
-    ):
+    full_queue = queue.Queue(maxsize=1)
+    full_queue.put_nowait("already queued")
+
+    with patch.object(user_signals, "_userprofile_to_notify", full_queue):
         user_signals.userprofile_mark_save_notification(get_user_model(), user)
 
-    assert user_signals._userprofile_to_notify.empty()
+    assert full_queue.qsize() == 1
+    assert full_queue.get_nowait() == "already queued"
+    assert user.pk in user_signals._user_changes
+
+
+class DrainedQueue(queue.Queue):
+    """Reports items while actually empty, as when another thread drained it."""
+
+    def empty(self):
+        return False
 
 
 def test_do_userprofile_notification_stops_on_empty_queue():
     with (
-        patch.object(user_signals._userprofile_to_notify, "empty", return_value=False),
-        patch.object(
-            user_signals._userprofile_to_notify, "get_nowait", side_effect=queue.Empty
-        ),
+        patch.object(user_signals, "_userprofile_to_notify", DrainedQueue()),
         patch("apps.user.signals._send_field_change_notification") as notify,
     ):
         user_signals.do_userprofile_notification()
