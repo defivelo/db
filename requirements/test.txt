@@ -149,7 +149,7 @@ odfpy==1.4.1
     # via tablib
 openpyxl==3.1.2
     # via tablib
-packaging==23.2
+packaging==26.3
     # via pytest
 parso==0.8.3
     # via jedi
