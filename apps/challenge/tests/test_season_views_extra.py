@@ -741,7 +741,12 @@ class TestPersonalCalendarFeed:
         url = reverse("season-personal-calendar", kwargs=general_kwargs(client.user.pk))
         assert client.get(url).status_code == 403
 
-    def test_month_feed_has_no_access_control(self, season):
+    @pytest.mark.xfail(
+        strict=True,
+        reason="Bug: the per-season feed has no access control, anyone logged in "
+        "can read any helper's sessions",
+    )
+    def test_month_feed_forbidden_for_outsider(self, season):
         helper = make_helper()
         session = make_session(season)
         QualificationFactory(session=session, helpers=[helper])
@@ -751,5 +756,4 @@ class TestPersonalCalendarFeed:
             kwargs={"pk": season.pk, "helperpk": helper.pk},
         )
         response = outsider.get(url)
-        assert response.status_code == 200
-        assert session.orga.name in response.content.decode()
+        assert response.status_code == 403
