@@ -185,7 +185,7 @@ pytest==7.4.2
     #   pytest-cov
     #   pytest-django
     #   pytest-xdist
-pytest-cov==4.1.0
+pytest-cov==5.0.0
     # via -r test.in
 pytest-django==4.5.2
     # via -r test.in
