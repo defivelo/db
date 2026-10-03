@@ -44,3 +44,8 @@ class UserFactory(DjangoModelFactory):
     # Normal users can't login, and don't have passwords
     password = factory.PostGenerationMethodCall("set_unusable_password")
     is_active = False
+
+    @classmethod
+    def _after_postgeneration(cls, instance, create, results=None):
+        if create and results:
+            instance.save()

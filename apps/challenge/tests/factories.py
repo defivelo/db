@@ -109,6 +109,11 @@ class QualificationFactory(DjangoModelFactory):
                 )
                 self.helpers.add(helper)
 
+    @classmethod
+    def _after_postgeneration(cls, instance, create, results=None):
+        if create and results:
+            instance.save()
+
 
 class AnnualStateSettingFactory(DjangoModelFactory):
     class Meta:
