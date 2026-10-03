@@ -1,5 +1,7 @@
 import datetime
 
+from django.utils import timezone
+
 import factory
 
 from apps.salary.models import MonthlyCantonalValidation, Timesheet
@@ -16,7 +18,11 @@ class TimesheetFactory(factory.django.DjangoModelFactory):
 
 class ValidatedTimesheetFactory(TimesheetFactory):
     validated_at = factory.LazyAttribute(
-        lambda timesheet: timesheet.date + datetime.timedelta(days=1)
+        lambda timesheet: timezone.make_aware(
+            datetime.datetime.combine(
+                timesheet.date + datetime.timedelta(days=1), datetime.time()
+            )
+        )
     )
     validated_by = factory.SubFactory(UserFactory)
 

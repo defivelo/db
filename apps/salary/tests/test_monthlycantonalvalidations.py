@@ -3,6 +3,7 @@ import datetime
 from django.db import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from apps.challenge.tests.factories import QualificationFactory, SessionFactory
 from apps.common import DV_STATES
@@ -146,7 +147,7 @@ class StateManagerUserTest(TestCase):
                 TimesheetFactory(
                     user=actor,
                     date=today.replace(day=12),
-                    validated_at=today.replace(day=13),
+                    validated_at=timezone.make_aware(today.replace(day=13)),
                     validated_by=actor,
                 )
                 # Clear the cache
