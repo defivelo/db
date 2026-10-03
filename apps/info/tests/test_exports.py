@@ -18,7 +18,6 @@ from apps.orga.tests.factories import OrganizationFactory
 from apps.user.tests.factories import UserFactory
 from defivelo.tests.utils import (
     CollaboratorAuthClient,
-    PowerUserAuthClient,
     StateManagerAuthClient,
 )
 
@@ -32,11 +31,6 @@ def _url(name, season=DV_SEASON_SPRING, fmt=None, year=YEAR):
     if fmt:
         kwargs["format"] = fmt
     return reverse(name, kwargs=kwargs)
-
-
-@pytest.fixture
-def power_client():
-    return PowerUserAuthClient()
 
 
 @pytest.fixture
@@ -60,23 +54,26 @@ def _get_json(client, url):
 
 
 class TestSeasonSessionsPeriod:
-    def test_spring_export_contains_only_january_to_july(self, power_client, vd_orga):
+    def test_spring_export_contains_only_january_to_july(
+        self, power_user_client, vd_orga
+    ):
         SessionFactory(orga=vd_orga, day=date(YEAR, 1, 1))
         SessionFactory(orga=vd_orga, day=date(YEAR, 7, 31))
         SessionFactory(orga=vd_orga, day=date(YEAR, 8, 1))
         SessionFactory(orga=vd_orga, day=date(YEAR - 1, 12, 31))
-        rows = _get_json(power_client, _url("logistics-export", fmt="json"))
+        rows = _get_json(power_user_client, _url("logistics-export", fmt="json"))
         assert sorted(r["Date"] for r in rows) == ["1.01.30", "31.07.30"]
 
     def test_autumn_export_contains_only_august_to_december(
-        self, power_client, vd_orga
+        self, power_user_client, vd_orga
     ):
         SessionFactory(orga=vd_orga, day=date(YEAR, 7, 31))
         SessionFactory(orga=vd_orga, day=date(YEAR, 8, 1))
         SessionFactory(orga=vd_orga, day=date(YEAR, 12, 31))
         SessionFactory(orga=vd_orga, day=date(YEAR + 1, 1, 1))
         rows = _get_json(
-            power_client, _url("logistics-export", season=DV_SEASON_AUTUMN, fmt="json")
+            power_user_client,
+            _url("logistics-export", season=DV_SEASON_AUTUMN, fmt="json"),
         )
         assert sorted(r["Date"] for r in rows) == ["1.08.30", "31.12.30"]
 
@@ -89,7 +86,7 @@ class TestSeasonSessionsPeriod:
 
 
 class TestLogisticsExport:
-    def test_rows_and_headers(self, power_client, vd_orga):
+    def test_rows_and_headers(self, power_user_client, vd_orga):
         session = SessionFactory(
             orga=vd_orga,
             day=date(YEAR, 3, 4),
@@ -99,7 +96,7 @@ class TestLogisticsExport:
         )
         QualificationFactory(session=session, n_participants=10, n_bikes=3, n_helmets=2)
         QualificationFactory(session=session, n_participants=12, n_bikes=4, n_helmets=1)
-        rows = _get_json(power_client, _url("logistics-export", fmt="json"))
+        rows = _get_json(power_user_client, _url("logistics-export", fmt="json"))
         assert rows == [
             {
                 "Canton": "VD",
@@ -116,9 +113,9 @@ class TestLogisticsExport:
             }
         ]
 
-    def test_csv_export_attachment(self, power_client, vd_orga):
+    def test_csv_export_attachment(self, power_user_client, vd_orga):
         SessionFactory(orga=vd_orga, day=date(YEAR, 3, 4))
-        response = power_client.get(_url("logistics-export", fmt="csv"))
+        response = power_user_client.get(_url("logistics-export", fmt="csv"))
         assert response.status_code == 200
         assert response["Content-Type"].startswith("text/csv")
         disposition = response["Content-Disposition"]
@@ -139,18 +136,20 @@ class TestLogisticsExport:
             ("ods", "application/vnd.oasis.opendocument.spreadsheet"),
         ],
     )
-    def test_binary_formats(self, power_client, vd_orga, fmt, content_type):
+    def test_binary_formats(self, power_user_client, vd_orga, fmt, content_type):
         SessionFactory(orga=vd_orga, day=date(YEAR, 3, 4))
-        response = power_client.get(_url("logistics-export", fmt=fmt))
+        response = power_user_client.get(_url("logistics-export", fmt=fmt))
         assert response.status_code == 200
         assert response["Content-Type"].startswith(content_type)
         assert response["Content-Disposition"].endswith(f'.{fmt}"')
         assert response.content
 
-    def test_html_view_links_to_session_when_season_exists(self, power_client, vd_orga):
+    def test_html_view_links_to_session_when_season_exists(
+        self, power_user_client, vd_orga
+    ):
         season = SeasonFactory(year=YEAR, month_start=1, n_months=7, cantons=["VD"])
         session = SessionFactory(orga=vd_orga, day=date(YEAR, 3, 4), begin=time(9))
-        response = power_client.get(_url("logistics"))
+        response = power_user_client.get(_url("logistics"))
         assert response.status_code == 200
         dataset = response.context["dataset"]
         row = dataset[0]
@@ -165,9 +164,9 @@ class TestLogisticsExport:
         )
         assert response.context["dataset_title"].endswith(" 2030")
 
-    def test_html_view_without_season_has_no_link(self, power_client, ge_orga):
+    def test_html_view_without_season_has_no_link(self, power_user_client, ge_orga):
         SessionFactory(orga=ge_orga, day=date(YEAR, 3, 4), begin=time(9))
-        response = power_client.get(_url("logistics"))
+        response = power_user_client.get(_url("logistics"))
         row = response.context["dataset"][0]
         assert row[1] == "École GE"
         assert row[3] == "4.03.30"
@@ -175,7 +174,7 @@ class TestLogisticsExport:
 
 
 class TestSeasonStatsExport:
-    def test_per_canton_aggregates(self, power_client, vd_orga, ge_orga):
+    def test_per_canton_aggregates(self, power_user_client, vd_orga, ge_orga):
         leader = UserFactory()
         helper = UserFactory()
         actor = UserFactory()
@@ -198,7 +197,7 @@ class TestSeasonStatsExport:
         )
         SessionFactory(orga=ge_orga, day=date(YEAR, 4, 1))
 
-        rows = _get_json(power_client, _url("season-stats-export", fmt="json"))
+        rows = _get_json(power_user_client, _url("season-stats-export", fmt="json"))
         by_canton = {r["Canton"]: r for r in rows}
         assert set(by_canton) == {"VD", "GE"}
         assert by_canton["VD"] == {
@@ -218,26 +217,28 @@ class TestSeasonStatsExport:
         assert by_canton["GE"]["Qualifs"] == 0
         assert by_canton["GE"]["Nombre d’élèves"] is None
 
-    def test_canton_without_sessions_is_skipped(self, power_client):
-        assert _get_json(power_client, _url("season-stats-export", fmt="json")) == []
+    def test_canton_without_sessions_is_skipped(self, power_user_client):
+        assert (
+            _get_json(power_user_client, _url("season-stats-export", fmt="json")) == []
+        )
 
-    def test_filename(self, power_client):
-        response = power_client.get(_url("season-stats-export", fmt="csv"))
+    def test_filename(self, power_user_client):
+        response = power_user_client.get(_url("season-stats-export", fmt="csv"))
         assert 'filename="DV-Stats_Mois-2030-' in response["Content-Disposition"]
 
-    def test_html_view_has_dataset_and_title(self, power_client, vd_orga):
+    def test_html_view_has_dataset_and_title(self, power_user_client, vd_orga):
         SessionFactory(orga=vd_orga, day=date(YEAR, 3, 4))
-        response = power_client.get(_url("season-stats"))
+        response = power_user_client.get(_url("season-stats"))
         assert response.status_code == 200
         assert response.context["dataset"][0][0] == "VD"
         assert response.context["dataset_title"].startswith("Statistiques - ")
 
 
 class TestQualifsCalendarExport:
-    def test_rows_are_weeks(self, power_client, vd_orga, ge_orga):
+    def test_rows_are_weeks(self, power_user_client, vd_orga, ge_orga):
         SessionFactory(orga=vd_orga, day=date(YEAR, 3, 6), begin=time(8, 0))
         SessionFactory(orga=ge_orga, day=date(YEAR, 3, 6), begin=None)
-        rows = _get_json(power_client, _url("qualifs-calendar-export", fmt="json"))
+        rows = _get_json(power_user_client, _url("qualifs-calendar-export", fmt="json"))
         assert len(rows) == 1
         week = rows[0]
         assert list(week) == [
@@ -257,19 +258,19 @@ class TestQualifsCalendarExport:
         assert lines[0] == "2030-03-06"
         assert sorted(lines[1:]) == sorted(["08:00:00 EVD VD", " École GE GE"])
 
-    def test_multiple_weeks(self, power_client, vd_orga):
+    def test_multiple_weeks(self, power_user_client, vd_orga):
         SessionFactory(orga=vd_orga, day=date(YEAR, 3, 4))
         SessionFactory(orga=vd_orga, day=date(YEAR, 3, 20))
-        rows = _get_json(power_client, _url("qualifs-calendar-export", fmt="json"))
+        rows = _get_json(power_user_client, _url("qualifs-calendar-export", fmt="json"))
         assert [r["Lundi"].split("\n")[0] for r in rows] == [
             "2030-03-04",
             "2030-03-11",
             "2030-03-18",
         ]
 
-    def test_filename(self, power_client, vd_orga):
+    def test_filename(self, power_user_client, vd_orga):
         SessionFactory(orga=vd_orga, day=date(YEAR, 3, 4))
-        response = power_client.get(_url("qualifs-calendar-export", fmt="csv"))
+        response = power_user_client.get(_url("qualifs-calendar-export", fmt="csv"))
         assert 'filename="DV-Calendar-2030-' in response["Content-Disposition"]
 
     @pytest.mark.xfail(
@@ -277,8 +278,8 @@ class TestQualifsCalendarExport:
         raises=KeyError,
         strict=True,
     )
-    def test_export_without_sessions(self, power_client):
-        response = power_client.get(_url("qualifs-calendar-export", fmt="csv"))
+    def test_export_without_sessions(self, power_user_client):
+        response = power_user_client.get(_url("qualifs-calendar-export", fmt="csv"))
         assert response.status_code == 200
 
     @pytest.mark.xfail(

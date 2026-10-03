@@ -13,7 +13,6 @@ from apps.challenge import CHOSEN_AS_HELPER
 from apps.challenge.models import HelperSessionAvailability
 from apps.challenge.views.mixins import CantonSeasonFormMixin
 from apps.user.tests.factories import UserFactory
-from defivelo.tests.utils import StateManagerAuthClient
 
 from .factories import (
     QualificationActivityFactory,
@@ -21,16 +20,6 @@ from .factories import (
     SeasonFactory,
     SessionFactory,
 )
-
-
-@pytest.fixture
-def client(db):
-    return StateManagerAuthClient()
-
-
-@pytest.fixture
-def season(db):
-    return SeasonFactory(year=2030, month_start=1, n_months=6, cantons=["VD"])
 
 
 @pytest.fixture
@@ -51,27 +40,29 @@ def list_url(season):
     )
 
 
-def test_detail_has_previous_and_next_sessions_of_same_orga(client, season):
+def test_detail_has_previous_and_next_sessions_of_same_orga(
+    state_manager_client, season
+):
     first = SessionFactory(orga__address_canton="VD", day=datetime.date(2030, 3, 1))
     middle = SessionFactory(orga=first.orga, day=datetime.date(2030, 3, 2))
     last = SessionFactory(orga=first.orga, day=datetime.date(2030, 3, 3))
 
-    response = client.get(detail_url(season, middle))
+    response = state_manager_client.get(detail_url(season, middle))
 
     assert response.status_code == 200
     assert response.context["session_previous"] == first
     assert response.context["session_next"] == last
 
 
-def test_detail_without_chosen_staff_has_no_mailto(client, season):
+def test_detail_without_chosen_staff_has_no_mailto(state_manager_client, season):
     session = SessionFactory(orga__address_canton="VD", day=datetime.date(2030, 3, 1))
 
-    response = client.get(detail_url(season, session))
+    response = state_manager_client.get(detail_url(season, session))
 
     assert response.context["session_mailtoall"] is None
 
 
-def test_detail_mailto_lists_chosen_staff(client, season):
+def test_detail_mailto_lists_chosen_staff(state_manager_client, season):
     session = SessionFactory(orga__address_canton="VD", day=datetime.date(2030, 3, 1))
     helper = UserFactory(first_name="Jane", last_name="Doe", email="jane@example.com")
     HelperSessionAvailability.objects.create(
@@ -82,7 +73,7 @@ def test_detail_mailto_lists_chosen_staff(client, season):
         session=session, helper=refused, availability="n", chosen_as=CHOSEN_AS_HELPER
     )
 
-    response = client.get(detail_url(season, session))
+    response = state_manager_client.get(detail_url(season, session))
 
     mailto = response.context["session_mailtoall"]
     assert mailto.startswith("mailto:Jane Doe <jane@example.com>?")
@@ -90,66 +81,72 @@ def test_detail_mailto_lists_chosen_staff(client, season):
     assert "subject=" in mailto and "body=" in mailto
 
 
-def test_detail_for_season_leader_outside_managed_cantons(client, foreign_season):
-    foreign_season.leader = client.user
+def test_detail_for_season_leader_outside_managed_cantons(
+    state_manager_client, foreign_season
+):
+    foreign_season.leader = state_manager_client.user
     foreign_season.save()
     session = SessionFactory(orga__address_canton="GE", day=datetime.date(2030, 3, 1))
 
-    response = client.get(detail_url(foreign_season, session))
+    response = state_manager_client.get(detail_url(foreign_season, session))
 
     assert response.status_code == 200
     assert response.context["season"] == foreign_season
 
 
-def test_detail_for_mobile_state_manager(client, foreign_season):
-    client.user.profile.affiliation_canton = "GE"
-    client.user.profile.save()
+def test_detail_for_mobile_state_manager(state_manager_client, foreign_season):
+    state_manager_client.user.profile.affiliation_canton = "GE"
+    state_manager_client.user.profile.save()
     session = SessionFactory(orga__address_canton="GE", day=datetime.date(2030, 3, 1))
 
-    response = client.get(detail_url(foreign_season, session))
+    response = state_manager_client.get(detail_url(foreign_season, session))
 
     assert response.status_code == 200
     assert response.context["object"] == session
 
 
-def test_list_for_season_leader_outside_managed_cantons(client, foreign_season):
-    foreign_season.leader = client.user
+def test_list_for_season_leader_outside_managed_cantons(
+    state_manager_client, foreign_season
+):
+    foreign_season.leader = state_manager_client.user
     foreign_season.save()
     session = SessionFactory(orga__address_canton="GE", day=WEEK_10_DAY)
 
-    response = client.get(list_url(foreign_season))
+    response = state_manager_client.get(list_url(foreign_season))
 
     assert response.status_code == 200
     assert list(response.context["sessions"]) == [session]
 
 
-def test_list_for_mobile_state_manager(client, foreign_season):
-    client.user.profile.affiliation_canton = "GE"
-    client.user.profile.save()
+def test_list_for_mobile_state_manager(state_manager_client, foreign_season):
+    state_manager_client.user.profile.affiliation_canton = "GE"
+    state_manager_client.user.profile.save()
     session = SessionFactory(orga__address_canton="GE", day=WEEK_10_DAY)
 
-    response = client.get(list_url(foreign_season))
+    response = state_manager_client.get(list_url(foreign_season))
 
     assert response.status_code == 200
     assert list(response.context["sessions"]) == [session]
 
 
-def test_list_forbidden_for_unrelated_state_manager(client, foreign_season):
-    assert client.get(list_url(foreign_season)).status_code == 403
+def test_list_forbidden_for_unrelated_state_manager(
+    state_manager_client, foreign_season
+):
+    assert state_manager_client.get(list_url(foreign_season)).status_code == 403
 
 
-def export_rows(client, season, session):
+def export_rows(state_manager_client, season, session):
     url = reverse(
         "session-export",
         kwargs={"seasonpk": season.pk, "pk": session.pk, "format": "csv"},
     )
-    response = client.get(url)
+    response = state_manager_client.get(url)
     assert response.status_code == 200
     assert "attachment; filename=" in response["Content-Disposition"]
     return list(csv.reader(io.StringIO(response.content.decode("utf-8"))))
 
 
-def test_export_session_without_qualifications(client, season):
+def test_export_session_without_qualifications(state_manager_client, season):
     session = SessionFactory(
         orga__address_canton="VD",
         orga__address_city="Lausanne",
@@ -158,7 +155,7 @@ def test_export_session_without_qualifications(client, season):
         fallback_plan="B",
     )
 
-    rows = export_rows(client, season, session)
+    rows = export_rows(state_manager_client, season, session)
 
     assert len(rows) == 27
     assert rows[0][0] == "Date"
@@ -169,19 +166,19 @@ def test_export_session_without_qualifications(client, season):
     assert all(row[1] == "" for row in rows[14:])
 
 
-def test_export_session_place_falls_back_to_session_city(client, season):
+def test_export_session_place_falls_back_to_session_city(state_manager_client, season):
     session = SessionFactory(
         orga__address_canton="VD",
         day=datetime.date(2030, 3, 1),
         address_city="Morges",
     )
 
-    rows = export_rows(client, season, session)
+    rows = export_rows(state_manager_client, season, session)
 
     assert rows[3] == ["Emplacement", "Morges"]
 
 
-def test_export_session_with_qualifications(client, season):
+def test_export_session_with_qualifications(state_manager_client, season):
     superleader = UserFactory(first_name="Super", last_name="Leader")
     session = SessionFactory(
         orga__address_canton="VD",
@@ -209,7 +206,7 @@ def test_export_session_with_qualifications(client, season):
         session=session, name="Classe B", class_teacher_fullname="", n_bikes=3
     )
 
-    rows = export_rows(client, season, session)
+    rows = export_rows(state_manager_client, season, session)
 
     assert len(rows) == 27
     assert all(len(row) == 3 for row in rows)
@@ -250,37 +247,43 @@ def test_season_property_without_season_is_none():
     assert DummySeasonView(Mock(), seasonpk="abc").season is None
 
 
-def test_season_property_unknown_season_raises_value_error(client):
-    view = DummySeasonView(client.user, seasonpk="999999")
+def test_season_property_unknown_season_raises_value_error(state_manager_client):
+    view = DummySeasonView(state_manager_client.user, seasonpk="999999")
     with pytest.raises(ValueError):
         view.season
 
 
-def test_season_property_hidden_for_mobile_without_fetch(client, foreign_season):
-    client.user.profile.affiliation_canton = "GE"
-    client.user.profile.save()
-    view = DummySeasonView(client.user, seasonpk=foreign_season.pk)
+def test_season_property_hidden_for_mobile_without_fetch(
+    state_manager_client, foreign_season
+):
+    state_manager_client.user.profile.affiliation_canton = "GE"
+    state_manager_client.user.profile.save()
+    view = DummySeasonView(state_manager_client.user, seasonpk=foreign_season.pk)
     assert view.season is None
 
 
-def test_season_property_allowed_fetch_for_mobile(client, foreign_season):
-    client.user.profile.affiliation_canton = "GE"
-    client.user.profile.save()
-    view = DummySeasonView(client.user, seasonpk=foreign_season.pk)
+def test_season_property_allowed_fetch_for_mobile(state_manager_client, foreign_season):
+    state_manager_client.user.profile.affiliation_canton = "GE"
+    state_manager_client.user.profile.save()
+    view = DummySeasonView(state_manager_client.user, seasonpk=foreign_season.pk)
     view.allow_season_fetch = True
     assert view.season == foreign_season
 
 
-def test_season_property_raises_for_unrelated_state_manager(client, foreign_season):
-    view = DummySeasonView(client.user, seasonpk=foreign_season.pk)
+def test_season_property_raises_for_unrelated_state_manager(
+    state_manager_client, foreign_season
+):
+    view = DummySeasonView(state_manager_client.user, seasonpk=foreign_season.pk)
     with pytest.raises(PermissionDenied):
         view.season
 
 
-def test_season_property_mobile_with_raise_without_cantons(client, foreign_season):
-    client.user.profile.affiliation_canton = "GE"
-    client.user.profile.save()
-    view = DummySeasonView(client.user, seasonpk=foreign_season.pk)
+def test_season_property_mobile_with_raise_without_cantons(
+    state_manager_client, foreign_season
+):
+    state_manager_client.user.profile.affiliation_canton = "GE"
+    state_manager_client.user.profile.save()
+    view = DummySeasonView(state_manager_client.user, seasonpk=foreign_season.pk)
     view.raise_without_cantons = True
     with pytest.raises(PermissionDenied):
         view.season

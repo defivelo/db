@@ -20,7 +20,6 @@ from apps.user.tests.factories import UserFactory
 from defivelo.tests.utils import (
     CollaboratorAuthClient,
     CoordinatorAuthClient,
-    PowerUserAuthClient,
     StateManagerAuthClient,
 )
 
@@ -48,7 +47,7 @@ from .factories import (
 
 CANTON = DV_STATES[0]
 OTHER_CANTON = DV_STATES[1]
-YEAR = 2024
+YEAR = 2030
 
 
 def make_season(state=DV_SEASON_STATE_OPEN, cantons=None, month_start=3, **kwargs):
@@ -101,47 +100,37 @@ def session(season):
     return session
 
 
-@pytest.fixture
-def state_manager(db):
-    return StateManagerAuthClient()
-
-
-@pytest.fixture
-def power_user(db):
-    return PowerUserAuthClient()
-
-
 class TestSeasonList:
     def url(self, dv_season):
         return reverse("season-list", kwargs={"year": YEAR, "dv_season": dv_season})
 
     @pytest.mark.parametrize("dv_season", [2, 4])
-    def test_unknown_dv_season_is_forbidden(self, state_manager, dv_season):
-        assert state_manager.get(self.url(dv_season)).status_code == 403
+    def test_unknown_dv_season_is_forbidden(self, state_manager_client, dv_season):
+        assert state_manager_client.get(self.url(dv_season)).status_code == 403
 
-    def test_spring_lists_only_spring_seasons(self, state_manager):
+    def test_spring_lists_only_spring_seasons(self, state_manager_client):
         spring = make_season(month_start=3)
         autumn = make_season(month_start=10)
-        response = state_manager.get(self.url(DV_SEASON_SPRING))
+        response = state_manager_client.get(self.url(DV_SEASON_SPRING))
         assert response.status_code == 200
         assert list(response.context["seasons"]) == [spring]
         assert autumn not in response.context["seasons"]
         assert response.context["dv_season_prev_day"] == datetime.date(YEAR - 1, 8, 1)
         assert response.context["dv_season_next_day"] == datetime.date(YEAR, 8, 1)
 
-    def test_autumn_lists_only_autumn_seasons(self, state_manager):
+    def test_autumn_lists_only_autumn_seasons(self, state_manager_client):
         make_season(month_start=3)
         autumn = make_season(month_start=10)
-        response = state_manager.get(self.url(DV_SEASON_AUTUMN))
+        response = state_manager_client.get(self.url(DV_SEASON_AUTUMN))
         assert list(response.context["seasons"]) == [autumn]
         assert response.context["dv_season_prev_day"] == datetime.date(YEAR, 1, 1)
         assert response.context["dv_season_next_day"] == datetime.date(YEAR + 1, 1, 1)
 
 
 class TestSeasonDetail:
-    def test_unknown_season_is_404(self, state_manager):
+    def test_unknown_season_is_404(self, state_manager_client):
         url = reverse("season-detail", kwargs={"pk": 999999})
-        assert state_manager.get(url).status_code == 404
+        assert state_manager_client.get(url).status_code == 404
 
     def test_selected_helper_can_see_running_season(self, db):
         season = make_season(state=DV_SEASON_STATE_RUNNING)
@@ -176,13 +165,13 @@ class TestSeasonHelperList:
         url = reverse("season-helperlist", kwargs={"pk": season.pk})
         assert client.get(url).status_code == 403
 
-    def test_lists_qualification_helpers(self, state_manager, season, session):
+    def test_lists_qualification_helpers(self, state_manager_client, season, session):
         leader = make_helper(formation=FORMATION_M2)
         helper = make_helper()
         bystander = make_helper()
         QualificationFactory(session=session, leader=leader, helpers=[helper])
         url = reverse("season-helperlist", kwargs={"pk": season.pk})
-        response = state_manager.get(url)
+        response = state_manager_client.get(url)
         assert response.status_code == 200
         users = set(response.context["users"])
         assert {leader, helper} <= users
@@ -190,7 +179,9 @@ class TestSeasonHelperList:
 
 
 class TestSeasonToRunning:
-    def test_post_sends_email_to_season_helpers(self, state_manager, season, session):
+    def test_post_sends_email_to_season_helpers(
+        self, state_manager_client, season, session
+    ):
         available = make_helper()
         unavailable = make_helper()
         HelperSessionAvailability.objects.create(
@@ -200,7 +191,7 @@ class TestSeasonToRunning:
             session=session, helper=unavailable, availability="n"
         )
         url = reverse("season-set-running", kwargs={"pk": season.pk})
-        response = state_manager.post(
+        response = state_manager_client.post(
             url,
             {
                 "state": DV_SEASON_STATE_RUNNING,
@@ -219,25 +210,29 @@ class TestSeasonToRunning:
         )
         assert planning_url in mail.outbox[0].body
 
-    def test_post_without_sendemail_sends_nothing(self, state_manager, season, session):
+    def test_post_without_sendemail_sends_nothing(
+        self, state_manager_client, season, session
+    ):
         helper = make_helper()
         HelperSessionAvailability.objects.create(
             session=session, helper=helper, availability="y"
         )
         url = reverse("season-set-running", kwargs={"pk": season.pk})
-        response = state_manager.post(url, {"state": DV_SEASON_STATE_RUNNING})
+        response = state_manager_client.post(url, {"state": DV_SEASON_STATE_RUNNING})
         assert response.status_code == 302
         assert mail.outbox == []
 
 
 class TestSeasonToOpen:
-    def test_post_sends_email_to_active_helpers_of_cantons(self, state_manager, db):
+    def test_post_sends_email_to_active_helpers_of_cantons(
+        self, state_manager_client, db
+    ):
         season = make_season(state=DV_SEASON_STATE_PLANNING)
         local = make_helper()
         make_helper(canton=OTHER_CANTON)
         make_helper(formation="")
         url = reverse("season-set-open", kwargs={"pk": season.pk})
-        response = state_manager.post(
+        response = state_manager_client.post(
             url,
             {"state": DV_SEASON_STATE_OPEN, "sendemail": "on", "customtext": "Hop"},
         )
@@ -255,19 +250,19 @@ class TestSeasonToOpen:
 
 
 class TestSeasonAvailabilityReminder:
-    def test_no_sessions_means_no_recipients(self, state_manager, season):
+    def test_no_sessions_means_no_recipients(self, state_manager_client, season):
         make_helper()
         url = reverse("season-availability-reminder", kwargs={"pk": season.pk})
-        response = state_manager.get(url)
+        response = state_manager_client.get(url)
         assert response.status_code == 200
         assert response.context["recipients"] == []
 
     def test_post_without_sendemail_does_not_mark_sent(
-        self, state_manager, season, session
+        self, state_manager_client, season, session
     ):
         make_helper()
         url = reverse("season-availability-reminder", kwargs={"pk": season.pk})
-        response = state_manager.post(url, {})
+        response = state_manager_client.post(url, {})
         assert response.status_code == 302
         season.refresh_from_db()
         assert season.availability_reminder_sent_at is None
@@ -282,14 +277,14 @@ class TestSeasonExport:
         ]
 
     @pytest.mark.parametrize("fmt", ["csv", "ods", "xls"])
-    def test_export_formats(self, state_manager, season, session, fmt):
+    def test_export_formats(self, state_manager_client, season, session, fmt):
         url = reverse("season-export", kwargs={"pk": season.pk, "format": fmt})
-        response = state_manager.get(url)
+        response = state_manager_client.get(url)
         assert response.status_code == 200
         assert "attachment" in response["Content-Disposition"]
         assert response["Content-Disposition"].endswith(f'.{fmt}"')
 
-    def test_csv_contains_staff_and_empty_sessions(self, state_manager, season):
+    def test_csv_contains_staff_and_empty_sessions(self, state_manager_client, season):
         session = make_session(season)
         superleader = make_helper(formation=FORMATION_M2)
         session.superleader = superleader
@@ -300,7 +295,7 @@ class TestSeasonExport:
         QualificationFactory(session=session, leader=leader, helpers=[helper1, helper2])
         empty_session = make_session(season, day_offset=1)
         url = reverse("season-export", kwargs={"pk": season.pk, "format": "csv"})
-        content = state_manager.get(url).content.decode()
+        content = state_manager_client.get(url).content.decode()
         for user in (superleader, leader, helper1, helper2):
             assert user.get_full_name() in content
         assert empty_session.orga.name in content
@@ -331,14 +326,14 @@ def general_kwargs(helperpk, **extra):
 
 class TestPersonalPlanningExport:
     def test_planning_export_lists_all_season_people(
-        self, state_manager, season, session
+        self, state_manager_client, season, session
     ):
         helper = make_helper()
         QualificationFactory(session=session, helpers=[helper])
         url = reverse(
             "season-planning-export", kwargs={"pk": season.pk, "format": "csv"}
         )
-        response = state_manager.get(url)
+        response = state_manager_client.get(url)
         assert response.status_code == 200
         assert helper.get_full_name() in response.content.decode()
 
@@ -364,7 +359,7 @@ class TestPersonalPlanningExport:
         assert client.get(url).status_code == 403
 
     def test_general_export_without_assignment_has_no_session(
-        self, state_manager, season, session
+        self, state_manager_client, season, session
     ):
         helper = make_helper()
         HelperSessionAvailability.objects.create(
@@ -376,7 +371,7 @@ class TestPersonalPlanningExport:
             "season-personal-planning-export",
             kwargs=general_kwargs(helper.pk, format="csv"),
         )
-        response = state_manager.get(url)
+        response = state_manager_client.get(url)
         assert response.status_code == 200
         content = response.content.decode()
         assert helper.get_full_name() in content
@@ -392,13 +387,13 @@ class TestPersonalPlanningExport:
 
 
 class TestSeasonAvailabilityView:
-    def test_lists_current_availabilities(self, state_manager, season, session):
+    def test_lists_current_availabilities(self, state_manager_client, season, session):
         helper = make_helper()
         HelperSessionAvailability.objects.create(
             session=session, helper=helper, availability="i"
         )
         url = reverse("season-availabilities", kwargs={"pk": season.pk})
-        response = state_manager.get(url)
+        response = state_manager_client.get(url)
         assert response.status_code == 200
         key = AVAILABILITY_FIELDKEY.format(hpk=helper.pk, spk=session.pk)
         assert response.context["availabilities"][key] == "i"
@@ -407,31 +402,33 @@ class TestSeasonAvailabilityView:
         )
         assert helper in m1_helpers["Moniteur·trice·s 1"]
 
-    def test_post_valid_helper_redirects_to_update(self, state_manager, season):
+    def test_post_valid_helper_redirects_to_update(self, state_manager_client, season):
         helper = make_helper()
         url = reverse("season-availabilities", kwargs={"pk": season.pk})
-        response = state_manager.post(url, {"helper": helper.pk})
+        response = state_manager_client.post(url, {"helper": helper.pk})
         assert response.status_code == 302
         assert response.url == reverse(
             "season-availabilities-update",
             kwargs={"pk": season.pk, "helperpk": helper.pk},
         )
 
-    def test_post_invalid_helper_redirects_back(self, state_manager, season):
+    def test_post_invalid_helper_redirects_back(self, state_manager_client, season):
         url = reverse("season-availabilities", kwargs={"pk": season.pk})
-        response = state_manager.post(url, {"helper": ""})
+        response = state_manager_client.post(url, {"helper": ""})
         assert response.status_code == 302
         assert response.url == url
 
 
 class TestSeasonPlanningView:
-    def test_helperpk_zero_redirects_to_own_planning(self, state_manager, season):
+    def test_helperpk_zero_redirects_to_own_planning(
+        self, state_manager_client, season
+    ):
         url = reverse("season-planning", kwargs={"pk": season.pk, "helperpk": 0})
-        response = state_manager.get(url)
+        response = state_manager_client.get(url)
         assert response.status_code == 302
         assert response.url == reverse(
             "season-planning",
-            kwargs={"pk": season.pk, "helperpk": state_manager.user.pk},
+            kwargs={"pk": season.pk, "helperpk": state_manager_client.user.pk},
         )
 
 
@@ -464,9 +461,9 @@ class TestSeasonGeneralPlanningView:
         assert client.get(self.url(client.user.pk)).status_code == 403
 
     def test_manager_without_availabilities_gets_empty_planning(
-        self, state_manager, season, session
+        self, state_manager_client, season, session
     ):
-        response = state_manager.get(self.url(state_manager.user.pk))
+        response = state_manager_client.get(self.url(state_manager_client.user.pk))
         assert response.status_code == 200
         assert len(response.context["availabilities"]) == 0
         assert list(response.context["sessions"]) == []
@@ -480,7 +477,7 @@ class TestSeasonAvailabilityUpdate:
         )
 
     def test_manager_post_creates_and_updates_records(
-        self, state_manager, season, session
+        self, state_manager_client, season, session
     ):
         other_session = make_session(season, day_offset=1)
         QualificationFactory(session=other_session)
@@ -494,7 +491,7 @@ class TestSeasonAvailabilityUpdate:
             AVAILABILITY_FIELDKEY.format(hpk=helper.pk, spk=session.pk): "y",
             AVAILABILITY_FIELDKEY.format(hpk=helper.pk, spk=other_session.pk): "i",
         }
-        response = state_manager.post(self.url(season, helper), data)
+        response = state_manager_client.post(self.url(season, helper), data)
         assert response.status_code == 302
         assert response.url == reverse(
             "season-availabilities", kwargs={"pk": season.pk}
@@ -510,7 +507,7 @@ class TestSeasonAvailabilityUpdate:
         assert availabilities == {session.pk: "y", other_session.pk: "i"}
 
     def test_post_with_duplicate_work_wishes_updates_latest(
-        self, state_manager, season, session
+        self, state_manager_client, season, session
     ):
         helper = make_helper()
         HelperSeasonWorkWish.objects.create(season=season, helper=helper, amount=1)
@@ -518,7 +515,7 @@ class TestSeasonAvailabilityUpdate:
             season=season, helper=helper, amount=1
         )
         data = {SEASON_WORKWISH_FIELDKEY.format(hpk=helper.pk): 5}
-        response = state_manager.post(self.url(season, helper), data)
+        response = state_manager_client.post(self.url(season, helper), data)
         assert response.status_code == 302
         latest.refresh_from_db()
         assert latest.amount == 5
@@ -543,10 +540,10 @@ class TestSeasonAvailabilityUpdate:
             == 2
         )
 
-    def test_manager_cannot_update_archived_season(self, state_manager):
+    def test_manager_cannot_update_archived_season(self, state_manager_client):
         season = make_season(state=DV_SEASON_STATE_ARCHIVED)
         helper = make_helper()
-        assert state_manager.get(self.url(season, helper)).status_code == 403
+        assert state_manager_client.get(self.url(season, helper)).status_code == 403
 
 
 class TestSeasonStaffChoiceUpdate:
@@ -554,15 +551,15 @@ class TestSeasonStaffChoiceUpdate:
         return reverse("season-staff-update", kwargs={"pk": season.pk})
 
     def test_get_without_sessions_hides_organisation_filter(
-        self, state_manager, season
+        self, state_manager_client, season
     ):
-        response = state_manager.get(self.url(season))
+        response = state_manager_client.get(self.url(season))
         assert response.status_code == 200
         filter_form = response.context["season_staff_filter_form"]
         assert "organisations" not in filter_form.fields
 
     def test_get_builds_initial_for_partial_availabilities(
-        self, state_manager, season, session
+        self, state_manager_client, season, session
     ):
         other_session = make_session(season, day_offset=1)
         QualificationFactory(session=other_session)
@@ -572,7 +569,7 @@ class TestSeasonStaffChoiceUpdate:
         HelperSessionAvailability.objects.create(
             session=session, helper=helper, availability="y", chosen_as=CHOSEN_AS_LEADER
         )
-        response = state_manager.get(self.url(season))
+        response = state_manager_client.get(self.url(season))
         assert response.status_code == 200
         initial = response.context["availabilities"]
         assert initial[STAFF_FIELDKEY.format(hpk=helper.pk, spk=session.pk)] == (
@@ -592,7 +589,7 @@ class TestSeasonStaffChoiceUpdate:
         }
 
     def test_post_updates_choices_and_drops_unchosen_staff(
-        self, state_manager, season, session
+        self, state_manager_client, season, session
     ):
         leader = make_helper(formation=FORMATION_M2)
         helper = make_helper()
@@ -601,7 +598,7 @@ class TestSeasonStaffChoiceUpdate:
             STAFF_FIELDKEY.format(hpk=leader.pk, spk=session.pk): CHOSEN_AS_NOT,
             STAFF_FIELDKEY.format(hpk=helper.pk, spk=session.pk): CHOSEN_AS_HELPER,
         }
-        response = state_manager.post(self.url(season), data)
+        response = state_manager_client.post(self.url(season), data)
         assert response.status_code == 302
         assert response.url == reverse(
             "season-availabilities", kwargs={"pk": season.pk}
@@ -616,12 +613,12 @@ class TestSeasonStaffChoiceUpdate:
             == CHOSEN_AS_NOT
         )
 
-    def test_post_drops_unchosen_actor(self, state_manager, season, session):
+    def test_post_drops_unchosen_actor(self, state_manager_client, season, session):
         actor = make_helper(formation="")
         actor.profile.actor_for.add(QualificationActivityFactory(category="C"))
         quali = QualificationFactory(session=session, actor=actor)
         data = {STAFF_FIELDKEY.format(hpk=actor.pk, spk=session.pk): CHOSEN_AS_NOT}
-        state_manager.post(self.url(season), data)
+        state_manager_client.post(self.url(season), data)
         quali.refresh_from_db()
         assert quali.actor is None
 
@@ -630,7 +627,9 @@ class TestSeasonStaffChoiceUpdate:
         "`helper` instead of `non_helper` from quali.helpers",
         strict=True,
     )
-    def test_post_removes_the_unchosen_m1_only(self, state_manager, season, session):
+    def test_post_removes_the_unchosen_m1_only(
+        self, state_manager_client, season, session
+    ):
         dropped = make_helper(first_name="Aaa")
         kept = make_helper(first_name="Zzz")
         quali = QualificationFactory(session=session, helpers=[dropped, kept])
@@ -638,18 +637,18 @@ class TestSeasonStaffChoiceUpdate:
             STAFF_FIELDKEY.format(hpk=dropped.pk, spk=session.pk): CHOSEN_AS_NOT,
             STAFF_FIELDKEY.format(hpk=kept.pk, spk=session.pk): CHOSEN_AS_HELPER,
         }
-        state_manager.post(self.url(season), data)
+        state_manager_client.post(self.url(season), data)
         assert list(quali.helpers.all()) == [kept]
 
     def test_post_with_empty_choice_keeps_availability(
-        self, state_manager, season, session
+        self, state_manager_client, season, session
     ):
         helper = make_helper()
         HelperSessionAvailability.objects.create(
             session=session, helper=helper, availability="y", chosen_as=CHOSEN_AS_HELPER
         )
         data = {STAFF_FIELDKEY.format(hpk=helper.pk, spk=session.pk): ""}
-        response = state_manager.post(self.url(season), data)
+        response = state_manager_client.post(self.url(season), data)
         assert response.status_code == 302
         assert (
             HelperSessionAvailability.objects.get(
@@ -686,13 +685,15 @@ class TestSeasonStaffChoiceUpdate:
 
 
 class TestSeasonErrorsList:
-    def test_lists_only_incoherent_qualifications(self, state_manager, season, session):
+    def test_lists_only_incoherent_qualifications(
+        self, state_manager_client, season, session
+    ):
         leader = make_helper(formation=FORMATION_M2)
         coherent = QualificationFactory(session=session, leader=leader)
         incoherent = QualificationFactory(session=session)
         incoherent.helpers.add(make_helper())
         url = reverse("season-errorslist", kwargs={"pk": season.pk})
-        response = state_manager.get(url)
+        response = state_manager_client.get(url)
         assert response.status_code == 200
         assert response.context["submenu_category"] == "season-errorslist"
         assert list(response.context["qualifs"]) == [incoherent]
@@ -700,7 +701,7 @@ class TestSeasonErrorsList:
 
 
 class TestPersonalCalendarFeed:
-    def test_month_feed_lists_assigned_sessions(self, state_manager, season):
+    def test_month_feed_lists_assigned_sessions(self, state_manager_client, season):
         helper = make_helper()
         session = make_session(season)
         QualificationFactory(session=session, helpers=[helper])
@@ -710,7 +711,7 @@ class TestPersonalCalendarFeed:
             "season-personal-calendar",
             kwargs={"pk": season.pk, "helperpk": helper.pk},
         )
-        response = state_manager.get(url)
+        response = state_manager_client.get(url)
         assert response.status_code == 200
         content = response.content.decode()
         assert content.count("BEGIN:VEVENT") == 1

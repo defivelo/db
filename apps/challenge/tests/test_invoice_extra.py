@@ -8,7 +8,6 @@ from django.urls import reverse
 import pytest
 
 from apps.challenge.models import Invoice
-from apps.orga.tests.factories import OrganizationFactory
 from defivelo.tests.utils import (
     CollaboratorAuthClient,
     PowerUserAuthClient,
@@ -25,16 +24,6 @@ from .factories import (
 )
 
 DAY = datetime.date(2030, 3, 4)
-
-
-@pytest.fixture
-def orga(db):
-    return OrganizationFactory(address_canton="VD", name="École du Lac")
-
-
-@pytest.fixture
-def season(db):
-    return SeasonFactory(year=2030, month_start=1, n_months=6, cantons=["VD"])
 
 
 @pytest.fixture
@@ -108,7 +97,9 @@ def test_detail_without_reduction(invoice):
 
 
 def test_invoice_str(invoice):
-    assert str(invoice).startswith("Facture F-2030-1 pour École du Lac (")
+    assert str(invoice).startswith(
+        f"Facture F-2030-1 pour {invoice.organization.name} ("
+    )
     assert f" / {invoice.season}" in str(invoice)
 
 
