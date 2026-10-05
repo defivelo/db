@@ -14,9 +14,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import json
+
+from django.contrib.staticfiles import finders
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+
+from bs4 import BeautifulSoup
 
 from apps.article.models import Article
 from defivelo.tests.utils import AuthClient, CoordinatorAuthClient, PowerUserAuthClient
@@ -91,3 +96,19 @@ class PowerUserTest(OneArticle, TestCase):
             {"title": "New article", "body": "New body", "published": False},
         )
         self.assertEqual(response.status_code, 302, "Article creation")
+
+    def test_body_uses_the_bundled_tinymce(self):
+        response = self.client.get(
+            reverse("article-update", kwargs={"pk": self.article.pk})
+        )
+
+        soup = BeautifulSoup(response.content, "html.parser")
+        self.assertTrue(soup.find("script", src="/static/tinymce/tinymce.min.js"))
+        self.assertTrue(finders.find("tinymce/tinymce.min.js"))
+        config = json.loads(
+            soup.find("textarea", attrs={"name": "body"})["data-mce-conf"]
+        )
+        self.assertEqual(config["license_key"], "gpl")
+        for plugin in config["plugins"].split(","):
+            self.assertTrue(finders.find(f"tinymce/plugins/{plugin}"), plugin)
+        self.assertIn("blocks", config["toolbar"].split())
