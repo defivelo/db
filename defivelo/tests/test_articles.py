@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import json
+from importlib.metadata import version
 
 from django.contrib.staticfiles import finders
 from django.test import TestCase
@@ -98,17 +99,21 @@ class PowerUserTest(OneArticle, TestCase):
         self.assertEqual(response.status_code, 302, "Article creation")
 
     def test_body_uses_the_bundled_tinymce(self):
+        cache_suffix = f"?v={version('django-tinymce')}"
         response = self.client.get(
             reverse("article-update", kwargs={"pk": self.article.pk})
         )
 
         soup = BeautifulSoup(response.content, "html.parser")
-        self.assertTrue(soup.find("script", src="/static/tinymce/tinymce.min.js"))
+        self.assertTrue(
+            soup.find("script", src=f"/static/tinymce/tinymce.min.js{cache_suffix}")
+        )
         self.assertTrue(finders.find("tinymce/tinymce.min.js"))
         config = json.loads(
             soup.find("textarea", attrs={"name": "body"})["data-mce-conf"]
         )
         self.assertEqual(config["license_key"], "gpl")
+        self.assertEqual(config["cache_suffix"], cache_suffix)
         for plugin in config["plugins"].split(","):
             self.assertTrue(finders.find(f"tinymce/plugins/{plugin}"), plugin)
         self.assertIn("blocks", config["toolbar"].split())
