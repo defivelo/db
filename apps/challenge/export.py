@@ -41,4 +41,16 @@ class InvoiceResource(resources.ModelResource):
 
     class Meta:
         model = Invoice
-        fields = "__all__"
+        fields = (
+            "canton",
+            "month",
+            "invoice_nb",
+            "org_name",
+            "total_participants",
+            "cost_per_participant",
+            "total_cost_participants",
+            "total_nb_bikes",
+            "cost_per_bike",
+            "total_cost_bikes",
+            "invoice_total",
+        )

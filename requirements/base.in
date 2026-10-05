@@ -23,7 +23,7 @@ django-import-export
 # Need to drop that unmaintained dependency
 -e git+https://github.com/liip-forks/django-agpl#egg=django-agpl
 
-tablib
+tablib[html,ods,xls,xlsx,yaml]
 django-taggit
 pillow
 django-role-permissions
