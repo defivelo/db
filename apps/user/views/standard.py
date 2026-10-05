@@ -213,7 +213,7 @@ class UserProfileFilterSet(FilterSet):
             # That user only has a limited amount of choices available, amend them
             # Remove the inaccessible statuses
             status_choices = self.filters["profile__status"].extra["choices"]
-            self.filters["profile__status"].extra["choices"] = (
+            self.filters["profile__status"].extra["choices"] = tuple(
                 t
                 for t in status_choices
                 if t[0]
