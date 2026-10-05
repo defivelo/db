@@ -1,0 +1,8 @@
+{% load i18n %}{% autoescape off %}{% blocktrans with site_name=current_site.name site_domain=current_site.domain %}Courriel de {{ site_name }} !
+
+Vous recevez cet email car vous ou quelqu'un d'autre a demandé la réinitialisation du mot de passe d'un compte utilisateur·rice du site {{ site_domain }}. Cependant, aucun compte n'est associé à l'adresse {{ email }}.
+
+Vous pouvez simplement ignorer ce message si vous n'êtes pas à l'origine de cette demande. Sinon, vérifiez l'adresse email saisie ou contactez-nous : les comptes de l'intranet sont créés par l'équipe DÉFI VÉLO.{% endblocktrans %}{% endautoescape %}
+
+{% blocktrans with site_name=current_site.name site_domain=current_site.domain %}Merci d'utiliser {{ site_name }} !
+{{ site_domain }}{% endblocktrans %}
