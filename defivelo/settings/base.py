@@ -287,7 +287,6 @@ TINYMCE_DEFAULT_CONFIG = {
             "link",
             "image",
             "charmap",
-            "print",
             "preview",
             "anchor",
             "searchreplace",
@@ -297,7 +296,6 @@ TINYMCE_DEFAULT_CONFIG = {
             "insertdatetime",
             "media",
             "table",
-            "paste",
             "code",
             "help",
             "wordcount",
@@ -308,7 +306,7 @@ TINYMCE_DEFAULT_CONFIG = {
             " ".join(block)
             for block in [
                 [
-                    "formatselect",
+                    "blocks",
                 ],
                 [
                     "bold",
@@ -336,6 +334,7 @@ TINYMCE_DEFAULT_CONFIG = {
         ]
     ),
     "branding": False,
+    "license_key": "gpl",
 }
 TINYMCE_JS_URL = os.path.join(STATIC_URL, "tinymce/tinymce.min.js")
 TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, "tinymce")

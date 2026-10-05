@@ -27,8 +27,7 @@ tablib[html,ods,xls,xlsx,yaml]
 django-taggit
 pillow
 django-role-permissions
-# Kept on 3.x on purpose
-django-tinymce<4
+django-tinymce
 django-memoize
 django-countries
 django-simple-history
