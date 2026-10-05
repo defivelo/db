@@ -176,7 +176,7 @@ pexpect==4.9.0
     # via ipython
 phonenumbers==8.13.55
     # via -r base.in
-pillow==10.4.0
+pillow==12.3.0
     # via -r base.in
 pip-tools==7.6.1
     # via -r dev.in
