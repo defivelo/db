@@ -137,3 +137,9 @@ def test_notify_registrations_validated_mails_coordinator(message_request, mailo
         f"L'inscription pour l'établissement {orga} est enregistrée, et un "
         "email a été envoyé à la personne coordinatrice."
     ]
+
+
+def test_website_without_scheme_defaults_to_https():
+    field = Organization._meta.get_field("website").formfield()
+
+    assert field.clean("ecole.example.ch") == "https://ecole.example.ch"

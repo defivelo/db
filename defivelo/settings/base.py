@@ -436,6 +436,9 @@ BOOTSTRAP3 = {
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
+# Transitional until Django 6.0 makes https the default scheme of forms.URLField
+FORMS_URLFIELD_ASSUME_HTTPS = True
+
 #############
 # E-Mailing #
 #############
