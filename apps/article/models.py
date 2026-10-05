@@ -47,7 +47,7 @@ class Article(models.Model):
     modified = models.DateTimeField(_("Modifié"), default=timezone.now)
     published = models.BooleanField(default=False)
     body = HTMLField(_("Body"))
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
 
     class Meta:
         ordering = ["-modified"]

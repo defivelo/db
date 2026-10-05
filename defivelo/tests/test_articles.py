@@ -25,7 +25,12 @@ from django.utils import timezone
 from bs4 import BeautifulSoup
 
 from apps.article.models import Article
-from defivelo.tests.utils import AuthClient, CoordinatorAuthClient, PowerUserAuthClient
+from defivelo.tests.utils import (
+    AuthClient,
+    CoordinatorAuthClient,
+    PowerUserAuthClient,
+    SuperUserAuthClient,
+)
 
 
 class OneArticle(object):
@@ -117,3 +122,31 @@ class PowerUserTest(OneArticle, TestCase):
         for plugin in config["plugins"].split(","):
             self.assertTrue(finders.find(f"tinymce/plugins/{plugin}"), plugin)
         self.assertIn("blocks", config["toolbar"].split())
+
+
+class AdminTest(OneArticle, TestCase):
+    def setUp(self):
+        super().setUp()
+        self.client = SuperUserAuthClient()
+        self.client.user.is_staff = True
+        self.client.user.save()
+
+    def test_article_without_tags_can_be_saved(self):
+        response = self.client.post(
+            reverse("admin:article_article_change", args=[self.article.pk]),
+            {
+                "title": "Edited",
+                "slug": self.article.slug,
+                "summary": "",
+                "modified_0": "2026-10-05",
+                "modified_1": "12:00:00",
+                "published": "on",
+                "body": "<p>Edited body</p>",
+                "tags": "",
+            },
+        )
+
+        self.assertRedirects(response, reverse("admin:article_article_changelist"))
+        self.article.refresh_from_db()
+        self.assertEqual(self.article.title, "Edited")
+        self.assertEqual(list(self.article.tags.all()), [])
