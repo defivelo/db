@@ -493,6 +493,60 @@ class TestEmailManagement:
         assert len(mailoutbox) == 2
         assert mailoutbox[1].to == [self.NEW_EMAIL]
 
+    def test_resend_to_verified_email_sends_nothing(self, client, user, mailoutbox):
+        response = client.post(
+            reverse("account_email"), {"action_send": "", "email": EMAIL}, follow=True
+        )
+
+        assert mailoutbox == []
+        soup = intranet_page(response, "Adresses e-mail")
+        assert f"L'adresse e-mail {EMAIL} est déjà vérifiée." in main_text(soup)
+
+    def test_resend_after_changing_primary(self, client, user, mailoutbox):
+        self.add_email(client)
+        client.post(link_in(mailoutbox[0]))
+        client.post(
+            reverse("account_email"), {"action_primary": "", "email": self.NEW_EMAIL}
+        )
+        cache.clear()
+        sent_before = len(mailoutbox)
+
+        soup = intranet_page(client.get(reverse("account_email")), "Adresses e-mail")
+        checked = soup.select_one("form.email_list input[name=email][checked]")
+        assert checked["value"] == self.NEW_EMAIL
+        response = client.post(
+            reverse("account_email"),
+            {"action_send": "", "email": checked["value"]},
+            follow=True,
+        )
+
+        assert len(mailoutbox) == sent_before
+        soup = intranet_page(response, "Adresses e-mail")
+        assert f"L'adresse e-mail {self.NEW_EMAIL} est déjà vérifiée." in main_text(
+            soup
+        )
+
+    def test_resent_link_confirms_unverified_email(self, client, user, mailoutbox):
+        self.add_email(client)
+        cache.clear()
+        client.post(
+            reverse("account_email"), {"action_send": "", "email": self.NEW_EMAIL}
+        )
+
+        soup = intranet_page(
+            client.get(link_in(mailoutbox[1])), "Confirmer l'adresse e-mail"
+        )
+        assert "expiré" not in main_text(soup)
+        client.post(link_in(mailoutbox[1]))
+
+        assert EmailAddress.objects.get(user=user, email=self.NEW_EMAIL).verified
+
+    def test_anonymous_is_sent_to_login(self, client):
+        response = client.get(reverse("account_email"))
+
+        assert response.status_code == 302
+        assert response.url.startswith(reverse("account_login"))
+
     def test_remove_secondary_email(self, client, user):
         self.add_email(client)
 

@@ -20,6 +20,7 @@ from django.contrib import admin
 from django.urls import include, re_path
 from django.utils.translation import gettext_lazy as _
 
+from .accounts import EmailView
 from .views.common import HomeView, LicenseView
 
 admin.autodiscover()
@@ -28,6 +29,7 @@ urlpatterns = [
     re_path(r"^admin/", include("apps.email_outbox.urls")),
     re_path(r"^admin/", admin.site.urls),
     re_path(r"^i18n/", include("django.conf.urls.i18n")),
+    re_path(r"^accounts/email/$", EmailView.as_view(), name="account_email"),
     re_path(r"^accounts/", include("allauth.urls")),
     re_path(r"^license/", LicenseView.as_view(), name="license"),
     re_path(r"^agpl-", include("django_agpl.urls")),
