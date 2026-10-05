@@ -24,6 +24,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
 import os
+from importlib.metadata import version
 
 from django.utils.translation import gettext_lazy as _
 
@@ -275,6 +276,8 @@ ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 
+# Bust browser caches on upgrades, also for the files TinyMCE loads itself
+TINYMCE_CACHE_SUFFIX = f"?v={version('django-tinymce')}"
 TINYMCE_DEFAULT_CONFIG = {
     "theme": "silver",
     "height": 500,
@@ -335,8 +338,11 @@ TINYMCE_DEFAULT_CONFIG = {
     ),
     "branding": False,
     "license_key": "gpl",
+    "cache_suffix": TINYMCE_CACHE_SUFFIX,
 }
-TINYMCE_JS_URL = os.path.join(STATIC_URL, "tinymce/tinymce.min.js")
+TINYMCE_JS_URL = (
+    os.path.join(STATIC_URL, "tinymce/tinymce.min.js") + TINYMCE_CACHE_SUFFIX
+)
 TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, "tinymce")
 TINYMCE_INCLUDE_JQUERY = False
 TINYMCE_COMPRESSOR = False
