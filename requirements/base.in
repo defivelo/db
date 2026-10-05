@@ -35,5 +35,4 @@ sentry-sdk
 six
 dj-email-url
 django-ical
-cryptography
 pyyaml

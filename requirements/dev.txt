@@ -34,9 +34,7 @@ coverage[toml]==7.16.2
 crispy-bootstrap3==2024.1
     # via -r base.in
 cryptography==41.0.7
-    # via
-    #   -r base.in
-    #   paramiko
+    # via paramiko
 csscompressor==0.9.5
     # via -r base.in
 decorator==5.3.1

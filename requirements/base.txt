@@ -13,11 +13,7 @@ asgiref==3.12.1
     #   django-countries
 certifi==2026.7.22
     # via sentry-sdk
-cffi==1.17.1
-    # via cryptography
 crispy-bootstrap3==2024.1
-    # via -r base.in
-cryptography==41.0.7
     # via -r base.in
 csscompressor==0.9.5
     # via -r base.in
@@ -115,8 +111,6 @@ pillow==10.4.0
     # via -r base.in
 psycopg2-binary==2.9.13
     # via -r base.in
-pycparser==2.23
-    # via cffi
 python-dateutil==2.9.0.post0
     # via
     #   django-recurrence
