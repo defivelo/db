@@ -13,9 +13,31 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
+
+from allauth.account import views as allauth_views
 from allauth.account.adapter import DefaultAccountAdapter
 
 
 class NoSignupAccountAdapter(DefaultAccountAdapter):
     def is_open_for_signup(self, request):
         return False
+
+
+class EmailView(allauth_views.EmailView):
+    """
+    allauth resends a confirmation even for a verified address, with a link that
+    can only fail (confirmation keys only resolve unverified addresses).
+    """
+
+    def _action_send(self, request, *args, **kwargs):
+        email_address = self._get_email_address(request)
+        if email_address and email_address.verified:
+            messages.info(
+                request,
+                _("L'adresse e-mail %(email)s est déjà vérifiée.")
+                % {"email": email_address.email},
+            )
+            return None
+        return super()._action_send(request, *args, **kwargs)
