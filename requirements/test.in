@@ -3,6 +3,7 @@ pytest
 pytest-django
 pytest-cov
 pytest-xdist
+beautifulsoup4
 factory_boy
 ipdb
 ruff
