@@ -57,6 +57,7 @@ def migrate_organization(apps, schema_editor):
 class Migration(migrations.Migration):
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ("account", "0001_initial"),
         ("orga", "0006_auto_20170831_1201"),
         ("user", "0059_userprofile_phone"),
     ]

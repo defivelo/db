@@ -15,6 +15,7 @@ from django.urls import reverse
 
 import pytest
 from allauth.account.models import EmailAddress
+from allauth.socialaccount.adapter import get_adapter as get_socialaccount_adapter
 
 from apps.user.management.commands.createsuperuser import ProxyUser
 from apps.user.tests.factories import UserFactory
@@ -24,6 +25,7 @@ pytestmark = pytest.mark.django_db
 EMAIL = "jane.doe@example.com"
 PASSWORD = "Old-Secret-2026!"
 NEW_PASSWORD = "New-Secret-2026!"
+LOGIN_CODE_PATH = "/accounts/login/code/"
 
 
 @pytest.fixture(autouse=True)
@@ -63,6 +65,24 @@ def link_in(message):
 
 def template_names(response):
     return [t.name for t in response.templates]
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "account_email_verification_sent",
+        "account_inactive",
+        "account_reset_password_done",
+        "account_reset_password_from_key_done",
+        "account_signup",
+    ],
+)
+def test_allauth_pages_use_project_layout(client, name):
+    response = client.get(reverse(name))
+
+    assert response.status_code == 200
+    assert "account/base.html" in template_names(response)
+    assert reverse("account_signup") not in response.content.decode()
 
 
 class TestLogin:
@@ -177,6 +197,37 @@ class TestSignup:
 
         assert not get_user_model().objects.filter(email=EMAIL).exists()
 
+    def test_login_page_offers_no_signup_nor_login_code(self, client):
+        content = client.get(reverse("account_login")).content.decode()
+
+        assert reverse("account_signup") not in content
+        assert LOGIN_CODE_PATH not in content
+
+    def test_social_signup_is_closed(self, rf):
+        request = rf.get("/")
+
+        assert get_socialaccount_adapter(request).is_open_for_signup(request, None) is (
+            False
+        )
+
+    def test_social_signup_page_creates_no_user(self, client):
+        response = client.post(
+            reverse("socialaccount_signup"),
+            {"email": EMAIL, "password1": PASSWORD, "password2": PASSWORD},
+        )
+
+        assert response.status_code == 302
+        assert response.url.startswith(reverse("account_login"))
+        assert not get_user_model().objects.filter(email=EMAIL).exists()
+
+    def test_login_by_code_is_disabled(self, client, mailoutbox):
+        make_user()
+
+        response = client.post(LOGIN_CODE_PATH, {"email": EMAIL})
+
+        assert response.status_code == 404
+        assert mailoutbox == []
+
 
 class TestPasswordReset:
     def request_reset(self, client, email=EMAIL):
@@ -289,7 +340,7 @@ class TestEmailConfirmation:
         assert "Jane Doe" in message.body
         assert path.startswith("/accounts/confirm-email/")
 
-    def test_confirming_verifies_then_login_works(self, client, mailoutbox):
+    def test_confirming_verifies_and_logs_in(self, client, mailoutbox):
         user = make_user(verified=False)
         path = self.confirmation_link(client, mailoutbox)
 
@@ -301,13 +352,8 @@ class TestEmailConfirmation:
 
         response = client.post(path)
 
-        # ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION only applies to signups, which
-        # are closed, so the user is sent back to the login page
-        assert response.url == reverse("account_login")
+        assert response.url == "/"
         assert EmailAddress.objects.get(user=user, email=EMAIL).verified
-        assert logged_in_user_pk(client) is None
-
-        login(client)
         assert logged_in_user_pk(client) == user.pk
 
     def test_invalid_key_shows_expired_message(self, client):
