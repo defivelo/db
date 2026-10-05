@@ -104,7 +104,7 @@ django-filter==23.5
     # via -r base.in
 django-ical==1.9.2
     # via -r base.in
-django-import-export==3.3.9
+django-import-export==4.4.1
     # via -r base.in
 django-localflavor==4.0
     # via -r base.in
@@ -128,7 +128,7 @@ django-tinymce==3.7.1
     # via -r base.in
 dulwich==0.19.15
     # via -r dev.in
-et-xmlfile==1.1.0
+et-xmlfile==2.0.0
     # via openpyxl
 execnet==2.1.2
     # via pytest-xdist
@@ -154,8 +154,6 @@ jedi==0.19.2
     # via ipython
 libsass==0.22.0
     # via -r base.in
-markuppy==1.18
-    # via tablib
 markupsafe==2.1.5
     # via werkzeug
 matplotlib-inline==0.1.7
@@ -248,7 +246,7 @@ sqlparse==0.6.0
     #   django-debug-toolbar
 stack-data==0.6.3
     # via ipython
-tablib[html,ods,xls,xlsx,yaml]==3.5.0
+tablib[html,ods,xls,xlsx,yaml]==3.10.0
     # via
     #   -r base.in
     #   django-import-export

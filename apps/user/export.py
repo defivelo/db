@@ -26,12 +26,12 @@ from .models import COLLABORATOR_FIELDS, STD_PROFILE_FIELDS
 
 
 class MultipleSelectWidget(widgets.Widget):
-    def render(self, value, obj=None):
+    def render(self, value, obj=None, **kwargs):
         return ", ".join(value)
 
 
 class FirstMedWidget(widgets.Widget):
-    def render(self, value, object=None):
+    def render(self, value, object=None, **kwargs):
         final = _("Yes") if value.firstmed_course else _("No")
         if value.firstmed_course_comm:
             final += " - " + value.firstmed_course_comm
@@ -43,7 +43,7 @@ class ObjectMethodWidget(widgets.Widget):
         self.method = method
         return super(ObjectMethodWidget, self).__init__(*args, **kwargs)
 
-    def render(self, value, object=None):
+    def render(self, value, object=None, **kwargs):
         attribute = getattr(value, self.method)
         if isinstance(attribute, list):
             attribute = ", ".join(attribute)
@@ -60,6 +60,7 @@ ALL_PROFILE_FIELDS = tuple(
         if field not in ["firstmed_course_comm"]
     ]
 )
+MANAGEMENT_FIELDS = ("profile__access_level", "profile__managed_cantons")
 ALL_COLLABORATOR_FIELDS = tuple(
     ["first_name", "last_name", "email"]
     + ["profile__%s" % field for field in COLLABORATOR_FIELDS]
@@ -194,8 +195,8 @@ class UserResource(resources.ModelResource):
 
     class Meta:
         model = get_user_model()
-        fields = ALL_PROFILE_FIELDS
-        export_order = ALL_PROFILE_FIELDS
+        fields = ALL_PROFILE_FIELDS + MANAGEMENT_FIELDS
+        export_order = ALL_PROFILE_FIELDS + MANAGEMENT_FIELDS
 
     def dehydrate_profile__address_canton(self, field):
         return canton_abbr(field.profile.address_canton, abbr=False, long=True)
@@ -214,5 +215,5 @@ class CollaboratorUserResource(UserResource):
     Restricted UserResource
     """
 
-    def get_fields(self, **kwargs):
+    def get_export_fields(self, selected_fields=None):
         return [self.fields[f] for f in ALL_COLLABORATOR_FIELDS]
