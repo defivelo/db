@@ -138,7 +138,7 @@ six==1.17.0
     # via
     #   -r base.in
     #   python-dateutil
-sqlparse==0.4.4
+sqlparse==0.6.0
     # via django
 tablib[html,ods,xls,xlsx,yaml]==3.5.0
     # via
