@@ -110,7 +110,7 @@ openpyxl==3.1.5
     # via tablib
 phonenumbers==8.13.55
     # via -r base.in
-pillow==10.4.0
+pillow==12.3.0
     # via -r base.in
 psycopg2-binary==2.9.13
     # via -r base.in
