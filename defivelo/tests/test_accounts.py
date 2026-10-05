@@ -262,10 +262,15 @@ class TestPasswordReset:
         response = self.request_reset(client, email="nobody@example.com")
 
         assert response.url == reverse("account_reset_password_done")
-        # allauth tells the address owner no account exists, without a reset link
         assert len(mailoutbox) == 1
-        assert mailoutbox[0].to == ["nobody@example.com"]
-        assert "/accounts/password/reset/key/" not in mailoutbox[0].body
+        message = mailoutbox[0]
+        assert message.to == ["nobody@example.com"]
+        assert "Réinitialisation du mot de passe" in message.subject
+        assert "aucun compte n'est associé à l'adresse nobody@example.com" in (
+            message.body
+        )
+        assert "/accounts/password/reset/key/" not in message.body
+        assert reverse("account_signup") not in message.body
 
 
 class TestEmailConfirmation:
