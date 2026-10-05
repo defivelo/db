@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from django import forms
 from django.contrib import admin
+from django.db import transaction
 
 from allauth.account.admin import EmailAddressAdmin as BaseEmailAddressAdmin
 from allauth.account.models import EmailAddress
@@ -35,6 +36,14 @@ class EmailAddressAdminForm(forms.ModelForm):
         model = EmailAddress
         fields = "__all__"
 
+    def _get_validation_exclusions(self):
+        # unique_primary_email would reject a new primary before save() demotes
+        # the previous one; the database still enforces it
+        exclude = super()._get_validation_exclusions()
+        exclude.add("primary")
+        return exclude
+
+    @transaction.atomic
     def save(self, commit=True):
         if self.cleaned_data["primary"] is True:
             EmailAddress.objects.filter(
