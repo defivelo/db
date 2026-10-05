@@ -27,7 +27,8 @@ tablib
 django-taggit
 pillow
 django-role-permissions
-django-tinymce
+# Kept on 3.x on purpose
+django-tinymce<4
 django-memoize
 django-countries
 django-simple-history
