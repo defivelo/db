@@ -1,8 +1,9 @@
 """
 Functional tests of the django-allauth flows used by the intranet.
 
-They drive the real URLs, templates and emails so that an allauth upgrade
-breaking login, password reset or email confirmation is caught here.
+They drive the real URLs and emails and assert the rendered HTML, so that an
+allauth upgrade breaking login, password reset or email confirmation, or
+changing what users see on those pages, is caught here.
 """
 
 import re
@@ -16,6 +17,7 @@ from django.urls import reverse
 import pytest
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.adapter import get_adapter as get_socialaccount_adapter
+from bs4 import BeautifulSoup
 
 from apps.user.management.commands.createsuperuser import ProxyUser
 from apps.user.tests.factories import UserFactory
@@ -63,42 +65,47 @@ def link_in(message):
     return urlparse(match.group(0)).path
 
 
-def template_names(response):
-    return [t.name for t in response.templates]
+def squash(text):
+    return " ".join(text.split())
 
 
-@pytest.mark.parametrize(
-    "name",
-    [
-        "account_email_verification_sent",
-        "account_inactive",
-        "account_reset_password_done",
-        "account_reset_password_from_key_done",
-        "account_signup",
-    ],
-)
-def test_allauth_pages_use_project_layout(client, name):
-    response = client.get(reverse(name))
-
+def intranet_page(response, heading):
+    """
+    Parse an allauth page and check it is rendered inside the intranet layout,
+    with the expected heading and without any way to sign up.
+    """
     assert response.status_code == 200
-    assert "account/base.html" in template_names(response)
-    assert reverse("account_signup") not in response.content.decode()
+    soup = BeautifulSoup(response.content, "html.parser")
+    assert soup.select_one("#dv-navbar-logo"), "page is not in the intranet layout"
+    assert squash(soup.h1.get_text()) == heading
+    assert not soup.find("a", href=reverse("account_signup"))
+    return soup
+
+
+def main_text(soup):
+    return squash(soup.select_one("[role=main]").get_text())
+
+
+def form_fields(soup, action):
+    form = soup.find("form", action=action)
+    assert form, f"no form posting to {action}"
+    return {field.get("name") for field in form.select("input, button")}
 
 
 class TestLogin:
-    def test_login_page_uses_project_template(self, client):
-        response = client.get(reverse("account_login"))
+    def test_login_page(self, client):
+        soup = intranet_page(client.get(reverse("account_login")), "Connexion")
 
-        assert response.status_code == 200
-        assert "account/login.html" in template_names(response)
-        assert reverse("account_reset_password") in response.content.decode()
+        assert {"login", "password"} <= form_fields(soup, reverse("account_login"))
+        reset = soup.find("a", href=reverse("account_reset_password"))
+        assert squash(reset.get_text()) == "Mot de passe oublié ?"
 
     def test_anonymous_user_is_sent_to_login(self, client):
-        response = client.get(reverse("home"))
+        response = client.get(reverse("home"), follow=True)
 
-        assert response.status_code == 302
-        assert response.url.startswith(reverse("account_login"))
-        assert "next=/" in response.url
+        assert response.redirect_chain[0][0].startswith(reverse("account_login"))
+        assert "next=/" in response.redirect_chain[0][0]
+        intranet_page(response, "Connexion")
 
     def test_login_with_verified_email(self, client):
         user = make_user()
@@ -130,33 +137,47 @@ class TestLogin:
     def test_login_with_bad_credentials_is_refused(self, client, email, password):
         make_user()
 
-        response = login(client, email=email, password=password)
+        soup = intranet_page(login(client, email=email, password=password), "Connexion")
 
-        assert response.status_code == 200
-        assert response.context["form"].errors
+        assert "L’adresse e-mail ou le mot de passe sont incorrects." in main_text(soup)
         assert logged_in_user_pk(client) is None
 
     def test_login_without_usable_password_is_refused(self, client):
         UserFactory(email=EMAIL, is_active=True)
 
-        login(client)
+        soup = intranet_page(login(client), "Connexion")
 
+        assert "L’adresse e-mail ou le mot de passe sont incorrects." in main_text(soup)
         assert logged_in_user_pk(client) is None
 
     def test_inactive_user_is_refused(self, client):
         make_user(is_active=False)
 
-        response = login(client)
+        response = client.post(
+            reverse("account_login"),
+            {"login": EMAIL, "password": PASSWORD},
+            follow=True,
+        )
 
-        assert response.url == reverse("account_inactive")
+        assert response.redirect_chain == [(reverse("account_inactive"), 302)]
+        soup = intranet_page(response, "Compte inactif")
+        assert "Ce compte est inactif." in main_text(soup)
         assert logged_in_user_pk(client) is None
 
     def test_unverified_email_requires_confirmation(self, client, mailoutbox):
         make_user(verified=False)
 
-        response = login(client)
+        response = client.post(
+            reverse("account_login"),
+            {"login": EMAIL, "password": PASSWORD},
+            follow=True,
+        )
 
-        assert response.url == reverse("account_email_verification_sent")
+        assert response.redirect_chain == [
+            (reverse("account_email_verification_sent"), 302)
+        ]
+        soup = intranet_page(response, "Vérifiez votre adresse e-mail")
+        assert "Nous vous avons envoyé un e-mail pour validation." in main_text(soup)
         assert logged_in_user_pk(client) is None
         assert len(mailoutbox) == 1
         assert mailoutbox[0].to == [EMAIL]
@@ -167,10 +188,10 @@ class TestLogout:
         user = make_user()
         login(client)
 
-        response = client.get(reverse("account_logout"))
+        soup = intranet_page(client.get(reverse("account_logout")), "Se Déconnecter")
 
-        assert response.status_code == 200
-        assert "account/logout.html" in template_names(response)
+        assert "Êtes-vous sûr de vouloir vous déconnecter ?" in main_text(soup)
+        assert form_fields(soup, reverse("account_logout"))
         assert logged_in_user_pk(client) == user.pk
 
     def test_post_logs_out(self, client):
@@ -185,9 +206,12 @@ class TestLogout:
 
 class TestSignup:
     def test_signup_is_closed(self, client):
-        response = client.get(reverse("account_signup"))
+        soup = intranet_page(
+            client.get(reverse("account_signup")), "Inscriptions fermées"
+        )
 
-        assert "account/signup_closed.html" in template_names(response)
+        assert "les inscriptions sont actuellement fermées" in main_text(soup)
+        assert not soup.select("[role=main] form")
 
     def test_signup_post_creates_no_user(self, client):
         client.post(
@@ -197,10 +221,9 @@ class TestSignup:
 
         assert not get_user_model().objects.filter(email=EMAIL).exists()
 
-    def test_login_page_offers_no_signup_nor_login_code(self, client):
+    def test_login_page_offers_no_login_code(self, client):
         content = client.get(reverse("account_login")).content.decode()
 
-        assert reverse("account_signup") not in content
         assert LOGIN_CODE_PATH not in content
 
     def test_social_signup_is_closed(self, rf):
@@ -231,33 +254,43 @@ class TestSignup:
 
 class TestPasswordReset:
     def request_reset(self, client, email=EMAIL):
-        return client.post(reverse("account_reset_password"), {"email": email})
+        return client.post(
+            reverse("account_reset_password"), {"email": email}, follow=True
+        )
 
     def set_password(self, client, path, password1=NEW_PASSWORD, password2=None):
         # allauth moves the key from the URL to the session before showing the form
         response = client.get(path)
         assert response.status_code == 302
         set_password_url = response.url
-        response = client.get(set_password_url)
-        assert response.status_code == 200
-        assert "account/password_reset_from_key.html" in template_names(response)
+        soup = intranet_page(client.get(set_password_url), "Modifier le mot de passe")
+        assert {"password1", "password2"} <= form_fields(soup, ".")
         return client.post(
             set_password_url,
             {"password1": password1, "password2": password2 or password1},
+            follow=True,
         )
 
-    def test_reset_page_uses_project_template(self, client):
-        response = client.get(reverse("account_reset_password"))
+    def assert_reset_requested(self, response):
+        assert response.redirect_chain == [
+            (reverse("account_reset_password_done"), 302)
+        ]
+        soup = intranet_page(response, "Réinitialisation du mot de passe")
+        assert "Nous vous avons envoyé un email de vérification." in main_text(soup)
 
-        assert response.status_code == 200
-        assert "account/password_reset.html" in template_names(response)
+    def test_reset_page(self, client):
+        soup = intranet_page(
+            client.get(reverse("account_reset_password")),
+            "Réinitialisation du mot de passe",
+        )
+
+        assert "Mot de passe oublié ?" in main_text(soup)
+        assert "email" in form_fields(soup, reverse("account_reset_password"))
 
     def test_full_reset_flow(self, client, mailoutbox):
         user = make_user()
 
-        response = self.request_reset(client)
-
-        assert response.url == reverse("account_reset_password_done")
+        self.assert_reset_requested(self.request_reset(client))
         assert len(mailoutbox) == 1
         message = mailoutbox[0]
         assert message.to == [EMAIL]
@@ -266,7 +299,12 @@ class TestPasswordReset:
 
         response = self.set_password(client, link_in(message))
 
-        assert response.url == reverse("account_reset_password_from_key_done")
+        assert response.redirect_chain[-1] == (
+            reverse("account_reset_password_from_key_done"),
+            302,
+        )
+        soup = intranet_page(response, "Modifier le mot de passe")
+        assert "Votre mot de passe a été modifié." in main_text(soup)
         user.refresh_from_db()
         assert user.check_password(NEW_PASSWORD)
         assert logged_in_user_pk(client) is None
@@ -276,15 +314,21 @@ class TestPasswordReset:
         login(client, password=NEW_PASSWORD)
         assert logged_in_user_pk(client) == user.pk
 
+    def assert_token_fail(self, response):
+        soup = intranet_page(response, "Mauvais jeton d'identification")
+        assert "Le lien de réinitialisation du mot de passe est invalide." in (
+            main_text(soup)
+        )
+        assert soup.find("a", href=reverse("account_reset_password"))
+        assert not soup.select("[role=main] form")
+
     def test_reset_link_works_only_once(self, client, mailoutbox):
         make_user()
         self.request_reset(client)
         path = link_in(mailoutbox[0])
         self.set_password(client, path)
 
-        response = client.get(path, follow=True)
-
-        assert response.context["token_fail"] is True
+        self.assert_token_fail(client.get(path, follow=True))
 
     def test_tampered_reset_link_fails(self, client, mailoutbox):
         make_user()
@@ -292,9 +336,7 @@ class TestPasswordReset:
         path = link_in(mailoutbox[0])
         tampered = path.rstrip("/")[:-3] + "xyz/"
 
-        response = client.get(tampered, follow=True)
-
-        assert response.context["token_fail"] is True
+        self.assert_token_fail(client.get(tampered, follow=True))
 
     def test_mismatched_passwords_keep_old_password(self, client, mailoutbox):
         user = make_user()
@@ -304,15 +346,16 @@ class TestPasswordReset:
             client, link_in(mailoutbox[0]), password2="Something-Else-2026!"
         )
 
-        assert response.status_code == 200
-        assert response.context["form"].errors
+        soup = intranet_page(response, "Modifier le mot de passe")
+        assert "Vous devez saisir deux fois le même mot de passe." in main_text(soup)
         user.refresh_from_db()
         assert user.check_password(PASSWORD)
 
     def test_unknown_email_does_not_reveal_accounts(self, client, mailoutbox):
-        response = self.request_reset(client, email="nobody@example.com")
+        self.assert_reset_requested(
+            self.request_reset(client, email="nobody@example.com")
+        )
 
-        assert response.url == reverse("account_reset_password_done")
         assert len(mailoutbox) == 1
         message = mailoutbox[0]
         assert message.to == ["nobody@example.com"]
@@ -344,23 +387,32 @@ class TestEmailConfirmation:
         user = make_user(verified=False)
         path = self.confirmation_link(client, mailoutbox)
 
-        response = client.get(path)
+        soup = intranet_page(client.get(path), "Confirmer l'adresse e-mail")
 
-        assert response.status_code == 200
-        assert "account/email_confirm.html" in template_names(response)
-        assert response.context["confirmation"] is not None
+        assert (
+            f"Merci de confirmer que {EMAIL} est l'adresse email de Jane Doe."
+            in main_text(soup)
+        )
+        # The signed key embeds a timestamp, so the form may carry a fresher one
+        form = soup.select_one("[role=main] form")
+        assert form["action"].startswith("/accounts/confirm-email/")
 
-        response = client.post(path)
+        response = client.post(form["action"])
 
         assert response.url == "/"
         assert EmailAddress.objects.get(user=user, email=EMAIL).verified
         assert logged_in_user_pk(client) == user.pk
 
     def test_invalid_key_shows_expired_message(self, client):
-        response = client.get(reverse("account_confirm_email", args=["not-a-key"]))
+        soup = intranet_page(
+            client.get(reverse("account_confirm_email", args=["not-a-key"])),
+            "Confirmer l'adresse e-mail",
+        )
 
-        assert "account/email_confirm.html" in template_names(response)
-        assert response.context["confirmation"] is None
+        assert "Ce lien de confirmation d'adresse email est expiré ou non valide." in (
+            main_text(soup)
+        )
+        assert not soup.select("[role=main] form")
 
 
 class TestEmailManagement:
@@ -377,16 +429,27 @@ class TestEmailManagement:
             reverse("account_email"), {"action_add": "", "email": self.NEW_EMAIL}
         )
 
-    def test_page_lists_addresses(self, client, user):
-        response = client.get(reverse("account_email"))
+    def email_rows(self, client):
+        soup = intranet_page(client.get(reverse("account_email")), "Adresses e-mail")
+        return {
+            squash(row.label.get_text()): squash(row.get_text())
+            for row in soup.select("form.email_list .ctrlHolder")
+        }
 
-        assert response.status_code == 200
-        assert "account/email.html" in template_names(response)
-        assert EMAIL in response.content.decode()
+    def test_page_lists_addresses(self, client, user):
+        soup = intranet_page(client.get(reverse("account_email")), "Adresses e-mail")
+
+        assert {"action_primary", "action_send", "action_remove"} <= form_fields(
+            soup, reverse("account_email")
+        )
+        assert self.email_rows(client) == {EMAIL: f"{EMAIL} Vérifiée Principale"}
 
     def test_add_email_sends_confirmation(self, client, user, mailoutbox):
         self.add_email(client)
 
+        assert self.email_rows(client)[self.NEW_EMAIL] == (
+            f"{self.NEW_EMAIL} Non vérifiée"
+        )
         added = EmailAddress.objects.get(user=user, email=self.NEW_EMAIL)
         assert not added.verified
         assert not added.primary
@@ -401,11 +464,12 @@ class TestEmailManagement:
             reverse("account_email"), {"action_primary": "", "email": self.NEW_EMAIL}
         )
 
+        assert self.email_rows(client) == {
+            EMAIL: f"{EMAIL} Vérifiée",
+            self.NEW_EMAIL: f"{self.NEW_EMAIL} Vérifiée Principale",
+        }
         user.refresh_from_db()
         assert user.email == self.NEW_EMAIL
-        assert EmailAddress.objects.get(user=user, primary=True).email == (
-            self.NEW_EMAIL
-        )
 
     def test_unverified_email_cannot_become_primary(self, client, user):
         self.add_email(client)
@@ -414,6 +478,7 @@ class TestEmailManagement:
             reverse("account_email"), {"action_primary": "", "email": self.NEW_EMAIL}
         )
 
+        assert self.email_rows(client)[EMAIL] == f"{EMAIL} Vérifiée Principale"
         user.refresh_from_db()
         assert user.email == EMAIL
 
@@ -435,9 +500,7 @@ class TestEmailManagement:
             reverse("account_email"), {"action_remove": "", "email": self.NEW_EMAIL}
         )
 
-        assert list(
-            EmailAddress.objects.filter(user=user).values_list("email", flat=True)
-        ) == [EMAIL]
+        assert list(self.email_rows(client)) == [EMAIL]
 
 
 class TestPasswordChange:
@@ -461,8 +524,12 @@ class TestPasswordChange:
         user = make_user()
         login(client)
 
-        response = client.get(reverse("account_change_password"))
-        assert "account/password_change.html" in template_names(response)
+        soup = intranet_page(
+            client.get(reverse("account_change_password")), "Modifier le mot de passe"
+        )
+        assert {"oldpassword", "password1", "password2"} <= form_fields(
+            soup, reverse("account_change_password")
+        )
         response = self.change(client)
 
         assert response.status_code == 302
@@ -474,10 +541,12 @@ class TestPasswordChange:
         user = make_user()
         login(client)
 
-        response = self.change(client, oldpassword="wrong-password")
+        soup = intranet_page(
+            self.change(client, oldpassword="wrong-password"),
+            "Modifier le mot de passe",
+        )
 
-        assert response.status_code == 200
-        assert response.context["form"].has_error("oldpassword")
+        assert "Merci d'indiquer votre mot de passe actuel." in main_text(soup)
         user.refresh_from_db()
         assert user.check_password(PASSWORD)
 
