@@ -11,10 +11,13 @@ from apps.user.models import UserProfile
 class ProxyUserManager(UserManager):
     @transaction.atomic
     def _create_user(self, username, email, password, **extra_fields):
-        normalized_email = self.normalize_email(email)
-        if self.filter(email=normalized_email).exists():
+        # allauth looks emails up lowercase, so store them that way
+        normalized_email = self.normalize_email(email).lower()
+        if self.filter(email__iexact=normalized_email).exists():
             raise ValidationError("User with this email already exists.")
-        user = super()._create_user(username, email, password, **extra_fields)
+        user = super()._create_user(
+            username, normalized_email, password, **extra_fields
+        )
         UserProfile.objects.create(user=user)
         return user
 

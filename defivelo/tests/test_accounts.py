@@ -14,6 +14,7 @@ from urllib.parse import urlparse
 from django.contrib.auth import SESSION_KEY, get_user_model
 from django.contrib.sites.models import Site
 from django.core.cache import cache
+from django.core.exceptions import ValidationError
 from django.urls import reverse
 
 import pytest
@@ -656,10 +657,17 @@ class TestProjectIntegration:
         assert not user.has_usable_password()
         assert not EmailAddress.objects.filter(user=user).exists()
 
-    def test_createsuperuser_can_login(self, client):
-        user = ProxyUser.objects.create_superuser("admin", EMAIL, PASSWORD)
+    @pytest.mark.parametrize("email", [EMAIL, "Jane.Doe@Example.com"])
+    def test_createsuperuser_can_login(self, client, email):
+        user = ProxyUser.objects.create_superuser("admin", email, PASSWORD)
 
         login(client)
 
         assert logged_in_user_pk(client) == user.pk
         assert EmailAddress.objects.get(user=user).verified
+
+    def test_createsuperuser_refuses_case_only_duplicate(self):
+        UserFactory(email=EMAIL)
+
+        with pytest.raises(ValidationError):
+            ProxyUser.objects.create_superuser("admin", EMAIL.upper(), PASSWORD)
