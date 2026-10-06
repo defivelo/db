@@ -95,8 +95,9 @@ class SimpleUserProfileForm(forms.ModelForm):
 
     def clean_email(self):
         # Ideally, this should get checked by the User model
-        email = self.cleaned_data["email"]
-        existing_users = self._meta.model.objects.filter(email=email)
+        # allauth looks emails up lowercase, so store them that way
+        email = self.cleaned_data["email"].lower()
+        existing_users = self._meta.model.objects.filter(email__iexact=email)
         if self.instance and self.instance.pk is not None:
             existing_users = existing_users.exclude(pk=self.instance.pk)
         if existing_users.exists():
