@@ -144,6 +144,44 @@ def test_qualification_form_deletes_timesheets_of_removed_staff(session):
     }
 
 
+def test_coordinator_qualification_form_keeps_staff_timesheets(session):
+    leader, helper, actor = UserFactory.create_batch(3)
+    quali = QualificationFactory(
+        session=session, leader=leader, helpers=[helper], actor=actor
+    )
+    for user in (leader, helper, actor):
+        Timesheet.objects.create(user=user, date=DAY)
+
+    form = QualificationForm(
+        data=quali_data(session, n_participants=12),
+        session=session,
+        instance=quali,
+        is_for_coordinator=True,
+    )
+    assert form.is_valid(), form.errors
+    form.save()
+
+    assert Timesheet.objects.filter(date=DAY).count() == 3
+    assert set(quali.helpers.all()) == {helper}
+
+
+def test_qualification_form_keeps_timesheet_of_staff_still_working_that_day(session):
+    user = UserFactory()
+    quali = QualificationFactory(session=session, helpers=[user])
+    QualificationFactory(
+        session=SessionFactory(orga=session.orga, day=DAY, begin=datetime.time(14)),
+        actor=user,
+    )
+    Timesheet.objects.create(user=user, date=DAY)
+
+    form = QualificationForm(data=quali_data(session), session=session, instance=quali)
+    assert form.is_valid(), form.errors
+    form.save()
+
+    assert not quali.helpers.exists()
+    assert Timesheet.objects.filter(user=user, date=DAY).exists()
+
+
 def test_qualification_form_keeps_timesheets_if_form_is_invalid(session):
     helper = UserFactory()
     quali = QualificationFactory(session=session, helpers=[helper])
