@@ -215,6 +215,17 @@ def test_list_wide_search():
     assert other.pk not in ids
 
 
+def test_list_names_are_plain_text_without_detail_permission():
+    client = CollaboratorAuthClient()
+    UserFactory(first_name="Zoé", last_name="Zbinden", profile__formation=FORMATION_M1)
+
+    response = client.get(reverse("user-list"), {"q": "zbinden"})
+
+    content = response.content.decode()
+    assert "<td>Zoé</td>" in content
+    assert "<td>Zbinden</td>" in content
+
+
 def test_mark_inactive_lists_and_updates_monitors_without_role():
     client = PowerUserAuthClient()
     collaborator = UserFactory()
