@@ -1,6 +1,7 @@
 import datetime
 import importlib
 
+from django.db.migrations.loader import MigrationLoader
 from django.db.models.functions import Lower
 from django.utils import timezone
 
@@ -15,6 +16,14 @@ migration = importlib.import_module(
 )
 
 pytestmark = pytest.mark.django_db
+
+
+def test_runs_before_allauth_lowercases_emails():
+    plan = MigrationLoader(None).graph.forwards_plan(
+        ("account", "0006_emailaddress_lower")
+    )
+
+    assert ("user", "0078_unverify_case_duplicate_emails") in plan
 
 
 def address(email, primary=True, **user_kwargs):
@@ -32,10 +41,11 @@ def verified_pks():
 
 
 def test_deleted_account_loses_verification():
-    kept = address("jan@example.com", is_active=True)
+    # Created first, so the older address would otherwise win the tie-break
     deleted = address(
-        "Jan@example.com", is_active=False, profile__status=USERSTATUS_DELETED
+        "Jan@example.com", is_active=True, profile__status=USERSTATUS_DELETED
     )
+    kept = address("jan@example.com", is_active=True)
 
     assert migration.unverify_case_duplicates(EmailAddress) == [deleted.pk]
     assert verified_pks() == {kept.pk}
