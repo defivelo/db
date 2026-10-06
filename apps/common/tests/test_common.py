@@ -3,7 +3,6 @@ from django.forms import ChoiceField, Form
 
 import pytest
 from tablib import Dataset
-from tablib.exceptions import UnsupportedFormat
 
 from apps.common import DV_STATE_CHOICES_WITH_ABBR, format_with_abbr
 from apps.common.fields import CheckboxInput, ChoiceArrayField
@@ -141,12 +140,6 @@ def test_export_mixin_uses_export_class():
     assert response.content == b'[{"x": "foo"}, {"x": "bar"}]'
 
 
-@pytest.mark.xfail(
-    reason="unknown format falls back to CSV metadata but still exports with "
-    "the unknown format name",
-    raises=UnsupportedFormat,
-    strict=True,
-)
 def test_export_mixin_unknown_format_falls_back_to_csv():
     response = _DatasetExport("foo").render_to_response({})
     assert response["Content-Disposition"].endswith('.csv"')
