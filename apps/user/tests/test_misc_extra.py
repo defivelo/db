@@ -4,6 +4,7 @@ from unittest.mock import patch
 from django.contrib.auth import get_user_model
 from django.core.signals import request_finished
 from django.test import override_settings
+from django.urls import reverse
 
 import pytest
 from allauth.account.models import EmailAddress
@@ -108,6 +109,24 @@ def test_notification_skipped_without_recipients():
         )
 
     mocked.assert_not_called()
+
+
+def test_user_admin_stores_email_lowercase(admin_client):
+    user = UserFactory(username="jane", email="old@example.com")
+
+    response = admin_client.post(
+        reverse("admin:auth_user_change", args=[user.pk]),
+        {
+            "username": "jane",
+            "email": "Jane.Doe@Example.com",
+            "date_joined_0": "2026-01-01",
+            "date_joined_1": "00:00:00",
+        },
+    )
+
+    assert response.status_code == 302, response.context["adminform"].form.errors
+    user.refresh_from_db()
+    assert user.email == "jane.doe@example.com"
 
 
 def test_email_admin_form_unsets_other_primary_addresses():
