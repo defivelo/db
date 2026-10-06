@@ -19,17 +19,6 @@ from apps.user.tests.factories import UserFactory
 pytestmark = pytest.mark.django_db
 
 
-@pytest.fixture(autouse=True)
-def clean_signal_state():
-    user_signals._user_changes.clear()
-    while not user_signals._userprofile_to_notify.empty():
-        user_signals._userprofile_to_notify.get_nowait()
-    yield
-    user_signals._user_changes.clear()
-    while not user_signals._userprofile_to_notify.empty():
-        user_signals._userprofile_to_notify.get_nowait()
-
-
 def test_formation_short():
     assert str(formation_short(FORMATION_M1, real_gettext=True)) == "M1"
     assert str(formation_short(FORMATION_M2, real_gettext=True)) == "M2"
