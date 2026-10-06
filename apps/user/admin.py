@@ -15,6 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from django import forms
 from django.contrib import admin
+from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.forms import UserChangeForm as BaseUserChangeForm
 from django.db import transaction
 
 from allauth.account.admin import EmailAddressAdmin as BaseEmailAddressAdmin
@@ -29,6 +32,20 @@ class AdminUserProfile(admin.ModelAdmin):
 
 admin.site.register(UserProfile, AdminUserProfile)
 admin.site.register(UserManagedState)
+
+
+class UserChangeForm(BaseUserChangeForm):
+    def clean_email(self):
+        # allauth looks emails up lowercase, so store them that way
+        return self.cleaned_data["email"].lower()
+
+
+class UserAdmin(BaseUserAdmin):
+    form = UserChangeForm
+
+
+admin.site.unregister(get_user_model())
+admin.site.register(get_user_model(), UserAdmin)
 
 
 class EmailAddressAdminForm(forms.ModelForm):
