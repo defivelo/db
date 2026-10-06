@@ -7,7 +7,6 @@ from django.test import RequestFactory
 from django.urls import reverse
 
 import pytest
-from tablib.exceptions import UnsupportedFormat
 
 from apps.salary import BONUS_LEADER, HOURLY_RATE_HELPER, RATE_ACTOR
 from apps.salary.views import ExportMonthlyControl, ExportMonthlyTimesheets
@@ -111,11 +110,6 @@ def test_winbiz_export_without_validated_timesheets_is_404(db):
     assert client.get(export_url("accounting-export")).status_code == 404
 
 
-@pytest.mark.xfail(
-    raises=UnsupportedFormat,
-    strict=True,
-    reason="ExportMixin falls back to CSV for the filename only, not for the export",
-)
 def test_winbiz_export_unknown_format_falls_back_to_csv(timesheets):
     client = PowerUserAuthClient()
     response = client.get(export_url("accounting-export", fmt="foo"))

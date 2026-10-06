@@ -33,6 +33,7 @@ class ExportMixin(object):
         try:
             format = getattr(base_formats, formattxt.upper())()
         except AttributeError:
+            formattxt = "csv"
             format = base_formats.CSV()
 
         try:
