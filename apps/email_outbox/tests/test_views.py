@@ -338,10 +338,15 @@ def test_filebased_index_rebuilt_when_cached_index_is_invalid(two_files, maildir
     assert len(views._get_filebased_index_cached()) == 3
 
 
-@pytest.mark.xfail(reason="per_page=0 raises ZeroDivisionError", strict=True)
-def test_list_per_page_zero(admin_client, locmem):
+@pytest.mark.parametrize(
+    "per_page,expected",
+    [(0, 1), (-3, 1), (views.MAX_PER_PAGE + 1, views.MAX_PER_PAGE)],
+)
+def test_list_per_page_is_bounded(admin_client, locmem, per_page, expected):
     build_message().send()
-    assert admin_client.get(list_url(per_page=0)).status_code == 200
+    response = admin_client.get(list_url(per_page=per_page))
+    assert response.status_code == 200
+    assert response.context["per_page"] == expected
 
 
 def test_filebased_index_skips_unreadable_files(two_files, monkeypatch):

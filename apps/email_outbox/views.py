@@ -20,6 +20,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 
 # Used to split aggregated messages stored in a single raw file (bytes)
 AGGREGATED_EMAIL_SPLIT_RE = re.compile(rb"\r?\n-{50,}[ \t]*\r?\n")
+MAX_PER_PAGE = 200
 
 
 def _ensure_supported_backend() -> None:
@@ -324,6 +325,7 @@ def outbox_list_view(request: HttpRequest) -> HttpResponse:
         per_page = int(request.GET.get("per_page", "50"))
     except ValueError:
         per_page = 50
+    per_page = min(max(per_page, 1), MAX_PER_PAGE)
     count = len(emails_sorted)
     num_pages = max(1, math.ceil(count / per_page))
     if page < 1:
