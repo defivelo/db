@@ -1,6 +1,7 @@
 import datetime
 import importlib
 
+from django.db.models.functions import Lower
 from django.utils import timezone
 
 import pytest
@@ -78,3 +79,35 @@ def test_addresses_without_case_duplicates_are_untouched():
 
     assert migration.unverify_case_duplicates(EmailAddress) == []
     assert verified_pks() == {first.pk, second.pk}
+
+
+def same_user_address(user, email, verified, primary):
+    created = EmailAddress.objects.create(
+        user=user, email=f"tmp-{email}", primary=primary, verified=verified
+    )
+    EmailAddress.objects.filter(pk=created.pk).update(email=email)
+    return created
+
+
+def test_same_user_case_duplicates_keep_the_verified_one_as_primary():
+    user = UserFactory(email="lea@example.com")
+    verified = same_user_address(user, "Lea@example.com", verified=True, primary=False)
+    primary = same_user_address(user, "lea@example.com", verified=False, primary=True)
+
+    assert migration.merge_same_user_case_duplicates(EmailAddress) == [primary.pk]
+    assert list(
+        EmailAddress.objects.filter(user=user).values_list("pk", "verified", "primary")
+    ) == [(verified.pk, True, True)]
+
+
+def test_case_duplicates_no_longer_block_lowercasing():
+    user = UserFactory(email="lea@example.com")
+    same_user_address(user, "Lea@example.com", verified=False, primary=False)
+    same_user_address(user, "lea@example.com", verified=True, primary=True)
+    address("LEA@example.com", is_active=True)
+
+    migration.merge_same_user_case_duplicates(EmailAddress)
+    migration.unverify_case_duplicates(EmailAddress)
+    EmailAddress.objects.update(email=Lower("email"))
+
+    assert EmailAddress.objects.filter(verified=True).count() == 1
