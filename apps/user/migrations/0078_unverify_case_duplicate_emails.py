@@ -1,8 +1,10 @@
 """
-allauth's account.0006 lowercases every EmailAddress, which collides with its
-`unique_verified_email` constraint when two verified addresses only differ by
-case. Keep `verified` on the most legitimate address of each such group and
-un-verify the others, so the allauth migrations can run.
+allauth's account.0006 lowercases every EmailAddress, which collides with:
+- `unique_together (user, email)` when a user owns addresses only differing by
+  case: keep one of them, primary if any was;
+- `unique_verified_email` when two verified addresses only differ by case: keep
+  `verified` on the most legitimate one and un-verify the others.
+so the allauth migrations can run.
 """
 
 from django.db import migrations
@@ -24,6 +26,26 @@ def address_rank(address, lower_email):
         user.last_login,
         -address.pk,
     )
+
+
+def merge_same_user_case_duplicates(EmailAddress, using="default"):
+    addresses = EmailAddress.objects.using(using).annotate(lower_email=Lower("email"))
+    duplicated = (
+        addresses.values("user", "lower_email")
+        .annotate(n=Count("id"))
+        .filter(n__gt=1)
+        .values_list("user", "lower_email")
+    )
+    deleted, promoted = [], []
+    for user, lower_email in duplicated:
+        group = list(addresses.filter(user=user, lower_email=lower_email))
+        group.sort(key=lambda a: (a.verified, a.primary, -a.pk), reverse=True)
+        deleted += [a.pk for a in group[1:]]
+        if not group[0].primary and any(a.primary for a in group):
+            promoted.append(group[0].pk)
+    EmailAddress.objects.using(using).filter(pk__in=deleted).delete()
+    EmailAddress.objects.using(using).filter(pk__in=promoted).update(primary=True)
+    return deleted
 
 
 def unverify_case_duplicates(EmailAddress, using="default"):
@@ -52,9 +74,9 @@ def unverify_case_duplicates(EmailAddress, using="default"):
 
 
 def forwards(apps, schema_editor):
-    unverify_case_duplicates(
-        apps.get_model("account", "EmailAddress"), schema_editor.connection.alias
-    )
+    EmailAddress = apps.get_model("account", "EmailAddress")
+    merge_same_user_case_duplicates(EmailAddress, schema_editor.connection.alias)
+    unverify_case_duplicates(EmailAddress, schema_editor.connection.alias)
 
 
 class Migration(migrations.Migration):
