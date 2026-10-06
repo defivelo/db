@@ -108,15 +108,11 @@ def test_str_omits_chosen_as_when_not_chosen():
     assert "(" not in text.split(":")[-1]
 
 
-@pytest.mark.xfail(
-    raises=KeyError,
-    strict=True,
-    reason="__str__ formats '{season}' but passes 'session=' kwarg",
-)
 def test_work_wish_str():
+    season = SeasonFactory.build()
     wish = HelperSeasonWorkWish(
-        season=SeasonFactory.build(),
+        season=season,
         helper=UserFactory.build(first_name="Jane", last_name="Doe"),
         amount=3,
     )
-    assert "Jane Doe aimerait travailler 3 fois" in str(wish)
+    assert str(wish) == f"{season}: Jane Doe aimerait travailler 3 fois"
