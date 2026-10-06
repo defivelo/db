@@ -1,11 +1,11 @@
 import json
 from urllib.parse import parse_qs, urlparse
 
-from django.forms import ValidationError
 from django.urls import reverse
 from django.utils import timezone
 
 import pytest
+from rolepermissions.checkers import has_role
 from rolepermissions.roles import assign_role
 
 from apps.user import FORMATION_M1
@@ -309,16 +309,54 @@ def test_resendcredentials_forbidden_when_never_sent():
     assert response.status_code == 403
 
 
+def post_role(client, user, role):
+    return client.post(
+        reverse("user-assign-role", kwargs={"pk": user.pk}), {"role": role}
+    )
+
+
 def test_state_manager_cannot_remove_coordinator_role():
     client = StateManagerAuthClient()
     coordinator = login_capable(UserFactory(profile__formation=""))
     assign_role(coordinator, "coordinator")
 
-    with pytest.raises(ValidationError):
-        client.post(
-            reverse("user-assign-role", kwargs={"pk": coordinator.pk}),
-            {"role": ""},
-        )
+    response = post_role(client, coordinator, "")
+
+    assert response.status_code == 200
+    assert response.context["form"].has_error("role", "role-not-allowed")
+    assert has_role(coordinator, "coordinator")
+
+
+@pytest.mark.parametrize("role", ["state_manager", "power_user"])
+def test_state_manager_cannot_assign_other_roles_than_coordinator(role):
+    client = StateManagerAuthClient()
+    user = login_capable(UserFactory())
+
+    response = post_role(client, user, role)
+
+    assert response.status_code == 200
+    assert response.context["form"].has_error("role", "role-not-allowed")
+    assert not has_role(user, role)
+
+
+def test_state_manager_can_make_a_coordinator():
+    client = StateManagerAuthClient()
+    user = login_capable(UserFactory())
+
+    response = post_role(client, user, "coordinator")
+
+    assert response.status_code == 302
+    assert has_role(user, "coordinator")
+
+
+def test_power_user_can_assign_any_role():
+    client = PowerUserAuthClient()
+    user = login_capable(UserFactory())
+
+    response = post_role(client, user, "power_user")
+
+    assert response.status_code == 302
+    assert has_role(user, "power_user")
 
 
 def test_assign_role_forbidden_without_permission():
