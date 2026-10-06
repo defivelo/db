@@ -39,7 +39,7 @@ from apps.common.forms import (
     SwissDateField,
 )
 from apps.orga.models import Organization
-from defivelo.roles import DV_AUTOMATIC_ROLES, DV_AVAILABLE_ROLES
+from defivelo.roles import DV_AUTOMATIC_ROLES, DV_AVAILABLE_ROLES, has_permission
 
 from ..common.fields import CheckboxMultipleChoiceField
 from . import STATE_CHOICES_WITH_DEFAULT
@@ -223,8 +223,9 @@ class UserAssignRoleForm(forms.Form):
         required=False,
     )
 
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, user, requester, *args, **kwargs):
         self.user = user
+        self.requester = requester
         super().__init__(*args, **kwargs)
         roles = get_user_roles(user)
         self.fields["managed_organizations"].choices = [
@@ -242,6 +243,19 @@ class UserAssignRoleForm(forms.Form):
                 user.managed_organizations.all().values_list("id", flat=True)
             ),
         }
+
+    def clean_role(self):
+        role = self.cleaned_data["role"]
+        if has_permission(self.requester, "user_set_role"):
+            return role
+        # Others (state managers) only make coordinators out of users without a role
+        allowed = {"coordinator"} if get_user_roles(self.user) else {"", "coordinator"}
+        if role not in allowed:
+            raise ValidationError(
+                _("Vous pouvez seulement attribuer le rôle de coordina·teur·trice."),
+                code="role-not-allowed",
+            )
+        return role
 
     def save(self):
         role = self.cleaned_data["role"]
