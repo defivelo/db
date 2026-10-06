@@ -7,6 +7,8 @@ changing what users see on those pages, is caught here.
 """
 
 import re
+from smtplib import SMTPException
+from unittest.mock import patch
 from urllib.parse import urlparse
 
 from django.contrib.auth import SESSION_KEY, get_user_model
@@ -20,6 +22,7 @@ from allauth.socialaccount.adapter import get_adapter as get_socialaccount_adapt
 from bs4 import BeautifulSoup
 
 from apps.user.management.commands.createsuperuser import ProxyUser
+from apps.user.models import UserProfile
 from apps.user.tests.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
@@ -606,23 +609,52 @@ class TestPasswordChange:
 
 
 class TestProjectIntegration:
-    def test_emailed_credentials_allow_login(self, client, mailoutbox):
-        user = UserFactory(email=EMAIL, first_name="Jane", last_name="Doe")
-        sender = UserFactory()
-
+    def send_credentials(self, user, force=False):
         user.profile.send_credentials(
             {
-                "fromuser": sender,
+                "fromuser": UserFactory(),
                 "current_site": Site.objects.get_current(),
                 "login_uri": "https://intranet.example.com/accounts/login/",
-            }
+            },
+            force=force,
         )
+
+    @pytest.mark.parametrize("stored_email", [EMAIL, "Jane.Doe@Example.com"])
+    def test_emailed_credentials_allow_login(self, client, mailoutbox, stored_email):
+        user = UserFactory(email=stored_email, first_name="Jane", last_name="Doe")
+
+        self.send_credentials(user)
 
         assert len(mailoutbox) == 1
         password = re.search(r"Mot de passe\s*: (\S+)", mailoutbox[0].body).group(1)
         response = login(client, password=password)
         assert response.url == "/"
         assert logged_in_user_pk(client) == user.pk
+
+    def test_resent_credentials_make_the_new_email_the_only_primary(self, mailoutbox):
+        user = make_user(email="old@example.com")
+        user.email = EMAIL
+        user.save()
+
+        self.send_credentials(user, force=True)
+
+        assert set(
+            EmailAddress.objects.filter(user=user).values_list(
+                "email", "verified", "primary"
+            )
+        ) == {("old@example.com", True, False), (EMAIL, True, True)}
+
+    def test_failed_credentials_mail_changes_nothing(self):
+        user = UserFactory(email=EMAIL, is_active=False)
+
+        with patch.object(UserProfile, "send_mail", side_effect=SMTPException):
+            with pytest.raises(SMTPException):
+                self.send_credentials(user)
+
+        user.refresh_from_db()
+        assert not user.is_active
+        assert not user.has_usable_password()
+        assert not EmailAddress.objects.filter(user=user).exists()
 
     def test_createsuperuser_can_login(self, client):
         user = ProxyUser.objects.create_superuser("admin", EMAIL, PASSWORD)
