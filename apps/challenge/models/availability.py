@@ -61,7 +61,7 @@ class HelperSeasonWorkWish(models.Model):
 
     def __str__(self):
         return _("{season}: {helper} aimerait travailler {amount} fois").format(
-            session=self.season, helper=self.helper.get_full_name(), amount=self.amount
+            season=self.season, helper=self.helper.get_full_name(), amount=self.amount
         )
 
 
