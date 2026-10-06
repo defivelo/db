@@ -183,13 +183,14 @@ class QualificationForm(forms.ModelForm):
         # Timesheets of removed staff are only deleted on save()
         self.removed_staff = set()
         if self.instance.pk:
-            self.removed_staff = {user.pk for user in self.instance.helpers.all()} - {
-                user.pk for user in self.cleaned_data.get("helpers", [])
+            previous = {
+                "leader": self.instance.leader,
+                "helpers": self.instance.helpers.all(),
+                "actor": self.instance.actor,
             }
-            for field in ("leader", "actor"):
-                previous = getattr(self.instance, field)
-                if previous and previous != self.cleaned_data.get(field):
-                    self.removed_staff.add(previous.pk)
+            self.removed_staff = self.editable_staff(previous) - self.editable_staff(
+                self.cleaned_data
+            )
 
         # Check that there are <= helmets or bikes than participants
         n_participants = self.cleaned_data.get("n_participants")
@@ -208,11 +209,28 @@ class QualificationForm(forms.ModelForm):
 
         return self.cleaned_data
 
+    def editable_staff(self, values):
+        """
+        pks of the staff in `values`, limited to the staff fields of this form:
+        a coordinator's form has none, so it never removes anyone.
+        """
+        staff = set()
+        for field in ("leader", "actor"):
+            if field in self.fields and values.get(field):
+                staff.add(values[field].pk)
+        if "helpers" in self.fields:
+            staff |= {user.pk for user in values.get("helpers") or []}
+        return staff
+
     def save(self, commit=True):
         qualification = super().save(commit=commit)
         if commit and self.removed_staff:
-            Timesheet.objects.filter(
-                user__in=self.removed_staff, date=qualification.session.day
+            day = qualification.session.day
+            # A timesheet covers the whole day, keep it if they still work that day
+            Timesheet.objects.filter(user__in=self.removed_staff, date=day).exclude(
+                Q(user__qualifs_mon2__session__day=day)
+                | Q(user__qualifs_mon1__session__day=day)
+                | Q(user__qualifs_actor__session__day=day)
             ).delete()
         return qualification
 
