@@ -173,23 +173,30 @@ def test_firstmed_widget_without_course():
     assert FirstMedWidget().render(user.profile) == "Non"
 
 
-def test_simple_profile_form_rejects_duplicate_email():
-    UserFactory(email="taken@example.com")
+def simple_profile_form(email):
     user = UserFactory(profile__affiliation_canton="", profile__formation="")
-
-    form = SimpleUserProfileForm(
+    return SimpleUserProfileForm(
         instance=user,
         allow_email=True,
-        data={
-            "first_name": "A",
-            "last_name": "B",
-            "email": "taken@example.com",
-            "language": "fr",
-        },
+        data={"first_name": "A", "last_name": "B", "email": email, "language": "fr"},
     )
+
+
+@pytest.mark.parametrize("email", ["taken@example.com", "Taken@Example.com"])
+def test_simple_profile_form_rejects_duplicate_email(email):
+    UserFactory(email="taken@example.com")
+
+    form = simple_profile_form(email)
 
     assert not form.is_valid()
     assert "email" in form.errors
+
+
+def test_simple_profile_form_lowercases_email():
+    form = simple_profile_form("Jean.Dupont@Example.com")
+
+    assert form.is_valid(), form.errors
+    assert form.save().email == "jean.dupont@example.com"
 
 
 @pytest.mark.xfail(
