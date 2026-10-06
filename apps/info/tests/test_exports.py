@@ -273,14 +273,23 @@ class TestQualifsCalendarExport:
         response = power_user_client.get(_url("qualifs-calendar-export", fmt="csv"))
         assert 'filename="DV-Calendar-2030-' in response["Content-Disposition"]
 
-    @pytest.mark.xfail(
-        reason="get_context_data omits date_sessions when there are no sessions",
-        raises=KeyError,
-        strict=True,
-    )
-    def test_export_without_sessions(self, power_user_client):
+    def test_export_without_sessions_has_headers_only(self, power_user_client):
         response = power_user_client.get(_url("qualifs-calendar-export", fmt="csv"))
+
         assert response.status_code == 200
+        rows = list(csv.reader(io.StringIO(response.content.decode("utf-8-sig"))))
+        assert rows == [
+            [
+                "Semaine",
+                "Lundi",
+                "Mardi",
+                "Mercredi",
+                "Jeudi",
+                "Vendredi",
+                "Samedi",
+                "Dimanche",
+            ]
+        ]
 
     @pytest.mark.xfail(
         reason="user_cantons raises LookupError for users without cantons",
