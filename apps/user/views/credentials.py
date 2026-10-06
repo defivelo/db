@@ -111,8 +111,7 @@ class UserAssignRole(ProfileMixin, FormView):
                 self.request.user, "assign_only_coordinator_role"
             ):
                 return super(UserAssignRole, self).dispatch(request, *args, **kwargs)
-        else:
-            raise PermissionDenied
+        raise PermissionDenied
 
     def get_context_data(self, **kwargs):
         context = super(UserAssignRole, self).get_context_data(**kwargs)

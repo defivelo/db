@@ -321,12 +321,6 @@ def test_state_manager_cannot_remove_coordinator_role():
         )
 
 
-@pytest.mark.xfail(
-    reason="UserAssignRole.dispatch returns None instead of raising PermissionDenied "
-    "when the requester lacks permissions (apps/user/views/credentials.py:109-115)",
-    raises=AttributeError,
-    strict=True,
-)
 def test_assign_role_forbidden_without_permission():
     client = CollaboratorAuthClient()
     other = login_capable(UserFactory())
