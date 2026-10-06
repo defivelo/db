@@ -351,6 +351,7 @@ class UserProfile(Address, models.Model):
             UserManagedState.objects.get_or_create(user=self.user, canton=canton)
         self.reset_cache()
 
+    @transaction.atomic
     def send_credentials(self, context, force=False):
         if self.can_login and not force:
             # Has credentials already
@@ -368,15 +369,21 @@ class UserProfile(Address, models.Model):
         context["password"] = newpassword
         self.user.save()
 
-        # This can raise exception, but that's good
+        # Make it the only primary validated email, lowercase as allauth looks it up
+        address = EmailAddress.objects.get_or_create(
+            user=self.user, email=self.user.email.lower()
+        )[0]
+        EmailAddress.objects.filter(user=self.user, primary=True).exclude(
+            pk=address.pk
+        ).update(primary=False)
+        address.verified = True
+        address.primary = True
+        address.save()
+
+        # This can raise exception, but that's good: nothing above is kept
         self.send_mail(
             (settings.EMAIL_SUBJECT_PREFIX + gettext("Accès à l’Intranet")),
             render_to_string("auth/email_user_send_credentials.txt", context),
-        )
-
-        # Create a validated email
-        EmailAddress.objects.get_or_create(
-            user=self.user, email=self.user.email, verified=True, primary=True
         )
 
     @transaction.atomic
