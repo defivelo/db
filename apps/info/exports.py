@@ -92,7 +92,8 @@ class QualifsCalendarExport(SeasonSessionsMixin):
             gettext("Dimanche"),
         ]
 
-        calendar_data = self.get_context_data()["date_sessions"]
+        # Without sessions there are no dates: export the headers only
+        calendar_data = self.get_context_data().get("date_sessions", [])
 
         row = []
         for day_data in calendar_data:
