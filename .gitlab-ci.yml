@@ -1,9 +1,9 @@
 include:
-  - component: $CI_SERVER_FQDN/components/containers-builder/build@0.8.0
+  - component: $CI_SERVER_FQDN/components/containers-builder/build@0.9.3
     inputs:
       as: "Build image"
       allow_failure: false
-  - component: $CI_SERVER_FQDN/components/containers-builder/tags-delete@0.8.0
+  - component: $CI_SERVER_FQDN/components/containers-builder/tags-delete@0.9.3
     inputs:
       as: "Unpush built image"
       stage: build
@@ -15,7 +15,7 @@ include:
         - when: always
 
   # 1bf1de1f is a commit on main (the latest version tag is outdated)
-  - component: $CI_SERVER_FQDN/components/secret-detection/secret-detection@1bf1de1f
+  - component: $CI_SERVER_FQDN/components/secret-detection/secret-detection@1.1
     inputs:
       enable_mr_pipelines: true
 
