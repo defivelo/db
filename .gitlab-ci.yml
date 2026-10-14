@@ -14,6 +14,11 @@ include:
       rules:
         - when: always
 
+  # 1bf1de1f is a commit on main (the latest version tag is outdated)
+  - component: $CI_SERVER_FQDN/components/secret-detection/secret-detection@1bf1de1f
+    inputs:
+      enable_mr_pipelines: true
+
 stages:
   - test
   - build
@@ -31,6 +36,10 @@ renovate-config:
   allow_failure: true
   script:
     - renovate-config-validator --strict
+
+secret_detection:
+  tags:
+    - docker
 
 test:
   stage: test
