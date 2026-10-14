@@ -1,4 +1,4 @@
-FROM python:3.11-bullseye
+FROM python:3.11-bookworm
 
 RUN set -x; \
     apt-get update -qq \
