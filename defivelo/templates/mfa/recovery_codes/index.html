@@ -1,0 +1,23 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Codes de secours" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Codes de secours" %}</h1>
+    <p>{% blocktrans count unused_count=unused_codes|length %}Il reste {{ unused_count }} code de secours sur {{ total_count }}.{% plural %}Il reste {{ unused_count }} codes de secours sur {{ total_count }}.{% endblocktrans %}</p>
+
+    {% if can_view_codes %}
+        <pre>{% for code in unused_codes %}{{ code }}
+{% endfor %}</pre>
+    {% endif %}
+
+    <p>
+        {% if can_download_codes %}
+            <a class="btn btn-default" href="{% url 'mfa_download_recovery_codes' %}">{% trans "Télécharger les codes" %}</a>
+        {% endif %}
+        {% if can_generate_codes %}
+            <a class="btn btn-default" href="{% url 'mfa_generate_recovery_codes' %}">{% trans "Générer de nouveaux codes" %}</a>
+        {% endif %}
+    </p>
+{% endblock %}

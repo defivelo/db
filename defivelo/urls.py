@@ -17,13 +17,37 @@
 from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
-from django.urls import include, re_path
+from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.contrib.auth.views import redirect_to_login
+from django.shortcuts import redirect
+from django.urls import include, re_path, reverse
 from django.utils.translation import gettext_lazy as _
 
 from .accounts import EmailView
 from .views.common import HomeView, LicenseView
 
 admin.autodiscover()
+
+
+def _admin_login_redirect(request, extra_context=None):
+    """
+    Send anonymous visitors of /admin/login/ to the allauth login instead of
+    Django admin's own (non-MFA-aware) login form. Already-authenticated
+    visitors are routed to the admin index (if authorized) or home instead,
+    since bouncing them back to the allauth login would redirect straight
+    back here (via REDIRECT_FIELD_NAME) and loop forever.
+    """
+    if request.user.is_authenticated:
+        if admin.site.has_permission(request):
+            return redirect(reverse("admin:index"))
+        return redirect(reverse("home"))
+    return redirect_to_login(
+        request.GET.get(REDIRECT_FIELD_NAME, reverse("admin:index")),
+        login_url=reverse("account_login"),
+    )
+
+
+admin.site.login = _admin_login_redirect
 
 urlpatterns = [
     re_path(r"^admin/", include("apps.email_outbox.urls")),

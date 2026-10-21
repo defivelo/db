@@ -1,0 +1,26 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+
+{% block head_title %}{% trans "Activer l'application d'authentification" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Activer l'application d'authentification" %}</h1>
+    <p>{% trans "Pour protéger votre compte, scannez le code QR ci-dessous avec votre application d'authentification, puis saisissez le code qu'elle génère." %}</p>
+
+    <img src="{{ totp_svg_data_uri }}" alt="{{ form.secret }}">
+
+    <p>
+        <strong>{% trans "Secret de l'application d'authentification :" %}</strong>
+        <code>{{ form.secret }}</code><br>
+        <span class="help-block">{% trans "Conservez ce secret pour pouvoir réinstaller votre application d'authentification plus tard." %}</span>
+    </p>
+
+    <form class="form-horizontal" method="post" action="{% url 'mfa_activate_totp' %}">
+        {% csrf_token %}
+        {% bootstrap_form form layout='horizontal' %}
+        {% buttons %}
+            <button type="submit" class="btn btn-primary">{% trans "Activer" %}</button>
+        {% endbuttons %}
+    </form>
+{% endblock %}

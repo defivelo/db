@@ -22,3 +22,7 @@ SECRET_KEY = "notsosecret"
 NEVERCACHE_KEY = "notsosecret"
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# Most test fixtures for superusers/PowerUsers don't provision an MFA
+# authenticator; re-enabled where it's actually tested.
+MFA_ENFORCEMENT_ENABLED = False

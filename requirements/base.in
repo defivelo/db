@@ -7,7 +7,7 @@ django-compressor
 libsass
 csscompressor
 django-stronghold
-django-allauth
+django-allauth[mfa]
 crispy-bootstrap3
 django-crispy-forms
 django-localflavor

@@ -1,0 +1,29 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+
+{% block head_title %}{% trans "Ajouter une clé de sécurité" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Ajouter une clé de sécurité" %}</h1>
+
+    <form class="form-horizontal" method="post" action="{% url 'mfa_add_webauthn' %}">
+        {% csrf_token %}
+        {% bootstrap_form form layout='horizontal' %}
+        {% buttons %}
+            <button id="mfa_webauthn_add" type="button" class="btn btn-primary">{% trans "Ajouter" %}</button>
+        {% endbuttons %}
+    </form>
+
+    {% include "mfa/webauthn/snippets/scripts.html" %}
+    {{ js_data|json_script:"js_data" }}
+    <script data-allauth-onload="allauth.webauthn.forms.addForm" type="application/json">{
+    "ids": {
+        "add": "mfa_webauthn_add",
+        "passwordless": "{{ form.passwordless.auto_id }}",
+        "credential": "{{ form.credential.auto_id }}",
+        "data": "js_data"
+    }
+}
+    </script>
+{% endblock %}

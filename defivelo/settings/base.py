@@ -62,6 +62,7 @@ UPSTREAM_APPS = (
     "django.contrib.postgres",
     "allauth",
     "allauth.account",
+    "allauth.mfa",
     "allauth.socialaccount",
     "dal",
     "dal_select2",
@@ -113,6 +114,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "defivelo.middleware.RequireMFAMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "stronghold.middleware.LoginRequiredMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
@@ -275,6 +277,16 @@ ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+
+# TOTP is the primary second factor, WebAuthn an alternative
+MFA_SUPPORTED_TYPES = ["totp", "webauthn", "recovery_codes"]
+MFA_TOTP_ISSUER = "Défi Vélo"
+
+# Whether RequireMFAMiddleware enforces 2FA for superusers/PowerUsers.
+# Disabled in test.py by default since most test fixtures for these roles
+# don't provision an authenticator; re-enabled in the tests that specifically
+# exercise the enforcement.
+MFA_ENFORCEMENT_ENABLED = True
 
 # Bust browser caches on upgrades, also for the files TinyMCE loads itself
 TINYMCE_CACHE_SUFFIX = f"?v={version('django-tinymce')}"

@@ -1,0 +1,51 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+
+{% block head_title %}{% trans "Authentification à deux facteurs" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Authentification à deux facteurs" %}</h1>
+    <p>{% trans "Votre compte est protégé par l'authentification à deux facteurs. Saisissez le code généré par votre application d'authentification :" %}</p>
+
+    <form class="form-horizontal" method="post" action="{% url 'mfa_authenticate' %}">
+        {% csrf_token %}
+        {% bootstrap_form form layout='horizontal' %}
+        {% buttons %}
+            <button type="submit" class="btn btn-primary">{% trans "Se connecter" %}</button>
+            {% if "webauthn" not in MFA_SUPPORTED_TYPES %}
+                <button type="submit" form="logout-from-stage" class="btn btn-default">{% trans "Annuler" %}</button>
+            {% endif %}
+        {% endbuttons %}
+    </form>
+
+    {% if "webauthn" in MFA_SUPPORTED_TYPES %}
+        <hr>
+        <h2>{% trans "Alternative" %}</h2>
+        <form id="webauthn_form" method="post" action="{% url 'mfa_authenticate' %}">
+            {% csrf_token %}
+            {{ webauthn_form.credential }}
+        </form>
+        <p>
+            <button id="mfa_webauthn_authenticate" type="button" class="btn btn-default">
+                {% trans "Utiliser une clé de sécurité" %}
+            </button>
+            <button type="submit" form="logout-from-stage" class="btn btn-default">{% trans "Annuler" %}</button>
+        </p>
+        {{ js_data|json_script:"js_data" }}
+        {% include "mfa/webauthn/snippets/scripts.html" %}
+        <script data-allauth-onload="allauth.webauthn.forms.authenticateForm" type="application/json">{
+    "ids": {
+        "authenticate": "mfa_webauthn_authenticate",
+        "credential": "{{ webauthn_form.credential.auto_id }}",
+        "data": "js_data"
+    }
+}
+        </script>
+    {% endif %}
+
+    <form id="logout-from-stage" method="post" action="{% url 'account_logout' %}">
+        <input type="hidden" name="next" value="{% url 'account_login' %}">
+        {% csrf_token %}
+    </form>
+{% endblock %}

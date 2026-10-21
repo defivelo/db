@@ -1,0 +1,21 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+{% load bootstrap3 %}
+
+{% block head_title %}{% trans "Confirmer l'accès" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Confirmer l'accès" %}</h1>
+    <p>{% trans "Veuillez vous réauthentifier pour protéger votre compte." %}</p>
+
+    <form class="form-horizontal" method="post" action="{% url 'account_reauthenticate' %}">
+        {% csrf_token %}
+        {% bootstrap_form form layout='horizontal' %}
+        {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        {% endif %}
+        {% buttons %}
+            <button type="submit" class="btn btn-primary">{% trans "Confirmer" %}</button>
+        {% endbuttons %}
+    </form>
+{% endblock %}

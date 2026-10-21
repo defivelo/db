@@ -1,0 +1,67 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Authentification à deux facteurs" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Authentification à deux facteurs" %}</h1>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">{% trans "Application d'authentification (TOTP)" %}</div>
+        <div class="panel-body">
+            {% if authenticators.totp %}
+                <p>{% trans "Une application d'authentification est active sur ce compte." %}</p>
+            {% else %}
+                <p>{% trans "Aucune application d'authentification n'est configurée." %}</p>
+            {% endif %}
+        </div>
+        <div class="panel-footer">
+            {% if authenticators.totp %}
+                <a class="btn btn-default" href="{% url 'mfa_deactivate_totp' %}">{% trans "Désactiver" %}</a>
+            {% else %}
+                <a class="btn btn-primary" href="{% url 'mfa_activate_totp' %}">{% trans "Activer" %}</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">{% trans "Clé de sécurité (WebAuthn), en alternative" %}</div>
+        <div class="panel-body">
+            {% with keys_count=authenticators.webauthn|length %}
+                {% if keys_count %}
+                    <p>{% blocktrans count count=keys_count %}Vous avez ajouté {{ count }} clé de sécurité.{% plural %}Vous avez ajouté {{ count }} clés de sécurité.{% endblocktrans %}</p>
+                {% else %}
+                    <p>{% trans "Aucune clé de sécurité n'a été ajoutée." %}</p>
+                {% endif %}
+            {% endwith %}
+        </div>
+        <div class="panel-footer">
+            {% if authenticators.webauthn %}
+                <a class="btn btn-default" href="{% url 'mfa_list_webauthn' %}">{% trans "Gérer" %}</a>
+            {% else %}
+                <a class="btn btn-default" href="{% url 'mfa_add_webauthn' %}">{% trans "Ajouter une clé de sécurité" %}</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if is_mfa_enabled %}
+        <div class="panel panel-default">
+            <div class="panel-heading">{% trans "Codes de secours" %}</div>
+            <div class="panel-body">
+                {% if authenticators.recovery_codes %}
+                    {% with unused=authenticators.recovery_codes.get_unused_codes|length total=authenticators.recovery_codes.generate_codes|length %}
+                        <p>{% blocktrans %}Il reste {{ unused }} codes de secours sur {{ total }}.{% endblocktrans %}</p>
+                    {% endwith %}
+                {% else %}
+                    <p>{% trans "Aucun code de secours n'a été généré." %}</p>
+                {% endif %}
+            </div>
+            <div class="panel-footer">
+                {% if authenticators.recovery_codes and not MFA_RECOVERY_CODES_SHOW_ONCE %}
+                    <a class="btn btn-default" href="{% url 'mfa_view_recovery_codes' %}">{% trans "Voir" %}</a>
+                {% endif %}
+                <a class="btn btn-default" href="{% url 'mfa_generate_recovery_codes' %}">{% trans "Générer" %}</a>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

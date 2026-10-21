@@ -17,10 +17,14 @@ beautifulsoup4==4.15.0
     # via -r test.in
 certifi==2026.7.22
     # via sentry-sdk
+cffi==2.1.1
+    # via cryptography
 coverage[toml]==7.16.2
     # via pytest-cov
 crispy-bootstrap3==2024.1
     # via -r base.in
+cryptography==50.0.2
+    # via fido2
 csscompressor==0.9.5
     # via -r base.in
 decorator==5.3.1
@@ -59,7 +63,7 @@ django==5.2.17
     #   django-simple-history
     #   django-taggit
     #   django-tinymce
-django-allauth==65.19.7
+django-allauth[mfa]==65.19.7
     # via -r base.in
 django-appconf==1.2.0
     # via django-compressor
@@ -113,6 +117,8 @@ factory-boy==3.3.3
     # via -r test.in
 faker==19.13.0
     # via factory-boy
+fido2==2.2.1
+    # via django-allauth
 icalendar==5.0.14
     # via django-ical
 iniconfig==2.3.0
@@ -151,6 +157,8 @@ ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.4
     # via stack-data
+pycparser==3.11
+    # via cffi
 pygments==2.21.0
     # via ipython
 pytest==7.4.4
@@ -180,6 +188,8 @@ pyyaml==6.0.3
     # via
     #   -r base.in
     #   tablib
+qrcode==8.2
+    # via django-allauth
 rcssmin==1.2.2
     # via django-compressor
 rjsmin==1.2.5
