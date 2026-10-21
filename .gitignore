@@ -11,3 +11,6 @@ envdir/*
 /.idea
 /*.sql.gz
 override.justfile
+
+# pip's checkout dir for editable VCS requirements (e.g. django-agpl), from pip-compile/pip install
+/src
