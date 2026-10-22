@@ -605,6 +605,8 @@ def install_requirements(c):
     except UnexpectedExit:
         c.conn.mk_venv()
 
+    c.conn.pip('install --upgrade "pip>=26.2.2"')
+
     try:
         requirements_variant = c.config.requirements
     except AttributeError:

@@ -24,7 +24,7 @@ RUN set -x; \
 USER app
 RUN python -m ensurepip --upgrade
 RUN python -m venv "$VIRTUAL_ENV"
-RUN python -m pip install --upgrade pip
+RUN python -m pip install --upgrade "pip>=26.2.2"
 WORKDIR /code
 
 COPY entrypoint.sh /
