@@ -11,19 +11,19 @@ asgiref==3.12.1
     #   django
     #   django-allauth
     #   django-countries
-asttokens==2.4.1
+asttokens==3.0.2
     # via stack-data
-bcrypt==4.3.0
+bcrypt==5.0.0
     # via paramiko
 beautifulsoup4==4.15.0
     # via -r test.in
 build==1.6.1
     # via pip-tools
-certifi==2026.7.22
+certifi==2026.10.19
     # via
     #   dulwich
     #   sentry-sdk
-cffi==1.17.1
+cffi==2.1.1
     # via
     #   cryptography
     #   pynacl
@@ -33,7 +33,7 @@ coverage[toml]==7.16.2
     # via pytest-cov
 crispy-bootstrap3==2024.1
     # via -r base.in
-cryptography==41.0.7
+cryptography==50.0.2
     # via paramiko
 csscompressor==0.9.5
     # via -r base.in
@@ -41,18 +41,17 @@ decorator==5.3.1
     # via
     #   fabric
     #   ipdb
-    #   ipython
 defusedxml==0.7.1
     # via odfpy
 deprecated==1.3.1
     # via fabric
 diff-match-patch==20241021
     # via django-import-export
-dj-database-url==2.3.0
+dj-database-url==3.1.2
     # via -r base.in
 dj-email-url==1.0.6
     # via -r base.in
-django==5.2.17
+django==5.2.18
     # via
     #   -r base.in
     #   crispy-bootstrap3
@@ -78,47 +77,47 @@ django==5.2.17
     #   django-simple-history
     #   django-taggit
     #   django-tinymce
-django-allauth==65.19.7
+django-allauth==65.20.1
     # via -r base.in
 django-appconf==1.2.0
     # via django-compressor
-django-autocomplete-light==3.12.1
+django-autocomplete-light==5.0.0
     # via -r base.in
-django-bootstrap3==23.6
+django-bootstrap3==26.3
     # via -r base.in
 django-bootstrap3-datetimepicker-2==2.8.3
     # via -r base.in
 django-compressor==4.6.0
     # via -r base.in
-django-countries==7.6.1
+django-countries==9.1.0
     # via -r base.in
-django-crispy-forms==2.5
+django-crispy-forms==2.7
     # via
     #   -r base.in
     #   crispy-bootstrap3
-django-debug-toolbar==4.4.6
+django-debug-toolbar==8.0.0
     # via -r dev.in
-django-extensions==3.2.3
+django-extensions==4.1
     # via -r dev.in
-django-filter==23.5
+django-filter==26.2
     # via -r base.in
 django-ical==1.9.2
     # via -r base.in
-django-import-export==4.4.1
+django-import-export==4.4.3
     # via -r base.in
-django-localflavor==4.0
+django-localflavor==5.1
     # via -r base.in
 django-memoize==2.3.1
     # via -r base.in
-django-parler==2.3
+django-parler==2.4
     # via -r base.in
-django-phonenumber-field==7.3.0
+django-phonenumber-field==9.0.0
     # via -r base.in
 django-recurrence==1.14
     # via django-ical
 django-role-permissions==3.2.0
     # via -r base.in
-django-simple-history==3.12.0
+django-simple-history==3.13.0
     # via -r base.in
 django-stronghold==0.4.0
     # via -r base.in
@@ -132,31 +131,35 @@ et-xmlfile==2.0.0
     # via openpyxl
 execnet==2.1.2
     # via pytest-xdist
-executing==2.2.1
+executing==2.3.0
     # via stack-data
 fabric==3.2.3
     # via -r dev.in
 factory-boy==3.3.3
     # via -r test.in
-faker==19.13.0
+faker==40.43.0
     # via factory-boy
-icalendar==5.0.14
+icalendar==7.3.0
     # via django-ical
-iniconfig==2.3.0
+iniconfig==2.3.1
     # via pytest
 invoke==2.2.1
-    # via fabric
+    # via
+    #   fabric
+    #   paramiko
 ipdb==0.13.13
     # via -r test.in
-ipython==8.39.0
+ipython==9.17.1
     # via ipdb
-jedi==0.19.2
+ipython-pygments-lexers==1.1.1
     # via ipython
-libsass==0.22.0
+jedi==0.20.1
+    # via ipython
+libsass==0.23.0
     # via -r base.in
-markupsafe==2.1.5
+markupsafe==3.0.4
     # via werkzeug
-matplotlib-inline==0.1.7
+matplotlib-inline==0.2.2
     # via ipython
 odfpy==1.4.1
     # via tablib
@@ -166,21 +169,26 @@ packaging==26.3
     # via
     #   build
     #   pytest
-paramiko==3.5.1
+    #   wheel
+paramiko==5.1.0
     # via fabric
 parso==0.8.7
     # via jedi
 pexpect==4.9.0
     # via ipython
-phonenumbers==8.13.55
+phonenumbers==9.0.41
     # via -r base.in
-pillow==12.3.0
+pillow==13.0.0
     # via -r base.in
-pip-tools==7.6.1
+pip-tools==7.6.2
     # via -r dev.in
-pluggy==1.6.0
-    # via pytest
+pluggy==1.7.0
+    # via
+    #   pytest
+    #   pytest-cov
 prompt-toolkit==3.0.53
+    # via ipython
+psutil==7.2.2
     # via ipython
 psycopg2-binary==2.9.13
     # via -r base.in
@@ -188,57 +196,56 @@ ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.4
     # via stack-data
-pycparser==2.23
+pycparser==3.11
     # via cffi
 pygments==2.21.0
-    # via ipython
-pynacl==1.6.0
+    # via
+    #   ipython
+    #   ipython-pygments-lexers
+    #   pytest
+pynacl==1.6.2
     # via paramiko
 pyproject-hooks==1.3.3
     # via
     #   build
     #   pip-tools
-pytest==7.4.4
+pytest==9.1.1
     # via
     #   -r test.in
     #   pytest-cov
     #   pytest-django
     #   pytest-xdist
-pytest-cov==5.0.0
+pytest-cov==7.1.0
     # via -r test.in
 pytest-django==4.14.0
     # via -r test.in
 pytest-xdist==3.8.0
     # via -r test.in
-python-dateutil==2.9.0.post0
+python-dateutil==3.0.0
     # via
     #   django-recurrence
-    #   faker
     #   icalendar
-python-stdnum==1.20
+python-stdnum==2.2
     # via django-localflavor
 pytz==2026.5
-    # via
-    #   -r base.in
-    #   icalendar
+    # via -r base.in
 pyyaml==6.0.3
     # via
     #   -r base.in
     #   tablib
-rcssmin==1.2.2
+rcssmin==1.3.0
     # via django-compressor
-rjsmin==1.2.5
+rjsmin==1.3.0
     # via django-compressor
-ruff==0.12.12
+ruff==0.17.1
     # via -r test.in
-sentry-sdk==1.45.1
+sentry-sdk==2.73.0
     # via -r base.in
 six==1.17.0
     # via
     #   -r base.in
-    #   asttokens
     #   python-dateutil
-soupsieve==2.10
+soupsieve==3.0.4
     # via beautifulsoup4
 sqlparse==0.6.0
     # via
@@ -257,20 +264,24 @@ traitlets==5.16.1
 typing-extensions==4.16.0
     # via
     #   beautifulsoup4
-    #   dj-database-url
     #   django-countries
+    #   icalendar
     #   ipython
+tzdata==2026.5
+    # via
+    #   icalendar
+    #   python-dateutil
 urllib3==2.8.0
     # via
     #   dulwich
     #   sentry-sdk
-wcwidth==0.2.14
+wcwidth==0.9.3
     # via prompt-toolkit
 werkzeug==3.1.9
     # via -r dev.in
-wheel==0.41.3
+wheel==0.48.0
     # via pip-tools
-wrapt==1.17.3
+wrapt==2.5.1
     # via deprecated
 xlrd==2.0.2
     # via tablib
